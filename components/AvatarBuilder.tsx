@@ -398,75 +398,115 @@ export default function AvatarBuilder({
     </div>
   );
 }
-// FIX: Cast `import.meta` to `any` to bypass TypeScript error for `glob`, which is a Vite feature.
-// Also, cast `src` to `string` to match the LayerOption type.
-const backHairOptions = Object.entries((import.meta as any).glob('/public/asset/avatar-face/hair/back/*.png', { eager: true, query: '?url', import: 'default' })).map(([path, src]) => {
-    const name = path.split('/').pop()!.replace('.png', '');
-    return { id: `${name}bh`, name, src: src as string };
+// Định nghĩa kiểu chung cho layer
+type LayerOption = {
+  id: string;
+  name: string;
+  src: string;
+  ageCategory?: 'baby' | 'normal' | 'old';
+};
+
+// Helper lấy tên file
+const baseName = (path: string) =>
+  path.split('/').pop()!.replace(/\.(png|webp)$/i, '');
+
+// Backgrounds
+const backgroundOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/bg/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const name = baseName(path);
+  return { id: `bg-${name}`, name: `Background ${name}`, src: src as string };
 });
 
-// FIX: Cast `import.meta` to `any` to bypass TypeScript error for `glob`, which is a Vite feature.
-// Also, cast `src` to `string` to match the LayerOption type.
-const eyesOptions = Object.entries((import.meta as any).glob('/public/asset/avatar-face/eyes/*.png', { eager: true, query: '?url', import: 'default' })).map(([path, src]) => {
-    const name = path.split('/').pop()!.replace('.png', '');
-    return { id: `${name}e`, name, src: src as string };
+// Back Hair
+const backHairOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/hair/back/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const name = baseName(path);
+  return { id: `${name}bh`, name, src: src as string };
 });
 
-// FIX: Cast `import.meta` to `any` to bypass TypeScript error for `glob`, which is a Vite feature.
-// Also, cast `src` to `string` to match the LayerOption type.
-const eyebrowsOptions = Object.entries((import.meta as any).glob('/public/asset/avatar-face/eyebrows/*.png', { eager: true, query: '?url', import: 'default' })).map(([path, src]) => {
-    const name = path.split('/').pop()!.replace('.png', '');
-    return { id: `${name}eb`, name, src: src as string };
+// Eyes
+const eyesOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/eyes/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const name = baseName(path);
+  return { id: `${name}e`, name, src: src as string };
 });
 
-// FIX: Cast `import.meta` to `any` to bypass TypeScript error for `glob`, which is a Vite feature.
-// Also, cast `src` to `string` to match the LayerOption type.
-const mouthOptions = Object.entries((import.meta as any).glob('/public/asset/avatar-face/mouth/*.png', { eager: true, query: '?url', import: 'default' })).map(([path, src]) => {
-    const name = path.split('/').pop()!.replace('.png', '');
-    return { id: `${name}m`, name, src: src as string };
+// Eyebrows
+const eyebrowsOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/eyebrows/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const name = baseName(path);
+  return { id: `${name}eb`, name, src: src as string };
 });
 
-// FIX: Cast `import.meta` to `any` to bypass TypeScript error for `glob`, which is a Vite feature.
-// Also, cast `src` to `string` to match the LayerOption type.
-const beardOptions = Object.entries((import.meta as any).glob('/public/asset/avatar-face/beard/*.png', { eager: true, query: '?url', import: 'default' })).map(([path, src]) => {
-    const name = path.split('/').pop()!.replace('.png', '');
-    return { id: `${name}b`, name, src: src as string };
+// Mouth
+const mouthOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/mouth/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const name = baseName(path);
+  return { id: `${name}m`, name, src: src as string };
 });
 
-// FIX: Cast `import.meta` to `any` to bypass TypeScript error for `glob`, which is a Vite feature.
-// Also, cast `src` to `string` to match the LayerOption type.
-const frontHairOptions = Object.entries((import.meta as any).glob('/public/asset/avatar-face/hair/front/*.png', { eager: true, query: '?url', import: 'default' })).map(([path, src]) => {
-    const name = path.split('/').pop()!.replace('.png', '');
-    return { id: `${name}fh`, name, src: src as string };
+// Beard
+const beardOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/beard/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const name = baseName(path);
+  return { id: `${name}b`, name, src: src as string };
 });
 
-// FIX: Cast `import.meta` to `any` to bypass TypeScript error for `glob`, which is a Vite feature.
-// Also, cast `src` to `string` to match the LayerOption type.
-const featureOptions = Object.entries((import.meta as any).glob('/public/asset/avatar-face/features/**/*.png', { eager: true, query: '?url', import: 'default' })).map(([path, src]) => {
-  const pathParts = path.split('/');
-  const ageCategory = pathParts[pathParts.length - 2] as 'baby' | 'normal' | 'old';
-  const fileName = pathParts[pathParts.length - 1].replace('.png', '');
+// Front Hair
+const frontHairOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/hair/front/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const name = baseName(path);
+  return { id: `${name}fh`, name, src: src as string };
+});
 
-  const name = fileName
+// Features (có subfolder: baby / normal / old / ...)
+const featureOptions: LayerOption[] = Object.entries(
+  import.meta.glob('/src/asset/avatar-face/features/**/*.{png,webp}', {
+    eager: true,
+    import: 'default'
+  })
+).map(([path, src]) => {
+  const parts = path.split('/');
+  const ageCategory = parts[parts.length - 2] as 'baby' | 'normal' | 'old';
+  const n = baseName(path);
+
+  const name = n
     .replace(/-/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase());
+    .replace(/\b\w/g, (l) => l.toUpperCase());
 
-  const id = `feat-${fileName}`;
-
-  return { id, name, src: src as string, ageCategory };
+  return { id: `feat-${n}`, name, src: src as string, ageCategory };
 });
 
 export const exampleManifest: Manifest = [
-  { key: "background", label: "Background", zIndex: 0, required: true, options: [
-    { id: "bg-yellow", name: "Yellow", src: "/asset/avatar-face/bg/1.png" },
-    { id: "bg-blue", name: "Blue", src: "/asset/avatar-face/bg/2.png" },
-   { id: "3", name: "3", src: "/asset/avatar-face/bg/3.png" },
-    { id: "bg-green", name: "Green", src: "/asset/avatar-face/bg/4.png" },
-    { id: "bg-orange", name: "Orange", src: "/asset/avatar-face/bg/5.png" },
-    { id: "bg-purple", name: "Purple", src: "/asset/avatar-face/bg/6.png" },
-    { id: "bg-red", name: "Red", src: "/asset/avatar-face/bg/7.png" },
-  
-  ]},
+  { key: "background", label: "Background", zIndex: 0, required: true, options: backgroundOptions},
   { key: "backHair", label: "Hair (Back)", zIndex: 1, allowNone: true, required: false, options: backHairOptions},
   { key: "features", label: "Face Features", zIndex: 2, allowNone: false, required: false, options: featureOptions},
   { key: "eyes", label: "Eyes", zIndex: 3, required: true, options: eyesOptions},
