@@ -78,7 +78,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
     const initialDate = { day: 1, year: initialYear };
     return {
         familyMembers: { [character.id]: character },
-        familyFund: 50000000,
+        familyFund: 50000,
         purchasedAssets: [],
         familyPets: {},
         familyBusinesses: {},
@@ -118,8 +118,8 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         mourningUntilYear: null, monthlyNetIncome: 0, eventsThisYear: 0, petId: mioId,
         completedOneTimeEvents: [],
         displayAdjective: null,
-        avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/mila.png`,
+        avatarState: null,
+        staticAvatarUrl: 'asset/mila.png',
     };
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 1,
@@ -133,8 +133,8 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         mourningUntilYear: null, monthlyNetIncome: 0, eventsThisYear: 0, petId: null,
         completedOneTimeEvents: [],
         displayAdjective: null,
-        avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/max.png`,
+        avatarState: null,
+        staticAvatarUrl: 'asset/max.png',
     };
     const alice: Character = {
         id: aliceId, name: 'Alice', gender: Gender.Female, generation: 2,
@@ -148,8 +148,8 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         mourningUntilYear: null, monthlyNetIncome: 0, eventsThisYear: 0, petId: null,
         completedOneTimeEvents: [],
         displayAdjective: null,
-        avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/alice.png`,
+        avatarState: null,
+        staticAvatarUrl: 'asset/alice.png',
     };
     const lucas: Character = {
         id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 2,
@@ -163,8 +163,8 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         mourningUntilYear: null, monthlyNetIncome: 0, eventsThisYear: 0, petId: null,
         completedOneTimeEvents: [],
         displayAdjective: null,
-        avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/lucas.png`,
+        avatarState: null,
+        staticAvatarUrl: 'asset/lucas.png',
     };
     const daisy: Character = {
         id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 2,
@@ -178,8 +178,8 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         mourningUntilYear: null, monthlyNetIncome: 0, eventsThisYear: 0, petId: null,
         completedOneTimeEvents: [],
         displayAdjective: null,
-        avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/daisy.png`,
+        avatarState: null,
+        staticAvatarUrl: 'asset/daisy.png',
     };
     const mio: Pet = {
         id: mioId, name: 'Mio', type: PetType.Dog, ownerId: milaId, age: 2,
