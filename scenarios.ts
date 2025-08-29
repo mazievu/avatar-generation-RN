@@ -119,7 +119,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/mila.png`,
+        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/mila.webp`,
     };
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 1,
@@ -134,7 +134,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/max.png`,
+        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/max.webp`,
     };
     const alice: Character = {
         id: aliceId, name: 'Alice', gender: Gender.Female, generation: 2,
@@ -149,7 +149,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/alice.png`,
+        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/alice.webp`,
     };
     const lucas: Character = {
         id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 2,
@@ -164,7 +164,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/lucas.png`,
+        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/lucas.webp`,
     };
     const daisy: Character = {
         id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 2,
@@ -179,7 +179,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/daisy.png`,
+        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/daisy.webp`,
     };
     const mio: Pet = {
         id: mioId, name: 'Mio', type: PetType.Dog, ownerId: milaId, age: 2,
