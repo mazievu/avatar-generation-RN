@@ -92,15 +92,13 @@ interface Props {
 export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, character, size }) => {
     // Handle static avatars for specific characters (e.g., Mila's family)
     if (character.staticAvatarUrl) {
-        const hasImg = !!images[character.staticAvatarUrl];
-        const displaySrc = hasImg ? character.staticAvatarUrl : makePlaceholderSVG(size.width, size.height, character.name);
         return (
             <div
                 className="relative overflow-hidden rounded-2xl shadow-md bg-slate-200"
                 style={{ width: size.width, height: size.height }}
             >
                 <img
-                    src={displaySrc}
+                    src={character.staticAvatarUrl}
                     alt={character.name}
                     className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
                     draggable={false}
