@@ -10,8 +10,9 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
-    "types": [
-      "node"
+    "types": [ // Add vite/client for Vite specific types like import.meta.env
+      "node",
+      "vite/client"
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,
