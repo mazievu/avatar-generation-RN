@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { PetType } from '../types';
 
@@ -78,6 +79,18 @@ export const RobotIcon: React.FC<IconProps> = ({ className }) => (
   </svg>
 );
 
+export const RobotAvatarIcon: React.FC<IconProps> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className={className}>
+    <circle cx="50" cy="50" r="48" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="4" />
+    <rect x="25" y="30" width="50" height="40" rx="8" fill="#64748b" />
+    <circle cx="40" cy="50" r="6" fill="#67e8f9" stroke="white" strokeWidth="2" />
+    <circle cx="60" cy="50" r="6" fill="#67e8f9" stroke="white" strokeWidth="2" />
+    <line x1="50" y1="30" x2="50" y2="20" stroke="#64748b" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="50" cy="15" r="5" fill="#ef4444" />
+  </svg>
+);
+
+
 export const UpgradeIcon: React.FC<IconProps> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clipRule="evenodd" />
@@ -101,4 +114,3 @@ export const LockClosedIcon: React.FC<IconProps> = ({ className }) => (
       <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
     </svg>
   );
-  

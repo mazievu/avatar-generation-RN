@@ -125,7 +125,6 @@ export const LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_online_scam_1', effect: { fundChange: -2000, statChanges: { happiness: -10 }, logKey: 'log_online_scam_1' } },
             { textKey: 'choice_online_scam_2', effect: { statChanges: { confidence: 5 }, logKey: 'log_online_scam_2' } },
-            // FIX: The 'iq' property should be nested within 'statChanges'.
             { textKey: 'choice_online_scam_3', effect: { statChanges: { iq: 8 }, logKey: 'log_online_scam_3' } },
         ]
     },

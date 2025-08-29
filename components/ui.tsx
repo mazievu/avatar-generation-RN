@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition } from '../types';
-import { IqIcon, HappinessIcon, ConfidenceIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon } from './icons';
+import { IqIcon, HappinessIcon, ConfidenceIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
 import { Gender, RelationshipStatus, CharacterStatus, LifePhase } from '../types';
 import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, EVENTS, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../constants';
 import { SCENARIOS } from '../scenarios';
@@ -549,7 +549,7 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
     if (fundChange && fundChange !== 0) {
         const value = Math.round(fundChange);
         const sign = value > 0 ? '+' : '';
-        const color = value > 0 ? 'text-green-600' : 'text-red-500';
+        const color = value > 0 ? 'text-green-600' : 'text-red-600';
         allChanges.push(
             <span key="fund" className={`inline-flex items-center text-xs font-bold ${color}`}>
                 <MoneyIcon className="h-4 w-4 mr-0.5" /> {sign}${Math.abs(value).toLocaleString()}
@@ -573,7 +573,7 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
 
             const value = Math.round(change);
             const sign = value > 0 ? '+' : '';
-            const color = value > 0 ? 'text-green-600' : 'text-red-500';
+            const color = value > 0 ? 'text-green-600' : 'text-red-600';
             allChanges.push(
                 <span key={stat} className={`inline-flex items-center text-xs font-bold ${color}`}>
                     <Icon className="h-4 w-4 mr-0.5" /> {sign}{value}
@@ -1105,11 +1105,11 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
 
                              return (
                                 <div key={index} className="bg-slate-100 p-3 rounded-xl flex items-center gap-4">
-                                    <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-slate-200 flex items-center justify-center">
+                                    <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-slate-200 flex items-center justify-center overflow-hidden">
                                         {assignedCharacter ? (
                                             <AgeAwareAvatarPreview manifest={manifest} character={assignedCharacter} images={images} size={{width: 64, height: 64}} />
                                         ) : isRobot ? (
-                                            <RobotIcon className="w-10 h-10 text-slate-500" />
+                                            <RobotAvatarIcon className="w-full h-full" />
                                         ) : (
                                             <div className="w-10 h-10 bg-slate-300 rounded-full" />
                                         )}

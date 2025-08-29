@@ -7,6 +7,7 @@ import { BUSINESS_DEFINITIONS, BUSINESS_MAP_LOCATIONS } from '../constants';
 import { BusinessMapSVG } from './BusinessMapSVG';
 import { calculateBusinessMonthlyNetIncome } from '../utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { RobotAvatarIcon } from './icons';
 
 // Modal for purchasing
 const BusinessPurchaseModal: React.FC<{
@@ -223,14 +224,24 @@ export const BusinessMap: React.FC<{
                                                 </p>
                                                 <div className="flex justify-center items-center gap-1 mt-2 -mb-1">
                                                      {businessToManage.slots.map((slot, i) => {
-                                                         if (!slot.assignedCharacterId || slot.assignedCharacterId === 'robot') return null;
+                                                         if (!slot.assignedCharacterId) return null;
+                                                         
+                                                         if (slot.assignedCharacterId === 'robot') {
+                                                            return (
+                                                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-slate-300 shadow-sm">
+                                                                    <RobotAvatarIcon className="w-full h-full" />
+                                                                </div>
+                                                            );
+                                                         }
+                                                         
                                                          const char = gameState.familyMembers[slot.assignedCharacterId];
                                                          if (!char) return null;
+                                                         
                                                          return (
                                                             <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-slate-300 shadow-sm">
                                                                 <AgeAwareAvatarPreview manifest={manifest} character={char} images={images} size={{width: 32, height: 32}} />
                                                             </div>
-                                                         )
+                                                         );
                                                      })}
                                                 </div>
                                                 <span className="block text-xs font-semibold text-blue-600 mt-2">{t('manage_button', lang)}</span>
