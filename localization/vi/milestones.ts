@@ -1,0 +1,29 @@
+
+
+export default {
+    // Marriage
+    milestone_marriage_title: 'Lời cầu hôn',
+    milestone_marriage_desc: 'Bạn đã gặp một người đặc biệt và đang cân nhắc việc kết hôn. Bạn sẽ làm gì?',
+    milestone_marriage_yes: 'Cầu hôn họ.',
+    log_milestone_marriage_yes: 'Tôi đã cầu hôn, và họ đã đồng ý! Một chương mới bắt đầu.',
+    milestone_marriage_no: 'Tạm thời độc thân.',
+    log_milestone_marriage_no: 'Tôi quyết định đây chưa phải là thời điểm thích hợp để ổn định.',
+    // Children
+    milestone_children_title: 'Nghĩ về con cái',
+    milestone_children_desc: 'Bạn và bạn đời đã thảo luận về khả năng có con.',
+    milestone_children_yes: 'Cố gắng có con.',
+    log_milestone_children_decision: 'Chúng tôi đã quyết định thử có con.',
+    log_milestone_children_try_success: 'Chúng tôi đã quyết định thử có con, và đã thành công!',
+    log_milestone_children_try_fail: 'Chúng tôi đã quyết định thử có con, nhưng lần này không thành công.',
+    milestone_children_no: 'Chưa phải bây giờ.',
+    log_milestone_children_no: 'Chúng tôi quyết định chúng tôi chưa sẵn sàng để có con.',
+    milestone_child_conceived_title: 'Tin Vui!',
+    milestone_child_conceived_desc: 'Bạn sắp có một đứa con! Em bé sẽ chào đời vào một thời điểm nào đó trong năm nay.',
+    milestone_child_conceived_ok: 'Tuyệt vời!',
+    log_milestone_child_conceived_ok: 'Một em bé xinh xắn đã chào đời!',
+    // Death
+    milestone_death_old_age_title: 'Một cuộc đời đã sống',
+    milestone_death_old_age_desc: 'Bạn đã sống một cuộc đời dài và trọn vẹn. Đã đến lúc yên nghỉ.',
+    milestone_death_old_age_ok: 'Tạm biệt.',
+    log_milestone_death_old_age_ok: 'Tôi đã ra đi thanh thản, được bao bọc bởi những kỷ niệm.'
+};
