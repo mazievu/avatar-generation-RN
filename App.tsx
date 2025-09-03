@@ -586,7 +586,7 @@ const App: React.FC = () => {
                                 const updatedChar = { ...char, ...charUpdate };
                                 nextFamilyMembers[id] = updatedChar;
                                 
-                                if (updatedChar.age === 19) {
+                                if (updatedChar.age === 18) {
                                     newUniversityChoices.push({ characterId: id });
                                 } else { 
                                     if (!careerChoiceSet) {
