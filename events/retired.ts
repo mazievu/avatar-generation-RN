@@ -32,7 +32,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         descriptionKey: 'event_retired_health_checkup_desc',
         phases: [LifePhase.Retired],
         choices: [
-            { textKey: 'choice_retired_health_checkup_1', effect: { statChanges: { health: 5 }, fundChange: -500, logKey: 'log_retired_health_checkup_1' } },
+            { textKey: 'choice_retired_health_checkup_1', effect: { statChanges: { health: 2 }, fundChange: -500, logKey: 'log_retired_health_checkup_1' } },
             { textKey: 'choice_retired_health_checkup_2', effect: { statChanges: { health: -1 }, fundChange: -200, logKey: 'log_retired_health_checkup_2' } },
             { textKey: 'choice_retired_health_checkup_3', effect: { statChanges: { health: -3 }, logKey: 'log_retired_health_checkup_3', triggers: [{ eventId: 'retired_illness_discovered', chance: 0.4 }] } },
         ]
@@ -55,9 +55,9 @@ export const RETIRED_EVENTS: GameEvent[] = [
         phases: [LifePhase.Retired],
         condition: (state, char) => !char.completedOneTimeEvents.includes('retired_long_trip'),
         choices: [
-            { textKey: 'choice_retired_long_trip_1', effect: { statChanges: { happiness: 8 }, fundChange: -3000, logKey: 'log_retired_long_trip_1' } },
-            { textKey: 'choice_retired_long_trip_2', effect: { statChanges: { happiness: 10 }, fundChange: -5000, logKey: 'log_retired_long_trip_2' } },
-            { textKey: 'choice_retired_long_trip_3', effect: { statChanges: { happiness: 12 }, fundChange: -8000, logKey: 'log_retired_long_trip_3', triggers: [{ eventId: 'retired_travel_fatigue', chance: 0.5 }] } },
+            { textKey: 'choice_retired_long_trip_1', effect: { statChanges: { happiness: 3 }, fundChange: -3000, logKey: 'log_retired_long_trip_1' } },
+            { textKey: 'choice_retired_long_trip_2', effect: { statChanges: { happiness: 3 }, fundChange: -5000, logKey: 'log_retired_long_trip_2' } },
+            { textKey: 'choice_retired_long_trip_3', effect: { statChanges: { happiness: 3 }, fundChange: -8000, logKey: 'log_retired_long_trip_3', triggers: [{ eventId: 'retired_travel_fatigue', chance: 0.5 }] } },
         ]
     },
     {
@@ -150,8 +150,8 @@ export const RETIRED_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_retired_illness_discovered_1', effect: { statChanges: { health: 3, confidence: 1 }, logKey: 'log_retired_illness_discovered_1' } },
-            { textKey: 'choice_retired_illness_discovered_2', effect: { statChanges: { health: -5, happiness: -2 }, logKey: 'log_retired_illness_discovered_2' } },
-            { textKey: 'choice_retired_illness_discovered_3', effect: { statChanges: { health: -8, happiness: -4, confidence: -3 }, logKey: 'log_retired_illness_discovered_3' } },
+            { textKey: 'choice_retired_illness_discovered_2', effect: { statChanges: { health: -2, happiness: -2 }, logKey: 'log_retired_illness_discovered_2' } },
+            { textKey: 'choice_retired_illness_discovered_3', effect: { statChanges: { health: -3, happiness: -4, confidence: -3 }, logKey: 'log_retired_illness_discovered_3' } },
         ]
     },
     {

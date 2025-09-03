@@ -1,4 +1,3 @@
-
 import { GameEvent, LifePhase, Pet, PetType, Stats, Character } from '../types';
 import { PET_DATA } from '../constants';
 
@@ -168,7 +167,7 @@ export const PET_EVENTS: GameEvent[] = [
             { 
                 textKey: 'choice_pet_gets_old_2', 
                 effect: { 
-                    statChanges: { happiness: -5 },
+                    statChanges: { happiness: -2 },
                     logKey: 'log_pet_gets_old_2',
                     action: (state, charId) => removePetFromOwner(state, charId)
                 } 
@@ -195,7 +194,7 @@ export const PET_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_pet_found_1', effect: { statChanges: { happiness: 10 }, logKey: 'log_pet_found_1' } },
+            { textKey: 'choice_pet_found_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_pet_found_1' } },
         ]
     },
     {
@@ -206,7 +205,7 @@ export const PET_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_pet_lost_forever_1', effect: { 
-                statChanges: { happiness: -5 }, 
+                statChanges: { happiness: -2 }, 
                 logKey: 'log_pet_lost_forever_1', 
                 action: (state, charId) => removePetFromOwner(state, charId)
             }}
@@ -219,7 +218,7 @@ export const PET_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_pet_contest_win_1', effect: { fundChange: 500, statChanges: { happiness: 5 }, logKey: 'log_pet_contest_win_1' } },
+            { textKey: 'choice_pet_contest_win_1', effect: { fundChange: 500, statChanges: { happiness: 2 }, logKey: 'log_pet_contest_win_1' } },
         ]
     },
     {

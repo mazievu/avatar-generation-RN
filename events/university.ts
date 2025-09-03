@@ -1,4 +1,3 @@
-
 import { GameEvent, LifePhase } from '../types';
 
 export const UNIVERSITY_EVENTS: GameEvent[] = [
@@ -56,7 +55,7 @@ export const UNIVERSITY_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_university_midterm_exam_1', effect: { statChanges: { iq: 3 }, logKey: 'log_university_midterm_exam_1' } },
             { textKey: 'choice_university_midterm_exam_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_midterm_exam_2', triggers: [{ eventId: 'university_exam_off_topic', chance: 0.6 }] } },
-            { textKey: 'choice_university_midterm_exam_3', effect: { statChanges: { iq: -5, confidence: -3 }, logKey: 'log_university_midterm_exam_3' } },
+            { textKey: 'choice_university_midterm_exam_3', effect: { statChanges: { iq: -3, confidence: -3 }, logKey: 'log_university_midterm_exam_3' } },
         ]
     },
     {

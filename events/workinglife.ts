@@ -1,4 +1,3 @@
-
 import { GameEvent, LifePhase, CharacterStatus } from '../types';
 
 export const WORKING_LIFE_EVENTS: GameEvent[] = [
@@ -161,7 +160,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_workinglife_client_complaint_1', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_client_complaint_1' } },
             { textKey: 'choice_workinglife_client_complaint_2', effect: { statChanges: { confidence: 1, iq: -1 }, logKey: 'log_workinglife_client_complaint_2' } },
-            { textKey: 'choice_workinglife_client_complaint_3', effect: { statChanges: { happiness: -5 }, logKey: 'log_workinglife_client_complaint_3' } },
+            { textKey: 'choice_workinglife_client_complaint_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_client_complaint_3' } },
         ]
     },
     {

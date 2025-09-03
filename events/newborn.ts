@@ -9,9 +9,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age === 0 && !char.completedOneTimeEvents.includes('newborn_first_night_crying'),
         choices: [
-            { textKey: 'choice_newborn_first_night_crying_1', effect: { statChanges: { happiness: 8, health: 5 }, logKey: 'log_newborn_first_night_crying_1' } },
-            { textKey: 'choice_newborn_first_night_crying_2', effect: { statChanges: { happiness: 5, health: -5 }, logKey: 'log_newborn_first_night_crying_2' } },
-            { textKey: 'choice_newborn_first_night_crying_3', effect: { statChanges: { iq: 5 }, logKey: 'log_newborn_first_night_crying_3', triggers: [{ eventId: 'newborn_parents_sleepless', chance: 0.5, reTarget: 'parents' }] } },
+            { textKey: 'choice_newborn_first_night_crying_1', effect: { statChanges: { happiness: 3, health: 2 }, logKey: 'log_newborn_first_night_crying_1' } },
+            { textKey: 'choice_newborn_first_night_crying_2', effect: { statChanges: { happiness: 2, health: -2 }, logKey: 'log_newborn_first_night_crying_2' } },
+            { textKey: 'choice_newborn_first_night_crying_3', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_first_night_crying_3', triggers: [{ eventId: 'newborn_parents_sleepless', chance: 0.5, reTarget: 'parents' }] } },
         ]
     },
     {
@@ -21,9 +21,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age === 0 && !char.completedOneTimeEvents.includes('newborn_first_bath'),
         choices: [
-            { textKey: 'choice_newborn_first_bath_1', effect: { statChanges: { happiness: 10 }, logKey: 'log_newborn_first_bath_1' } },
-            { textKey: 'choice_newborn_first_bath_2', effect: { statChanges: { happiness: -8 }, logKey: 'log_newborn_first_bath_2', triggers: [{ eventId: 'newborn_fear_of_bathing', chance: 0.4 }] } },
-            { textKey: 'choice_newborn_first_bath_3', effect: { statChanges: { happiness: 7, iq: 4 }, logKey: 'log_newborn_first_bath_3' } },
+            { textKey: 'choice_newborn_first_bath_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_first_bath_1' } },
+            { textKey: 'choice_newborn_first_bath_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_newborn_first_bath_2', triggers: [{ eventId: 'newborn_fear_of_bathing', chance: 0.4 }] } },
+            { textKey: 'choice_newborn_first_bath_3', effect: { statChanges: { happiness: 2, iq: 4 }, logKey: 'log_newborn_first_bath_3' } },
         ]
     },
     {
@@ -32,9 +32,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_vaccination_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_vaccination_1', effect: { statChanges: { happiness: 5, health: -4 }, logKey: 'log_newborn_vaccination_1' } },
-            { textKey: 'choice_newborn_vaccination_2', effect: { statChanges: { confidence: 5, health: -6 }, logKey: 'log_newborn_vaccination_2' } },
-            { textKey: 'choice_newborn_vaccination_3', effect: { statChanges: { confidence: -5, health: -5 }, logKey: 'log_newborn_vaccination_3', triggers: [{ eventId: 'newborn_fever_after_shot', chance: 0.6 }] } },
+            { textKey: 'choice_newborn_vaccination_1', effect: { statChanges: { happiness: 2, health: -4 }, logKey: 'log_newborn_vaccination_1' } },
+            { textKey: 'choice_newborn_vaccination_2', effect: { statChanges: { confidence: 2, health: -2 }, logKey: 'log_newborn_vaccination_2' } },
+            { textKey: 'choice_newborn_vaccination_3', effect: { statChanges: { confidence: -2, health: -2 }, logKey: 'log_newborn_vaccination_3', triggers: [{ eventId: 'newborn_fever_after_shot', chance: 0.6 }] } },
         ]
     },
     {
@@ -44,8 +44,8 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age <= 1 && !char.completedOneTimeEvents.includes('newborn_learning_to_roll_over'),
         choices: [
-            { textKey: 'choice_newborn_learning_to_roll_over_1', effect: { statChanges: { health: 6, happiness: 5 }, logKey: 'log_newborn_learning_to_roll_over_1' } },
-            { textKey: 'choice_newborn_learning_to_roll_over_2', effect: { statChanges: { health: 5, iq: 5 }, logKey: 'log_newborn_learning_to_roll_over_2' } },
+            { textKey: 'choice_newborn_learning_to_roll_over_1', effect: { statChanges: { health: 2, happiness: 2 }, logKey: 'log_newborn_learning_to_roll_over_1' } },
+            { textKey: 'choice_newborn_learning_to_roll_over_2', effect: { statChanges: { health: 2, iq: 2 }, logKey: 'log_newborn_learning_to_roll_over_2' } },
             { textKey: 'choice_newborn_learning_to_roll_over_3', effect: { statChanges: { health: 4 }, logKey: 'log_newborn_learning_to_roll_over_3', triggers: [{ eventId: 'newborn_minor_scratch', chance: 0.3 }] } },
         ]
     },
@@ -56,9 +56,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age <= 2 && !char.completedOneTimeEvents.includes('newborn_learning_to_crawl'),
         choices: [
-            { textKey: 'choice_newborn_learning_to_crawl_1', effect: { statChanges: { health: 6, iq: 5 }, logKey: 'log_newborn_learning_to_crawl_1' } },
-            { textKey: 'choice_newborn_learning_to_crawl_2', effect: { statChanges: { health: 5, happiness: 6 }, logKey: 'log_newborn_learning_to_crawl_2' } },
-            { textKey: 'choice_newborn_learning_to_crawl_3', effect: { statChanges: { health: 5 }, logKey: 'log_newborn_learning_to_crawl_3', triggers: [{ eventId: 'newborn_parents_baby_proofing', chance: 0.5 }] } },
+            { textKey: 'choice_newborn_learning_to_crawl_1', effect: { statChanges: { health: 2, iq: 2 }, logKey: 'log_newborn_learning_to_crawl_1' } },
+            { textKey: 'choice_newborn_learning_to_crawl_2', effect: { statChanges: { health: 2, happiness: 2 }, logKey: 'log_newborn_learning_to_crawl_2' } },
+            { textKey: 'choice_newborn_learning_to_crawl_3', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_learning_to_crawl_3', triggers: [{ eventId: 'newborn_parents_baby_proofing', chance: 0.5 }] } },
         ]
     },
     {
@@ -68,9 +68,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 1 && !char.completedOneTimeEvents.includes('newborn_first_steps'),
         choices: [
-            { textKey: 'choice_newborn_first_steps_1', effect: { statChanges: { health: 8, confidence: 5 }, logKey: 'log_newborn_first_steps_1' } },
-            { textKey: 'choice_newborn_first_steps_2', effect: { statChanges: { health: 6, confidence: 8 }, logKey: 'log_newborn_first_steps_2' } },
-            { textKey: 'choice_newborn_first_steps_3', effect: { statChanges: { health: 5 }, logKey: 'log_newborn_first_steps_3', triggers: [{ eventId: 'newborn_scraped_knee', chance: 0.4 }] } },
+            { textKey: 'choice_newborn_first_steps_1', effect: { statChanges: { health: 3, confidence: 2 }, logKey: 'log_newborn_first_steps_1' } },
+            { textKey: 'choice_newborn_first_steps_2', effect: { statChanges: { health: 2, confidence: 3 }, logKey: 'log_newborn_first_steps_2' } },
+            { textKey: 'choice_newborn_first_steps_3', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_first_steps_3', triggers: [{ eventId: 'newborn_scraped_knee', chance: 0.4 }] } },
         ]
     },
     {
@@ -80,8 +80,8 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2 && !char.completedOneTimeEvents.includes('newborn_first_day_daycare'),
         choices: [
-            { textKey: 'choice_newborn_first_day_daycare_1', effect: { statChanges: { confidence: -8, happiness: -6 }, logKey: 'log_newborn_first_day_daycare_1' } },
-            { textKey: 'choice_newborn_first_day_daycare_2', effect: { statChanges: { confidence: 5 }, logKey: 'log_newborn_first_day_daycare_2' } },
+            { textKey: 'choice_newborn_first_day_daycare_1', effect: { statChanges: { confidence: -3, happiness: -2 }, logKey: 'log_newborn_first_day_daycare_1' } },
+            { textKey: 'choice_newborn_first_day_daycare_2', effect: { statChanges: { confidence: 2 }, logKey: 'log_newborn_first_day_daycare_2' } },
             { textKey: 'choice_newborn_first_day_daycare_3', effect: { statChanges: { confidence: -4 }, logKey: 'log_newborn_first_day_daycare_3', triggers: [{ eventId: 'newborn_teacher_comforts', chance: 0.6 }] } },
         ]
     },
@@ -92,9 +92,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 1 && !char.completedOneTimeEvents.includes('newborn_first_self_feeding'),
         choices: [
-            { textKey: 'choice_newborn_first_self_feeding_1', effect: { statChanges: { iq: 6 }, logKey: 'log_newborn_first_self_feeding_1' } },
-            { textKey: 'choice_newborn_first_self_feeding_2', effect: { statChanges: { happiness: 5 }, logKey: 'log_newborn_first_self_feeding_2', triggers: [{ eventId: 'newborn_food_mess', chance: 0.7 }] } },
-            { textKey: 'choice_newborn_first_self_feeding_3', effect: { statChanges: { confidence: 5, iq: 5 }, logKey: 'log_newborn_first_self_feeding_3' } },
+            { textKey: 'choice_newborn_first_self_feeding_1', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_first_self_feeding_1' } },
+            { textKey: 'choice_newborn_first_self_feeding_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_newborn_first_self_feeding_2', triggers: [{ eventId: 'newborn_food_mess', chance: 0.7 }] } },
+            { textKey: 'choice_newborn_first_self_feeding_3', effect: { statChanges: { confidence: 2, iq: 2 }, logKey: 'log_newborn_first_self_feeding_3' } },
         ]
     },
     {
@@ -104,9 +104,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2,
         choices: [
-            { textKey: 'choice_newborn_snatching_toys_1', effect: { statChanges: { iq: 5, confidence: 5 }, logKey: 'log_newborn_snatching_toys_1' } },
-            { textKey: 'choice_newborn_snatching_toys_2', effect: { statChanges: { confidence: -6 }, logKey: 'log_newborn_snatching_toys_2' } },
-            { textKey: 'choice_newborn_snatching_toys_3', effect: { statChanges: { happiness: -5 }, logKey: 'log_newborn_snatching_toys_3', triggers: [{ eventId: 'newborn_parental_intervention', chance: 0.5 }] } },
+            { textKey: 'choice_newborn_snatching_toys_1', effect: { statChanges: { iq: 2, confidence: 2 }, logKey: 'log_newborn_snatching_toys_1' } },
+            { textKey: 'choice_newborn_snatching_toys_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_newborn_snatching_toys_2' } },
+            { textKey: 'choice_newborn_snatching_toys_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_newborn_snatching_toys_3', triggers: [{ eventId: 'newborn_parental_intervention', chance: 0.5 }] } },
         ]
     },
     {
@@ -116,9 +116,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2,
         choices: [
-            { textKey: 'choice_newborn_lost_in_store_1', effect: { statChanges: { confidence: 5, iq: 5 }, logKey: 'log_newborn_lost_in_store_1' } },
-            { textKey: 'choice_newborn_lost_in_store_2', effect: { statChanges: { confidence: -8 }, logKey: 'log_newborn_lost_in_store_2' } },
-            { textKey: 'choice_newborn_lost_in_store_3', effect: { statChanges: { confidence: 8 }, logKey: 'log_newborn_lost_in_store_3', triggers: [{ eventId: 'newborn_staff_assistance', chance: 0.8 }] } },
+            { textKey: 'choice_newborn_lost_in_store_1', effect: { statChanges: { confidence: 2, iq: 2 }, logKey: 'log_newborn_lost_in_store_1' } },
+            { textKey: 'choice_newborn_lost_in_store_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_newborn_lost_in_store_2' } },
+            { textKey: 'choice_newborn_lost_in_store_3', effect: { statChanges: { confidence: 3 }, logKey: 'log_newborn_lost_in_store_3', triggers: [{ eventId: 'newborn_staff_assistance', chance: 0.8 }] } },
         ]
     },
 
@@ -136,7 +136,7 @@ export const NEWBORN_EVENTS: GameEvent[] = [
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
-                    const statChanges = { health: -8, happiness: -5 };
+                    const statChanges = { health: -3, happiness: -2 };
                     parent1.stats.health = Math.max(0, parent1.stats.health + statChanges.health);
                     parent1.stats.happiness = Math.max(0, parent1.stats.happiness + statChanges.happiness);
                     if (parent1.partnerId) {
@@ -155,7 +155,7 @@ export const NEWBORN_EVENTS: GameEvent[] = [
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
-                    const statChanges = { health: -4, happiness: 5 };
+                    const statChanges = { health: -4, happiness: 2 };
                     parent1.stats.health = Math.max(0, parent1.stats.health + statChanges.health);
                     parent1.stats.happiness = Math.min(100, parent1.stats.happiness + statChanges.happiness);
                     if (parent1.partnerId) {
@@ -174,7 +174,7 @@ export const NEWBORN_EVENTS: GameEvent[] = [
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
-                    const statChanges = { health: 0, happiness: 10 };
+                    const statChanges = { health: 0, happiness: 3 };
                     parent1.stats.happiness = Math.min(100, parent1.stats.happiness + statChanges.happiness);
                     if (parent1.partnerId) {
                         const parent2 = newState.familyMembers[parent1.partnerId];
@@ -194,8 +194,8 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_newborn_fear_of_bathing_1', effect: { statChanges: { happiness: 8, confidence: 5 }, logKey: 'log_newborn_fear_of_bathing_1' } },
-            { textKey: 'choice_newborn_fear_of_bathing_2', effect: { statChanges: { happiness: 6 }, logKey: 'log_newborn_fear_of_bathing_2' } },
+            { textKey: 'choice_newborn_fear_of_bathing_1', effect: { statChanges: { happiness: 3, confidence: 2 }, logKey: 'log_newborn_fear_of_bathing_1' } },
+            { textKey: 'choice_newborn_fear_of_bathing_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_newborn_fear_of_bathing_2' } },
             { textKey: 'choice_newborn_fear_of_bathing_3', effect: { statChanges: { happiness: -4 }, logKey: 'log_newborn_fear_of_bathing_3' } },
         ]
     },
@@ -206,9 +206,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_newborn_fever_after_shot_1', effect: { statChanges: { health: 8 }, logKey: 'log_newborn_fever_after_shot_1' } },
-            { textKey: 'choice_newborn_fever_after_shot_2', effect: { statChanges: { health: 5 }, logKey: 'log_newborn_fever_after_shot_2' } },
-            { textKey: 'choice_newborn_fever_after_shot_3', effect: { statChanges: { health: -5, happiness: -8 }, logKey: 'log_newborn_fever_after_shot_3' } },
+            { textKey: 'choice_newborn_fever_after_shot_1', effect: { statChanges: { health: 3 }, logKey: 'log_newborn_fever_after_shot_1' } },
+            { textKey: 'choice_newborn_fever_after_shot_2', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_fever_after_shot_2' } },
+            { textKey: 'choice_newborn_fever_after_shot_3', effect: { statChanges: { health: -2, happiness: -3 }, logKey: 'log_newborn_fever_after_shot_3' } },
         ]
     },
     {
@@ -218,9 +218,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_newborn_minor_scratch_1', effect: { statChanges: { health: 5 }, logKey: 'log_newborn_minor_scratch_1' } },
-            { textKey: 'choice_newborn_minor_scratch_2', effect: { statChanges: { confidence: 5 }, logKey: 'log_newborn_minor_scratch_2' } },
-            { textKey: 'choice_newborn_minor_scratch_3', effect: { statChanges: { happiness: -8 }, logKey: 'log_newborn_minor_scratch_3' } },
+            { textKey: 'choice_newborn_minor_scratch_1', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_minor_scratch_1' } },
+            { textKey: 'choice_newborn_minor_scratch_2', effect: { statChanges: { confidence: 2 }, logKey: 'log_newborn_minor_scratch_2' } },
+            { textKey: 'choice_newborn_minor_scratch_3', effect: { statChanges: { happiness: -3 }, logKey: 'log_newborn_minor_scratch_3' } },
         ]
     },
     {
@@ -230,9 +230,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_newborn_parents_baby_proofing_1', effect: { statChanges: { health: 8 }, logKey: 'log_newborn_parents_baby_proofing_1' } },
-            { textKey: 'choice_newborn_parents_baby_proofing_2', effect: { statChanges: { health: 5 }, logKey: 'log_newborn_parents_baby_proofing_2' } },
-            { textKey: 'choice_newborn_parents_baby_proofing_3', effect: { statChanges: { iq: 5 }, logKey: 'log_newborn_parents_baby_proofing_3' } },
+            { textKey: 'choice_newborn_parents_baby_proofing_1', effect: { statChanges: { health: 3 }, logKey: 'log_newborn_parents_baby_proofing_1' } },
+            { textKey: 'choice_newborn_parents_baby_proofing_2', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_parents_baby_proofing_2' } },
+            { textKey: 'choice_newborn_parents_baby_proofing_3', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_parents_baby_proofing_3' } },
         ]
     },
     {
@@ -243,8 +243,8 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_newborn_scraped_knee_1', effect: { statChanges: { health: 4 }, logKey: 'log_newborn_scraped_knee_1' } },
-            { textKey: 'choice_newborn_scraped_knee_2', effect: { statChanges: { health: 6 }, logKey: 'log_newborn_scraped_knee_2' } },
-            { textKey: 'choice_newborn_scraped_knee_3', effect: { statChanges: { health: 8 }, logKey: 'log_newborn_scraped_knee_3' } },
+            { textKey: 'choice_newborn_scraped_knee_2', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_scraped_knee_2' } },
+            { textKey: 'choice_newborn_scraped_knee_3', effect: { statChanges: { health: 3 }, logKey: 'log_newborn_scraped_knee_3' } },
         ]
     },
     {
@@ -254,9 +254,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_newborn_teacher_comforts_1', effect: { statChanges: { happiness: 8, confidence: 5 }, logKey: 'log_newborn_teacher_comforts_1' } },
-            { textKey: 'choice_newborn_teacher_comforts_2', effect: { statChanges: { happiness: 6, confidence: 8 }, logKey: 'log_newborn_teacher_comforts_2' } },
-            { textKey: 'choice_newborn_teacher_comforts_3', effect: { statChanges: { happiness: 10 }, logKey: 'log_newborn_teacher_comforts_3' } },
+            { textKey: 'choice_newborn_teacher_comforts_1', effect: { statChanges: { happiness: 3, confidence: 2 }, logKey: 'log_newborn_teacher_comforts_1' } },
+            { textKey: 'choice_newborn_teacher_comforts_2', effect: { statChanges: { happiness: 2, confidence: 3 }, logKey: 'log_newborn_teacher_comforts_2' } },
+            { textKey: 'choice_newborn_teacher_comforts_3', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_teacher_comforts_3' } },
         ]
     },
     {
@@ -267,8 +267,8 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_newborn_food_mess_1', effect: { statChanges: { iq: 4 }, logKey: 'log_newborn_food_mess_1' } },
-            { textKey: 'choice_newborn_food_mess_2', effect: { statChanges: { iq: 5, happiness: 5 }, logKey: 'log_newborn_food_mess_2' } },
-            { textKey: 'choice_newborn_food_mess_3', effect: { statChanges: { happiness: 4, iq: 5 }, logKey: 'log_newborn_food_mess_3' } },
+            { textKey: 'choice_newborn_food_mess_2', effect: { statChanges: { iq: 2, happiness: 2 }, logKey: 'log_newborn_food_mess_2' } },
+            { textKey: 'choice_newborn_food_mess_3', effect: { statChanges: { happiness: 4, iq: 2 }, logKey: 'log_newborn_food_mess_3' } },
         ]
     },
     {
@@ -278,9 +278,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_newborn_parental_intervention_1', effect: { statChanges: { confidence: 5 }, logKey: 'log_newborn_parental_intervention_1' } },
-            { textKey: 'choice_newborn_parental_intervention_2', effect: { statChanges: { happiness: -8 }, logKey: 'log_newborn_parental_intervention_2' } },
-            { textKey: 'choice_newborn_parental_intervention_3', effect: { statChanges: { happiness: 5, iq: 5 }, logKey: 'log_newborn_parental_intervention_3' } },
+            { textKey: 'choice_newborn_parental_intervention_1', effect: { statChanges: { confidence: 2 }, logKey: 'log_newborn_parental_intervention_1' } },
+            { textKey: 'choice_newborn_parental_intervention_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_newborn_parental_intervention_2' } },
+            { textKey: 'choice_newborn_parental_intervention_3', effect: { statChanges: { happiness: 2, iq: 2 }, logKey: 'log_newborn_parental_intervention_3' } },
         ]
     },
     {
@@ -290,9 +290,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_newborn_staff_assistance_1', effect: { statChanges: { happiness: 10 }, logKey: 'log_newborn_staff_assistance_1' } },
-            { textKey: 'choice_newborn_staff_assistance_2', effect: { statChanges: { confidence: 5 }, logKey: 'log_newborn_staff_assistance_2' } },
-            { textKey: 'choice_newborn_staff_assistance_3', effect: { statChanges: { iq: 5 }, logKey: 'log_newborn_staff_assistance_3' } },
+            { textKey: 'choice_newborn_staff_assistance_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_staff_assistance_1' } },
+            { textKey: 'choice_newborn_staff_assistance_2', effect: { statChanges: { confidence: 2 }, logKey: 'log_newborn_staff_assistance_2' } },
+            { textKey: 'choice_newborn_staff_assistance_3', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_staff_assistance_3' } },
         ]
     },
 
@@ -303,9 +303,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_off_nap_schedule_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_off_nap_schedule_1', effect: { statChanges: { health: 5 }, logKey: 'log_newborn_off_nap_schedule_1' } },
-            { textKey: 'choice_newborn_off_nap_schedule_2', effect: { statChanges: { health: -4, happiness: 5 }, logKey: 'log_newborn_off_nap_schedule_2' } },
-            { textKey: 'choice_newborn_off_nap_schedule_3', effect: { statChanges: { health: -8 }, logKey: 'log_newborn_off_nap_schedule_3' } },
+            { textKey: 'choice_newborn_off_nap_schedule_1', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_off_nap_schedule_1' } },
+            { textKey: 'choice_newborn_off_nap_schedule_2', effect: { statChanges: { health: -4, happiness: 2 }, logKey: 'log_newborn_off_nap_schedule_2' } },
+            { textKey: 'choice_newborn_off_nap_schedule_3', effect: { statChanges: { health: -3 }, logKey: 'log_newborn_off_nap_schedule_3' } },
         ]
     },
     {
@@ -315,9 +315,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age <= 1 && !char.completedOneTimeEvents.includes('newborn_first_tooth'),
         choices: [
-            { textKey: 'choice_newborn_first_tooth_1', effect: { statChanges: { health: -5, happiness: 5 }, logKey: 'log_newborn_first_tooth_1' } },
+            { textKey: 'choice_newborn_first_tooth_1', effect: { statChanges: { health: -2, happiness: 2 }, logKey: 'log_newborn_first_tooth_1' } },
             { textKey: 'choice_newborn_first_tooth_2', effect: { statChanges: { health: -4 }, logKey: 'log_newborn_first_tooth_2' } },
-            { textKey: 'choice_newborn_first_tooth_3', effect: { statChanges: { health: -5, happiness: 8 }, logKey: 'log_newborn_first_tooth_3' } },
+            { textKey: 'choice_newborn_first_tooth_3', effect: { statChanges: { health: -2, happiness: 3 }, logKey: 'log_newborn_first_tooth_3' } },
         ]
     },
     {
@@ -326,9 +326,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_stroller_in_park_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_stroller_in_park_1', effect: { statChanges: { health: 5, happiness: 5 }, logKey: 'log_newborn_stroller_in_park_1' } },
-            { textKey: 'choice_newborn_stroller_in_park_2', effect: { statChanges: { iq: 5, happiness: 8 }, logKey: 'log_newborn_stroller_in_park_2' } },
-            { textKey: 'choice_newborn_stroller_in_park_3', effect: { statChanges: { confidence: 5, health: 5 }, logKey: 'log_newborn_stroller_in_park_3' } },
+            { textKey: 'choice_newborn_stroller_in_park_1', effect: { statChanges: { health: 2, happiness: 2 }, logKey: 'log_newborn_stroller_in_park_1' } },
+            { textKey: 'choice_newborn_stroller_in_park_2', effect: { statChanges: { iq: 2, happiness: 3 }, logKey: 'log_newborn_stroller_in_park_2' } },
+            { textKey: 'choice_newborn_stroller_in_park_3', effect: { statChanges: { confidence: 2, health: 2 }, logKey: 'log_newborn_stroller_in_park_3' } },
         ]
     },
     {
@@ -338,9 +338,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 1 && !char.completedOneTimeEvents.includes('newborn_first_haircut'),
         choices: [
-            { textKey: 'choice_newborn_first_haircut_1', effect: { statChanges: { happiness: 5 }, logKey: 'log_newborn_first_haircut_1' } },
-            { textKey: 'choice_newborn_first_haircut_2', effect: { statChanges: { confidence: -8, happiness: -5 }, logKey: 'log_newborn_first_haircut_2' } },
-            { textKey: 'choice_newborn_first_haircut_3', effect: { statChanges: { confidence: 5 }, logKey: 'log_newborn_first_haircut_3' } },
+            { textKey: 'choice_newborn_first_haircut_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_newborn_first_haircut_1' } },
+            { textKey: 'choice_newborn_first_haircut_2', effect: { statChanges: { confidence: -3, happiness: -2 }, logKey: 'log_newborn_first_haircut_2' } },
+            { textKey: 'choice_newborn_first_haircut_3', effect: { statChanges: { confidence: 2 }, logKey: 'log_newborn_first_haircut_3' } },
         ]
     },
     {
@@ -350,9 +350,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 1 && !char.completedOneTimeEvents.includes('newborn_learning_to_talk'),
         choices: [
-            { textKey: 'choice_newborn_learning_to_talk_1', effect: { statChanges: { iq: 8, happiness: 8 }, logKey: 'log_newborn_learning_to_talk_1' } },
-            { textKey: 'choice_newborn_learning_to_talk_2', effect: { statChanges: { iq: 5 }, logKey: 'log_newborn_learning_to_talk_2' } },
-            { textKey: 'choice_newborn_learning_to_talk_3', effect: { statChanges: { iq: 6, confidence: 5 }, logKey: 'log_newborn_learning_to_talk_3' } },
+            { textKey: 'choice_newborn_learning_to_talk_1', effect: { statChanges: { iq: 3, happiness: 3 }, logKey: 'log_newborn_learning_to_talk_1' } },
+            { textKey: 'choice_newborn_learning_to_talk_2', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_learning_to_talk_2' } },
+            { textKey: 'choice_newborn_learning_to_talk_3', effect: { statChanges: { iq: 2, confidence: 2 }, logKey: 'log_newborn_learning_to_talk_3' } },
         ]
     },
     {
@@ -361,9 +361,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_bedtime_story_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_bedtime_story_1', effect: { statChanges: { iq: 6, happiness: 8 }, logKey: 'log_newborn_bedtime_story_1' } },
-            { textKey: 'choice_newborn_bedtime_story_2', effect: { statChanges: { iq: 5 }, logKey: 'log_newborn_bedtime_story_2' } },
-            { textKey: 'choice_newborn_bedtime_story_3', effect: { statChanges: { happiness: 6 }, logKey: 'log_newborn_bedtime_story_3' } },
+            { textKey: 'choice_newborn_bedtime_story_1', effect: { statChanges: { iq: 2, happiness: 3 }, logKey: 'log_newborn_bedtime_story_1' } },
+            { textKey: 'choice_newborn_bedtime_story_2', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_bedtime_story_2' } },
+            { textKey: 'choice_newborn_bedtime_story_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_newborn_bedtime_story_3' } },
         ]
     },
     {
@@ -373,8 +373,8 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2 && !char.completedOneTimeEvents.includes('newborn_first_dentist_visit'),
         choices: [
-            { textKey: 'choice_newborn_first_dentist_visit_1', effect: { statChanges: { health: 8, confidence: 5 }, logKey: 'log_newborn_first_dentist_visit_1' } },
-            { textKey: 'choice_newborn_first_dentist_visit_2', effect: { statChanges: { health: 5, confidence: -5 }, logKey: 'log_newborn_first_dentist_visit_2' } },
+            { textKey: 'choice_newborn_first_dentist_visit_1', effect: { statChanges: { health: 3, confidence: 2 }, logKey: 'log_newborn_first_dentist_visit_1' } },
+            { textKey: 'choice_newborn_first_dentist_visit_2', effect: { statChanges: { health: 2, confidence: -2 }, logKey: 'log_newborn_first_dentist_visit_2' } },
             { textKey: 'choice_newborn_first_dentist_visit_3', effect: { statChanges: { health: 4, happiness: 4 }, logKey: 'log_newborn_first_dentist_visit_3' } },
         ]
     },
@@ -385,9 +385,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2,
         choices: [
-            { textKey: 'choice_newborn_friend_birthday_1', effect: { statChanges: { happiness: 8 }, logKey: 'log_newborn_friend_birthday_1' } },
-            { textKey: 'choice_newborn_friend_birthday_2', effect: { statChanges: { confidence: -5, happiness: -5 }, logKey: 'log_newborn_friend_birthday_2' } },
-            { textKey: 'choice_newborn_friend_birthday_3', effect: { statChanges: { happiness: 5, confidence: 5 }, logKey: 'log_newborn_friend_birthday_3' } },
+            { textKey: 'choice_newborn_friend_birthday_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_friend_birthday_1' } },
+            { textKey: 'choice_newborn_friend_birthday_2', effect: { statChanges: { confidence: -2, happiness: -2 }, logKey: 'log_newborn_friend_birthday_2' } },
+            { textKey: 'choice_newborn_friend_birthday_3', effect: { statChanges: { happiness: 2, confidence: 2 }, logKey: 'log_newborn_friend_birthday_3' } },
         ]
     },
     {
@@ -397,9 +397,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 1 && !char.completedOneTimeEvents.includes('newborn_first_swim'),
         choices: [
-            { textKey: 'choice_newborn_first_swim_1', effect: { statChanges: { health: 8, happiness: 8 }, logKey: 'log_newborn_first_swim_1' } },
-            { textKey: 'choice_newborn_first_swim_2', effect: { statChanges: { health: 5, confidence: -8 }, logKey: 'log_newborn_first_swim_2' } },
-            { textKey: 'choice_newborn_first_swim_3', effect: { statChanges: { health: 6, confidence: 5 }, logKey: 'log_newborn_first_swim_3' } },
+            { textKey: 'choice_newborn_first_swim_1', effect: { statChanges: { health: 3, happiness: 3 }, logKey: 'log_newborn_first_swim_1' } },
+            { textKey: 'choice_newborn_first_swim_2', effect: { statChanges: { health: 2, confidence: -3 }, logKey: 'log_newborn_first_swim_2' } },
+            { textKey: 'choice_newborn_first_swim_3', effect: { statChanges: { health: 2, confidence: 2 }, logKey: 'log_newborn_first_swim_3' } },
         ]
     },
     {
@@ -409,9 +409,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 1,
         choices: [
-            { textKey: 'choice_newborn_mild_allergy_1', effect: { statChanges: { health: -5 }, logKey: 'log_newborn_mild_allergy_1' } },
+            { textKey: 'choice_newborn_mild_allergy_1', effect: { statChanges: { health: -2 }, logKey: 'log_newborn_mild_allergy_1' } },
             { textKey: 'choice_newborn_mild_allergy_2', effect: { statChanges: { health: 4 }, logKey: 'log_newborn_mild_allergy_2' } },
-            { textKey: 'choice_newborn_mild_allergy_3', effect: { statChanges: { health: -8 }, logKey: 'log_newborn_mild_allergy_3' } },
+            { textKey: 'choice_newborn_mild_allergy_3', effect: { statChanges: { health: -3 }, logKey: 'log_newborn_mild_allergy_3' } },
         ]
     },
     {
@@ -421,9 +421,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2 && !char.completedOneTimeEvents.includes('newborn_potty_training'),
         choices: [
-            { textKey: 'choice_newborn_potty_training_1', effect: { statChanges: { happiness: 8, confidence: 5 }, logKey: 'log_newborn_potty_training_1' } },
-            { textKey: 'choice_newborn_potty_training_2', effect: { statChanges: { happiness: -5, confidence: -5 }, logKey: 'log_newborn_potty_training_2' } },
-            { textKey: 'choice_newborn_potty_training_3', effect: { statChanges: { iq: 5 }, logKey: 'log_newborn_potty_training_3' } },
+            { textKey: 'choice_newborn_potty_training_1', effect: { statChanges: { happiness: 3, confidence: 2 }, logKey: 'log_newborn_potty_training_1' } },
+            { textKey: 'choice_newborn_potty_training_2', effect: { statChanges: { happiness: -2, confidence: -2 }, logKey: 'log_newborn_potty_training_2' } },
+            { textKey: 'choice_newborn_potty_training_3', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_potty_training_3' } },
         ]
     },
     {
@@ -432,9 +432,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_rainy_day_inside_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_rainy_day_inside_1', effect: { statChanges: { iq: 8 }, logKey: 'log_newborn_rainy_day_inside_1' } },
-            { textKey: 'choice_newborn_rainy_day_inside_2', effect: { statChanges: { iq: 5, happiness: 5 }, logKey: 'log_newborn_rainy_day_inside_2' } },
-            { textKey: 'choice_newborn_rainy_day_inside_3', effect: { statChanges: { happiness: 8 }, logKey: 'log_newborn_rainy_day_inside_3' } },
+            { textKey: 'choice_newborn_rainy_day_inside_1', effect: { statChanges: { iq: 3 }, logKey: 'log_newborn_rainy_day_inside_1' } },
+            { textKey: 'choice_newborn_rainy_day_inside_2', effect: { statChanges: { iq: 2, happiness: 2 }, logKey: 'log_newborn_rainy_day_inside_2' } },
+            { textKey: 'choice_newborn_rainy_day_inside_3', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_rainy_day_inside_3' } },
         ]
     },
     {
@@ -444,9 +444,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2,
         choices: [
-            { textKey: 'choice_newborn_sharing_food_1', effect: { statChanges: { happiness: 8, confidence: 5 }, logKey: 'log_newborn_sharing_food_1' } },
-            { textKey: 'choice_newborn_sharing_food_2', effect: { statChanges: { iq: 5 }, logKey: 'log_newborn_sharing_food_2' } },
-            { textKey: 'choice_newborn_sharing_food_3', effect: { statChanges: { confidence: -5 }, logKey: 'log_newborn_sharing_food_3' } },
+            { textKey: 'choice_newborn_sharing_food_1', effect: { statChanges: { happiness: 3, confidence: 2 }, logKey: 'log_newborn_sharing_food_1' } },
+            { textKey: 'choice_newborn_sharing_food_2', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_sharing_food_2' } },
+            { textKey: 'choice_newborn_sharing_food_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_newborn_sharing_food_3' } },
         ]
     },
     {
@@ -455,9 +455,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_scared_of_thunder_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_scared_of_thunder_1', effect: { statChanges: { confidence: 5, happiness: 5 }, logKey: 'log_newborn_scared_of_thunder_1' } },
-            { textKey: 'choice_newborn_scared_of_thunder_2', effect: { statChanges: { confidence: -8, happiness: -8 }, logKey: 'log_newborn_scared_of_thunder_2' } },
-            { textKey: 'choice_newborn_scared_of_thunder_3', effect: { statChanges: { happiness: 8 }, logKey: 'log_newborn_scared_of_thunder_3' } },
+            { textKey: 'choice_newborn_scared_of_thunder_1', effect: { statChanges: { confidence: 2, happiness: 2 }, logKey: 'log_newborn_scared_of_thunder_1' } },
+            { textKey: 'choice_newborn_scared_of_thunder_2', effect: { statChanges: { confidence: -3, happiness: -3 }, logKey: 'log_newborn_scared_of_thunder_2' } },
+            { textKey: 'choice_newborn_scared_of_thunder_3', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_scared_of_thunder_3' } },
         ]
     },
     {
@@ -466,9 +466,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_breaks_cup_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_breaks_cup_1', effect: { statChanges: { iq: 5, confidence: 5 }, logKey: 'log_newborn_breaks_cup_1' } },
-            { textKey: 'choice_newborn_breaks_cup_2', effect: { statChanges: { confidence: -6 }, logKey: 'log_newborn_breaks_cup_2' } },
-            { textKey: 'choice_newborn_breaks_cup_3', effect: { statChanges: { happiness: -5 }, logKey: 'log_newborn_breaks_cup_3' } },
+            { textKey: 'choice_newborn_breaks_cup_1', effect: { statChanges: { iq: 2, confidence: 2 }, logKey: 'log_newborn_breaks_cup_1' } },
+            { textKey: 'choice_newborn_breaks_cup_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_newborn_breaks_cup_2' } },
+            { textKey: 'choice_newborn_breaks_cup_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_newborn_breaks_cup_3' } },
         ]
     },
     {
@@ -478,8 +478,8 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2 && !char.completedOneTimeEvents.includes('newborn_self_dressing'),
         choices: [
-            { textKey: 'choice_newborn_self_dressing_1', effect: { statChanges: { iq: 5, confidence: 5 }, logKey: 'log_newborn_self_dressing_1' } },
-            { textKey: 'choice_newborn_self_dressing_2', effect: { statChanges: { happiness: 5 }, logKey: 'log_newborn_self_dressing_2' } },
+            { textKey: 'choice_newborn_self_dressing_1', effect: { statChanges: { iq: 2, confidence: 2 }, logKey: 'log_newborn_self_dressing_1' } },
+            { textKey: 'choice_newborn_self_dressing_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_newborn_self_dressing_2' } },
             { textKey: 'choice_newborn_self_dressing_3', effect: { statChanges: { iq: 4, happiness: 4 }, logKey: 'log_newborn_self_dressing_3' } },
         ]
     },
@@ -490,9 +490,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2,
         choices: [
-            { textKey: 'choice_newborn_unwilling_to_go_to_class_1', effect: { statChanges: { confidence: -8, happiness: -6 }, logKey: 'log_newborn_unwilling_to_go_to_class_1' } },
-            { textKey: 'choice_newborn_unwilling_to_go_to_class_2', effect: { statChanges: { confidence: 5 }, logKey: 'log_newborn_unwilling_to_go_to_class_2' } },
-            { textKey: 'choice_newborn_unwilling_to_go_to_class_3', effect: { statChanges: { happiness: 8 }, logKey: 'log_newborn_unwilling_to_go_to_class_3' } },
+            { textKey: 'choice_newborn_unwilling_to_go_to_class_1', effect: { statChanges: { confidence: -3, happiness: -2 }, logKey: 'log_newborn_unwilling_to_go_to_class_1' } },
+            { textKey: 'choice_newborn_unwilling_to_go_to_class_2', effect: { statChanges: { confidence: 2 }, logKey: 'log_newborn_unwilling_to_go_to_class_2' } },
+            { textKey: 'choice_newborn_unwilling_to_go_to_class_3', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_unwilling_to_go_to_class_3' } },
         ]
     },
     {
@@ -501,9 +501,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_playing_in_sand_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_playing_in_sand_1', effect: { statChanges: { iq: 5, happiness: 5 }, logKey: 'log_newborn_playing_in_sand_1' } },
-            { textKey: 'choice_newborn_playing_in_sand_2', effect: { statChanges: { health: -5, happiness: -5 }, logKey: 'log_newborn_playing_in_sand_2' } },
-            { textKey: 'choice_newborn_playing_in_sand_3', effect: { statChanges: { happiness: 5, iq: 5 }, logKey: 'log_newborn_playing_in_sand_3' } },
+            { textKey: 'choice_newborn_playing_in_sand_1', effect: { statChanges: { iq: 2, happiness: 2 }, logKey: 'log_newborn_playing_in_sand_1' } },
+            { textKey: 'choice_newborn_playing_in_sand_2', effect: { statChanges: { health: -2, happiness: -2 }, logKey: 'log_newborn_playing_in_sand_2' } },
+            { textKey: 'choice_newborn_playing_in_sand_3', effect: { statChanges: { happiness: 2, iq: 2 }, logKey: 'log_newborn_playing_in_sand_3' } },
         ]
     },
     {
@@ -512,9 +512,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         descriptionKey: 'event_newborn_drops_toy_desc',
         phases: [LifePhase.Newborn],
         choices: [
-            { textKey: 'choice_newborn_drops_toy_1', effect: { statChanges: { happiness: 8 }, logKey: 'log_newborn_drops_toy_1' } },
-            { textKey: 'choice_newborn_drops_toy_2', effect: { statChanges: { happiness: -8 }, logKey: 'log_newborn_drops_toy_2' } },
-            { textKey: 'choice_newborn_drops_toy_3', effect: { statChanges: { happiness: 5, confidence: 5 }, logKey: 'log_newborn_drops_toy_3' } },
+            { textKey: 'choice_newborn_drops_toy_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_drops_toy_1' } },
+            { textKey: 'choice_newborn_drops_toy_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_newborn_drops_toy_2' } },
+            { textKey: 'choice_newborn_drops_toy_3', effect: { statChanges: { happiness: 2, confidence: 2 }, logKey: 'log_newborn_drops_toy_3' } },
         ]
     },
     {
@@ -524,9 +524,9 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         phases: [LifePhase.Newborn],
         condition: (state, char) => char.age >= 2,
         choices: [
-            { textKey: 'choice_newborn_school_festival_1', effect: { statChanges: { happiness: 8, confidence: 5 }, logKey: 'log_newborn_school_festival_1' } },
-            { textKey: 'choice_newborn_school_festival_2', effect: { statChanges: { confidence: -5, happiness: 5 }, logKey: 'log_newborn_school_festival_2' } },
-            { textKey: 'choice_newborn_school_festival_3', effect: { statChanges: { iq: 5, happiness: 8 }, logKey: 'log_newborn_school_festival_3' } },
+            { textKey: 'choice_newborn_school_festival_1', effect: { statChanges: { happiness: 3, confidence: 2 }, logKey: 'log_newborn_school_festival_1' } },
+            { textKey: 'choice_newborn_school_festival_2', effect: { statChanges: { confidence: -2, happiness: 2 }, logKey: 'log_newborn_school_festival_2' } },
+            { textKey: 'choice_newborn_school_festival_3', effect: { statChanges: { iq: 2, happiness: 3 }, logKey: 'log_newborn_school_festival_3' } },
         ]
     }
 ];
