@@ -600,10 +600,16 @@ const App: React.FC = () => {
                                 newUniversityChoices.push({ characterId: id });
                             } 
                             else if (char.age === 60 && char.status !== CharacterStatus.Retired) {
-                                const charUpdate: Partial<Character> = { status: CharacterStatus.Retired, careerTrack: null, careerLevel: 0 };
-                                nextFamilyMembers[id] = { ...char, ...charUpdate };
-                                const displayName = getCharacterDisplayName(char, language);
-                                nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_retirement_title', messageKey: 'log_retired', replacements: { name: displayName } });
+                                const isWorkingInFamilyBusiness = Object.values(prevState.familyBusinesses).some(business =>
+                                    business.slots.some(slot => slot.assignedCharacterId === char.id)
+                                );
+                        
+                                if (!isWorkingInFamilyBusiness) {
+                                    const charUpdate: Partial<Character> = { status: CharacterStatus.Retired, careerTrack: null, careerLevel: 0 };
+                                    nextFamilyMembers[id] = { ...char, ...charUpdate };
+                                    const displayName = getCharacterDisplayName(char, language);
+                                    nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_retirement_title', messageKey: 'log_retired', replacements: { name: displayName } });
+                                }
                             }
                         }
 
