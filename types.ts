@@ -146,6 +146,8 @@ export interface Character {
   progressionPenalty?: number;
   traineeForCareer?: string | null;
   childrenEventCooldownUntil?: { day: number; year: number; } | null;
+  lowHappinessYears: number; // New: Tracks years happiness is below threshold
+  lowHealthYears: number; // New: Tracks years health is below threshold
 }
 export enum AssetType {
     Housing = 'Housing',

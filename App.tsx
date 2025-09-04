@@ -138,9 +138,21 @@ const App: React.FC = () => {
         if (!scenario) {
             console.error(`Scenario with id "${mode}" not found.`);
             const defaultScenario = SCENARIOS[0];
-            setGameState(defaultScenario.createInitialState(initialYear, language));
+            const initialState = defaultScenario.createInitialState(initialYear, language);
+            // Initialize new properties for new characters
+            for (const charId in initialState.familyMembers) {
+                initialState.familyMembers[charId].lowHappinessYears = 0;
+                initialState.familyMembers[charId].lowHealthYears = 0;
+            }
+            setGameState(initialState);
         } else {
-            setGameState(scenario.createInitialState(initialYear, language));
+            const initialState = scenario.createInitialState(initialYear, language);
+            // Initialize new properties for new characters
+            for (const charId in initialState.familyMembers) {
+                initialState.familyMembers[charId].lowHappinessYears = 0;
+                initialState.familyMembers[charId].lowHealthYears = 0;
+            }
+            setGameState(initialState);
         }
         
         setIsPaused(false);
@@ -158,6 +170,13 @@ const App: React.FC = () => {
                     for (const charId in savedState.familyMembers) {
                         if (!savedState.familyMembers[charId].completedOneTimeEvents) {
                             savedState.familyMembers[charId].completedOneTimeEvents = [];
+                        }
+                        // Initialize new properties for existing characters
+                        if (savedState.familyMembers[charId].lowHappinessYears === undefined) {
+                            savedState.familyMembers[charId].lowHappinessYears = 0;
+                        }
+                        if (savedState.familyMembers[charId].lowHealthYears === undefined) {
+                            savedState.familyMembers[charId].lowHealthYears = 0;
                         }
                     }
                 }
@@ -566,6 +585,40 @@ const App: React.FC = () => {
 
                     for (const id of livingMemberIds) {
                         const char = nextFamilyMembers[id];
+
+                        // Update low stats counters
+                        if (char.stats.happiness < 10) {
+                            charUpdate.lowHappinessYears = (char.lowHappinessYears || 0) + 1;
+                        } else {
+                            charUpdate.lowHappinessYears = 0;
+                        }
+                        if (char.stats.health < 10) {
+                            charUpdate.lowHealthYears = (char.lowHealthYears || 0) + 1;
+                        } else {
+                            charUpdate.lowHealthYears = 0;
+                        }
+
+                        // Check for death due to prolonged low stats
+                        if (char.isAlive && ((charUpdate.lowHappinessYears || 0) >= 1 || (charUpdate.lowHealthYears || 0) >= 1)) {
+                            charUpdate.isAlive = false;
+                            charUpdate.deathDate = newState.currentDate;
+                            let deathMessageKey = '';
+                            if ((charUpdate.lowHappinessYears || 0) >= 1 && (charUpdate.lowHealthYears || 0) >= 1) {
+                                deathMessageKey = 'log_death_low_happiness_and_health';
+                            } else if ((charUpdate.lowHappinessYears || 0) >= 1) {
+                                deathMessageKey = 'log_death_low_happiness';
+                            } else {
+                                deathMessageKey = 'log_death_low_health';
+                            }
+                            nextGameLog.push({
+                                year: newState.currentDate.year,
+                                characterId: id,
+                                eventTitleKey: 'event_death_title',
+                                messageKey: deathMessageKey,
+                                replacements: { name: displayName },
+                            });
+                        }
+
                         if (char.age === 6 && char.status === CharacterStatus.Idle) {
                             newSchoolChoices.push({ characterId: id, newPhase: LifePhase.Elementary });
                         } else if (char.age === 12 && char.status === CharacterStatus.InEducation) {

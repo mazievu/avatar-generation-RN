@@ -351,6 +351,10 @@ log_surprise_gift_2: 'Tôi tự hỏi tại sao mình lại nhận được nó.
 choice_surprise_gift_3: 'Chia sẻ niềm vui với người khác.',
 log_surprise_gift_3: 'Tôi lan tỏa hạnh phúc bằng cách khoe nó với bạn bè.',
 
+log_death_low_happiness: "{name} qua đời do không hạnh phúc kéo dài.",
+log_death_low_health: "{name} qua đời do sức khỏe kém kéo dài.",
+log_death_low_happiness_and_health: "{name} qua đời do không hạnh phúc và sức khỏe kém kéo dài.",
+
     // Trigger-only
     event_investment_success_large_title: 'Đầu tư lớn thành công!',
     event_investment_success_large_desc: 'Khoản đầu tư lớn của bạn đã mang lại lợi nhuận khổng lồ!',

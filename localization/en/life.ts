@@ -243,6 +243,9 @@ export default {
     log_surprise_gift_1: 'The gift is wonderful!',
     choice_surprise_gift_2: 'A bit confused.',
     log_surprise_gift_2: "I don't know why I received it.",
+    log_death_low_happiness: "{name} passed away due to prolonged unhappiness.",
+    log_death_low_health: "{name} passed away due to prolonged poor health.",
+    log_death_low_happiness_and_health: "{name} passed away due to prolonged unhappiness and poor health.",
     // Trigger-only
     event_investment_success_large_title: 'Investment Success!',
     event_investment_success_large_desc: 'Your large investment has yielded a huge profit!',
