@@ -168,6 +168,7 @@ export interface AssetDefinition {
     descriptionKey: string;
     cost: number;
     effects: Partial<Stats>; // Monthly buffs
+    imageSrc?: string; // Path to the asset image
 }
 
 export interface PurchasedAsset {

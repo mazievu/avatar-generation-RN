@@ -334,7 +334,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                             />
                         )}
                     </div>
-                    <div className={`${mainView === 'business' ? 'hidden' : 'lg:col-span-1'} h-[80vh] flex flex-col`}>
+                    <div className="lg:col-span-1 h-[80vh] flex flex-col">
                         <div className="flex-shrink-0">
                             <TabButton label={t('tab_log', lang)} isActive={activeTab === 'log'} onClick={() => handleTabClick('log')} />
                             <TabButton label={t('tab_assets', lang)} isActive={activeTab === 'assets'} onClick={() => handleTabClick('assets')} />
