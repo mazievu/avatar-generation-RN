@@ -1,9 +1,5 @@
-
-
-
-
 import React, { useState, useCallback, useEffect } from 'react';
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business } from '../types';
+import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club } from '../types';
 import { formatDate, getCharacterDisplayName } from '../utils';
 import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../constants';
 import {
@@ -24,6 +20,7 @@ import {
     UnderqualifiedChoiceModal,
     BusinessManagementModal
 } from './ui';
+import { ClubChoiceModal } from './ClubChoiceModal';
 import { Language, t } from '../localization';
 import { exampleManifest } from './AvatarBuilder';
 import { BusinessMap } from './BusinessMap';
@@ -74,6 +71,7 @@ interface GameUIProps {
     onEventChoice: (choice: EventChoice) => void;
     onEventModalClose: () => void;
     onSchoolChoice: (option: SchoolOption) => void;
+    onClubChoice: (clubId: string | null) => void;
     onUniversityChoice: (goToUniversity: boolean) => void;
     onMajorChoice: (major: UniversityMajor) => void;
     onAbandonUniversity: () => void;
@@ -112,6 +110,7 @@ export const GameUI: React.FC<GameUIProps> = ({
     onEventChoice,
     onEventModalClose,
     onSchoolChoice,
+    onClubChoice,
     onUniversityChoice,
     onMajorChoice,
     onAbandonUniversity,
@@ -187,6 +186,15 @@ export const GameUI: React.FC<GameUIProps> = ({
                     schoolOptions={SCHOOL_OPTIONS[gameState.pendingSchoolChoice[0].newPhase]}
                     onSelect={onSchoolChoice}
                     currentFunds={gameState.familyFund}
+                    lang={lang}
+                />
+            )}
+            {gameState.pendingClubChoice && (
+                <ClubChoiceModal
+                    character={gameState.familyMembers[gameState.pendingClubChoice.characterId]}
+                    clubs={gameState.pendingClubChoice.options}
+                    onSelect={onClubChoice}
+                    onSkip={() => onClubChoice(null)}
                     lang={lang}
                 />
             )}
@@ -269,7 +277,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                         <div className="flex items-baseline">
                             <span className="text-slate-500 font-bold">{t('family_fund_label', lang)}:</span>
                             <span className={`font-extrabold text-xl ml-2 ${gameState.familyFund >= 0 ? 'text-slate-700' : 'text-red-500'}`}>
-                                ${gameState.familyFund.toLocaleString()}
+                                ${Math.round(gameState.familyFund).toLocaleString()}
                             </span>
                             {gameState.monthlyNetChange !== 0 && (
                                 <span className={`text-sm ml-2 font-mono font-bold ${gameState.monthlyNetChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>

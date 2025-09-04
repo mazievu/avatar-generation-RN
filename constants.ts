@@ -1,4 +1,4 @@
-import { GameEvent, LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, BusinessDefinition, CareerTrack, AssetDefinition, AssetType } from './types';
+import { GameEvent, LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, BusinessDefinition, CareerTrack, AssetDefinition, AssetType, Club } from './types';
 import { ALL_EVENTS } from './events';
 
 // ==============================
@@ -278,6 +278,12 @@ export const ASSET_DEFINITIONS: Record<string, AssetDefinition> = {
     'vacation_2': { id: 'vacation_2', type: AssetType.Vacation, tier: 2, nameKey: 'asset_vacation_2_name', descriptionKey: 'asset_vacation_2_desc', cost: 400000, effects: { happiness: 0.02 } },
     'vacation_3': { id: 'vacation_3', type: AssetType.Vacation, tier: 3, nameKey: 'asset_vacation_3_name', descriptionKey: 'asset_vacation_3_desc', cost: 2500000, effects: { happiness: 0.03 } },
 };
+
+export const CLUBS: Club[] = [
+    { id: 'sports_club', nameKey: 'club_sports', descriptionKey: 'club_sports_desc', effects: { health: 5, skill: 2 } },
+    { id: 'art_club', nameKey: 'club_art', descriptionKey: 'club_art_desc', effects: { eq: 5, iq: 2 } },
+    { id: 'science_club', nameKey: 'club_science', descriptionKey: 'club_science_desc', effects: { iq: 5, skill: 2 } },
+];
 
 export const BUSINESS_MAP_LOCATIONS: Record<string, { x: number; y: number; width: number; height: number; buildingType: string }> = {
     // Medical District

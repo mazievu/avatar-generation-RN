@@ -414,7 +414,7 @@ const baseName = (path: string) =>
 const backgroundOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/bg/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const name = baseName(path);
@@ -425,7 +425,7 @@ const backgroundOptions: LayerOption[] = Object.entries(
 const backHairOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/hair/back/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const name = baseName(path);
@@ -436,7 +436,7 @@ const backHairOptions: LayerOption[] = Object.entries(
 const eyesOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/eyes/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const name = baseName(path);
@@ -447,7 +447,7 @@ const eyesOptions: LayerOption[] = Object.entries(
 const eyebrowsOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/eyebrows/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const name = baseName(path);
@@ -458,7 +458,7 @@ const eyebrowsOptions: LayerOption[] = Object.entries(
 const mouthOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/mouth/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const name = baseName(path);
@@ -469,7 +469,7 @@ const mouthOptions: LayerOption[] = Object.entries(
 const beardOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/beard/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const name = baseName(path);
@@ -480,7 +480,7 @@ const beardOptions: LayerOption[] = Object.entries(
 const frontHairOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/hair/front/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const name = baseName(path);
@@ -491,7 +491,7 @@ const frontHairOptions: LayerOption[] = Object.entries(
 const featureOptions: LayerOption[] = Object.entries(
   import.meta.glob('/src/asset/avatar-face/features/**/*.{png,webp}', {
     eager: true,
-    import: 'default'
+    as: 'url'
   })
 ).map(([path, src]) => {
   const parts = path.split('/');

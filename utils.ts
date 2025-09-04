@@ -2,6 +2,7 @@ import { Gender, LifePhase, Character, Stats, CharacterStatus, RelationshipStatu
 import { LIFE_PHASE_AGES, CAREER_LADDER, UNIVERSITY_MAJORS, DAYS_IN_YEAR, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, AVATAR_COLOR_PALETTE } from './constants';
 import { Language, t } from './localization';
 import { exampleManifest } from './components/AvatarBuilder';
+import { CLUBS, CLUB_EVENTS } from './clubsAndEventsData';
 
 const MALE_NAMES_EN = ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Daniel", "Matthew", "Anthony", "Mark", "Donald", "Steven", "Paul", "Andrew", "Joshua", "Kevin"];
 const FEMALE_NAMES_EN = ["Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen", "Nancy", "Lisa", "Betty", "Margaret", "Sandra", "Ashley", "Kimberly", "Emily", "Donna", "Michelle"];
@@ -186,6 +187,8 @@ export const createInitialCharacter = (year: number, lang: Language): Character 
         eventsThisYear: 0,
         petId: null,
         completedOneTimeEvents: [],
+        currentClubs: [],
+        completedClubEvents: [],
         displayAdjective: null,
         avatarState: generateRandomAvatar(exampleManifest, age, gender),
     };

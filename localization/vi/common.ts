@@ -1,5 +1,3 @@
-
-
 export default {
     // UI
     game_title: 'Các Thế Hệ',
@@ -20,6 +18,8 @@ export default {
     tab_log: 'Nhật ký',
     tab_assets: 'Tài sản',
     tab_businesses: 'Kinh doanh',
+    tab_details: 'Chi tiết',
+    tab_life_events: 'Sự kiện cuộc đời',
     event_for: 'Sự kiện cho',
     for_char_label: 'Cho',
     cost_label: 'Chi phí',
@@ -42,6 +42,8 @@ export default {
     major_label: 'Chuyên ngành',
     career_label: 'Sự nghiệp',
     working_at_label: 'Làm việc tại',
+    clubs_label: 'Câu lạc bộ',
+    life_events_label: 'Sự kiện cuộc đời',
     education_none: 'Chưa có',
     education_high_school: 'Bằng tốt nghiệp cấp 3',
     education_vocational_diploma: 'Chứng chỉ nghề',
@@ -109,6 +111,10 @@ export default {
     underqualified_tooltip: 'Thiếu yêu cầu:',
     underqualified_tooltip_iq: 'IQ ({shortfall} điểm)',
     underqualified_tooltip_conf: 'Tự tin ({shortfall} điểm)',
+    modal_club_choice_title: 'Chọn một câu lạc bộ',
+    modal_club_choice_desc: 'Đã đến lúc {name} tham gia một câu lạc bộ sau giờ học! Điều này có thể giúp định hình sự nghiệp tương lai của họ.',
+    join_club: 'Tham gia',
+    skip_clubs: 'Bỏ qua bây giờ',
     // Assets & Businesses
     family_assets_title: 'Tài sản gia đình',
     total_value_label: 'Tổng giá trị',
@@ -337,6 +343,7 @@ export default {
     event_birth_title: 'Chào đời',
     event_death_title: 'Qua đời',
     event_pet_adoption_log_title: 'Nhận nuôi thú cưng',
+    event_club_join_title: 'Đã tham gia câu lạc bộ',
     // Game Log Messages
     log_first_generation: '{name} đã ra đời, bắt đầu thế hệ đầu tiên.',
     log_alone_start: '{name} đã tốt nghiệp và bắt đầu một cuộc sống mới với 50.000 đô la.',
@@ -388,4 +395,11 @@ export default {
     log_loan_taken: "Gia đình đã vay một khoản {amount}$ với thời hạn trả là {term} năm.",
     log_loan_repaid: "Gia đình đã trả thành công khoản vay {amount}$.",
     log_loan_repayment_due: "Một khoản vay {amount}$ sắp đến hạn trả trong năm nay.",
+        log_joined_club: '{name} đã tham gia {clubName}.',
+    club_sports: 'Câu lạc bộ Thể thao',
+    club_sports_desc: 'Tham gia câu lạc bộ thể thao để cải thiện sức khỏe và kỹ năng thể chất của bạn.',
+    club_art: 'Câu lạc bộ Nghệ thuật',
+    club_art_desc: 'Giải phóng sự sáng tạo và trí tuệ cảm xúc của bạn trong câu lạc bộ nghệ thuật.',
+    club_science: 'Câu lạc bộ Khoa học',
+    club_science_desc: 'Khám phá những điều kỳ diệu của khoa học và tăng cường IQ và kỹ năng giải quyết vấn đề của bạn.',
 };

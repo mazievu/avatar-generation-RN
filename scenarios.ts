@@ -1,4 +1,4 @@
-import type { GameState, Character, Pet, GameScenario } from './types';
+import type { GameState, Character, Pet, GameScenario, Club } from './types';
 import { LifePhase, CharacterStatus, RelationshipStatus, Gender, PetType } from './types';
 import { INITIAL_FUNDS, UNIVERSITY_MAJORS } from './constants';
 import { createInitialCharacter, generateName, generateRandomAvatar, addDays } from './utils';
@@ -21,6 +21,7 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         pendingSchoolChoice: null,
         pendingUniversityChoice: null,
         pendingMajorChoice: null,
+        pendingClubChoice: null,
         pendingCareerChoice: null,
         pendingLoanChoice: null,
         pendingPromotion: null,
@@ -86,6 +87,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         gameLog: [{ year: initialYear, messageKey: 'log_alone_start', replacements: { name: character.name } }],
         gameOverReason: null, activeEvent: null, pendingSchoolChoice: null,
         pendingUniversityChoice: null, pendingMajorChoice: null,
+        pendingClubChoice: null,
         pendingCareerChoice: { characterId: character.id, options: ['job', 'internship', 'vocational'] },
         pendingLoanChoice: null,
         pendingPromotion: null,
@@ -196,6 +198,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         gameLog: [{ year: initialYear, messageKey: "log_mila_start" }],
         gameOverReason: null, activeEvent: null, pendingSchoolChoice: null,
         pendingUniversityChoice: null, pendingMajorChoice: null, pendingCareerChoice: null,
+        pendingClubChoice: null,
         pendingLoanChoice: null,
         pendingPromotion: null,
         activeLoans: [],

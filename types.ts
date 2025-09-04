@@ -138,6 +138,8 @@ export interface Character {
   eventsThisYear: number;
   petId: string | null;
   completedOneTimeEvents: string[];
+  currentClubs: string[];
+  completedClubEvents: string[];
   displayAdjective: { key: string; year: number; } | null;
   avatarState: AvatarState;
   staticAvatarUrl?: string;
@@ -210,6 +212,7 @@ export interface GameState {
   pendingSchoolChoice: { characterId: string; newPhase: LifePhase }[] | null;
   pendingUniversityChoice: { characterId: string }[] | null;
   pendingMajorChoice: { characterId: string; options: UniversityMajor[] } | null;
+  pendingClubChoice: { characterId: string; options: Club[] } | null;
   pendingCareerChoice: CareerChoice | null;
   pendingUnderqualifiedChoice?: { characterId: string; careerTrackKey: string; } | null;
   pendingLoanChoice: boolean | null;
@@ -318,4 +321,23 @@ export interface GameScenario {
   descriptionKey: string;
   themeColor: string;
   createInitialState: (initialYear: number, lang: Language) => GameState;
+}
+
+export interface Club {
+  id: string;
+  nameKey: string;
+  descriptionKey: string;
+  prerequisites: { age?: number; stats?: Partial<Stats>; };
+  effects: StatChanges;
+  careerInfluence: string[];
+  lifePhase: LifePhase[];
+}
+
+export interface ClubEvent {
+  id: string;
+  titleKey: string;
+  descriptionKey: string;
+  clubId: string;
+  choices: EventChoice[];
+  condition?: (state: GameState, char: Character) => boolean;
 }

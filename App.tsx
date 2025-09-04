@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry } from './types';
+import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club } from './types';
 import { LifePhase, CharacterStatus, RelationshipStatus, Gender } from './types';
 // FIX: Changed import from COST_OF_LIVING to getCostOfLiving to match the exported member from constants.
 import { GAME_SPEED_MS, DAYS_IN_YEAR, EVENTS, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './constants';
+import { CLUBS } from './clubsAndEventsData';
 import { GameUI } from './components/GameUI';
 import AvatarBuilder, { exampleManifest, usePreloadedImages } from './components/AvatarBuilder';
 import { SCENARIOS } from './scenarios';
@@ -721,13 +721,14 @@ const App: React.FC = () => {
             !!gameState?.pendingLoanChoice ||
             !!gameState?.pendingPromotion ||
             !!gameState?.pendingUnderqualifiedChoice ||
+            !!gameState?.pendingClubChoice ||
             !!customizingCharacterId ||
             mainView === 'business';
 
         if (isModalOrSpecialViewActive) {
             setIsPaused(true);
         }
-    }, [gameState?.activeEvent, gameState?.pendingSchoolChoice, gameState?.pendingUniversityChoice, gameState?.pendingMajorChoice, gameState?.pendingCareerChoice, gameState?.pendingLoanChoice, gameState?.pendingPromotion, gameState?.pendingUnderqualifiedChoice, customizingCharacterId, mainView]);
+    }, [gameState?.activeEvent, gameState?.pendingSchoolChoice, gameState?.pendingUniversityChoice, gameState?.pendingMajorChoice, gameState?.pendingCareerChoice, gameState?.pendingLoanChoice, gameState?.pendingPromotion, gameState?.pendingUnderqualifiedChoice, gameState?.pendingClubChoice, customizingCharacterId, mainView]);
 
     useEffect(() => {
         stopGameLoop();
@@ -905,6 +906,29 @@ const App: React.FC = () => {
                 eventTitleKey: 'event_school_choice_title',
             };
 
+            let pendingClubChoice: { characterId: string; options: Club[] } | null = null;
+            if (currentChoice.newPhase === LifePhase.MiddleSchool) {
+                const eligibleClubs = CLUBS.filter(club => {
+                    if (club.prerequisites.age && updatedCharacter.age < club.prerequisites.age) {
+                        return false;
+                    }
+                    if (club.prerequisites.stats) {
+                        for (const [stat, requiredValue] of Object.entries(club.prerequisites.stats)) {
+                            if (updatedCharacter.stats[stat as keyof Stats] < requiredValue) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                });
+
+                const shuffledClubs = eligibleClubs.sort(() => 0.5 - Math.random());
+                const clubOptions = shuffledClubs.slice(0, 4);
+                if (clubOptions.length > 0) {
+                    pendingClubChoice = { characterId, options: clubOptions };
+                }
+            }
+
             return {
                 ...prevState,
                 familyFund: prevState.familyFund - option.cost,
@@ -914,9 +938,65 @@ const App: React.FC = () => {
                 },
                 gameLog: [...prevState.gameLog, logEntry],
                 pendingSchoolChoice: remainingChoices.length > 0 ? remainingChoices : null,
+                pendingClubChoice: pendingClubChoice,
             };
         });
     }, [language, gameState]);
+
+    const handleClubChoice = useCallback((clubId: string | null) => {
+        setGameState(prevState => {
+            if (!prevState || !prevState.pendingClubChoice) return prevState;
+            const { characterId } = prevState.pendingClubChoice;
+            const character = prevState.familyMembers[characterId];
+
+            if (clubId) {
+                const club = CLUBS.find(c => c.id === clubId);
+                if (club) {
+                    let newStats = { ...character.stats };
+                    if (club.effects) {
+                        for (const [stat, change] of Object.entries(club.effects)) {
+                            const key = stat as keyof Stats;
+                            let calculatedValue = Math.round(Math.max(0, newStats[key] + change));
+                            if (isNaN(calculatedValue)) {
+                                calculatedValue = 0; // Default to 0 or some safe value
+                            }
+                            if (key === 'iq') newStats[key] = Math.min(200, calculatedValue);
+                            else if (key !== 'skill') newStats[key] = Math.min(100, calculatedValue);
+                        }
+                    }
+                    const updatedCharacter: Character = {
+                        ...character,
+                        currentClubs: [...(character.currentClubs || []), clubId],
+                        stats: newStats,
+                    };
+                    const displayName = getCharacterDisplayName(updatedCharacter, language);
+                    const logEntry: GameLogEntry = {
+                        year: prevState.currentDate.year,
+                        messageKey: 'log_joined_club',
+                        replacements: { name: displayName, clubName: t(club.nameKey, language) },
+                        characterId: characterId,
+                        eventTitleKey: 'event_club_join_title',
+                    };
+                    return {
+                        ...prevState,
+                        familyMembers: {
+                            ...prevState.familyMembers,
+                            [characterId]: updatedCharacter,
+                        },
+                        gameLog: [...prevState.gameLog, logEntry],
+                        pendingClubChoice: null,
+                    };
+                }
+            }
+            
+            // if player skips or club not found
+            return {
+                ...prevState,
+                pendingClubChoice: null,
+            };
+        });
+        setIsPaused(false);
+    }, [language]);
 
     const handleUniversityChoice = useCallback((goToUniversity: boolean) => {
         if (gameState?.pendingUniversityChoice?.length === 1) {
@@ -1534,6 +1614,7 @@ const App: React.FC = () => {
             onEventChoice={handleEventChoice}
             onEventModalClose={handleCloseEventModal}
             onSchoolChoice={handleSchoolChoice}
+            onClubChoice={handleClubChoice}
             onUniversityChoice={handleUniversityChoice}
             onMajorChoice={handleMajorChoice}
             onAbandonUniversity={handleAbandonUniversity}

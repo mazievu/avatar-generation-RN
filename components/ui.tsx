@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition } from '../types';
 import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
 import { Gender, RelationshipStatus, CharacterStatus, LifePhase } from '../types';
-import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, EVENTS, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../constants';
+import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, EVENTS, VOCATIONAL_TRAINING, ASSET_DEFINITIONS, CLUBS } from '../constants';
 import { SCENARIOS } from '../scenarios';
 import { Language, t, displayPhase, displayStatus, displayRelationshipStatus } from '../localization';
 import { getCharacterDisplayName, calculateEmployeeSalary } from '../utils';
@@ -206,79 +206,108 @@ interface CharacterDetailModalProps extends LocalizedProps {
     manifest: Manifest;
 }
 
-export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ character, gameState, onClose, lang, onCustomize, images, manifest }) => {
-    const { familyMembers, familyPets, familyBusinesses } = gameState;
-    const partner = character.partnerId ? familyMembers[character.partnerId] : null;
-    const career = character.careerTrack && CAREER_LADDER[character.careerTrack] ? CAREER_LADDER[character.careerTrack].levels[character.careerLevel] : null;
-    const pet = character.petId ? familyPets[character.petId] : null;
-
+export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ character, gameState, onClose, onCustomize, images, manifest, lang }) => {
+    const [activeDetailTab, setActiveDetailTab] = React.useState('details');
     const displayName = getCharacterDisplayName(character, lang);
+    const partner = character.partnerId ? gameState.familyMembers[character.partnerId] : null;
     const partnerDisplayName = partner ? getCharacterDisplayName(partner, lang) : '';
 
-    let businessRole: { businessName: string, role: string } | null = null;
-    if (!career && (character.status === CharacterStatus.Working || character.status === CharacterStatus.Trainee)) {
-        for (const business of Object.values(familyBusinesses)) {
-            const foundSlot = business.slots.find(slot => slot.assignedCharacterId === character.id);
-            if (foundSlot) {
-                const businessDef = BUSINESS_DEFINITIONS[business.type];
-                businessRole = { businessName: t(businessDef.nameKey, lang), role: t(foundSlot.role, lang) };
-                break;
-            }
-        }
-    }
-
-    const educationText = character.major 
-        ? t('education_university_display', lang, { major_name: t(character.major, lang) }) 
-        : character.education !== 'None' ? t(character.education, lang) : t('education_none', lang);
+    const educationText = character.universityDegree ? t(character.universityDegree, lang) : (character.schoolHistory && character.schoolHistory.length > 0 ? t('education_some_school', lang) : t('education_none', lang));
+    const career = character.careerTrack && character.careerLevel !== undefined ? CAREER_LADDER[character.careerTrack]?.levels[character.careerLevel] : null;
+    const businessRole = character.businessId && character.businessSlotIndex !== undefined ? gameState.familyBusinesses[character.businessId]?.slots[character.businessSlotIndex] : null;
+    const pet = character.petId ? PET_DATA[character.petId] : null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="comic-panel-wrapper" style={{'--rotate': '0deg'} as React.CSSProperties}>
-                <div className={`comic-panel p-6 w-full max-w-md ${character.isAlive ? '' : 'grayscale'}`} onClick={e => e.stopPropagation()}>
-                    <div className="flex gap-4 items-start mb-2">
-                        <div className="w-32 h-32 rounded-2xl border-4 border-amber-400 overflow-hidden shadow-lg flex-shrink-0 bg-slate-200">
-                             {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
-                                <AgeAwareAvatarPreview
-                                    manifest={manifest}
-                                    character={character}
-                                    images={images}
-                                    size={{ width: 128, height: 128 }}
-                                />
-                            ) : null}
-                        </div>
-
-                        <div className="flex-grow">
-                            <div className="flex justify-between items-start mb-2">
-                                <h3 className={`text-3xl font-black ${character.isPlayerCharacter ? 'text-amber-500' : 'text-slate-800'}`}>
-                                    {displayName} (G{character.generation})
-                                </h3>
-                                <button onClick={onClose} className="text-slate-400 hover:text-slate-800 text-4xl font-bold -mt-2">&times;</button>
-                            </div>
-                            <div className="flex justify-between items-center text-sm text-slate-500 mb-1">
-                                <span>{displayPhase(character.phase, lang)} | {displayStatus(character.status, lang)}</span>
-                                <span>{character.isAlive ? `${character.age} ${t('age_short', lang)}` : `${t('deceased_at', lang)} ${character.age}`}</span>
-                            </div>
-
-                            <p className="text-sm text-slate-500 mb-3">{t('relationship_label', lang)}: {displayRelationshipStatus(character.relationshipStatus, lang)}{partner ? ` ${t('with_person', lang)} ${partnerDisplayName}`: ''}</p>
-                        </div>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+            <div className="comic-panel-wrapper" style={{'--rotate': '3deg'} as React.CSSProperties}>
+                <div className="comic-panel p-6 max-w-2xl w-full max-h-[90vh] flex flex-col">
+                    <div className="flex justify-between items-start mb-2">
+                        <h3 className={`text-3xl font-black ${character.isPlayerCharacter ? 'text-amber-500' : 'text-slate-800'}`}>
+                            {displayName} (G{character.generation})
+                        </h3>
+                        <button onClick={onClose} className="text-slate-400 hover:text-slate-800 text-4xl font-bold -mt-2">&times;</button>
                     </div>
-                     
-                    {pet && <p className="text-sm text-cyan-600 mb-2 font-bold">{getPetIcon(pet.type)} {t('pet_label', lang)}: {pet.name} {t('the_pet_type', lang)} {t(PET_DATA[pet.type].nameKey, lang)}</p>}
 
-                    <p className="text-sm text-sky-600 mb-1">{t('education_label', lang)}: {educationText}</p>
-                    {character.major && <p className="text-sm text-sky-600 mb-1">{t('major_label', lang)}: {t(character.major, lang)}</p>}
-                    {career && <p className="text-sm text-green-600 font-bold mb-3">{t('career_label', lang)}: {t(career.titleKey, lang)} (${career.salary.toLocaleString()}/yr)</p>}
-                    {businessRole && <p className="text-sm text-green-600 font-bold mb-3">{t('working_at_label', lang)}: {businessRole.businessName} ({businessRole.role})</p>}
+                    <div className="flex mb-4">
+                        <button
+                            onClick={() => setActiveDetailTab('details')}
+                            className={`px-4 py-2 text-sm font-bold rounded-t-lg ${activeDetailTab === 'details' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600'}`}
+                        >
+                            {t('tab_details', lang)}
+                        </button>
+                        <button
+                            onClick={() => setActiveDetailTab('events')}
+                            className={`px-4 py-2 text-sm font-bold rounded-t-lg ${activeDetailTab === 'events' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600'}`}
+                        >
+                            {t('tab_life_events', lang)}
+                        </button>
+                    </div>
 
-                    {character.isAlive && (
-                        <>
-                            <div className="mt-4 space-y-2 p-3 bg-slate-50 rounded-xl">
-                                <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="bg-blue-400" />
-                                <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="bg-yellow-400" />
-                                <StatBar Icon={eqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="bg-purple-400" />
-                                <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="bg-red-400" />
-                                {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="bg-green-400" />}
+                    
+                    {activeDetailTab === 'details' && (
+                        <div className="space-y-3">
+                            <div className="flex gap-4 items-start mb-2">
+                                <div className="w-32 h-32 rounded-2xl border-4 border-amber-400 overflow-hidden shadow-lg flex-shrink-0 bg-slate-200">
+                                    {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
+                                        <AgeAwareAvatarPreview
+                                            manifest={manifest}
+                                            character={character}
+                                            images={images}
+                                            size={{ width: 128, height: 128 }}
+                                        />
+                                    ) : null}
+                                </div>
+
+                                <div className="flex-grow">
+                                    <div className="flex justify-between items-center text-sm text-slate-500 mb-1">
+                                        <span>{displayPhase(character.phase, lang)} | {displayStatus(character.status, lang)}</span>
+                                        <span>{character.isAlive ? `${character.age} ${t('age_short', lang)}` : `${t('deceased_at', lang)} ${character.age}`}</span>
+                                    </div>
+
+                                    <p className="text-sm text-slate-500 mb-3">{t('relationship_label', lang)}: {displayRelationshipStatus(character.relationshipStatus, lang)}{partner ? ` ${t('with_person', lang)} ${partnerDisplayName}`: ''}</p>
+                                </div>
                             </div>
+                            
+                            {pet && <p className="text-sm text-cyan-600 mb-2 font-bold">{getPetIcon(pet.type)} {t('pet_label', lang)}: {pet.name} {t('the_pet_type', lang)} {t(PET_DATA[pet.type].nameKey, lang)}</p>}
+
+                            <p className="text-sm text-sky-600 mb-1">{t('education_label', lang)}: {educationText}</p>
+                            {character.major && <p className="text-sm text-sky-600 mb-1">{t('major_label', lang)}: {t(character.major, lang)}</p>}
+                            {career && <p className="text-sm text-green-600 font-bold mb-3">{t('career_label', lang)}: {t(career.titleKey, lang)} (${career.salary.toLocaleString()}/yr)</p>}
+                            {businessRole && <p className="text-sm text-green-600 font-bold mb-3">{t('working_at_label', lang)}: {businessRole.businessName} ({businessRole.role})</p>}
+
+                            {character.currentClubs && character.currentClubs.length > 0 && (
+                                <div className="mt-3">
+                                    <p className="text-sm text-purple-600 font-bold mb-1">{t('clubs_label', lang)}:</p>
+                                    <ul className="list-disc list-inside text-sm text-slate-600">
+                                        {character.currentClubs.map(clubId => {
+                                            const club = CLUBS.find(c => c.id === clubId);
+                                            return club ? <li key={clubId}>{t(club.nameKey, lang)}</li> : null;
+                                        }) }
+                                    </ul>
+                                </div>
+                            )}
+
+                            {character.completedOneTimeEvents && character.completedOneTimeEvents.length > 0 && (
+                                <div className="mt-3">
+                                    <p className="text-sm text-indigo-600 font-bold mb-1">{t('life_events_label', lang)}:</p>
+                                    <ul className="list-disc list-inside text-sm text-slate-600">
+                                        {character.completedOneTimeEvents.map(eventId => {
+                                            const event = EVENTS.find(e => e.id === eventId);
+                                            return event ? <li key={eventId}>{t(event.titleKey, lang)}</li> : null;
+                                        }) }
+                                    </ul>
+                                </div>
+                            )}
+
+                            {character.isAlive && (
+                                <div className="mt-4 space-y-2 p-3 bg-slate-50 rounded-xl">
+                                    <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="bg-blue-400" />
+                                    <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="bg-yellow-400" />
+                                    <StatBar Icon={eqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="bg-purple-400" />
+                                    <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="bg-red-400" />
+                                    {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="bg-green-400" />}
+                                </div>
+                            )}
                             {!character.staticAvatarUrl && (
                                 <div className="mt-4 text-center">
                                     <button onClick={() => onCustomize(character.id)} className="chunky-button chunky-button-pink">
@@ -286,13 +315,25 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
                                     </button>
                                 </div>
                             )}
-                        </>
+                        </div>
+                    )}
+
+                    {activeDetailTab === 'events' && (
+                        <div className="h-full overflow-y-auto">
+                            <GameLog 
+                                log={gameState.gameLog.filter(entry => entry.characterId === character.id)}
+                                lang={lang}
+                                familyMembers={gameState.familyMembers}
+                            />
+                        </div>
                     )}
                 </div>
             </div>
         </div>
     );
 };
+
+
 
 
 interface FamilyTreeProps extends LocalizedProps {
@@ -776,7 +817,7 @@ interface ModalBaseProps extends LocalizedProps {
     children: React.ReactNode;
 }
 
-const ModalBase: React.FC<ModalBaseProps> = ({titleKey, characterName, descriptionKey, descriptionReplacements, children, lang}) => (
+export const ModalBase: React.FC<ModalBaseProps> = ({titleKey, characterName, descriptionKey, descriptionReplacements, children, lang}) => (
      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
         <div className="comic-panel-wrapper" style={{'--rotate': '-1deg'} as React.CSSProperties}>
             <div className="comic-panel p-6 max-w-lg w-full">

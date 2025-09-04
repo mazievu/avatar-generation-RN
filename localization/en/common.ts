@@ -1,5 +1,3 @@
-
-
 export default {
     // UI
     game_title: 'Generations',
@@ -20,6 +18,8 @@ export default {
     tab_log: 'Log',
     tab_assets: 'Assets',
     tab_businesses: 'Businesses',
+    tab_details: 'Details',
+    tab_life_events: 'Life Events',
     event_for: 'Event for',
     for_char_label: 'For',
     cost_label: 'Cost',
@@ -42,6 +42,8 @@ export default {
     major_label: 'Major',
     career_label: 'Career',
     working_at_label: 'Working at',
+    clubs_label: 'Clubs',
+    life_events_label: 'Life Events',
     education_none: 'None',
     education_high_school: 'High School Diploma',
     education_vocational_diploma: 'Vocational Diploma',
@@ -109,6 +111,10 @@ export default {
     underqualified_tooltip: 'Missing Requirements:',
     underqualified_tooltip_iq: 'IQ ({shortfall} points)',
     underqualified_tooltip_conf: 'eq ({shortfall} points)',
+    modal_club_choice_title: 'Choose a Club',
+    modal_club_choice_desc: 'It\'s time for {name} to join an after-school club! This can help shape their future career.',
+    join_club: 'Join',
+    skip_clubs: 'Skip for now',
     // Assets & Businesses
     family_assets_title: 'Family Assets',
     total_value_label: 'Total Value',
@@ -337,6 +343,7 @@ export default {
     event_birth_title: 'Birth',
     event_death_title: 'Passed Away',
     event_pet_adoption_log_title: 'Pet Adoption',
+    event_club_join_title: 'Joined a Club',
     // Game Log Messages
     log_first_generation: '{name} was born, starting the first generation.',
     log_alone_start: '{name} has graduated and started a new life with $50,000.',
@@ -388,4 +395,11 @@ export default {
     log_loan_taken: "The family took out a loan of ${amount} due in {term} years.",
     log_loan_repaid: "The family has successfully repaid a loan of ${amount}.",
     log_loan_repayment_due: "A loan of ${amount} is due for repayment this year.",
+    log_joined_club: '{name} has joined the {clubName}.',
+    club_sports: 'Sports Club',
+    club_sports_desc: 'Join the sports club to improve your health and physical skills.',
+    club_art: 'Art Club',
+    club_art_desc: 'Unleash your creativity and emotional intelligence in the art club.',
+    club_science: 'Science Club',
+    club_science_desc: 'Explore the wonders of science and boost your IQ and problem-solving skills.',
 };
