@@ -105,7 +105,7 @@ export const calculateNewAdjectiveKey = (character: Character): string => {
   if (stats.happiness > 85) {
     possibleAdjectives.push('adjective_happy', 'adjective_joyful');
   }
-  if (stats.confidence > 85) {
+  if (stats.eq > 85) {
     possibleAdjectives.push('adjective_confident', 'adjective_brave');
   }
   if (stats.health > 90) {
@@ -165,7 +165,7 @@ export const createInitialCharacter = (year: number, lang: Language): Character 
         stats: {
             iq: Math.floor(Math.random() * 101), // 0-100
             happiness: Math.floor(Math.random() * 101), // 0-100
-            confidence: Math.floor(Math.random() * 101), // 0-100
+            eq: Math.floor(Math.random() * 101), // 0-100
             health: 30 + Math.floor(Math.random() * 71), // 30-100
             skill: 0,
         },
@@ -196,7 +196,7 @@ export const handleBirth = (parent1: Character, parent2: Character, currentDate:
     const childStats: Stats = {
         iq: Math.min(200, Math.floor(((parent1.stats.iq + parent2.stats.iq) / 2) * (0.8 + Math.random() * 0.4))),
         happiness: Math.min(100, Math.floor(((parent1.stats.happiness + parent2.stats.happiness) / 2) * (0.8 + Math.random() * 0.4))),
-        confidence: Math.min(100, Math.floor(((parent1.stats.confidence + parent2.stats.confidence) / 2) * (0.8 + Math.random() * 0.4))),
+        eq: Math.min(100, Math.floor(((parent1.stats.eq + parent2.stats.eq) / 2) * (0.8 + Math.random() * 0.4))),
         health: Math.min(100, Math.floor(((parent1.stats.health + parent2.stats.health) / 2) * (0.8 + Math.random() * 0.4) + 10)),
         skill: 0,
     };

@@ -51,7 +51,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         stats: {
             iq: Math.floor(Math.random() * 101),
             happiness: Math.floor(Math.random() * 101),
-            confidence: Math.floor(Math.random() * 101),
+            eq: Math.floor(Math.random() * 101),
             health: 30 + Math.floor(Math.random() * 71),
             skill: 10 + Math.floor(Math.random() * 21),
         },
@@ -109,7 +109,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     const mila: Character = {
         id: milaId, name: 'Mila', gender: Gender.Female, generation: 1,
         birthDate: { day: 1, year: initialYear - 23 }, age: 23, isAlive: true, deathDate: null,
-        stats: { iq: 95, happiness: 85, confidence: 90, health: 80, skill: 70 },
+        stats: { iq: 95, happiness: 85, eq: 90, health: 80, skill: 70 },
         phase: LifePhase.PostGraduation,
         education: 'University (major_business)', major: 'major_business', careerTrack: 'Business', careerLevel: 2,
         status: CharacterStatus.Working, statusEndYear: null,
@@ -124,7 +124,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 1,
         birthDate: { day: 1, year: initialYear - 23 }, age: 23, isAlive: true, deathDate: null,
-        stats: { iq: 85, happiness: 95, confidence: 85, health: 95, skill: 80 },
+        stats: { iq: 85, happiness: 95, eq: 85, health: 95, skill: 80 },
         phase: LifePhase.PostGraduation,
         education: 'University (major_technology)', major: 'major_technology', careerTrack: 'Technology', careerLevel: 2,
         status: CharacterStatus.Working, statusEndYear: null,
@@ -139,7 +139,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     const alice: Character = {
         id: aliceId, name: 'Alice', gender: Gender.Female, generation: 2,
         birthDate: { day: 1, year: initialYear - 7 }, age: 7, isAlive: true, deathDate: null,
-        stats: { iq: 120, happiness: 80, confidence: 75, health: 70, skill: 65 },
+        stats: { iq: 120, happiness: 80, eq: 75, health: 70, skill: 65 },
         phase: LifePhase.Elementary,
         education: 'school_public', major: null, careerTrack: null, careerLevel: 0,
         status: CharacterStatus.InEducation, statusEndYear: null,
@@ -154,7 +154,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     const lucas: Character = {
         id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 2,
         birthDate: { day: 1, year: initialYear - 7 }, age: 7, isAlive: true, deathDate: null,
-        stats: { iq: 130, happiness: 75, confidence: 80, health: 85, skill: 95 },
+        stats: { iq: 130, happiness: 75, eq: 80, health: 85, skill: 95 },
         phase: LifePhase.Elementary,
         education: 'school_public', major: null, careerTrack: null, careerLevel: 0,
         status: CharacterStatus.InEducation, statusEndYear: null,
@@ -169,7 +169,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     const daisy: Character = {
         id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 2,
         birthDate: { day: 1, year: initialYear - 1 }, age: 1, isAlive: true, deathDate: null,
-        stats: { iq: 100, happiness: 85, confidence: 90, health: 80, skill: 85 },
+        stats: { iq: 100, happiness: 85, eq: 90, health: 80, skill: 85 },
         phase: LifePhase.Newborn,
         education: 'None', major: null, careerTrack: null, careerLevel: 0,
         status: CharacterStatus.Idle, statusEndYear: null,

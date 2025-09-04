@@ -9,9 +9,9 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         condition: (state, char) => char.careerLevel === 0 && !char.completedOneTimeEvents.includes('workinglife_first_day'),
         choices: [
-            { textKey: 'choice_workinglife_first_day_1', effect: { statChanges: { confidence: 2, skill: 1 }, logKey: 'log_workinglife_first_day_1' } },
-            { textKey: 'choice_workinglife_first_day_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_workinglife_first_day_2', triggers: [{ eventId: 'workinglife_boss_notices', chance: 0.6 }] } },
-            { textKey: 'choice_workinglife_first_day_3', effect: { statChanges: { confidence: -1, happiness: -1 }, logKey: 'log_workinglife_first_day_3' } },
+            { textKey: 'choice_workinglife_first_day_1', effect: { statChanges: { eq: 2, skill: 1 }, logKey: 'log_workinglife_first_day_1' } },
+            { textKey: 'choice_workinglife_first_day_2', effect: { statChanges: { eq: -2 }, logKey: 'log_workinglife_first_day_2', triggers: [{ eventId: 'workinglife_boss_notices', chance: 0.6 }] } },
+            { textKey: 'choice_workinglife_first_day_3', effect: { statChanges: { eq: -1, happiness: -1 }, logKey: 'log_workinglife_first_day_3' } },
         ]
     },
     {
@@ -20,8 +20,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_team_meeting_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_team_meeting_1', effect: { statChanges: { iq: 1, confidence: 1 }, logKey: 'log_workinglife_team_meeting_1' } },
-            { textKey: 'choice_workinglife_team_meeting_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_team_meeting_2', triggers: [{ eventId: 'workinglife_boss_reprimand', chance: 0.5 }] } },
+            { textKey: 'choice_workinglife_team_meeting_1', effect: { statChanges: { iq: 1, eq: 1 }, logKey: 'log_workinglife_team_meeting_1' } },
+            { textKey: 'choice_workinglife_team_meeting_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_team_meeting_2', triggers: [{ eventId: 'workinglife_boss_reprimand', chance: 0.5 }] } },
             { textKey: 'choice_workinglife_team_meeting_3', effect: { statChanges: { skill: 1 }, logKey: 'log_workinglife_team_meeting_3' } },
         ]
     },
@@ -32,7 +32,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_forgot_laptop_1', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_forgot_laptop_1' } },
-            { textKey: 'choice_workinglife_forgot_laptop_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_forgot_laptop_2', triggers: [{ eventId: 'workinglife_missed_deadline', chance: 0.7 }] } },
+            { textKey: 'choice_workinglife_forgot_laptop_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_forgot_laptop_2', triggers: [{ eventId: 'workinglife_missed_deadline', chance: 0.7 }] } },
             { textKey: 'choice_workinglife_forgot_laptop_3', effect: { statChanges: { skill: -1, iq: -1 }, logKey: 'log_workinglife_forgot_laptop_3' } },
         ]
     },
@@ -43,8 +43,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_urgent_deadline_1', effect: { statChanges: { skill: 2, health: -2 }, logKey: 'log_workinglife_urgent_deadline_1' } },
-            { textKey: 'choice_workinglife_urgent_deadline_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_urgent_deadline_2', triggers: [{ eventId: 'workinglife_client_complaint', chance: 0.6 }] } },
-            { textKey: 'choice_workinglife_urgent_deadline_3', effect: { statChanges: { skill: -2, confidence: -2 }, logKey: 'log_workinglife_urgent_deadline_3' } },
+            { textKey: 'choice_workinglife_urgent_deadline_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_urgent_deadline_2', triggers: [{ eventId: 'workinglife_client_complaint', chance: 0.6 }] } },
+            { textKey: 'choice_workinglife_urgent_deadline_3', effect: { statChanges: { skill: -2, eq: -2 }, logKey: 'log_workinglife_urgent_deadline_3' } },
         ]
     },
     {
@@ -53,8 +53,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_difficult_task_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_difficult_task_1', effect: { statChanges: { skill: 3, confidence: 2 }, logKey: 'log_workinglife_difficult_task_1' } },
-            { textKey: 'choice_workinglife_difficult_task_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_difficult_task_2', triggers: [{ eventId: 'workinglife_boss_disappointed', chance: 0.7 }] } },
+            { textKey: 'choice_workinglife_difficult_task_1', effect: { statChanges: { skill: 3, eq: 2 }, logKey: 'log_workinglife_difficult_task_1' } },
+            { textKey: 'choice_workinglife_difficult_task_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_difficult_task_2', triggers: [{ eventId: 'workinglife_boss_disappointed', chance: 0.7 }] } },
             { textKey: 'choice_workinglife_difficult_task_3', effect: { statChanges: { skill: 1, happiness: 1 }, logKey: 'log_workinglife_difficult_task_3' } },
         ]
     },
@@ -64,8 +64,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_late_after_lunch_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_late_after_lunch_1', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_late_after_lunch_1' } },
-            { textKey: 'choice_workinglife_late_after_lunch_2', effect: { statChanges: { confidence: 1 }, logKey: 'log_workinglife_late_after_lunch_2', triggers: [{ eventId: 'workinglife_colleagues_laugh', chance: 0.5 }] } },
+            { textKey: 'choice_workinglife_late_after_lunch_1', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_late_after_lunch_1' } },
+            { textKey: 'choice_workinglife_late_after_lunch_2', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_late_after_lunch_2', triggers: [{ eventId: 'workinglife_colleagues_laugh', chance: 0.5 }] } },
             { textKey: 'choice_workinglife_late_after_lunch_3', effect: { statChanges: { iq: -1 }, logKey: 'log_workinglife_late_after_lunch_3' } },
         ]
     },
@@ -75,9 +75,9 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_company_presentation_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_company_presentation_1', effect: { statChanges: { confidence: 3, skill: 2 }, logKey: 'log_workinglife_company_presentation_1' } },
-            { textKey: 'choice_workinglife_company_presentation_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_workinglife_company_presentation_2', triggers: [{ eventId: 'workinglife_lose_points_with_boss', chance: 0.8 }] } },
-            { textKey: 'choice_workinglife_company_presentation_3', effect: { statChanges: { confidence: -2, skill: -1 }, logKey: 'log_workinglife_company_presentation_3' } },
+            { textKey: 'choice_workinglife_company_presentation_1', effect: { statChanges: { eq: 3, skill: 2 }, logKey: 'log_workinglife_company_presentation_1' } },
+            { textKey: 'choice_workinglife_company_presentation_2', effect: { statChanges: { eq: -3 }, logKey: 'log_workinglife_company_presentation_2', triggers: [{ eventId: 'workinglife_lose_points_with_boss', chance: 0.8 }] } },
+            { textKey: 'choice_workinglife_company_presentation_3', effect: { statChanges: { eq: -2, skill: -1 }, logKey: 'log_workinglife_company_presentation_3' } },
         ]
     },
     {
@@ -88,7 +88,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_workinglife_team_building_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_workinglife_team_building_1' } },
             { textKey: 'choice_workinglife_team_building_2', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_team_building_2', triggers: [{ eventId: 'workinglife_feel_isolated', chance: 0.7 }] } },
-            { textKey: 'choice_workinglife_team_building_3', effect: { statChanges: { happiness: 1, confidence: -1 }, logKey: 'log_workinglife_team_building_3' } },
+            { textKey: 'choice_workinglife_team_building_3', effect: { statChanges: { happiness: 1, eq: -1 }, logKey: 'log_workinglife_team_building_3' } },
         ]
     },
     {
@@ -97,7 +97,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_delayed_salary_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_delayed_salary_1', effect: { statChanges: { confidence: 1 }, logKey: 'log_workinglife_delayed_salary_1' } },
+            { textKey: 'choice_workinglife_delayed_salary_1', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_delayed_salary_1' } },
             { textKey: 'choice_workinglife_delayed_salary_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_delayed_salary_2', triggers: [{ eventId: 'workinglife_financial_trouble', chance: 0.6 }] } },
             { textKey: 'choice_workinglife_delayed_salary_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_delayed_salary_3' } },
         ]
@@ -108,9 +108,9 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_difficult_client_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_difficult_client_1', effect: { statChanges: { skill: 2, confidence: 1 }, logKey: 'log_workinglife_difficult_client_1' } },
-            { textKey: 'choice_workinglife_difficult_client_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_difficult_client_2', triggers: [{ eventId: 'workinglife_client_unhappy', chance: 0.7 }] } },
-            { textKey: 'choice_workinglife_difficult_client_3', effect: { statChanges: { confidence: 1 }, logKey: 'log_workinglife_difficult_client_3' } },
+            { textKey: 'choice_workinglife_difficult_client_1', effect: { statChanges: { skill: 2, eq: 1 }, logKey: 'log_workinglife_difficult_client_1' } },
+            { textKey: 'choice_workinglife_difficult_client_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_difficult_client_2', triggers: [{ eventId: 'workinglife_client_unhappy', chance: 0.7 }] } },
+            { textKey: 'choice_workinglife_difficult_client_3', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_difficult_client_3' } },
         ]
     },
 
@@ -122,9 +122,9 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_workinglife_boss_notices_1', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_boss_notices_1' } },
+            { textKey: 'choice_workinglife_boss_notices_1', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_boss_notices_1' } },
             { textKey: 'choice_workinglife_boss_notices_2', effect: { statChanges: { iq: -1 }, logKey: 'log_workinglife_boss_notices_2' } },
-            { textKey: 'choice_workinglife_boss_notices_3', effect: { statChanges: { confidence: -2, happiness: -1 }, logKey: 'log_workinglife_boss_notices_3' } },
+            { textKey: 'choice_workinglife_boss_notices_3', effect: { statChanges: { eq: -2, happiness: -1 }, logKey: 'log_workinglife_boss_notices_3' } },
         ]
     },
     {
@@ -134,9 +134,9 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_workinglife_boss_reprimand_1', effect: { statChanges: { confidence: 1 }, logKey: 'log_workinglife_boss_reprimand_1' } },
-            { textKey: 'choice_workinglife_boss_reprimand_2', effect: { statChanges: { confidence: -1, happiness: -1 }, logKey: 'log_workinglife_boss_reprimand_2' } },
-            { textKey: 'choice_workinglife_boss_reprimand_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_workinglife_boss_reprimand_3' } },
+            { textKey: 'choice_workinglife_boss_reprimand_1', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_boss_reprimand_1' } },
+            { textKey: 'choice_workinglife_boss_reprimand_2', effect: { statChanges: { eq: -1, happiness: -1 }, logKey: 'log_workinglife_boss_reprimand_2' } },
+            { textKey: 'choice_workinglife_boss_reprimand_3', effect: { statChanges: { eq: -2 }, logKey: 'log_workinglife_boss_reprimand_3' } },
         ]
     },
     {
@@ -147,7 +147,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_workinglife_missed_deadline_1', effect: { statChanges: { iq: -2, happiness: -1 }, logKey: 'log_workinglife_missed_deadline_1' } },
-            { textKey: 'choice_workinglife_missed_deadline_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_missed_deadline_2' } },
+            { textKey: 'choice_workinglife_missed_deadline_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_missed_deadline_2' } },
             { textKey: 'choice_workinglife_missed_deadline_3', effect: { statChanges: { skill: 1 }, logKey: 'log_workinglife_missed_deadline_3' } },
         ]
     },
@@ -158,8 +158,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_workinglife_client_complaint_1', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_client_complaint_1' } },
-            { textKey: 'choice_workinglife_client_complaint_2', effect: { statChanges: { confidence: 1, iq: -1 }, logKey: 'log_workinglife_client_complaint_2' } },
+            { textKey: 'choice_workinglife_client_complaint_1', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_client_complaint_1' } },
+            { textKey: 'choice_workinglife_client_complaint_2', effect: { statChanges: { eq: 1, iq: -1 }, logKey: 'log_workinglife_client_complaint_2' } },
             { textKey: 'choice_workinglife_client_complaint_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_client_complaint_3' } },
         ]
     },
@@ -170,7 +170,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_workinglife_boss_disappointed_1', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_boss_disappointed_1' } },
+            { textKey: 'choice_workinglife_boss_disappointed_1', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_boss_disappointed_1' } },
             { textKey: 'choice_workinglife_boss_disappointed_2', effect: { statChanges: { skill: 2 }, logKey: 'log_workinglife_boss_disappointed_2' } },
             { textKey: 'choice_workinglife_boss_disappointed_3', effect: { statChanges: { skill: -1 }, logKey: 'log_workinglife_boss_disappointed_3' } },
         ]
@@ -183,7 +183,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_workinglife_colleagues_laugh_1', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_colleagues_laugh_1' } },
-            { textKey: 'choice_workinglife_colleagues_laugh_2', effect: { statChanges: { confidence: 1, happiness: -1 }, logKey: 'log_workinglife_colleagues_laugh_2' } },
+            { textKey: 'choice_workinglife_colleagues_laugh_2', effect: { statChanges: { eq: 1, happiness: -1 }, logKey: 'log_workinglife_colleagues_laugh_2' } },
             { textKey: 'choice_workinglife_colleagues_laugh_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_colleagues_laugh_3' } },
         ]
     },
@@ -195,7 +195,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_workinglife_lose_points_with_boss_1', effect: { statChanges: { skill: 1 }, logKey: 'log_workinglife_lose_points_with_boss_1' } },
-            { textKey: 'choice_workinglife_lose_points_with_boss_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_lose_points_with_boss_2' } },
+            { textKey: 'choice_workinglife_lose_points_with_boss_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_lose_points_with_boss_2' } },
             { textKey: 'choice_workinglife_lose_points_with_boss_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_lose_points_with_boss_3' } },
         ]
     },
@@ -208,7 +208,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_workinglife_feel_isolated_1', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_feel_isolated_1' } },
             { textKey: 'choice_workinglife_feel_isolated_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_workinglife_feel_isolated_2' } },
-            { textKey: 'choice_workinglife_feel_isolated_3', effect: { statChanges: { confidence: 1, happiness: 1 }, logKey: 'log_workinglife_feel_isolated_3' } },
+            { textKey: 'choice_workinglife_feel_isolated_3', effect: { statChanges: { eq: 1, happiness: 1 }, logKey: 'log_workinglife_feel_isolated_3' } },
         ]
     },
     {
@@ -230,7 +230,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_workinglife_client_unhappy_1', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_client_unhappy_1' } },
+            { textKey: 'choice_workinglife_client_unhappy_1', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_client_unhappy_1' } },
             { textKey: 'choice_workinglife_client_unhappy_2', effect: { statChanges: { skill: 1 }, logKey: 'log_workinglife_client_unhappy_2' } },
             { textKey: 'choice_workinglife_client_unhappy_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_client_unhappy_3' } },
         ]
@@ -255,7 +255,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_new_project_1', effect: { 
-                statChanges: { skill: 2, confidence: 1 }, 
+                statChanges: { skill: 2, eq: 1 }, 
                 logKey: 'log_workinglife_new_project_1',
                 action: (state, charId) => {
                     const char = state.familyMembers[charId];
@@ -270,7 +270,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
                 }
             } },
             { textKey: 'choice_workinglife_new_project_2', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_new_project_2' } },
-            { textKey: 'choice_workinglife_new_project_3', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_new_project_3' } },
+            { textKey: 'choice_workinglife_new_project_3', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_new_project_3' } },
         ]
     },
     {
@@ -280,8 +280,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_boss_praise_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_workinglife_boss_praise_1' } },
-            { textKey: 'choice_workinglife_boss_praise_2', effect: { statChanges: { happiness: 1, confidence: -1 }, logKey: 'log_workinglife_boss_praise_2' } },
-            { textKey: 'choice_workinglife_boss_praise_3', effect: { statChanges: { confidence: 2, happiness: 2 }, logKey: 'log_workinglife_boss_praise_3' } },
+            { textKey: 'choice_workinglife_boss_praise_2', effect: { statChanges: { happiness: 1, eq: -1 }, logKey: 'log_workinglife_boss_praise_2' } },
+            { textKey: 'choice_workinglife_boss_praise_3', effect: { statChanges: { eq: 2, happiness: 2 }, logKey: 'log_workinglife_boss_praise_3' } },
         ]
     },
     {
@@ -290,8 +290,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_boss_criticism_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_boss_criticism_1', effect: { statChanges: { confidence: -2, happiness: -1 }, logKey: 'log_workinglife_boss_criticism_1' } },
-            { textKey: 'choice_workinglife_boss_criticism_2', effect: { statChanges: { confidence: 1 }, logKey: 'log_workinglife_boss_criticism_2' } },
+            { textKey: 'choice_workinglife_boss_criticism_1', effect: { statChanges: { eq: -2, happiness: -1 }, logKey: 'log_workinglife_boss_criticism_1' } },
+            { textKey: 'choice_workinglife_boss_criticism_2', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_boss_criticism_2' } },
             { textKey: 'choice_workinglife_boss_criticism_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_boss_criticism_3' } },
         ]
     },
@@ -313,7 +313,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_new_colleague_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_workinglife_new_colleague_1' } },
-            { textKey: 'choice_workinglife_new_colleague_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_new_colleague_2' } },
+            { textKey: 'choice_workinglife_new_colleague_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_new_colleague_2' } },
             { textKey: 'choice_workinglife_new_colleague_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_new_colleague_3' } },
         ]
     },
@@ -324,7 +324,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_office_lunch_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_workinglife_office_lunch_1' } },
-            { textKey: 'choice_workinglife_office_lunch_2', effect: { statChanges: { confidence: 1 }, logKey: 'log_workinglife_office_lunch_2' } },
+            { textKey: 'choice_workinglife_office_lunch_2', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_office_lunch_2' } },
             { textKey: 'choice_workinglife_office_lunch_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_office_lunch_3' } },
         ]
     },
@@ -334,9 +334,9 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_client_meeting_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_client_meeting_1', effect: { statChanges: { skill: 1, confidence: 1 }, logKey: 'log_workinglife_client_meeting_1' } },
+            { textKey: 'choice_workinglife_client_meeting_1', effect: { statChanges: { skill: 1, eq: 1 }, logKey: 'log_workinglife_client_meeting_1' } },
             { textKey: 'choice_workinglife_client_meeting_2', effect: { statChanges: { iq: 1 }, logKey: 'log_workinglife_client_meeting_2' } },
-            { textKey: 'choice_workinglife_client_meeting_3', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_client_meeting_3' } },
+            { textKey: 'choice_workinglife_client_meeting_3', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_client_meeting_3' } },
         ]
     },
     {
@@ -345,7 +345,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_group_work_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_group_work_1', effect: { statChanges: { iq: 1, confidence: 1 }, logKey: 'log_workinglife_group_work_1' } },
+            { textKey: 'choice_workinglife_group_work_1', effect: { statChanges: { iq: 1, eq: 1 }, logKey: 'log_workinglife_group_work_1' } },
             { textKey: 'choice_workinglife_group_work_2', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_group_work_2' } },
             { textKey: 'choice_workinglife_group_work_3', effect: { statChanges: { skill: 1 }, logKey: 'log_workinglife_group_work_3' } },
         ]
@@ -357,7 +357,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_company_party_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_workinglife_company_party_1' } },
-            { textKey: 'choice_workinglife_company_party_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_company_party_2' } },
+            { textKey: 'choice_workinglife_company_party_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_company_party_2' } },
             { textKey: 'choice_workinglife_company_party_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_company_party_3' } },
         ]
     },
@@ -367,8 +367,8 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_workinglife_business_trip_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_workinglife_business_trip_1', effect: { statChanges: { skill: 2, confidence: 1 }, logKey: 'log_workinglife_business_trip_1' } },
-            { textKey: 'choice_workinglife_business_trip_2', effect: { statChanges: { confidence: -2, happiness: -1 }, logKey: 'log_workinglife_business_trip_2' } },
+            { textKey: 'choice_workinglife_business_trip_1', effect: { statChanges: { skill: 2, eq: 1 }, logKey: 'log_workinglife_business_trip_1' } },
+            { textKey: 'choice_workinglife_business_trip_2', effect: { statChanges: { eq: -2, happiness: -1 }, logKey: 'log_workinglife_business_trip_2' } },
             { textKey: 'choice_workinglife_business_trip_3', effect: { statChanges: { iq: 1, happiness: 1 }, logKey: 'log_workinglife_business_trip_3' } },
         ]
     },
@@ -390,7 +390,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_work_delayed_1', effect: { statChanges: { skill: 1 }, logKey: 'log_workinglife_work_delayed_1' } },
-            { textKey: 'choice_workinglife_work_delayed_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_work_delayed_2' } },
+            { textKey: 'choice_workinglife_work_delayed_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_work_delayed_2' } },
             { textKey: 'choice_workinglife_work_delayed_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_work_delayed_3' } },
         ]
     },
@@ -414,7 +414,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
             { textKey: 'choice_workinglife_bonus_cut_1', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_bonus_cut_1' } },
             { textKey: 'choice_workinglife_bonus_cut_2', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_bonus_cut_2' } },
             { textKey: 'choice_workinglife_bonus_cut_3', effect: { 
-                statChanges: { confidence: -1 }, 
+                statChanges: { eq: -1 }, 
                 logKey: 'log_workinglife_bonus_cut_3',
                 action: (state, charId) => {
                     const char = state.familyMembers[charId];
@@ -441,7 +441,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_policy_change_1', effect: { statChanges: { iq: 1 }, logKey: 'log_workinglife_policy_change_1' } },
-            { textKey: 'choice_workinglife_policy_change_2', effect: { statChanges: { confidence: 1 }, logKey: 'log_workinglife_policy_change_2' } },
+            { textKey: 'choice_workinglife_policy_change_2', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_policy_change_2' } },
             { textKey: 'choice_workinglife_policy_change_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_policy_change_3' } },
         ]
     },
@@ -475,7 +475,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_workinglife_performance_review_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_workinglife_performance_review_1' } },
             { textKey: 'choice_workinglife_performance_review_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_performance_review_2' } },
-            { textKey: 'choice_workinglife_performance_review_3', effect: { statChanges: { happiness: -2, confidence: -1 }, logKey: 'log_workinglife_performance_review_3' } },
+            { textKey: 'choice_workinglife_performance_review_3', effect: { statChanges: { happiness: -2, eq: -1 }, logKey: 'log_workinglife_performance_review_3' } },
         ]
     },
     {
@@ -486,7 +486,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_workinglife_share_office_snacks_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_workinglife_share_office_snacks_1' } },
             { textKey: 'choice_workinglife_share_office_snacks_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_share_office_snacks_2' } },
-            { textKey: 'choice_workinglife_share_office_snacks_3', effect: { statChanges: { confidence: -1 }, logKey: 'log_workinglife_share_office_snacks_3' } },
+            { textKey: 'choice_workinglife_share_office_snacks_3', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_share_office_snacks_3' } },
         ]
     },
 ];

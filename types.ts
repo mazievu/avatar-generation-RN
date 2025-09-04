@@ -42,7 +42,7 @@ export enum PetType {
 export interface Stats {
   iq: number; // 0-200
   happiness: number; // 0-100
-  confidence: number; // 0-100
+  eq: number; // 0-100
   health: number; // 0-100
   skill: number; // 0-100
 }
@@ -284,7 +284,7 @@ export interface CareerTrack {
     levels: { titleKey: string; salary: number; skillRequired: number }[];
     requiredMajor?: string;
     iqRequired: number;
-    confidenceRequired: number;
+    eqRequired: number;
 }
 
 export interface PetDefinition {

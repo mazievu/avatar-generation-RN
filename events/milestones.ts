@@ -31,7 +31,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
                         stats: {
                             iq: Math.max(20, Math.min(200, char1.stats.iq + (Math.floor(Math.random() * 41) - 20))),
                             happiness: Math.max(0, Math.min(100, char1.stats.happiness + (Math.floor(Math.random() * 31) - 15))),
-                            confidence: Math.max(0, Math.min(100, char1.stats.confidence + (Math.floor(Math.random() * 31) - 15))),
+                            eq: Math.max(0, Math.min(100, char1.stats.eq + (Math.floor(Math.random() * 31) - 15))),
                             health: Math.max(0, Math.min(100, char1.stats.health + (Math.floor(Math.random() * 21) - 10))),
                             skill: 0,
                         },

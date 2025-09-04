@@ -19,7 +19,7 @@ export const HappinessIcon: React.FC<IconProps> = ({ className }) => (
   </svg>
 );
 
-export const ConfidenceIcon: React.FC<IconProps> = ({ className }) => (
+export const eqIcon: React.FC<IconProps> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-5 w-5 mr-1 text-purple-400"} viewBox="0 0 20 20" fill="currentColor">
     <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
     <path fillRule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7zm-1 4a1 1 0 100 2h2a1 1 0 100-2H6z" clipRule="evenodd" />

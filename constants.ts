@@ -51,26 +51,26 @@ export const getCostOfLiving = (phase: LifePhase): number => {
 // ==============================
 export const SCHOOL_OPTIONS: Record<LifePhase.Elementary | LifePhase.MiddleSchool | LifePhase.HighSchool, SchoolOption[]> = {
     [LifePhase.Elementary]: [
-        { nameKey: 'school_public', cost: 0, effects: { iq: 5, confidence: 2 }, logKey: 'log_enrolled_public_elementary' },
-        { nameKey: 'school_private', cost: 20000, effects: { iq: 10, confidence: 5 }, logKey: 'log_enrolled_private_elementary' },
-        { nameKey: 'school_royal', cost: 100000, effects: { iq: 20, confidence: 10 }, logKey: 'log_enrolled_royal_elementary' },
+                { nameKey: 'school_public', cost: 0, effects: { iq: 5, eq: 2 }, logKey: 'log_enrolled_public_elementary' },,
+        { nameKey: 'school_private', cost: 20000, effects: { iq: 10, eq: 5 }, logKey: 'log_enrolled_private_elementary' },
+                { nameKey: 'school_royal', cost: 100000, effects: { iq: 20, eq: 10 }, logKey: 'log_enrolled_royal_elementary' },,
     ],
     [LifePhase.MiddleSchool]: [
-        { nameKey: 'school_public', cost: 0, effects: { iq: 8, confidence: 3 }, logKey: 'log_enrolled_public_middle' },
-        { nameKey: 'school_private', cost: 30000, effects: { iq: 15, confidence: 7 }, logKey: 'log_enrolled_private_middle' },
-        { nameKey: 'school_royal', cost: 150000, effects: { iq: 25, confidence: 15 }, logKey: 'log_enrolled_royal_middle' },
+        { nameKey: 'school_public', cost: 0, effects: { iq: 8, eq: 3 }, logKey: 'log_enrolled_public_middle' },
+        { nameKey: 'school_private', cost: 30000, effects: { iq: 15, eq: 7 }, logKey: 'log_enrolled_private_middle' },
+        { nameKey: 'school_royal', cost: 150000, effects: { iq: 25, eq: 15 }, logKey: 'log_enrolled_royal_middle' },
     ],
     [LifePhase.HighSchool]: [
-        { nameKey: 'school_public_high', cost: 0, effects: { iq: 10, confidence: 5 }, logKey: 'log_enrolled_public_high' },
-        { nameKey: 'school_private_high', cost: 50000, effects: { iq: 20, confidence: 10 }, logKey: 'log_enrolled_private_high' },
-        { nameKey: 'school_royal_high', cost: 250000, effects: { iq: 35, confidence: 20 }, logKey: 'log_enrolled_royal_high' },
+        { nameKey: 'school_public_high', cost: 0, effects: { iq: 10, eq: 5 }, logKey: 'log_enrolled_public_high' },
+        { nameKey: 'school_private_high', cost: 50000, effects: { iq: 20, eq: 10 }, logKey: 'log_enrolled_private_high' },
+        { nameKey: 'school_royal_high', cost: 250000, effects: { iq: 35, eq: 20 }, logKey: 'log_enrolled_royal_high' },
     ],
 };
 
 export const UNIVERSITY_MAJORS: UniversityMajor[] = [
-    { nameKey: 'major_business', descriptionKey: 'major_business_desc', cost: 100000, effects: { iq: 15, confidence: 10 } },
-    { nameKey: 'major_finance', descriptionKey: 'major_finance_desc', cost: 110000, effects: { iq: 20, confidence: 5 } },
-    { nameKey: 'major_marketing', descriptionKey: 'major_marketing_desc', cost: 90000, effects: { iq: 10, confidence: 15 } },
+    { nameKey: 'major_business', descriptionKey: 'major_business_desc', cost: 100000, effects: { iq: 15, eq: 10 } },
+    { nameKey: 'major_finance', descriptionKey: 'major_finance_desc', cost: 110000, effects: { iq: 20, eq: 5 } },
+    { nameKey: 'major_marketing', descriptionKey: 'major_marketing_desc', cost: 90000, effects: { iq: 10, eq: 15 } },
     { nameKey: 'major_technology', descriptionKey: 'major_technology_desc', cost: 120000, effects: { iq: 25 } },
     { nameKey: 'major_engineering', descriptionKey: 'major_engineering_desc', cost: 130000, effects: { iq: 25 } },
     { nameKey: 'major_arts', descriptionKey: 'major_arts_desc', cost: 80000, effects: { iq: 5, happiness: 10 } },
@@ -87,7 +87,7 @@ export const UNIVERSITY_MAJORS: UniversityMajor[] = [
 export const CAREER_LADDER: Record<string, CareerTrack> = {
     Unskilled: {
         nameKey: 'career_track_unskilled_name', descriptionKey: 'career_track_unskilled_desc',
-        iqRequired: 0, confidenceRequired: 0,
+        iqRequired: 0, eqRequired: 0,
         levels: [
             { titleKey: 'career_unskilled_1', salary: 6000, skillRequired: 0 }, // 500/tháng
             { titleKey: 'career_unskilled_2', salary: 7200, skillRequired: 20 }, // 600/tháng
@@ -97,7 +97,7 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
     },
     Trade: {
         nameKey: 'career_track_trade_name', descriptionKey: 'career_track_trade_desc',
-        iqRequired: 80, confidenceRequired: 40,
+        iqRequired: 80, eqRequired: 40,
         levels: [
             { titleKey: 'career_trade_1', salary: 8400, skillRequired: 0 }, // 700/tháng
             { titleKey: 'career_trade_2', salary: 9600, skillRequired: 30 }, // 800/tháng
@@ -107,7 +107,7 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
     },
     Arts: {
         nameKey: 'career_track_arts_name', descriptionKey: 'career_track_arts_desc',
-        requiredMajor: 'major_arts', iqRequired: 100, confidenceRequired: 80,
+        requiredMajor: 'major_arts', iqRequired: 100, eqRequired: 80,
         levels: [
             { titleKey: 'career_arts_1', salary: 10200, skillRequired: 0 }, // 850/tháng
             { titleKey: 'career_arts_2', salary: 11400, skillRequired: 40 }, // 950/tháng
@@ -117,7 +117,7 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
     },
     Business: {
         nameKey: 'career_track_business_name', descriptionKey: 'career_track_business_desc',
-        requiredMajor: 'major_business', iqRequired: 110, confidenceRequired: 70,
+        requiredMajor: 'major_business', iqRequired: 110, eqRequired: 70,
         levels: [
             { titleKey: 'career_business_1', salary: 11400, skillRequired: 0 }, // 950/tháng
             { titleKey: 'career_business_2', salary: 12600, skillRequired: 30 }, // 1,050/tháng
@@ -127,7 +127,7 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
     },
     Technology: {
         nameKey: 'career_track_technology_name', descriptionKey: 'career_track_technology_desc',
-        requiredMajor: 'major_technology', iqRequired: 120, confidenceRequired: 50,
+        requiredMajor: 'major_technology', iqRequired: 120, eqRequired: 50,
         levels: [
             { titleKey: 'career_technology_1', salary: 12000, skillRequired: 0 }, // 1,000/tháng
             { titleKey: 'career_technology_2', salary: 13800, skillRequired: 40 }, // 1,150/tháng
@@ -137,7 +137,7 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
     },
     Medicine: {
         nameKey: 'career_track_medicine_name', descriptionKey: 'career_track_medicine_desc',
-        requiredMajor: 'major_medicine', iqRequired: 130, confidenceRequired: 80,
+        requiredMajor: 'major_medicine', iqRequired: 130, eqRequired: 80,
         levels: [
             { titleKey: 'career_medicine_1', salary: 12000, skillRequired: 0 }, // 1,000/tháng
             { titleKey: 'career_medicine_2', salary: 13800, skillRequired: 40 }, // 1,150/tháng
@@ -150,7 +150,7 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
 // ==============================
 // TRAINING & EARLY CAREER
 // ==============================
-export const VOCATIONAL_TRAINING = { duration: 3, cost: 40000, effects: { skill: 40, confidence: 10 } };
+export const VOCATIONAL_TRAINING = { duration: 3, cost: 40000, effects: { skill: 40, eq: 10 } };
 export const INTERNSHIP = { duration: 1, stipend: 5400 }; // 450/tháng
 export const TRAINEE_SALARY = 5400; // 450/tháng
 
@@ -164,9 +164,9 @@ export const EVENTS = ALL_EVENTS;
 // ==============================
 export const PET_DATA: Record<PetType, PetDefinition> = {
     [PetType.Dog]: { nameKey: 'pet_dog', monthlyCost: 50, effects: { happiness: 3, health: 1 } },
-    [PetType.Cat]: { nameKey: 'pet_cat', monthlyCost: 40, effects: { happiness: 2, confidence: 1 } },
+    [PetType.Cat]: { nameKey: 'pet_cat', monthlyCost: 40, effects: { happiness: 2, eq: 1 } },
     [PetType.Parrot]: { nameKey: 'pet_parrot', monthlyCost: 30, effects: { happiness: 1, iq: 1 } },
-    [PetType.Horse]: { nameKey: 'pet_horse', monthlyCost: 200, effects: { happiness: 5, health: 2, confidence: 2 } },
+    [PetType.Horse]: { nameKey: 'pet_horse', monthlyCost: 200, effects: { happiness: 5, health: 2, eq: 2 } },
     [PetType.Fish]: { nameKey: 'pet_fish', monthlyCost: 20, effects: { happiness: 1 } },
 };
 
@@ -243,8 +243,8 @@ export const ASSET_DEFINITIONS: Record<string, AssetDefinition> = {
     'housing_3': { id: 'housing_3', type: AssetType.Housing, tier: 3, nameKey: 'asset_housing_3_name', descriptionKey: 'asset_housing_3_desc', cost: 1000000, effects: { happiness: 0.03 } },
     // Vehicle
     'vehicle_1': { id: 'vehicle_1', type: AssetType.Vehicle, tier: 1, nameKey: 'asset_vehicle_1_name', descriptionKey: 'asset_vehicle_1_desc', cost: 20000, effects: { happiness: 0.01 } },
-    'vehicle_2': { id: 'vehicle_2', type: AssetType.Vehicle, tier: 2, nameKey: 'asset_vehicle_2_name', descriptionKey: 'asset_vehicle_2_desc', cost: 80000, effects: { confidence: 0.01 } },
-    'vehicle_3': { id: 'vehicle_3', type: AssetType.Vehicle, tier: 3, nameKey: 'asset_vehicle_3_name', descriptionKey: 'asset_vehicle_3_desc', cost: 250000, effects: { confidence: 0.02 } },
+    'vehicle_2': { id: 'vehicle_2', type: AssetType.Vehicle, tier: 2, nameKey: 'asset_vehicle_2_name', descriptionKey: 'asset_vehicle_2_desc', cost: 80000, effects: { eq: 0.01 } },
+    'vehicle_3': { id: 'vehicle_3', type: AssetType.Vehicle, tier: 3, nameKey: 'asset_vehicle_3_name', descriptionKey: 'asset_vehicle_3_desc', cost: 250000, effects: { eq: 0.02 } },
     // Electronics
     'electronics_1': { id: 'electronics_1', type: AssetType.Electronics, tier: 1, nameKey: 'asset_electronics_1_name', descriptionKey: 'asset_electronics_1_desc', cost: 1000, effects: { iq: 0.01 } },
     'electronics_2': { id: 'electronics_2', type: AssetType.Electronics, tier: 2, nameKey: 'asset_electronics_2_name', descriptionKey: 'asset_electronics_2_desc', cost: 5000, effects: { happiness: 0.01 } },
@@ -254,9 +254,9 @@ export const ASSET_DEFINITIONS: Record<string, AssetDefinition> = {
     'art_2': { id: 'art_2', type: AssetType.Art, tier: 2, nameKey: 'asset_art_2_name', descriptionKey: 'asset_art_2_desc', cost: 50000, effects: { iq: 0.02 } },
     'art_3': { id: 'art_3', type: AssetType.Art, tier: 3, nameKey: 'asset_art_3_name', descriptionKey: 'asset_art_3_desc', cost: 200000, effects: { iq: 0.03 } },
     // Jewelry
-    'jewelry_1': { id: 'jewelry_1', type: AssetType.Jewelry, tier: 1, nameKey: 'asset_jewelry_1_name', descriptionKey: 'asset_jewelry_1_desc', cost: 2000, effects: { confidence: 0.01 } },
-    'jewelry_2': { id: 'jewelry_2', type: AssetType.Jewelry, tier: 2, nameKey: 'asset_jewelry_2_name', descriptionKey: 'asset_jewelry_2_desc', cost: 25000, effects: { confidence: 0.02 } },
-    'jewelry_3': { id: 'jewelry_3', type: AssetType.Jewelry, tier: 3, nameKey: 'asset_jewelry_3_name', descriptionKey: 'asset_jewelry_3_desc', cost: 100000, effects: { confidence: 0.03 } },
+    'jewelry_1': { id: 'jewelry_1', type: AssetType.Jewelry, tier: 1, nameKey: 'asset_jewelry_1_name', descriptionKey: 'asset_jewelry_1_desc', cost: 2000, effects: { eq: 0.01 } },
+    'jewelry_2': { id: 'jewelry_2', type: AssetType.Jewelry, tier: 2, nameKey: 'asset_jewelry_2_name', descriptionKey: 'asset_jewelry_2_desc', cost: 25000, effects: { eq: 0.02 } },
+    'jewelry_3': { id: 'jewelry_3', type: AssetType.Jewelry, tier: 3, nameKey: 'asset_jewelry_3_name', descriptionKey: 'asset_jewelry_3_desc', cost: 100000, effects: { eq: 0.03 } },
     // Furniture
     'furniture_1': { id: 'furniture_1', type: AssetType.Furniture, tier: 1, nameKey: 'asset_furniture_1_name', descriptionKey: 'asset_furniture_1_desc', cost: 10000, effects: { happiness: 0.01 } },
     'furniture_2': { id: 'furniture_2', type: AssetType.Furniture, tier: 2, nameKey: 'asset_furniture_2_name', descriptionKey: 'asset_furniture_2_desc', cost: 40000, effects: { happiness: 0.02 } },

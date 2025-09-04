@@ -12,7 +12,7 @@ import { Language, t } from './localization';
 
 type GameView = 'menu' | 'playing' | 'gameover' | 'welcome_back';
 const SAVE_KEY = 'generations_savegame';
-
+ 
 const ONE_TIME_EVENT_IDS = [
     // Newborn Milestones
     'newborn_first_night_crying',
@@ -346,27 +346,27 @@ const App: React.FC = () => {
                     
                     if (businessSalaries[char.id]) {
                         personalIncome = businessSalaries[char.id];
-                        const iqRatio = char.stats.iq / 200;
-                        const confRatio = char.stats.confidence / 100;
-                        let skillGain = Math.min(1, iqRatio * confRatio);
+                        const iqRatio = char.stats.iq / 200; // Assuming max IQ is 200
+                        const eqRatio = char.stats.eq / 100; // Assuming max EQ is 100
+                        let skillGain = Math.min(1, iqRatio * eqRatio);
 
                         let assignedBusinessSlot: { role: string; requiredMajor: string; } | null = null;
                         for (const business of Object.values(prevState.familyBusinesses)) {
                             const foundSlot = business.slots.find(s => s.assignedCharacterId === char.id);
-                            if(foundSlot) {
+                            if (foundSlot) {
                                 assignedBusinessSlot = foundSlot;
                                 break;
                             }
                         }
 
-                        if(assignedBusinessSlot) {
+                        if (assignedBusinessSlot) {
                             const requiredMajor = assignedBusinessSlot.requiredMajor;
                             if (requiredMajor && requiredMajor !== 'Unskilled' && char.major !== requiredMajor) {
                                 skillGain *= 0.5; // 50% slower skill gain
                             }
                         }
 
-                        const newSkill = Math.min(100, char.stats.skill + skillGain);
+                        const newSkill = Math.min(100, char.stats.skill + skillGain); // Cap skill at 100
                         charUpdate.status = CharacterStatus.Working;
                         statsUpdate = { ...(statsUpdate || char.stats), skill: newSkill };
                         charUpdate.monthlyNetIncome = personalIncome - personalExpenses;
@@ -374,20 +374,20 @@ const App: React.FC = () => {
                     } else if (char.status === CharacterStatus.Working && char.careerTrack) {
                         const salary = CAREER_LADDER[char.careerTrack].levels[char.careerLevel].salary;
                         personalIncome += salary / 12;
-                        const iqRatio = char.stats.iq / 200;
-                        const confRatio = char.stats.confidence / 100;
+                        const iqRatio = char.stats.iq / 200; // Assuming max IQ is 200
+                        const eqRatio = char.stats.eq / 100; // Assuming max EQ is 100
 
                         const career = CAREER_LADDER[char.careerTrack];
-                        const isMismatched = career.requiredMajor && char.major !== career.requiredMajor;
+                        const isMismatched = career.requiredMajor && char.major !== career.requiredMajor; // Mismatched major penalty
 
-                        let skillGain = Math.min(1, iqRatio * confRatio);
+                        let skillGain = Math.min(1, iqRatio * eqRatio);
                         if (isMismatched) {
                             skillGain *= 0.5; // 50% slower skill gain
                         }
                         if (char.progressionPenalty) {
                              skillGain *= (1 - char.progressionPenalty);
                         }
-                        
+
                         const newSkill = Math.min(100, char.stats.skill + skillGain);
                         statsUpdate = { ...(statsUpdate || char.stats), skill: newSkill };
                         
@@ -418,14 +418,14 @@ const App: React.FC = () => {
                         const career = CAREER_LADDER[char.traineeForCareer];
                         if (career) {
                             const iqNeeded = career.iqRequired > char.stats.iq;
-                            const confNeeded = career.confidenceRequired > char.stats.confidence;
+                            const eqNeeded = career.eqRequired > char.stats.eq;
                             if(iqNeeded) statsUpdate.iq = Math.min(career.iqRequired, (statsUpdate.iq || char.stats.iq) + 0.5);
-                            if(confNeeded) statsUpdate.confidence = Math.min(career.confidenceRequired, (statsUpdate.confidence || char.stats.confidence) + 0.5);
+                            if(eqNeeded) statsUpdate.eq = Math.min(career.eqRequired, (statsUpdate.eq || char.stats.eq) + 0.5);
                             
                             const newIQ = statsUpdate.iq || char.stats.iq;
-                            const newConf = statsUpdate.confidence || char.stats.confidence;
+                            const newEQ = statsUpdate.eq || char.stats.eq;
 
-                            if(newIQ >= career.iqRequired && newConf >= career.confidenceRequired) {
+                            if(newIQ >= career.iqRequired && newEQ >= career.eqRequired) {
                                 charUpdate.status = CharacterStatus.Working;
                                 charUpdate.careerTrack = char.traineeForCareer;
                                 charUpdate.careerLevel = 0;
@@ -446,18 +446,18 @@ const App: React.FC = () => {
                         charUpdate.monthlyNetIncome = personalIncome - personalExpenses;
                     } else if (char.status === CharacterStatus.VocationalTraining) {
                         const monthlySkillGain = VOCATIONAL_TRAINING.effects.skill / (VOCATIONAL_TRAINING.duration * 12);
-                        const monthlyConfidenceGain = VOCATIONAL_TRAINING.effects.confidence / (VOCATIONAL_TRAINING.duration * 12);
-                        statsUpdate = { 
-                            ...(statsUpdate || char.stats), 
+                        const monthlyEqGain = VOCATIONAL_TRAINING.effects.eq / (VOCATIONAL_TRAINING.duration * 12);
+                        statsUpdate = {
+                            ...(statsUpdate || char.stats),
                             skill: Math.min(100, char.stats.skill + monthlySkillGain),
-                            confidence: Math.min(100, char.stats.confidence + monthlyConfidenceGain)
+                            eq: Math.min(100, char.stats.eq + monthlyEqGain)
                         };
                         charUpdate.monthlyNetIncome = -personalExpenses;
                     } else if (char.status === CharacterStatus.Unemployed) {
-                        statsUpdate = { 
+                        statsUpdate = {
                             ...(statsUpdate || char.stats), 
                             happiness: Math.max(0, char.stats.happiness - 1),
-                            confidence: Math.max(0, char.stats.confidence - 1)
+                            eq: Math.max(0, char.stats.eq - 1)
                         };
                         charUpdate.monthlyNetIncome = -personalExpenses;
                     } else {
@@ -1105,11 +1105,11 @@ const App: React.FC = () => {
             const hasDegree = !!character.major;
             
             const iqReq = trackDetails.iqRequired || 0;
-            const confReq = trackDetails.confidenceRequired || 0;
-            const isStatQualified = character.stats.iq >= iqReq && character.stats.confidence >= confReq;
+            const eqReq = trackDetails.eqRequired || 0;
+            const isStatQualified = character.stats.iq >= iqReq && character.stats.eq >= eqReq;
 
             let updatedCharacter: Partial<Character> = {};
-            let logEntry: GameLogEntry | null = null;
+            let logEntry: GameLogEntry | null = null; // FIX: Changed from GameLogEntry to GameLogEntry | null
 
             // THIS IS THE ONLY CASE FOR THE TRAINEE/PENALIZED MODAL
             if (isMajorMatch && !isStatQualified) {
@@ -1132,11 +1132,11 @@ const App: React.FC = () => {
                 logEntry = { year: prevState.currentDate.year, messageKey: 'log_accepted_mismatched_job', replacements: { name: displayName, title: t(trackDetails.levels[0].titleKey, language) }, characterId, eventTitleKey: 'event_career_choice_title' };
             } else { // Underqualified for other reasons (mismatched major + low stats, or no degree + low stats)
                 const iqDeficit = Math.max(0, iqReq - character.stats.iq);
-                const confDeficit = Math.max(0, confReq - character.stats.confidence);
-                const iqPenalty = iqReq > 0 ? iqDeficit / iqReq : 0;
-                const confPenalty = confReq > 0 ? confDeficit / confReq : 0;
-                const numDeficits = (iqDeficit > 0 ? 1 : 0) + (confDeficit > 0 ? 1 : 0);
-                const lowStatPenalty = numDeficits > 0 ? (iqPenalty + confPenalty) / numDeficits : 0;
+                const eqDeficit = Math.max(0, eqReq - character.stats.eq);
+                const iqPenalty = iqReq > 0 ? iqDeficit / iqReq : 0; // Use iqReq
+                const eqPenalty = eqReq > 0 ? eqDeficit / eqReq : 0; // Use eqReq
+                const numDeficits = (iqDeficit > 0 ? 1 : 0) + (eqDeficit > 0 ? 1 : 0);
+                const lowStatPenalty = numDeficits > 0 ? (iqPenalty + eqPenalty) / numDeficits : 0;
                 
                 const mismatchPenalty = (trackDetails.requiredMajor && !isMajorMatch) ? 0.30 : 0;
                 const combinedPenalty = Math.min(0.9, mismatchPenalty + lowStatPenalty);
@@ -1173,11 +1173,11 @@ const App: React.FC = () => {
             let logEntry: GameLogEntry;
 
             if (isTrainee) {
-                updatedCharacter = {
+                updatedCharacter = { // FIX: Changed from const to let
                     status: CharacterStatus.Trainee,
                     traineeForCareer: careerTrackKey,
                     careerTrack: null,
-                    careerLevel: 0,
+                    careerLevel: 0, // FIX: Added careerLevel
                     progressionPenalty: 0,
                     stats: { ...character.stats, skill: 0 },
                 };
@@ -1190,11 +1190,11 @@ const App: React.FC = () => {
                 }
             } else {
                 const iqDeficit = Math.max(0, track.iqRequired - character.stats.iq);
-                const confDeficit = Math.max(0, track.confidenceRequired - character.stats.confidence);
+                const eqDeficit = Math.max(0, track.eqRequired - character.stats.eq);
                 const iqPenalty = track.iqRequired > 0 ? iqDeficit / track.iqRequired : 0;
-                const confPenalty = track.confidenceRequired > 0 ? confDeficit / track.confidenceRequired : 0;
-                const numDeficits = (iqDeficit > 0 ? 1 : 0) + (confDeficit > 0 ? 1 : 0);
-                const totalPenalty = numDeficits > 0 ? (iqPenalty + confPenalty) / numDeficits : 0;
+                const eqPenalty = track.eqRequired > 0 ? eqDeficit / track.eqRequired : 0;
+                const numDeficits = (iqDeficit > 0 ? 1 : 0) + (eqDeficit > 0 ? 1 : 0);
+                const totalPenalty = numDeficits > 0 ? (iqPenalty + eqPenalty) / numDeficits : 0; // FIX: Changed from eqDeficit to eqPenalty
                 
                 updatedCharacter = {
                     status: CharacterStatus.Working,
@@ -1260,14 +1260,14 @@ const App: React.FC = () => {
             const updatedCharacter = {
                 ...character,
                 careerLevel: newLevel,
-                stats: { ...character.stats, happiness: Math.min(100, character.stats.happiness + 10), confidence: Math.min(100, character.stats.confidence + 5) }
+                stats: { ...character.stats, happiness: Math.min(100, character.stats.happiness + 10), eq: Math.min(100, character.stats.eq + 5) }
             };
             const displayName = getCharacterDisplayName(character, language);
             const logEntry: GameLogEntry = {
                 year: prevState.currentDate.year,
                 messageKey: 'log_promoted',
                 replacements: { name: displayName, title: t(newTitleKey, language) },
-                statChanges: { happiness: 10, confidence: 5 },
+                statChanges: { happiness: 10, eq: 5 },
                 characterId: characterId,
                 eventTitleKey: 'event_promotion_title',
             };

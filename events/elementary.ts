@@ -9,8 +9,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         condition: (state, char) => char.age === 6,
         choices: [
-            { textKey: 'choice_elementary_first_day_1', effect: { statChanges: { iq: 2, confidence: 4, happiness: -3 }, logKey: 'log_elementary_first_day_1' } },
-            { textKey: 'choice_elementary_first_day_2', effect: { statChanges: { happiness: 3, confidence: -4 }, logKey: 'log_elementary_first_day_2', triggers: [{ eventId: 'elementary_teacher_reprimand_opening', chance: 0.4 }] } },
+            { textKey: 'choice_elementary_first_day_1', effect: { statChanges: { iq: 2, eq: 4, happiness: -3 }, logKey: 'log_elementary_first_day_1' } },
+            { textKey: 'choice_elementary_first_day_2', effect: { statChanges: { happiness: 3, eq: -4 }, logKey: 'log_elementary_first_day_2', triggers: [{ eventId: 'elementary_teacher_reprimand_opening', chance: 0.4 }] } },
             { textKey: 'choice_elementary_first_day_3', effect: { statChanges: { iq: 4, happiness: 2 }, logKey: 'log_elementary_first_day_3' } },
         ]
     },
@@ -21,7 +21,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_forgot_notebook_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_forgot_notebook_1' } },
-            { textKey: 'choice_elementary_forgot_notebook_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_forgot_notebook_2' } },
+            { textKey: 'choice_elementary_forgot_notebook_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_forgot_notebook_2' } },
             { textKey: 'choice_elementary_forgot_notebook_3', effect: { statChanges: { iq: -2 }, logKey: 'log_elementary_forgot_notebook_3', triggers: [{ eventId: 'elementary_teacher_punishment_notebook', chance: 0.5 }] } },
         ]
     },
@@ -32,8 +32,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_math_test_1', effect: { statChanges: { iq: 3 }, logKey: 'log_elementary_math_test_1' } },
-            { textKey: 'choice_elementary_math_test_2', effect: { statChanges: { iq: -3, confidence: -2 }, logKey: 'log_elementary_math_test_2', triggers: [{ eventId: 'elementary_invigilator_warning', chance: 0.6 }] } },
-            { textKey: 'choice_elementary_math_test_3', effect: { statChanges: { happiness: 2, confidence: -2 }, logKey: 'log_elementary_math_test_3' } },
+            { textKey: 'choice_elementary_math_test_2', effect: { statChanges: { iq: -3, eq: -2 }, logKey: 'log_elementary_math_test_2', triggers: [{ eventId: 'elementary_invigilator_warning', chance: 0.6 }] } },
+            { textKey: 'choice_elementary_math_test_3', effect: { statChanges: { happiness: 2, eq: -2 }, logKey: 'log_elementary_math_test_3' } },
         ]
     },
     {
@@ -42,8 +42,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_fire_alarm_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_fire_alarm_1', effect: { statChanges: { health: 2, confidence: 2 }, logKey: 'log_elementary_fire_alarm_1' } },
-            { textKey: 'choice_elementary_fire_alarm_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_elementary_fire_alarm_2', triggers: [{ eventId: 'elementary_lost_from_class', chance: 0.5 }] } },
+            { textKey: 'choice_elementary_fire_alarm_1', effect: { statChanges: { health: 2, eq: 2 }, logKey: 'log_elementary_fire_alarm_1' } },
+            { textKey: 'choice_elementary_fire_alarm_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_fire_alarm_2', triggers: [{ eventId: 'elementary_lost_from_class', chance: 0.5 }] } },
             { textKey: 'choice_elementary_fire_alarm_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_fire_alarm_3' } },
         ]
     },
@@ -53,9 +53,9 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_oral_exam_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_oral_exam_1', effect: { statChanges: { iq: 3, confidence: 3 }, logKey: 'log_elementary_oral_exam_1' } },
-            { textKey: 'choice_elementary_oral_exam_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_elementary_oral_exam_2', triggers: [{ eventId: 'elementary_punishment_writing', chance: 0.4 }] } },
-            { textKey: 'choice_elementary_oral_exam_3', effect: { statChanges: { iq: -2, confidence: -2 }, logKey: 'log_elementary_oral_exam_3' } },
+            { textKey: 'choice_elementary_oral_exam_1', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_elementary_oral_exam_1' } },
+            { textKey: 'choice_elementary_oral_exam_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_oral_exam_2', triggers: [{ eventId: 'elementary_punishment_writing', chance: 0.4 }] } },
+            { textKey: 'choice_elementary_oral_exam_3', effect: { statChanges: { iq: -2, eq: -2 }, logKey: 'log_elementary_oral_exam_3' } },
         ]
     },
     {
@@ -76,7 +76,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_recess_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_elementary_recess_1' } },
-            { textKey: 'choice_elementary_recess_2', effect: { statChanges: { happiness: -3, confidence: -2 }, logKey: 'log_elementary_recess_2', triggers: [{ eventId: 'elementary_called_to_office', chance: 0.6 }] } },
+            { textKey: 'choice_elementary_recess_2', effect: { statChanges: { happiness: -3, eq: -2 }, logKey: 'log_elementary_recess_2', triggers: [{ eventId: 'elementary_called_to_office', chance: 0.6 }] } },
             { textKey: 'choice_elementary_recess_3', effect: { statChanges: { iq: 4, happiness: 4 }, logKey: 'log_elementary_recess_3' } },
         ]
     },
@@ -87,7 +87,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_lunchtime_1', effect: { statChanges: { health: 2 }, logKey: 'log_elementary_lunchtime_1' } },
-            { textKey: 'choice_elementary_lunchtime_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_lunchtime_2', triggers: [{ eventId: 'elementary_clean_up_mess', chance: 0.7 }] } },
+            { textKey: 'choice_elementary_lunchtime_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_lunchtime_2', triggers: [{ eventId: 'elementary_clean_up_mess', chance: 0.7 }] } },
             { textKey: 'choice_elementary_lunchtime_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_lunchtime_3' } },
         ]
     },
@@ -97,8 +97,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_performance_prep_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_performance_prep_1', effect: { statChanges: { iq: 2, happiness: 2, confidence: 2 }, logKey: 'log_elementary_performance_prep_1' } },
-            { textKey: 'choice_elementary_performance_prep_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_elementary_performance_prep_2', triggers: [{ eventId: 'elementary_role_replaced', chance: 0.5 }] } },
+            { textKey: 'choice_elementary_performance_prep_1', effect: { statChanges: { iq: 2, happiness: 2, eq: 2 }, logKey: 'log_elementary_performance_prep_1' } },
+            { textKey: 'choice_elementary_performance_prep_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_performance_prep_2', triggers: [{ eventId: 'elementary_role_replaced', chance: 0.5 }] } },
             { textKey: 'choice_elementary_performance_prep_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_elementary_performance_prep_3' } },
         ]
     },
@@ -122,9 +122,9 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_teacher_reprimand_opening_1', effect: { statChanges: { confidence: -4 }, logKey: 'log_elementary_teacher_reprimand_opening_1' } },
-            { textKey: 'choice_elementary_teacher_reprimand_opening_2', effect: { statChanges: { confidence: -2, iq: 4 }, logKey: 'log_elementary_teacher_reprimand_opening_2' } },
-            { textKey: 'choice_elementary_teacher_reprimand_opening_3', effect: { statChanges: { confidence: -3 }, logKey: 'log_elementary_teacher_reprimand_opening_3' } },
+            { textKey: 'choice_elementary_teacher_reprimand_opening_1', effect: { statChanges: { eq: -4 }, logKey: 'log_elementary_teacher_reprimand_opening_1' } },
+            { textKey: 'choice_elementary_teacher_reprimand_opening_2', effect: { statChanges: { eq: -2, iq: 4 }, logKey: 'log_elementary_teacher_reprimand_opening_2' } },
+            { textKey: 'choice_elementary_teacher_reprimand_opening_3', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_teacher_reprimand_opening_3' } },
         ]
     },
     {
@@ -146,9 +146,9 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_invigilator_warning_1', effect: { statChanges: { confidence: -3 }, logKey: 'log_elementary_invigilator_warning_1' } },
-            { textKey: 'choice_elementary_invigilator_warning_2', effect: { statChanges: { confidence: -4 }, logKey: 'log_elementary_invigilator_warning_2' } },
-            { textKey: 'choice_elementary_invigilator_warning_3', effect: { statChanges: { confidence: -3, happiness: -3 }, logKey: 'log_elementary_invigilator_warning_3' } },
+            { textKey: 'choice_elementary_invigilator_warning_1', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_invigilator_warning_1' } },
+            { textKey: 'choice_elementary_invigilator_warning_2', effect: { statChanges: { eq: -4 }, logKey: 'log_elementary_invigilator_warning_2' } },
+            { textKey: 'choice_elementary_invigilator_warning_3', effect: { statChanges: { eq: -3, happiness: -3 }, logKey: 'log_elementary_invigilator_warning_3' } },
         ]
     },
     {
@@ -158,7 +158,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_lost_from_class_1', effect: { statChanges: { confidence: 2 }, logKey: 'log_elementary_lost_from_class_1' } },
+            { textKey: 'choice_elementary_lost_from_class_1', effect: { statChanges: { eq: 2 }, logKey: 'log_elementary_lost_from_class_1' } },
             { textKey: 'choice_elementary_lost_from_class_2', effect: { statChanges: { happiness: 4 }, logKey: 'log_elementary_lost_from_class_2' } },
             { textKey: 'choice_elementary_lost_from_class_3', effect: { statChanges: { happiness: -3 }, logKey: 'log_elementary_lost_from_class_3' } },
         ]
@@ -172,7 +172,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_elementary_punishment_writing_1', effect: { statChanges: { iq: 2, happiness: -4 }, logKey: 'log_elementary_punishment_writing_1' } },
             { textKey: 'choice_elementary_punishment_writing_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_elementary_punishment_writing_2' } },
-            { textKey: 'choice_elementary_punishment_writing_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_punishment_writing_3' } },
+            { textKey: 'choice_elementary_punishment_writing_3', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_punishment_writing_3' } },
         ]
     },
     {
@@ -182,8 +182,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_teased_by_friends_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_teased_by_friends_1' } },
-            { textKey: 'choice_elementary_teased_by_friends_2', effect: { statChanges: { confidence: 2, happiness: -4 }, logKey: 'log_elementary_teased_by_friends_2' } },
+            { textKey: 'choice_elementary_teased_by_friends_1', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_teased_by_friends_1' } },
+            { textKey: 'choice_elementary_teased_by_friends_2', effect: { statChanges: { eq: 2, happiness: -4 }, logKey: 'log_elementary_teased_by_friends_2' } },
             { textKey: 'choice_elementary_teased_by_friends_3', effect: { statChanges: { health: 2 }, logKey: 'log_elementary_teased_by_friends_3' } },
         ]
     },
@@ -194,8 +194,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_called_to_office_1', effect: { statChanges: { confidence: -3 }, logKey: 'log_elementary_called_to_office_1' } },
-            { textKey: 'choice_elementary_called_to_office_2', effect: { statChanges: { confidence: -2, happiness: -2 }, logKey: 'log_elementary_called_to_office_2' } },
+            { textKey: 'choice_elementary_called_to_office_1', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_called_to_office_1' } },
+            { textKey: 'choice_elementary_called_to_office_2', effect: { statChanges: { eq: -2, happiness: -2 }, logKey: 'log_elementary_called_to_office_2' } },
             { textKey: 'choice_elementary_called_to_office_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_called_to_office_3' } },
         ]
     },
@@ -206,7 +206,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_clean_up_mess_1', effect: { statChanges: { confidence: 2 }, logKey: 'log_elementary_clean_up_mess_1' } },
+            { textKey: 'choice_elementary_clean_up_mess_1', effect: { statChanges: { eq: 2 }, logKey: 'log_elementary_clean_up_mess_1' } },
             { textKey: 'choice_elementary_clean_up_mess_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_elementary_clean_up_mess_2' } },
             { textKey: 'choice_elementary_clean_up_mess_3', effect: { statChanges: { iq: 4, happiness: 4 }, logKey: 'log_elementary_clean_up_mess_3' } },
         ]
@@ -218,9 +218,9 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_role_replaced_1', effect: { statChanges: { confidence: 4 }, logKey: 'log_elementary_role_replaced_1' } },
+            { textKey: 'choice_elementary_role_replaced_1', effect: { statChanges: { eq: 4 }, logKey: 'log_elementary_role_replaced_1' } },
             { textKey: 'choice_elementary_role_replaced_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_elementary_role_replaced_2' } },
-            { textKey: 'choice_elementary_role_replaced_3', effect: { statChanges: { confidence: 3, happiness: 2 }, logKey: 'log_elementary_role_replaced_3' } },
+            { textKey: 'choice_elementary_role_replaced_3', effect: { statChanges: { eq: 3, happiness: 2 }, logKey: 'log_elementary_role_replaced_3' } },
         ]
     },
     {
@@ -230,7 +230,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_elementary_teacher_reprimand_homework_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_teacher_reprimand_homework_1' } },
+            { textKey: 'choice_elementary_teacher_reprimand_homework_1', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_teacher_reprimand_homework_1' } },
             { textKey: 'choice_elementary_teacher_reprimand_homework_2', effect: { statChanges: { iq: -2 }, logKey: 'log_elementary_teacher_reprimand_homework_2' } },
             { textKey: 'choice_elementary_teacher_reprimand_homework_3', effect: { statChanges: { iq: 2, happiness: 2 }, logKey: 'log_elementary_teacher_reprimand_homework_3' } },
         ]
@@ -243,7 +243,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_toy_dispute_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_toy_dispute_1', effect: { statChanges: { iq: 2, confidence: 2 }, logKey: 'log_elementary_toy_dispute_1' } },
+            { textKey: 'choice_elementary_toy_dispute_1', effect: { statChanges: { iq: 2, eq: 2 }, logKey: 'log_elementary_toy_dispute_1' } },
             { textKey: 'choice_elementary_toy_dispute_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_elementary_toy_dispute_2' } },
             { textKey: 'choice_elementary_toy_dispute_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_toy_dispute_3' } },
         ]
@@ -287,9 +287,9 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_first_speech_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_first_speech_1', effect: { statChanges: { confidence: 3 }, logKey: 'log_elementary_first_speech_1' } },
-            { textKey: 'choice_elementary_first_speech_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_elementary_first_speech_2' } },
-            { textKey: 'choice_elementary_first_speech_3', effect: { statChanges: { confidence: -2, happiness: -2 }, logKey: 'log_elementary_first_speech_3' } },
+            { textKey: 'choice_elementary_first_speech_1', effect: { statChanges: { eq: 3 }, logKey: 'log_elementary_first_speech_1' } },
+            { textKey: 'choice_elementary_first_speech_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_first_speech_2' } },
+            { textKey: 'choice_elementary_first_speech_3', effect: { statChanges: { eq: -2, happiness: -2 }, logKey: 'log_elementary_first_speech_3' } },
         ]
     },
     {
@@ -298,7 +298,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_extracurricular_club_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_extracurricular_club_1', effect: { statChanges: { iq: 2, confidence: 2, happiness: 2 }, logKey: 'log_elementary_extracurricular_club_1' } },
+            { textKey: 'choice_elementary_extracurricular_club_1', effect: { statChanges: { iq: 2, eq: 2, happiness: 2 }, logKey: 'log_elementary_extracurricular_club_1' } },
             { textKey: 'choice_elementary_extracurricular_club_2', effect: { statChanges: { happiness: -4 }, logKey: 'log_elementary_extracurricular_club_2' } },
             { textKey: 'choice_elementary_extracurricular_club_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_extracurricular_club_3' } },
         ]
@@ -320,8 +320,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_sports_day_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_sports_day_1', effect: { statChanges: { health: 3, confidence: 2 }, logKey: 'log_elementary_sports_day_1' } },
-            { textKey: 'choice_elementary_sports_day_2', effect: { statChanges: { health: 2, confidence: 4 }, logKey: 'log_elementary_sports_day_2' } },
+            { textKey: 'choice_elementary_sports_day_1', effect: { statChanges: { health: 3, eq: 2 }, logKey: 'log_elementary_sports_day_1' } },
+            { textKey: 'choice_elementary_sports_day_2', effect: { statChanges: { health: 2, eq: 4 }, logKey: 'log_elementary_sports_day_2' } },
             { textKey: 'choice_elementary_sports_day_3', effect: { statChanges: { happiness: 3 }, logKey: 'log_elementary_sports_day_3' } },
         ]
     },
@@ -332,7 +332,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_classroom_game_1', effect: { statChanges: { iq: 2 }, logKey: 'log_elementary_classroom_game_1' } },
-            { textKey: 'choice_elementary_classroom_game_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_classroom_game_2' } },
+            { textKey: 'choice_elementary_classroom_game_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_classroom_game_2' } },
             { textKey: 'choice_elementary_classroom_game_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_elementary_classroom_game_3' } },
         ]
     },
@@ -354,7 +354,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_spelling_test_1', effect: { statChanges: { iq: 2 }, logKey: 'log_elementary_spelling_test_1' } },
-            { textKey: 'choice_elementary_spelling_test_2', effect: { statChanges: { iq: -2, confidence: -2 }, logKey: 'log_elementary_spelling_test_2' } },
+            { textKey: 'choice_elementary_spelling_test_2', effect: { statChanges: { iq: -2, eq: -2 }, logKey: 'log_elementary_spelling_test_2' } },
             { textKey: 'choice_elementary_spelling_test_3', effect: { statChanges: { iq: 4 }, logKey: 'log_elementary_spelling_test_3' } },
         ]
     },
@@ -364,9 +364,9 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_good_student_award_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_good_student_award_1', effect: { statChanges: { happiness: 3, confidence: 3 }, logKey: 'log_elementary_good_student_award_1' } },
+            { textKey: 'choice_elementary_good_student_award_1', effect: { statChanges: { happiness: 3, eq: 3 }, logKey: 'log_elementary_good_student_award_1' } },
             { textKey: 'choice_elementary_good_student_award_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_good_student_award_2' } },
-            { textKey: 'choice_elementary_good_student_award_3', effect: { statChanges: { confidence: 2 }, logKey: 'log_elementary_good_student_award_3' } },
+            { textKey: 'choice_elementary_good_student_award_3', effect: { statChanges: { eq: 2 }, logKey: 'log_elementary_good_student_award_3' } },
         ]
     },
     {
@@ -375,8 +375,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_singing_class_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_singing_class_1', effect: { statChanges: { confidence: 2 }, logKey: 'log_elementary_singing_class_1' } },
-            { textKey: 'choice_elementary_singing_class_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_singing_class_2' } },
+            { textKey: 'choice_elementary_singing_class_1', effect: { statChanges: { eq: 2 }, logKey: 'log_elementary_singing_class_1' } },
+            { textKey: 'choice_elementary_singing_class_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_singing_class_2' } },
             { textKey: 'choice_elementary_singing_class_3', effect: { statChanges: { happiness: 4 }, logKey: 'log_elementary_singing_class_3' } },
         ]
     },
@@ -386,8 +386,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_praised_by_teacher_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_praised_by_teacher_1', effect: { statChanges: { confidence: -4, happiness: 3 }, logKey: 'log_elementary_praised_by_teacher_1' } },
-            { textKey: 'choice_elementary_praised_by_teacher_2', effect: { statChanges: { confidence: 3, happiness: 3 }, logKey: 'log_elementary_praised_by_teacher_2' } },
+            { textKey: 'choice_elementary_praised_by_teacher_1', effect: { statChanges: { eq: -4, happiness: 3 }, logKey: 'log_elementary_praised_by_teacher_1' } },
+            { textKey: 'choice_elementary_praised_by_teacher_2', effect: { statChanges: { eq: 3, happiness: 3 }, logKey: 'log_elementary_praised_by_teacher_2' } },
             { textKey: 'choice_elementary_praised_by_teacher_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_praised_by_teacher_3' } },
         ]
     },
@@ -397,9 +397,9 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_talking_in_class_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_talking_in_class_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_talking_in_class_1' } },
-            { textKey: 'choice_elementary_talking_in_class_2', effect: { statChanges: { confidence: 2, happiness: -2 }, logKey: 'log_elementary_talking_in_class_2' } },
-            { textKey: 'choice_elementary_talking_in_class_3', effect: { statChanges: { confidence: -4, iq: 2 }, logKey: 'log_elementary_talking_in_class_3' } },
+            { textKey: 'choice_elementary_talking_in_class_1', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_talking_in_class_1' } },
+            { textKey: 'choice_elementary_talking_in_class_2', effect: { statChanges: { eq: 2, happiness: -2 }, logKey: 'log_elementary_talking_in_class_2' } },
+            { textKey: 'choice_elementary_talking_in_class_3', effect: { statChanges: { eq: -4, iq: 2 }, logKey: 'log_elementary_talking_in_class_3' } },
         ]
     },
     {
@@ -408,7 +408,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_first_bad_grade_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_first_bad_grade_1', effect: { statChanges: { happiness: -3, confidence: -3 }, logKey: 'log_elementary_first_bad_grade_1' } },
+            { textKey: 'choice_elementary_first_bad_grade_1', effect: { statChanges: { happiness: -3, eq: -3 }, logKey: 'log_elementary_first_bad_grade_1' } },
             { textKey: 'choice_elementary_first_bad_grade_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_elementary_first_bad_grade_2' } },
             { textKey: 'choice_elementary_first_bad_grade_3', effect: { statChanges: { iq: 3, happiness: -4 }, logKey: 'log_elementary_first_bad_grade_3' } },
         ]
@@ -419,7 +419,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_group_work_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_group_work_1', effect: { statChanges: { iq: 2, confidence: 2 }, logKey: 'log_elementary_group_work_1' } },
+            { textKey: 'choice_elementary_group_work_1', effect: { statChanges: { iq: 2, eq: 2 }, logKey: 'log_elementary_group_work_1' } },
             { textKey: 'choice_elementary_group_work_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_group_work_2' } },
             { textKey: 'choice_elementary_group_work_3', effect: { statChanges: { iq: 4 }, logKey: 'log_elementary_group_work_3' } },
         ]
@@ -441,8 +441,8 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_elementary_class_monitor_desc',
         phases: [LifePhase.Elementary],
         choices: [
-            { textKey: 'choice_elementary_class_monitor_1', effect: { statChanges: { confidence: 3, iq: 2 }, logKey: 'log_elementary_class_monitor_1' } },
-            { textKey: 'choice_elementary_class_monitor_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_elementary_class_monitor_2' } },
+            { textKey: 'choice_elementary_class_monitor_1', effect: { statChanges: { eq: 3, iq: 2 }, logKey: 'log_elementary_class_monitor_1' } },
+            { textKey: 'choice_elementary_class_monitor_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_class_monitor_2' } },
             { textKey: 'choice_elementary_class_monitor_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_class_monitor_3' } },
         ]
     },
@@ -454,7 +454,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_elementary_craft_class_1', effect: { statChanges: { iq: 2 }, logKey: 'log_elementary_craft_class_1' } },
             { textKey: 'choice_elementary_craft_class_2', effect: { statChanges: { iq: 4, happiness: 2 }, logKey: 'log_elementary_craft_class_2' } },
-            { textKey: 'choice_elementary_craft_class_3', effect: { statChanges: { confidence: -2, happiness: -2 }, logKey: 'log_elementary_craft_class_3' } },
+            { textKey: 'choice_elementary_craft_class_3', effect: { statChanges: { eq: -2, happiness: -2 }, logKey: 'log_elementary_craft_class_3' } },
         ]
     },
 ];

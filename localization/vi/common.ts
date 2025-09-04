@@ -28,7 +28,7 @@ export default {
     // Stats
     stat_iq: 'IQ',
     stat_happiness: 'Hạnh phúc',
-    stat_confidence: 'Tự tin',
+    stat_eq: 'EQ',
     stat_health: 'Sức khỏe',
     stat_skill: 'Kỹ năng',
     // Character Details

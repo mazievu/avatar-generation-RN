@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition } from '../types';
-import { IqIcon, HappinessIcon, ConfidenceIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
+import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
 import { Gender, RelationshipStatus, CharacterStatus, LifePhase } from '../types';
 import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, EVENTS, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../constants';
 import { SCENARIOS } from '../scenarios';
@@ -275,7 +275,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
                             <div className="mt-4 space-y-2 p-3 bg-slate-50 rounded-xl">
                                 <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="bg-blue-400" />
                                 <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="bg-yellow-400" />
-                                <StatBar Icon={ConfidenceIcon} value={character.stats.confidence} max={100} label={t('stat_confidence', lang)} color="bg-purple-400" />
+                                <StatBar Icon={eqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="bg-purple-400" />
                                 <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="bg-red-400" />
                                 {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="bg-green-400" />}
                             </div>
@@ -415,7 +415,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   const statIcons: Record<string, React.ElementType> = {
     iq: IqIcon,
     happiness: HappinessIcon,
-    confidence: ConfidenceIcon,
+    eq: eqIcon,
     health: HealthIcon,
     skill: SkillIcon,
   };
@@ -423,7 +423,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   const statLabels: Record<string, string> = {
     iq: 'IQ',
     happiness: t('stat_happiness', lang),
-    confidence: t('stat_confidence', lang),
+    eq: t('stat_eq', lang),
     health: t('stat_health', lang),
     skill: t('stat_skill', lang),
   }
@@ -561,7 +561,7 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
         const statIconMap: Record<keyof Stats, React.ElementType> = {
             iq: IqIcon,
             happiness: HappinessIcon,
-            confidence: ConfidenceIcon,
+            eq: eqIcon,
             health: HealthIcon,
             skill: SkillIcon,
         };
@@ -881,12 +881,12 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
              if (CAREER_LADDER[optionKey]) {
                 const track = CAREER_LADDER[optionKey];
                 const isMajorMatch = character.major && track.requiredMajor === character.major;
-                const isUnderqualified = isMajorMatch && (character.stats.iq < track.iqRequired || character.stats.confidence < track.confidenceRequired);
+                const isUnderqualified = isMajorMatch && (character.stats.iq < track.iqRequired || character.stats.eq < track.eqRequired);
                 
                 let tooltipText = '';
                 if(isUnderqualified) {
                     const iqShortfall = Math.max(0, track.iqRequired - character.stats.iq);
-                    const confShortfall = Math.max(0, track.confidenceRequired - character.stats.confidence);
+                    const confShortfall = Math.max(0, track.eqRequired - character.stats.eq);
                     let missing: string[] = [];
                     if(iqShortfall > 0) missing.push(t('underqualified_tooltip_iq', lang, {shortfall: iqShortfall}));
                     if(confShortfall > 0) missing.push(t('underqualified_tooltip_conf', lang, {shortfall: confShortfall}));

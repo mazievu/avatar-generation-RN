@@ -8,9 +8,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_late_for_school_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_late_for_school_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_late_for_school_1' } },
-            { textKey: 'choice_middleschool_late_for_school_2', effect: { statChanges: { confidence: 4, iq: -2 }, logKey: 'log_middleschool_late_for_school_2', triggers: [{ eventId: 'middleschool_late_slip', chance: 0.6 }] } },
-            { textKey: 'choice_middleschool_late_for_school_3', effect: { statChanges: { confidence: 2 }, logKey: 'log_middleschool_late_for_school_3' } },
+            { textKey: 'choice_middleschool_late_for_school_1', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_late_for_school_1' } },
+            { textKey: 'choice_middleschool_late_for_school_2', effect: { statChanges: { eq: 4, iq: -2 }, logKey: 'log_middleschool_late_for_school_2', triggers: [{ eventId: 'middleschool_late_slip', chance: 0.6 }] } },
+            { textKey: 'choice_middleschool_late_for_school_3', effect: { statChanges: { eq: 2 }, logKey: 'log_middleschool_late_for_school_3' } },
         ]
     },
     {
@@ -20,7 +20,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         choices: [
             { textKey: 'choice_middleschool_locker_trouble_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_locker_trouble_1' } },
-            { textKey: 'choice_middleschool_locker_trouble_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_locker_trouble_2', triggers: [{ eventId: 'middleschool_punished_for_tardiness', chance: 0.5 }] } },
+            { textKey: 'choice_middleschool_locker_trouble_2', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_locker_trouble_2', triggers: [{ eventId: 'middleschool_punished_for_tardiness', chance: 0.5 }] } },
             { textKey: 'choice_middleschool_locker_trouble_3', effect: { statChanges: { iq: -2 }, logKey: 'log_middleschool_locker_trouble_3' } },
         ]
     },
@@ -30,9 +30,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_science_project_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_science_project_1', effect: { statChanges: { iq: 3, confidence: 2 }, logKey: 'log_middleschool_science_project_1' } },
+            { textKey: 'choice_middleschool_science_project_1', effect: { statChanges: { iq: 3, eq: 2 }, logKey: 'log_middleschool_science_project_1' } },
             { textKey: 'choice_middleschool_science_project_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_middleschool_science_project_2', triggers: [{ eventId: 'middleschool_group_ostracized', chance: 0.5 }] } },
-            { textKey: 'choice_middleschool_science_project_3', effect: { statChanges: { confidence: 2, happiness: -3 }, logKey: 'log_middleschool_science_project_3' } },
+            { textKey: 'choice_middleschool_science_project_3', effect: { statChanges: { eq: 2, happiness: -3 }, logKey: 'log_middleschool_science_project_3' } },
         ]
     },
     {
@@ -52,9 +52,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_english_presentation_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_english_presentation_1', effect: { statChanges: { iq: 3, confidence: 3 }, logKey: 'log_middleschool_english_presentation_1' } },
-            { textKey: 'choice_middleschool_english_presentation_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_middleschool_english_presentation_2', triggers: [{ eventId: 'middleschool_teacher_reprimand_presentation', chance: 0.6 }] } },
-            { textKey: 'choice_middleschool_english_presentation_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_english_presentation_3' } },
+            { textKey: 'choice_middleschool_english_presentation_1', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_middleschool_english_presentation_1' } },
+            { textKey: 'choice_middleschool_english_presentation_2', effect: { statChanges: { eq: -3 }, logKey: 'log_middleschool_english_presentation_2', triggers: [{ eventId: 'middleschool_teacher_reprimand_presentation', chance: 0.6 }] } },
+            { textKey: 'choice_middleschool_english_presentation_3', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_english_presentation_3' } },
         ]
     },
     {
@@ -63,8 +63,8 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_student_council_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_student_council_1', effect: { statChanges: { confidence: 3 }, logKey: 'log_middleschool_student_council_1' } },
-            { textKey: 'choice_middleschool_student_council_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_student_council_2', triggers: [{ eventId: 'middleschool_teased_by_friends_council', chance: 0.5 }] } },
+            { textKey: 'choice_middleschool_student_council_1', effect: { statChanges: { eq: 3 }, logKey: 'log_middleschool_student_council_1' } },
+            { textKey: 'choice_middleschool_student_council_2', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_student_council_2', triggers: [{ eventId: 'middleschool_teased_by_friends_council', chance: 0.5 }] } },
             { textKey: 'choice_middleschool_student_council_3', effect: { statChanges: { iq: 2 }, logKey: 'log_middleschool_student_council_3' } },
         ]
     },
@@ -75,7 +75,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         choices: [
             { textKey: 'choice_middleschool_cafeteria_lunch_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_middleschool_cafeteria_lunch_1' } },
-            { textKey: 'choice_middleschool_cafeteria_lunch_2', effect: { statChanges: { happiness: 2, confidence: -4 }, logKey: 'log_middleschool_cafeteria_lunch_2', triggers: [{ eventId: 'middleschool_teased_by_friends_crush', chance: 0.6 }] } },
+            { textKey: 'choice_middleschool_cafeteria_lunch_2', effect: { statChanges: { happiness: 2, eq: -4 }, logKey: 'log_middleschool_cafeteria_lunch_2', triggers: [{ eventId: 'middleschool_teased_by_friends_crush', chance: 0.6 }] } },
             { textKey: 'choice_middleschool_cafeteria_lunch_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_cafeteria_lunch_3' } },
         ]
     },
@@ -85,8 +85,8 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_school_dance_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_school_dance_1', effect: { statChanges: { confidence: 3, happiness: 3 }, logKey: 'log_middleschool_school_dance_1' } },
-            { textKey: 'choice_middleschool_school_dance_2', effect: { statChanges: { confidence: -3 }, logKey: 'log_middleschool_school_dance_2', triggers: [{ eventId: 'middleschool_dragged_to_dance', chance: 0.7 }] } },
+            { textKey: 'choice_middleschool_school_dance_1', effect: { statChanges: { eq: 3, happiness: 3 }, logKey: 'log_middleschool_school_dance_1' } },
+            { textKey: 'choice_middleschool_school_dance_2', effect: { statChanges: { eq: -3 }, logKey: 'log_middleschool_school_dance_2', triggers: [{ eventId: 'middleschool_dragged_to_dance', chance: 0.7 }] } },
             { textKey: 'choice_middleschool_school_dance_3', effect: { statChanges: { iq: 2 }, logKey: 'log_middleschool_school_dance_3' } },
         ]
     },
@@ -96,7 +96,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_science_experiment_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_science_experiment_1', effect: { statChanges: { iq: 3, confidence: 2 }, logKey: 'log_middleschool_science_experiment_1' } },
+            { textKey: 'choice_middleschool_science_experiment_1', effect: { statChanges: { iq: 3, eq: 2 }, logKey: 'log_middleschool_science_experiment_1' } },
             { textKey: 'choice_middleschool_science_experiment_2', effect: { statChanges: { iq: -2 }, logKey: 'log_middleschool_science_experiment_2', triggers: [{ eventId: 'middleschool_minor_incident', chance: 0.5 }] } },
             { textKey: 'choice_middleschool_science_experiment_3', effect: { statChanges: { iq: 4 }, logKey: 'log_middleschool_science_experiment_3' } },
         ]
@@ -108,7 +108,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         choices: [
             { textKey: 'choice_middleschool_pop_quiz_1', effect: { statChanges: { iq: 2 }, logKey: 'log_middleschool_pop_quiz_1' } },
-            { textKey: 'choice_middleschool_pop_quiz_2', effect: { statChanges: { iq: -2, confidence: -2 }, logKey: 'log_middleschool_pop_quiz_2', triggers: [{ eventId: 'middleschool_invigilator_warning_quiz', chance: 0.6 }] } },
+            { textKey: 'choice_middleschool_pop_quiz_2', effect: { statChanges: { iq: -2, eq: -2 }, logKey: 'log_middleschool_pop_quiz_2', triggers: [{ eventId: 'middleschool_invigilator_warning_quiz', chance: 0.6 }] } },
             { textKey: 'choice_middleschool_pop_quiz_3', effect: { statChanges: { iq: -4, happiness: 2 }, logKey: 'log_middleschool_pop_quiz_3' } },
         ]
     },
@@ -121,7 +121,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_middleschool_late_slip_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_late_slip_1' } },
+            { textKey: 'choice_middleschool_late_slip_1', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_late_slip_1' } },
             { textKey: 'choice_middleschool_late_slip_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_middleschool_late_slip_2' } },
             { textKey: 'choice_middleschool_late_slip_3', effect: { statChanges: { iq: -2 }, logKey: 'log_middleschool_late_slip_3' } },
         ]
@@ -133,7 +133,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_middleschool_punished_for_tardiness_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_punished_for_tardiness_1' } },
+            { textKey: 'choice_middleschool_punished_for_tardiness_1', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_punished_for_tardiness_1' } },
             { textKey: 'choice_middleschool_punished_for_tardiness_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_middleschool_punished_for_tardiness_2' } },
             { textKey: 'choice_middleschool_punished_for_tardiness_3', effect: { statChanges: { iq: 2 }, logKey: 'log_middleschool_punished_for_tardiness_3' } },
         ]
@@ -146,7 +146,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_middleschool_group_ostracized_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_group_ostracized_1' } },
-            { textKey: 'choice_middleschool_group_ostracized_2', effect: { statChanges: { confidence: -3, happiness: -2 }, logKey: 'log_middleschool_group_ostracized_2' } },
+            { textKey: 'choice_middleschool_group_ostracized_2', effect: { statChanges: { eq: -3, happiness: -2 }, logKey: 'log_middleschool_group_ostracized_2' } },
             { textKey: 'choice_middleschool_group_ostracized_3', effect: { statChanges: { iq: 2 }, logKey: 'log_middleschool_group_ostracized_3' } },
         ]
     },
@@ -169,9 +169,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_middleschool_teacher_reprimand_presentation_1', effect: { statChanges: { confidence: 2, iq: 2 }, logKey: 'log_middleschool_teacher_reprimand_presentation_1' } },
-            { textKey: 'choice_middleschool_teacher_reprimand_presentation_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_teacher_reprimand_presentation_2' } },
-            { textKey: 'choice_middleschool_teacher_reprimand_presentation_3', effect: { statChanges: { confidence: -3, happiness: -2 }, logKey: 'log_middleschool_teacher_reprimand_presentation_3' } },
+            { textKey: 'choice_middleschool_teacher_reprimand_presentation_1', effect: { statChanges: { eq: 2, iq: 2 }, logKey: 'log_middleschool_teacher_reprimand_presentation_1' } },
+            { textKey: 'choice_middleschool_teacher_reprimand_presentation_2', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_teacher_reprimand_presentation_2' } },
+            { textKey: 'choice_middleschool_teacher_reprimand_presentation_3', effect: { statChanges: { eq: -3, happiness: -2 }, logKey: 'log_middleschool_teacher_reprimand_presentation_3' } },
         ]
     },
     {
@@ -182,7 +182,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_middleschool_teased_by_friends_council_1', effect: { statChanges: { happiness: 4 }, logKey: 'log_middleschool_teased_by_friends_council_1' } },
-            { textKey: 'choice_middleschool_teased_by_friends_council_2', effect: { statChanges: { confidence: 2, happiness: -2 }, logKey: 'log_middleschool_teased_by_friends_council_2' } },
+            { textKey: 'choice_middleschool_teased_by_friends_council_2', effect: { statChanges: { eq: 2, happiness: -2 }, logKey: 'log_middleschool_teased_by_friends_council_2' } },
             { textKey: 'choice_middleschool_teased_by_friends_council_3', effect: { statChanges: { happiness: -3 }, logKey: 'log_middleschool_teased_by_friends_council_3' } },
         ]
     },
@@ -193,9 +193,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_middleschool_teased_by_friends_crush_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_teased_by_friends_crush_1' } },
+            { textKey: 'choice_middleschool_teased_by_friends_crush_1', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_teased_by_friends_crush_1' } },
             { textKey: 'choice_middleschool_teased_by_friends_crush_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_teased_by_friends_crush_2' } },
-            { textKey: 'choice_middleschool_teased_by_friends_crush_3', effect: { statChanges: { confidence: -3, happiness: -2 }, logKey: 'log_middleschool_teased_by_friends_crush_3' } },
+            { textKey: 'choice_middleschool_teased_by_friends_crush_3', effect: { statChanges: { eq: -3, happiness: -2 }, logKey: 'log_middleschool_teased_by_friends_crush_3' } },
         ]
     },
     {
@@ -205,8 +205,8 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_middleschool_dragged_to_dance_1', effect: { statChanges: { happiness: 3, confidence: 2 }, logKey: 'log_middleschool_dragged_to_dance_1' } },
-            { textKey: 'choice_middleschool_dragged_to_dance_2', effect: { statChanges: { confidence: -4 }, logKey: 'log_middleschool_dragged_to_dance_2' } },
+            { textKey: 'choice_middleschool_dragged_to_dance_1', effect: { statChanges: { happiness: 3, eq: 2 }, logKey: 'log_middleschool_dragged_to_dance_1' } },
+            { textKey: 'choice_middleschool_dragged_to_dance_2', effect: { statChanges: { eq: -4 }, logKey: 'log_middleschool_dragged_to_dance_2' } },
             { textKey: 'choice_middleschool_dragged_to_dance_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_dragged_to_dance_3' } },
         ]
     },
@@ -217,7 +217,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_middleschool_minor_incident_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_minor_incident_1' } },
+            { textKey: 'choice_middleschool_minor_incident_1', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_minor_incident_1' } },
             { textKey: 'choice_middleschool_minor_incident_2', effect: { statChanges: { iq: 4 }, logKey: 'log_middleschool_minor_incident_2' } },
             { textKey: 'choice_middleschool_minor_incident_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_minor_incident_3' } },
         ]
@@ -229,8 +229,8 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         phases: [LifePhase.MiddleSchool],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_middleschool_invigilator_warning_quiz_1', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_invigilator_warning_quiz_1' } },
-            { textKey: 'choice_middleschool_invigilator_warning_quiz_2', effect: { statChanges: { confidence: 2, iq: -3 }, logKey: 'log_middleschool_invigilator_warning_quiz_2' } },
+            { textKey: 'choice_middleschool_invigilator_warning_quiz_1', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_invigilator_warning_quiz_1' } },
+            { textKey: 'choice_middleschool_invigilator_warning_quiz_2', effect: { statChanges: { eq: 2, iq: -3 }, logKey: 'log_middleschool_invigilator_warning_quiz_2' } },
             { textKey: 'choice_middleschool_invigilator_warning_quiz_3', effect: { statChanges: { iq: -3, happiness: -3 }, logKey: 'log_middleschool_invigilator_warning_quiz_3' } },
         ]
     },
@@ -242,7 +242,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_class_debate_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_class_debate_1', effect: { statChanges: { iq: 2, confidence: 2 }, logKey: 'log_middleschool_class_debate_1' } },
+            { textKey: 'choice_middleschool_class_debate_1', effect: { statChanges: { iq: 2, eq: 2 }, logKey: 'log_middleschool_class_debate_1' } },
             { textKey: 'choice_middleschool_class_debate_2', effect: { statChanges: { iq: 4 }, logKey: 'log_middleschool_class_debate_2' } },
             { textKey: 'choice_middleschool_class_debate_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_class_debate_3' } },
         ]
@@ -286,9 +286,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_teacher_praise_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_teacher_praise_1', effect: { statChanges: { confidence: 3, happiness: 3 }, logKey: 'log_middleschool_teacher_praise_1' } },
+            { textKey: 'choice_middleschool_teacher_praise_1', effect: { statChanges: { eq: 3, happiness: 3 }, logKey: 'log_middleschool_teacher_praise_1' } },
             { textKey: 'choice_middleschool_teacher_praise_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_teacher_praise_2' } },
-            { textKey: 'choice_middleschool_teacher_praise_3', effect: { statChanges: { confidence: 2 }, logKey: 'log_middleschool_teacher_praise_3' } },
+            { textKey: 'choice_middleschool_teacher_praise_3', effect: { statChanges: { eq: 2 }, logKey: 'log_middleschool_teacher_praise_3' } },
         ]
     },
     {
@@ -297,8 +297,8 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_teacher_criticism_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_teacher_criticism_1', effect: { statChanges: { confidence: -3 }, logKey: 'log_middleschool_teacher_criticism_1' } },
-            { textKey: 'choice_middleschool_teacher_criticism_2', effect: { statChanges: { confidence: 2, happiness: -2 }, logKey: 'log_middleschool_teacher_criticism_2' } },
+            { textKey: 'choice_middleschool_teacher_criticism_1', effect: { statChanges: { eq: -3 }, logKey: 'log_middleschool_teacher_criticism_1' } },
+            { textKey: 'choice_middleschool_teacher_criticism_2', effect: { statChanges: { eq: 2, happiness: -2 }, logKey: 'log_middleschool_teacher_criticism_2' } },
             { textKey: 'choice_middleschool_teacher_criticism_3', effect: { statChanges: { happiness: -3 }, logKey: 'log_middleschool_teacher_criticism_3' } },
         ]
     },
@@ -308,8 +308,8 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_extracurricular_activity_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_extracurricular_activity_1', effect: { statChanges: { confidence: 3, happiness: 2 }, logKey: 'log_middleschool_extracurricular_activity_1' } },
-            { textKey: 'choice_middleschool_extracurricular_activity_2', effect: { statChanges: { confidence: 2 }, logKey: 'log_middleschool_extracurricular_activity_2' } },
+            { textKey: 'choice_middleschool_extracurricular_activity_1', effect: { statChanges: { eq: 3, happiness: 2 }, logKey: 'log_middleschool_extracurricular_activity_1' } },
+            { textKey: 'choice_middleschool_extracurricular_activity_2', effect: { statChanges: { eq: 2 }, logKey: 'log_middleschool_extracurricular_activity_2' } },
             { textKey: 'choice_middleschool_extracurricular_activity_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_middleschool_extracurricular_activity_3' } },
         ]
     },
@@ -343,7 +343,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_middleschool_final_exam_day_1', effect: { statChanges: { iq: 3 }, logKey: 'log_middleschool_final_exam_day_1' } },
             { textKey: 'choice_middleschool_final_exam_day_2', effect: { statChanges: { iq: 2 }, logKey: 'log_middleschool_final_exam_day_2' } },
-            { textKey: 'choice_middleschool_final_exam_day_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_final_exam_day_3' } },
+            { textKey: 'choice_middleschool_final_exam_day_3', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_final_exam_day_3' } },
         ]
     },
     {
@@ -352,7 +352,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_class_meeting_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_class_meeting_1', effect: { statChanges: { confidence: 2 }, logKey: 'log_middleschool_class_meeting_1' } },
+            { textKey: 'choice_middleschool_class_meeting_1', effect: { statChanges: { eq: 2 }, logKey: 'log_middleschool_class_meeting_1' } },
             { textKey: 'choice_middleschool_class_meeting_2', effect: { statChanges: { iq: 2 }, logKey: 'log_middleschool_class_meeting_2' } },
             { textKey: 'choice_middleschool_class_meeting_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_class_meeting_3' } },
         ]
@@ -363,9 +363,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_meeting_teacher_outside_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_meeting_teacher_outside_1', effect: { statChanges: { confidence: 2 }, logKey: 'log_middleschool_meeting_teacher_outside_1' } },
+            { textKey: 'choice_middleschool_meeting_teacher_outside_1', effect: { statChanges: { eq: 2 }, logKey: 'log_middleschool_meeting_teacher_outside_1' } },
             { textKey: 'choice_middleschool_meeting_teacher_outside_2', effect: { statChanges: { happiness: -4 }, logKey: 'log_middleschool_meeting_teacher_outside_2' } },
-            { textKey: 'choice_middleschool_meeting_teacher_outside_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_meeting_teacher_outside_3' } },
+            { textKey: 'choice_middleschool_meeting_teacher_outside_3', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_meeting_teacher_outside_3' } },
         ]
     },
     {
@@ -376,7 +376,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_middleschool_new_student_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_middleschool_new_student_1' } },
             { textKey: 'choice_middleschool_new_student_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_new_student_2' } },
-            { textKey: 'choice_middleschool_new_student_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_new_student_3' } },
+            { textKey: 'choice_middleschool_new_student_3', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_new_student_3' } },
         ]
     },
     {
@@ -418,9 +418,9 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         descriptionKey: 'event_middleschool_foreign_visitor_desc',
         phases: [LifePhase.MiddleSchool],
         choices: [
-            { textKey: 'choice_middleschool_foreign_visitor_1', effect: { statChanges: { confidence: 3, iq: 2 }, logKey: 'log_middleschool_foreign_visitor_1' } },
+            { textKey: 'choice_middleschool_foreign_visitor_1', effect: { statChanges: { eq: 3, iq: 2 }, logKey: 'log_middleschool_foreign_visitor_1' } },
             { textKey: 'choice_middleschool_foreign_visitor_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_foreign_visitor_2' } },
-            { textKey: 'choice_middleschool_foreign_visitor_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_foreign_visitor_3' } },
+            { textKey: 'choice_middleschool_foreign_visitor_3', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_foreign_visitor_3' } },
         ]
     },
     {
@@ -442,7 +442,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_middleschool_exam_results_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_middleschool_exam_results_1' } },
             { textKey: 'choice_middleschool_exam_results_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_exam_results_2' } },
-            { textKey: 'choice_middleschool_exam_results_3', effect: { statChanges: { happiness: -3, confidence: -2 }, logKey: 'log_middleschool_exam_results_3' } },
+            { textKey: 'choice_middleschool_exam_results_3', effect: { statChanges: { happiness: -3, eq: -2 }, logKey: 'log_middleschool_exam_results_3' } },
         ]
     },
     {
@@ -453,7 +453,7 @@ export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_middleschool_sharing_lunch_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_middleschool_sharing_lunch_1' } },
             { textKey: 'choice_middleschool_sharing_lunch_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_middleschool_sharing_lunch_2' } },
-            { textKey: 'choice_middleschool_sharing_lunch_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_middleschool_sharing_lunch_3' } },
+            { textKey: 'choice_middleschool_sharing_lunch_3', effect: { statChanges: { eq: -2 }, logKey: 'log_middleschool_sharing_lunch_3' } },
         ]
     },
 ];

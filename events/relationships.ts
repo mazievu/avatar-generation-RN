@@ -9,7 +9,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         allowedRelationshipStatuses: [RelationshipStatus.Single],
         choices: [
-            { textKey: 'choice_relationship_first_date_1', effect: { statChanges: { happiness: 2, confidence: 2 }, logKey: 'log_relationship_first_date_1' } },
+            { textKey: 'choice_relationship_first_date_1', effect: { statChanges: { happiness: 2, eq: 2 }, logKey: 'log_relationship_first_date_1' } },
             { textKey: 'choice_relationship_first_date_2', effect: { statChanges: { happiness: 4 }, fundChange: -150, logKey: 'log_relationship_first_date_2' } },
             { textKey: 'choice_relationship_first_date_3', effect: { statChanges: { happiness: 2, health: 1 }, logKey: 'log_relationship_first_date_3', triggers: [{ eventId: 'relationship_forgot_socks', chance: 0.4 }] } },
         ]
@@ -21,8 +21,8 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool],
         condition: (state, char) => char.age >= 17,
         choices: [
-            { textKey: 'choice_relationship_prom_night_1', effect: { statChanges: { happiness: 3, confidence: 2 }, fundChange: -250, logKey: 'log_relationship_prom_night_1' } },
-            { textKey: 'choice_relationship_prom_night_2', effect: { statChanges: { happiness: 3, confidence: 3 }, logKey: 'log_relationship_prom_night_2' } },
+            { textKey: 'choice_relationship_prom_night_1', effect: { statChanges: { happiness: 3, eq: 2 }, fundChange: -250, logKey: 'log_relationship_prom_night_1' } },
+            { textKey: 'choice_relationship_prom_night_2', effect: { statChanges: { happiness: 3, eq: 3 }, logKey: 'log_relationship_prom_night_2' } },
             { textKey: 'choice_relationship_prom_night_3', effect: { statChanges: { happiness: 2 }, fundChange: -50, logKey: 'log_relationship_prom_night_3', triggers: [{ eventId: 'relationship_pancake_accident', chance: 0.5 }] } },
         ]
     },
@@ -32,9 +32,9 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         descriptionKey: 'event_relationship_sending_text_desc',
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_relationship_sending_text_1', effect: { statChanges: { confidence: 2, happiness: 1 }, logKey: 'log_relationship_sending_text_1' } },
+            { textKey: 'choice_relationship_sending_text_1', effect: { statChanges: { eq: 2, happiness: 1 }, logKey: 'log_relationship_sending_text_1' } },
             { textKey: 'choice_relationship_sending_text_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_relationship_sending_text_2' } },
-            { textKey: 'choice_relationship_sending_text_3', effect: { statChanges: { confidence: -1 }, logKey: 'log_relationship_sending_text_3', triggers: [{ eventId: 'relationship_misunderstood_silence', chance: 0.6 }] } },
+            { textKey: 'choice_relationship_sending_text_3', effect: { statChanges: { eq: -1 }, logKey: 'log_relationship_sending_text_3', triggers: [{ eventId: 'relationship_misunderstood_silence', chance: 0.6 }] } },
         ]
     },
     {
@@ -55,8 +55,8 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         descriptionKey: 'event_relationship_meeting_friends_desc',
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_relationship_meeting_friends_1', effect: { statChanges: { confidence: 2, happiness: 2 }, logKey: 'log_relationship_meeting_friends_1' } },
-            { textKey: 'choice_relationship_meeting_friends_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_relationship_meeting_friends_2' } },
+            { textKey: 'choice_relationship_meeting_friends_1', effect: { statChanges: { eq: 2, happiness: 2 }, logKey: 'log_relationship_meeting_friends_1' } },
+            { textKey: 'choice_relationship_meeting_friends_2', effect: { statChanges: { eq: -1 }, logKey: 'log_relationship_meeting_friends_2' } },
             { textKey: 'choice_relationship_meeting_friends_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_meeting_friends_3', triggers: [{ eventId: 'relationship_endless_teasing', chance: 0.5 }] } },
         ]
     },
@@ -78,10 +78,10 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         allowedRelationshipStatuses: [RelationshipStatus.Married],
         choices: [
-            { textKey: 'choice_relationship_first_argument_1', effect: { statChanges: { happiness: 1, confidence: 1 }, logKey: 'log_relationship_first_argument_1' } },
+            { textKey: 'choice_relationship_first_argument_1', effect: { statChanges: { happiness: 1, eq: 1 }, logKey: 'log_relationship_first_argument_1' } },
             { textKey: 'choice_relationship_first_argument_2', effect: { statChanges: { happiness: -4 }, logKey: 'log_relationship_first_argument_2', triggers: [{ eventId: 'relationship_cold_war', chance: 0.7 }] } },
             { textKey: 'choice_relationship_first_argument_3', effect: { 
-                statChanges: { happiness: -2, confidence: -2 }, 
+                statChanges: { happiness: -2, eq: -2 }, 
                 logKey: 'log_relationship_first_argument_3',
                 action: (state, charId) => {
                     const char = state.familyMembers[charId];
@@ -106,8 +106,8 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         descriptionKey: 'event_relationship_fancy_dinner_desc',
         phases: [LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
-            { textKey: 'choice_relationship_fancy_dinner_1', effect: { statChanges: { confidence: 1, happiness: 2 }, logKey: 'log_relationship_fancy_dinner_1' } },
-            { textKey: 'choice_relationship_fancy_dinner_2', effect: { statChanges: { confidence: -2 }, fundChange: -20, logKey: 'log_relationship_fancy_dinner_2', triggers: [{ eventId: 'relationship_everyone_staring', chance: 0.5 }] } },
+            { textKey: 'choice_relationship_fancy_dinner_1', effect: { statChanges: { eq: 1, happiness: 2 }, logKey: 'log_relationship_fancy_dinner_1' } },
+            { textKey: 'choice_relationship_fancy_dinner_2', effect: { statChanges: { eq: -2 }, fundChange: -20, logKey: 'log_relationship_fancy_dinner_2', triggers: [{ eventId: 'relationship_everyone_staring', chance: 0.5 }] } },
             { textKey: 'choice_relationship_fancy_dinner_3', effect: { statChanges: { happiness: 3 }, fundChange: -250, logKey: 'log_relationship_fancy_dinner_3' } },
         ]
     },
@@ -128,9 +128,9 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         descriptionKey: 'event_relationship_talk_future_desc',
         phases: [LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
-            { textKey: 'choice_relationship_talk_future_1', effect: { statChanges: { confidence: 2, happiness: 2 }, logKey: 'log_relationship_talk_future_1' } },
+            { textKey: 'choice_relationship_talk_future_1', effect: { statChanges: { eq: 2, happiness: 2 }, logKey: 'log_relationship_talk_future_1' } },
             { textKey: 'choice_relationship_talk_future_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_talk_future_2' } },
-            { textKey: 'choice_relationship_talk_future_3', effect: { statChanges: { confidence: -1, happiness: -2 }, logKey: 'log_relationship_talk_future_3', triggers: [{ eventId: 'relationship_doubt_arises', chance: 0.5 }] } },
+            { textKey: 'choice_relationship_talk_future_3', effect: { statChanges: { eq: -1, happiness: -2 }, logKey: 'log_relationship_talk_future_3', triggers: [{ eventId: 'relationship_doubt_arises', chance: 0.5 }] } },
         ]
     },
 
@@ -143,7 +143,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_relationship_forgot_socks_1', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_forgot_socks_1' } },
-            { textKey: 'choice_relationship_forgot_socks_2', effect: { statChanges: { confidence: 1, happiness: 1 }, logKey: 'log_relationship_forgot_socks_2' } },
+            { textKey: 'choice_relationship_forgot_socks_2', effect: { statChanges: { eq: 1, happiness: 1 }, logKey: 'log_relationship_forgot_socks_2' } },
             { textKey: 'choice_relationship_forgot_socks_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_relationship_forgot_socks_3' } },
         ]
     },
@@ -156,7 +156,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_relationship_pancake_accident_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_relationship_pancake_accident_1' } },
             { textKey: 'choice_relationship_pancake_accident_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_pancake_accident_2' } },
-            { textKey: 'choice_relationship_pancake_accident_3', effect: { statChanges: { confidence: 1, happiness: 1 }, logKey: 'log_relationship_pancake_accident_3' } },
+            { textKey: 'choice_relationship_pancake_accident_3', effect: { statChanges: { eq: 1, happiness: 1 }, logKey: 'log_relationship_pancake_accident_3' } },
         ]
     },
     {
@@ -166,7 +166,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_relationship_misunderstood_silence_1', effect: { statChanges: { confidence: 1 }, logKey: 'log_relationship_misunderstood_silence_1' } },
+            { textKey: 'choice_relationship_misunderstood_silence_1', effect: { statChanges: { eq: 1 }, logKey: 'log_relationship_misunderstood_silence_1' } },
             { textKey: 'choice_relationship_misunderstood_silence_2', effect: { statChanges: { happiness: -1 }, logKey: 'log_relationship_misunderstood_silence_2' } },
             { textKey: 'choice_relationship_misunderstood_silence_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_misunderstood_silence_3' } },
         ]
@@ -179,7 +179,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_relationship_silent_treatment_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_relationship_silent_treatment_1' } },
-            { textKey: 'choice_relationship_silent_treatment_2', effect: { statChanges: { happiness: 1, confidence: 1 }, logKey: 'log_relationship_silent_treatment_2' } },
+            { textKey: 'choice_relationship_silent_treatment_2', effect: { statChanges: { happiness: 1, eq: 1 }, logKey: 'log_relationship_silent_treatment_2' } },
             { textKey: 'choice_relationship_silent_treatment_3', effect: { statChanges: { happiness: -3, health: -1 }, logKey: 'log_relationship_silent_treatment_3' } },
         ]
     },
@@ -190,9 +190,9 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_relationship_endless_teasing_1', effect: { statChanges: { happiness: 1, confidence: 1 }, logKey: 'log_relationship_endless_teasing_1' } },
-            { textKey: 'choice_relationship_endless_teasing_2', effect: { statChanges: { confidence: -1 }, logKey: 'log_relationship_endless_teasing_2' } },
-            { textKey: 'choice_relationship_endless_teasing_3', effect: { statChanges: { confidence: -1, happiness: 1 }, logKey: 'log_relationship_endless_teasing_3' } },
+            { textKey: 'choice_relationship_endless_teasing_1', effect: { statChanges: { happiness: 1, eq: 1 }, logKey: 'log_relationship_endless_teasing_1' } },
+            { textKey: 'choice_relationship_endless_teasing_2', effect: { statChanges: { eq: -1 }, logKey: 'log_relationship_endless_teasing_2' } },
+            { textKey: 'choice_relationship_endless_teasing_3', effect: { statChanges: { eq: -1, happiness: 1 }, logKey: 'log_relationship_endless_teasing_3' } },
         ]
     },
     {
@@ -202,9 +202,9 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_relationship_unexpected_scream_1', effect: { statChanges: { confidence: -1, happiness: 1 }, logKey: 'log_relationship_unexpected_scream_1' } },
-            { textKey: 'choice_relationship_unexpected_scream_2', effect: { statChanges: { confidence: -2 }, logKey: 'log_relationship_unexpected_scream_2' } },
-            { textKey: 'choice_relationship_unexpected_scream_3', effect: { statChanges: { confidence: 1 }, logKey: 'log_relationship_unexpected_scream_3' } },
+            { textKey: 'choice_relationship_unexpected_scream_1', effect: { statChanges: { eq: -1, happiness: 1 }, logKey: 'log_relationship_unexpected_scream_1' } },
+            { textKey: 'choice_relationship_unexpected_scream_2', effect: { statChanges: { eq: -2 }, logKey: 'log_relationship_unexpected_scream_2' } },
+            { textKey: 'choice_relationship_unexpected_scream_3', effect: { statChanges: { eq: 1 }, logKey: 'log_relationship_unexpected_scream_3' } },
         ]
     },
     {
@@ -226,9 +226,9 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_relationship_everyone_staring_1', effect: { statChanges: { confidence: 1 }, logKey: 'log_relationship_everyone_staring_1' } },
-            { textKey: 'choice_relationship_everyone_staring_2', effect: { statChanges: { confidence: 2 }, logKey: 'log_relationship_everyone_staring_2' } },
-            { textKey: 'choice_relationship_everyone_staring_3', effect: { statChanges: { confidence: -2 }, logKey: 'log_relationship_everyone_staring_3' } },
+            { textKey: 'choice_relationship_everyone_staring_1', effect: { statChanges: { eq: 1 }, logKey: 'log_relationship_everyone_staring_1' } },
+            { textKey: 'choice_relationship_everyone_staring_2', effect: { statChanges: { eq: 2 }, logKey: 'log_relationship_everyone_staring_2' } },
+            { textKey: 'choice_relationship_everyone_staring_3', effect: { statChanges: { eq: -2 }, logKey: 'log_relationship_everyone_staring_3' } },
         ]
     },
     {
@@ -250,7 +250,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_relationship_doubt_arises_1', effect: { statChanges: { confidence: 1, happiness: 2 }, logKey: 'log_relationship_doubt_arises_1' } },
+            { textKey: 'choice_relationship_doubt_arises_1', effect: { statChanges: { eq: 1, happiness: 2 }, logKey: 'log_relationship_doubt_arises_1' } },
             { textKey: 'choice_relationship_doubt_arises_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_doubt_arises_2' } },
             { textKey: 'choice_relationship_doubt_arises_3', effect: { statChanges: { happiness: -3 }, logKey: 'log_relationship_doubt_arises_3' } },
         ]
@@ -274,9 +274,9 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         descriptionKey: 'event_relationship_house_party_desc',
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_relationship_house_party_1', effect: { statChanges: { happiness: 3, confidence: 1 }, logKey: 'log_relationship_house_party_1' } },
+            { textKey: 'choice_relationship_house_party_1', effect: { statChanges: { happiness: 3, eq: 1 }, logKey: 'log_relationship_house_party_1' } },
             { textKey: 'choice_relationship_house_party_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_house_party_2' } },
-            { textKey: 'choice_relationship_house_party_3', effect: { statChanges: { confidence: -1, happiness: 1 }, logKey: 'log_relationship_house_party_3' } },
+            { textKey: 'choice_relationship_house_party_3', effect: { statChanges: { eq: -1, happiness: 1 }, logKey: 'log_relationship_house_party_3' } },
         ]
     },
     {
@@ -353,7 +353,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_relationship_camping_trip_1', effect: { statChanges: { skill: 2, happiness: 3 }, logKey: 'log_relationship_camping_trip_1' } },
             { textKey: 'choice_relationship_camping_trip_2', effect: { statChanges: { happiness: -2, health: -1 }, logKey: 'log_relationship_camping_trip_2' } },
-            { textKey: 'choice_relationship_camping_trip_3', effect: { statChanges: { confidence: 1, happiness: 1 }, logKey: 'log_relationship_camping_trip_3' } },
+            { textKey: 'choice_relationship_camping_trip_3', effect: { statChanges: { eq: 1, happiness: 1 }, logKey: 'log_relationship_camping_trip_3' } },
         ]
     },
     {
@@ -396,7 +396,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_relationship_ice_cream_run_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_relationship_ice_cream_run_1' } },
-            { textKey: 'choice_relationship_ice_cream_run_2', effect: { statChanges: { happiness: 1, confidence: 1 }, logKey: 'log_relationship_ice_cream_run_2' } },
+            { textKey: 'choice_relationship_ice_cream_run_2', effect: { statChanges: { happiness: 1, eq: 1 }, logKey: 'log_relationship_ice_cream_run_2' } },
             { textKey: 'choice_relationship_ice_cream_run_3', effect: { statChanges: { happiness: 3, health: -1 }, logKey: 'log_relationship_ice_cream_run_3' } },
         ]
     },
@@ -406,7 +406,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         descriptionKey: 'event_relationship_arcade_night_desc',
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_relationship_arcade_night_1', effect: { statChanges: { happiness: 3, confidence: 1 }, logKey: 'log_relationship_arcade_night_1' } },
+            { textKey: 'choice_relationship_arcade_night_1', effect: { statChanges: { happiness: 3, eq: 1 }, logKey: 'log_relationship_arcade_night_1' } },
             { textKey: 'choice_relationship_arcade_night_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_arcade_night_2' } },
             { textKey: 'choice_relationship_arcade_night_3', effect: { statChanges: { skill: 1, happiness: 2 }, logKey: 'log_relationship_arcade_night_3' } },
         ]
@@ -452,7 +452,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_relationship_coffee_run_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_relationship_coffee_run_1' } },
             { textKey: 'choice_relationship_coffee_run_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_coffee_run_2' } },
-            { textKey: 'choice_relationship_coffee_run_3', effect: { statChanges: { confidence: -1 }, fundChange: -10, logKey: 'log_relationship_coffee_run_3' } },
+            { textKey: 'choice_relationship_coffee_run_3', effect: { statChanges: { eq: -1 }, fundChange: -10, logKey: 'log_relationship_coffee_run_3' } },
         ]
     },
     {
@@ -463,7 +463,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_relationship_pet_adoption_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_relationship_pet_adoption_1' } },
             { textKey: 'choice_relationship_pet_adoption_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_pet_adoption_2' } },
-            { textKey: 'choice_relationship_pet_adoption_3', effect: { statChanges: { confidence: 1 }, logKey: 'log_relationship_pet_adoption_3' } },
+            { textKey: 'choice_relationship_pet_adoption_3', effect: { statChanges: { eq: 1 }, logKey: 'log_relationship_pet_adoption_3' } },
         ]
     },
     {

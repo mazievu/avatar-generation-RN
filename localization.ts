@@ -1,5 +1,5 @@
 
-import { LifePhase, CharacterStatus, RelationshipStatus } from './types';
+import { LifePhase, CharacterStatus, RelationshipStatus, Stats } from './types';
 import translationsEn from './localization/en';
 import translationsVi from './localization/vi';
 

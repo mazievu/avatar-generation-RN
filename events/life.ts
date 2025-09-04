@@ -56,8 +56,8 @@ export const LIFE_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_sued_1', effect: { fundChange: -5000, logKey: 'log_sued_1' } },
-            { textKey: 'choice_sued_2', effect: { statChanges: { confidence: 3 }, fundChange: -10000, logKey: 'log_sued_2' } },
-            { textKey: 'choice_sued_3', effect: { statChanges: { happiness: -3, confidence: -3 }, logKey: 'log_sued_3' } },
+            { textKey: 'choice_sued_2', effect: { statChanges: { eq: 3 }, fundChange: -10000, logKey: 'log_sued_2' } },
+            { textKey: 'choice_sued_3', effect: { statChanges: { happiness: -3, eq: -3 }, logKey: 'log_sued_3' } },
         ]
     },
     {
@@ -92,7 +92,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_lose_friend_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_lose_friend_1' } },
             { textKey: 'choice_lose_friend_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_lose_friend_2' } },
-            { textKey: 'choice_lose_friend_3', effect: { statChanges: { confidence: -3 }, logKey: 'log_lose_friend_3' } },
+            { textKey: 'choice_lose_friend_3', effect: { statChanges: { eq: -3 }, logKey: 'log_lose_friend_3' } },
         ]
     },
     {
@@ -102,7 +102,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_lost_wallet_1', effect: { fundChange: -200, logKey: 'log_lost_wallet_1' } },
-            { textKey: 'choice_lost_wallet_2', effect: { fundChange: -300, statChanges: { confidence: -2 }, logKey: 'log_lost_wallet_2' } },
+            { textKey: 'choice_lost_wallet_2', effect: { fundChange: -300, statChanges: { eq: -2 }, logKey: 'log_lost_wallet_2' } },
             { textKey: 'choice_lost_wallet_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_lost_wallet_3' } },
         ]
     },
@@ -113,8 +113,8 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_burglary_1', effect: { fundChange: -1000, logKey: 'log_burglary_1' } },
-            { textKey: 'choice_burglary_2', effect: { statChanges: { confidence: 3, health: -3 }, logKey: 'log_burglary_2' } },
-            { textKey: 'choice_burglary_3', effect: { statChanges: { confidence: 3, happiness: 2 }, logKey: 'log_burglary_3' } },
+            { textKey: 'choice_burglary_2', effect: { statChanges: { eq: 3, health: -3 }, logKey: 'log_burglary_2' } },
+            { textKey: 'choice_burglary_3', effect: { statChanges: { eq: 3, happiness: 2 }, logKey: 'log_burglary_3' } },
         ]
     },
     {
@@ -124,7 +124,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_online_scam_1', effect: { fundChange: -2000, statChanges: { happiness: -3 }, logKey: 'log_online_scam_1' } },
-            { textKey: 'choice_online_scam_2', effect: { statChanges: { confidence: 2 }, logKey: 'log_online_scam_2' } },
+            { textKey: 'choice_online_scam_2', effect: { statChanges: { eq: 2 }, logKey: 'log_online_scam_2' } },
             { textKey: 'choice_online_scam_3', effect: { statChanges: { iq: 3 }, logKey: 'log_online_scam_3' } },
         ]
     },
@@ -156,7 +156,7 @@ export const LIFE_EVENTS: GameEvent[] = [
                 const updatedChar = { ...char, status: CharacterStatus.Unemployed, careerTrack: null, careerLevel: 0 };
                 return { familyMembers: { ...state.familyMembers, [charId]: updatedChar }};
             }}},
-            { textKey: 'choice_job_loss_social_crisis_3', effect: { statChanges: { skill: 3, confidence: 3}, logKey: 'log_job_loss_social_crisis_3' } },
+            { textKey: 'choice_job_loss_social_crisis_3', effect: { statChanges: { skill: 3, eq: 3}, logKey: 'log_job_loss_social_crisis_3' } },
         ]
     },
     {
@@ -166,7 +166,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_natural_disaster_1', effect: { statChanges: { health: -3 }, logKey: 'log_natural_disaster_1' } },
-            { textKey: 'choice_natural_disaster_2', effect: { statChanges: { confidence: 3, health: -3 }, logKey: 'log_natural_disaster_2' } },
+            { textKey: 'choice_natural_disaster_2', effect: { statChanges: { eq: 3, health: -3 }, logKey: 'log_natural_disaster_2' } },
             { textKey: 'choice_natural_disaster_3', effect: { statChanges: { happiness: 3 }, logKey: 'log_natural_disaster_3' } },
         ]
     },
@@ -176,14 +176,14 @@ export const LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_street_assault_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_street_assault_1', effect: { statChanges: { health: -2, confidence: 2 }, logKey: 'log_street_assault_1' } },
+            { textKey: 'choice_street_assault_1', effect: { statChanges: { health: -2, eq: 2 }, logKey: 'log_street_assault_1' } },
             { textKey: 'choice_street_assault_2', effect: { 
-                statChanges: { health: -3, happiness: -3, confidence: -3 }, 
+                statChanges: { health: -3, happiness: -3, eq: -3 }, 
                 fundChange: -500,
                 logKey: 'log_street_assault_2', 
                 triggers: [{ eventId: 'sickness_worsens', chance: 0.5 }]
             }},
-            { textKey: 'choice_street_assault_3', effect: { statChanges: { iq: 3, confidence: 3 }, logKey: 'log_street_assault_3' } },
+            { textKey: 'choice_street_assault_3', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_street_assault_3' } },
         ]
     },
     {
@@ -192,7 +192,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_getting_lost_desc',
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
-            { textKey: 'choice_getting_lost_1', effect: { statChanges: { confidence: -2, happiness: -2 }, logKey: 'log_getting_lost_1' } },
+            { textKey: 'choice_getting_lost_1', effect: { statChanges: { eq: -2, happiness: -2 }, logKey: 'log_getting_lost_1' } },
             { textKey: 'choice_getting_lost_2', effect: { logKey: 'log_getting_lost_2', triggers: [{ eventId: 'street_assault', chance: 0.3 }] } },
             { textKey: 'choice_getting_lost_3', effect: { statChanges: { iq: 3 }, logKey: 'log_getting_lost_3' } },
         ]
@@ -205,7 +205,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_unpaid_debt_1', effect: { statChanges: { happiness: -3 }, fundChange: -500, logKey: 'log_unpaid_debt_1' } },
             { textKey: 'choice_unpaid_debt_2', effect: { logKey: 'log_unpaid_debt_2', triggers: [{ eventId: 'sued', chance: 1.0 }] } },
-            { textKey: 'choice_unpaid_debt_3', effect: { fundChange: -250, statChanges: { confidence: 2 }, logKey: 'log_unpaid_debt_3' } },
+            { textKey: 'choice_unpaid_debt_3', effect: { fundChange: -250, statChanges: { eq: 2 }, logKey: 'log_unpaid_debt_3' } },
         ]
     },
     {
@@ -215,7 +215,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_tax_evasion_discovered_1', effect: { fundChange: -15000, statChanges: { happiness: -3 }, logKey: 'log_tax_evasion_discovered_1' } },
-            { textKey: 'choice_tax_evasion_discovered_2', effect: { statChanges: { confidence: 3 }, logKey: 'log_tax_evasion_discovered_2', triggers: [{ eventId: 'sued', chance: 1.0 }] } },
+            { textKey: 'choice_tax_evasion_discovered_2', effect: { statChanges: { eq: 3 }, logKey: 'log_tax_evasion_discovered_2', triggers: [{ eventId: 'sued', chance: 1.0 }] } },
             { textKey: 'choice_tax_evasion_discovered_3', effect: { fundChange: -7500, statChanges: { iq: 3 }, logKey: 'log_tax_evasion_discovered_3' } },
         ]
     },
@@ -238,7 +238,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_investment_failure_1', effect: { statChanges: { happiness: -3, confidence: -3 }, logKey: 'log_investment_failure_1' } },
+            { textKey: 'choice_investment_failure_1', effect: { statChanges: { happiness: -3, eq: -3 }, logKey: 'log_investment_failure_1' } },
             { textKey: 'choice_investment_failure_2', effect: { logKey: 'log_investment_failure_2' } },
             { textKey: 'choice_investment_failure_3', effect: { statChanges: { iq: 3 }, logKey: 'log_investment_failure_3' } },
         ]
@@ -271,7 +271,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_loan_shark_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_loan_shark_1', effect: { fundChange: -1000, statChanges: { confidence: 2 }, logKey: 'log_loan_shark_1' } },
+            { textKey: 'choice_loan_shark_1', effect: { fundChange: -1000, statChanges: { eq: 2 }, logKey: 'log_loan_shark_1' } },
             { textKey: 'choice_loan_shark_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_loan_shark_2', triggers: [{ eventId: 'loan_shark_enforcers', chance: 1.0 }] } },
             { textKey: 'choice_loan_shark_3', effect: { statChanges: { iq: 3 }, logKey: 'log_loan_shark_3' } },
         ]
@@ -285,7 +285,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_loan_shark_enforcers_1', effect: { fundChange: -5000, logKey: 'log_loan_shark_enforcers_1' } },
             { textKey: 'choice_loan_shark_enforcers_2', effect: { statChanges: { health: -3 }, logKey: 'log_loan_shark_enforcers_2', triggers: [{ eventId: 'sickness_worsens', chance: 0.6 }] } },
-            { textKey: 'choice_loan_shark_enforcers_3', effect: { statChanges: { iq: 3, confidence: 3 }, logKey: 'log_loan_shark_enforcers_3' } },
+            { textKey: 'choice_loan_shark_enforcers_3', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_loan_shark_enforcers_3' } },
         ]
     },
     {
@@ -305,7 +305,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_self_development_seminar_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_self_development_seminar_1', effect: { statChanges: { confidence: 3 }, logKey: 'log_self_development_seminar_1' } },
+            { textKey: 'choice_self_development_seminar_1', effect: { statChanges: { eq: 3 }, logKey: 'log_self_development_seminar_1' } },
             { textKey: 'choice_self_development_seminar_2', effect: { logKey: 'log_self_development_seminar_2' } },
             { textKey: 'choice_self_development_seminar_3', effect: { statChanges: { iq: 3, skill: 2 }, logKey: 'log_self_development_seminar_3' } },
         ]
@@ -340,7 +340,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_relative_death_1', effect: { fundChange: -3000, statChanges: { happiness: -3 }, logKey: 'log_relative_death_1' } },
             { textKey: 'choice_relative_death_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_relative_death_2', triggers: [{ eventId: 'lose_friend', chance: 0.9 }] } },
-            { textKey: 'choice_relative_death_3', effect: { statChanges: { confidence: 3 }, logKey: 'log_relative_death_3' } },
+            { textKey: 'choice_relative_death_3', effect: { statChanges: { eq: 3 }, logKey: 'log_relative_death_3' } },
         ]
     },
     {
@@ -350,7 +350,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_large_gift_1', effect: { fundChange: 2000, statChanges: { happiness: 3 }, logKey: 'log_large_gift_1' } },
-            { textKey: 'choice_large_gift_2', effect: { statChanges: { confidence: 3, happiness: 2 }, logKey: 'log_large_gift_2' } },
+            { textKey: 'choice_large_gift_2', effect: { statChanges: { eq: 3, happiness: 2 }, logKey: 'log_large_gift_2' } },
             { textKey: 'choice_large_gift_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_large_gift_3' } },
         ]
     },
@@ -360,7 +360,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_stranger_asks_for_help_desc',
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
-            { textKey: 'choice_stranger_asks_for_help_1', effect: { statChanges: { confidence: 3, happiness: 3 }, logKey: 'log_stranger_asks_for_help_1', triggers: [{ eventId: 'unpaid_debt', chance: 0.3 }] } },
+            { textKey: 'choice_stranger_asks_for_help_1', effect: { statChanges: { eq: 3, happiness: 3 }, logKey: 'log_stranger_asks_for_help_1', triggers: [{ eventId: 'unpaid_debt', chance: 0.3 }] } },
             { textKey: 'choice_stranger_asks_for_help_2', effect: { logKey: 'log_stranger_asks_for_help_2' } },
             { textKey: 'choice_stranger_asks_for_help_3', effect: { statChanges: { iq: 2 }, logKey: 'log_stranger_asks_for_help_3' } },
         ]
@@ -373,7 +373,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_social_movement_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_social_movement_1' } },
             { textKey: 'choice_social_movement_2', effect: { logKey: 'log_social_movement_2' } },
-            { textKey: 'choice_social_movement_3', effect: { fundChange: -100, statChanges: { confidence: 3 }, logKey: 'log_social_movement_3' } },
+            { textKey: 'choice_social_movement_3', effect: { fundChange: -100, statChanges: { eq: 3 }, logKey: 'log_social_movement_3' } },
         ]
     },
     {
@@ -406,7 +406,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_rescued_from_accident_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_rescued_from_accident_1' } },
             { textKey: 'choice_rescued_from_accident_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_rescued_from_accident_2' } },
-            { textKey: 'choice_rescued_from_accident_3', effect: { fundChange: 1000, statChanges: { confidence: 3 }, logKey: 'log_rescued_from_accident_3' } },
+            { textKey: 'choice_rescued_from_accident_3', effect: { fundChange: 1000, statChanges: { eq: 3 }, logKey: 'log_rescued_from_accident_3' } },
         ]
     },
     {
@@ -415,9 +415,9 @@ export const LIFE_EVENTS: GameEvent[] = [
         descriptionKey: 'event_falsely_accused_desc',
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
-            { textKey: 'choice_falsely_accused_1', effect: { statChanges: { confidence: 3 }, logKey: 'log_falsely_accused_1' } },
+            { textKey: 'choice_falsely_accused_1', effect: { statChanges: { eq: 3 }, logKey: 'log_falsely_accused_1' } },
             { textKey: 'choice_falsely_accused_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_falsely_accused_2' } },
-            { textKey: 'choice_falsely_accused_3', effect: { statChanges: { confidence: 3 }, logKey: 'log_falsely_accused_3' } },
+            { textKey: 'choice_falsely_accused_3', effect: { statChanges: { eq: 3 }, logKey: 'log_falsely_accused_3' } },
         ]
     },
     {
@@ -427,7 +427,7 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_surprise_gift_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_surprise_gift_1' } },
-            { textKey: 'choice_surprise_gift_2', effect: { statChanges: { confidence: 3 }, logKey: 'log_surprise_gift_2' } },
+            { textKey: 'choice_surprise_gift_2', effect: { statChanges: { eq: 3 }, logKey: 'log_surprise_gift_2' } },
             { textKey: 'choice_surprise_gift_3', effect: { fundChange: 500, logKey: 'log_surprise_gift_3' } },
         ]
     },

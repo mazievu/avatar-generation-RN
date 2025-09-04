@@ -28,7 +28,7 @@ export default {
     // Stats
     stat_iq: 'IQ',
     stat_happiness: 'Happiness',
-    stat_confidence: 'Confidence',
+    stat_eq: 'eq',
     stat_health: 'Health',
     stat_skill: 'Skill',
     // Character Details
@@ -108,7 +108,7 @@ export default {
     underqualified_choice_penalized_desc: 'Start at the lowest salary. Your skill gain and promotion speed will be penalized based on how much your stats are lacking.',
     underqualified_tooltip: 'Missing Requirements:',
     underqualified_tooltip_iq: 'IQ ({shortfall} points)',
-    underqualified_tooltip_conf: 'Confidence ({shortfall} points)',
+    underqualified_tooltip_conf: 'eq ({shortfall} points)',
     // Assets & Businesses
     family_assets_title: 'Family Assets',
     total_value_label: 'Total Value',

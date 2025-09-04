@@ -21,7 +21,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         phases: [LifePhase.Retired],
         condition: (state, char) => !char.completedOneTimeEvents.includes('retired_first_pension'),
         choices: [
-            { textKey: 'choice_retired_first_pension_1', effect: { statChanges: { confidence: 2 }, logKey: 'log_retired_first_pension_1' } },
+            { textKey: 'choice_retired_first_pension_1', effect: { statChanges: { eq: 2 }, logKey: 'log_retired_first_pension_1' } },
             { textKey: 'choice_retired_first_pension_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_first_pension_2' } },
             { textKey: 'choice_retired_first_pension_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_first_pension_3', triggers: [{ eventId: 'retired_insufficient_funds', chance: 0.5 }] } },
         ]
@@ -44,7 +44,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         phases: [LifePhase.Retired],
         choices: [
             { textKey: 'choice_retired_volunteering_1', effect: { statChanges: { happiness: 2, iq: 1 }, logKey: 'log_retired_volunteering_1' } },
-            { textKey: 'choice_retired_volunteering_2', effect: { statChanges: { happiness: 3, confidence: 1 }, logKey: 'log_retired_volunteering_2' } },
+            { textKey: 'choice_retired_volunteering_2', effect: { statChanges: { happiness: 3, eq: 1 }, logKey: 'log_retired_volunteering_2' } },
             { textKey: 'choice_retired_volunteering_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_volunteering_3', triggers: [{ eventId: 'retired_cant_keep_up_volunteer', chance: 0.3 }] } },
         ]
     },
@@ -137,7 +137,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         phases: [LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_retired_insufficient_funds_1', effect: { statChanges: { confidence: -1 }, logKey: 'log_retired_insufficient_funds_1' } },
+            { textKey: 'choice_retired_insufficient_funds_1', effect: { statChanges: { eq: -1 }, logKey: 'log_retired_insufficient_funds_1' } },
             { textKey: 'choice_retired_insufficient_funds_2', effect: { statChanges: { iq: 1 }, logKey: 'log_retired_insufficient_funds_2' } },
             { textKey: 'choice_retired_insufficient_funds_3', effect: { statChanges: { happiness: -2, health: -1 }, logKey: 'log_retired_insufficient_funds_3' } },
         ]
@@ -149,9 +149,9 @@ export const RETIRED_EVENTS: GameEvent[] = [
         phases: [LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_retired_illness_discovered_1', effect: { statChanges: { health: 3, confidence: 1 }, logKey: 'log_retired_illness_discovered_1' } },
+            { textKey: 'choice_retired_illness_discovered_1', effect: { statChanges: { health: 3, eq: 1 }, logKey: 'log_retired_illness_discovered_1' } },
             { textKey: 'choice_retired_illness_discovered_2', effect: { statChanges: { health: -2, happiness: -2 }, logKey: 'log_retired_illness_discovered_2' } },
-            { textKey: 'choice_retired_illness_discovered_3', effect: { statChanges: { health: -3, happiness: -4, confidence: -3 }, logKey: 'log_retired_illness_discovered_3' } },
+            { textKey: 'choice_retired_illness_discovered_3', effect: { statChanges: { health: -3, happiness: -4, eq: -3 }, logKey: 'log_retired_illness_discovered_3' } },
         ]
     },
     {
@@ -163,7 +163,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_retired_cant_keep_up_volunteer_1', effect: { statChanges: { happiness: -1 }, logKey: 'log_retired_cant_keep_up_volunteer_1' } },
             { textKey: 'choice_retired_cant_keep_up_volunteer_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_cant_keep_up_volunteer_2' } },
-            { textKey: 'choice_retired_cant_keep_up_volunteer_3', effect: { statChanges: { confidence: -1 }, logKey: 'log_retired_cant_keep_up_volunteer_3' } },
+            { textKey: 'choice_retired_cant_keep_up_volunteer_3', effect: { statChanges: { eq: -1 }, logKey: 'log_retired_cant_keep_up_volunteer_3' } },
         ]
     },
     {
@@ -175,7 +175,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_retired_travel_fatigue_1', effect: { statChanges: { health: 2, happiness: -1 }, logKey: 'log_retired_travel_fatigue_1' } },
             { textKey: 'choice_retired_travel_fatigue_2', effect: { statChanges: { happiness: -2 }, fundChange: 1000, logKey: 'log_retired_travel_fatigue_2' } },
-            { textKey: 'choice_retired_travel_fatigue_3', effect: { statChanges: { happiness: -3, confidence: -1 }, fundChange: 2000, logKey: 'log_retired_travel_fatigue_3' } },
+            { textKey: 'choice_retired_travel_fatigue_3', effect: { statChanges: { happiness: -3, eq: -1 }, fundChange: 2000, logKey: 'log_retired_travel_fatigue_3' } },
         ]
     },
     {
@@ -197,9 +197,9 @@ export const RETIRED_EVENTS: GameEvent[] = [
         phases: [LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_retired_difficulty_integrating_1', effect: { statChanges: { confidence: 1 }, logKey: 'log_retired_difficulty_integrating_1' } },
+            { textKey: 'choice_retired_difficulty_integrating_1', effect: { statChanges: { eq: 1 }, logKey: 'log_retired_difficulty_integrating_1' } },
             { textKey: 'choice_retired_difficulty_integrating_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_difficulty_integrating_2' } },
-            { textKey: 'choice_retired_difficulty_integrating_3', effect: { statChanges: { happiness: -2, confidence: -1 }, logKey: 'log_retired_difficulty_integrating_3' } },
+            { textKey: 'choice_retired_difficulty_integrating_3', effect: { statChanges: { happiness: -2, eq: -1 }, logKey: 'log_retired_difficulty_integrating_3' } },
         ]
     },
     {
@@ -222,7 +222,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_retired_loneliness_after_reunion_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_loneliness_after_reunion_1' } },
-            { textKey: 'choice_retired_loneliness_after_reunion_2', effect: { statChanges: { confidence: 1 }, logKey: 'log_retired_loneliness_after_reunion_2' } },
+            { textKey: 'choice_retired_loneliness_after_reunion_2', effect: { statChanges: { eq: 1 }, logKey: 'log_retired_loneliness_after_reunion_2' } },
             { textKey: 'choice_retired_loneliness_after_reunion_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_retired_loneliness_after_reunion_3' } },
         ]
     },
@@ -233,9 +233,9 @@ export const RETIRED_EVENTS: GameEvent[] = [
         phases: [LifePhase.Retired],
         isTriggerOnly: true,
         choices: [
-            { textKey: 'choice_retired_lose_central_role_1', effect: { statChanges: { confidence: 1, happiness: 1 }, logKey: 'log_retired_lose_central_role_1' } },
+            { textKey: 'choice_retired_lose_central_role_1', effect: { statChanges: { eq: 1, happiness: 1 }, logKey: 'log_retired_lose_central_role_1' } },
             { textKey: 'choice_retired_lose_central_role_2', effect: { statChanges: { iq: 1 }, logKey: 'log_retired_lose_central_role_2' } },
-            { textKey: 'choice_retired_lose_central_role_3', effect: { statChanges: { happiness: -2, confidence: -1 }, logKey: 'log_retired_lose_central_role_3' } },
+            { textKey: 'choice_retired_lose_central_role_3', effect: { statChanges: { happiness: -2, eq: -1 }, logKey: 'log_retired_lose_central_role_3' } },
         ]
     },
 
@@ -302,7 +302,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         descriptionKey: 'event_retired_visiting_temple_desc',
         phases: [LifePhase.Retired],
         choices: [
-            { textKey: 'choice_retired_visiting_temple_1', effect: { statChanges: { happiness: 2, confidence: 1 }, logKey: 'log_retired_visiting_temple_1' } },
+            { textKey: 'choice_retired_visiting_temple_1', effect: { statChanges: { happiness: 2, eq: 1 }, logKey: 'log_retired_visiting_temple_1' } },
             { textKey: 'choice_retired_visiting_temple_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_visiting_temple_2' } },
             { textKey: 'choice_retired_visiting_temple_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_visiting_temple_3' } },
         ]
@@ -371,7 +371,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_retired_new_class_1', effect: { statChanges: { iq: 2, skill: 1 }, logKey: 'log_retired_new_class_1' } },
             { textKey: 'choice_retired_new_class_2', effect: { statChanges: { iq: 1 }, logKey: 'log_retired_new_class_2' } },
-            { textKey: 'choice_retired_new_class_3', effect: { statChanges: { confidence: -1 }, logKey: 'log_retired_new_class_3' } },
+            { textKey: 'choice_retired_new_class_3', effect: { statChanges: { eq: -1 }, logKey: 'log_retired_new_class_3' } },
         ]
     },
     {
@@ -460,7 +460,7 @@ export const RETIRED_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_retired_sharing_with_grandkids_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_sharing_with_grandkids_1' } },
             { textKey: 'choice_retired_sharing_with_grandkids_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_sharing_with_grandkids_2' } },
-            { textKey: 'choice_retired_sharing_with_grandkids_3', effect: { statChanges: { confidence: -1 }, logKey: 'log_retired_sharing_with_grandkids_3' } },
+            { textKey: 'choice_retired_sharing_with_grandkids_3', effect: { statChanges: { eq: -1 }, logKey: 'log_retired_sharing_with_grandkids_3' } },
         ]
     },
 ];
