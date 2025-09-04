@@ -668,7 +668,7 @@ const App: React.FC = () => {
                                 const updatedChar = { ...char, ...charUpdate };
                                 nextFamilyMembers[id] = updatedChar;
                                 
-                                if (updatedChar.age === 18) {
+                                if (updatedChar.age === 19) { // Changed from 18 to 19
                                     newUniversityChoices.push({ characterId: id });
                                 } else { 
                                     if (!careerChoiceSet) {
@@ -678,7 +678,8 @@ const App: React.FC = () => {
                                     }
                                 }
                             } 
-                            else if (char.age === 19 && char.status === CharacterStatus.Idle) {
+                            // Handle characters who are already Idle and turn 19
+                            else if (char.age === 19 && char.status === CharacterStatus.Idle) { // This condition is correct for characters turning 19 and being idle
                                 newUniversityChoices.push({ characterId: id });
                             } 
                             else if (char.age === 60 && char.status !== CharacterStatus.Retired) {
