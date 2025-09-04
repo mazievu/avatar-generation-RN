@@ -178,6 +178,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
+                    onAvatarClick={onSetSelectedCharacter}
                 />
             )}
             {gameState.pendingSchoolChoice && gameState.pendingSchoolChoice.length > 0 && (

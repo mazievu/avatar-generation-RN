@@ -404,9 +404,10 @@ interface EventModalProps extends LocalizedProps {
   onClose: () => void;
   images: Record<string, HTMLImageElement>;
   manifest: Manifest;
+  onAvatarClick: (character: Character) => void;
 }
 
-export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest }) => {
+export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest, onAvatarClick }) => {
   const [initialCharacterState, setInitialCharacterState] = React.useState(character);
   const [displayEventData, setDisplayEventData] = React.useState(eventData);
   const [outcome, setOutcome] = React.useState<EventEffect | null>(null);
@@ -475,7 +476,10 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
       <div className="comic-panel-wrapper" style={{'--rotate': '2deg'} as React.CSSProperties}>
         <div className="comic-panel p-6 max-w-lg w-full">
             <div className="flex gap-4 items-center mb-4">
-                <div className="w-20 h-20 rounded-full border-4 border-amber-300 overflow-hidden shadow-lg flex-shrink-0 bg-slate-200">
+                <div
+                    className="w-20 h-20 rounded-full border-4 border-amber-300 overflow-hidden shadow-lg flex-shrink-0 bg-slate-200 cursor-pointer"
+                    onClick={() => onAvatarClick(character)}
+                >
                     <AgeAwareAvatarPreview
                         manifest={manifest}
                         character={character}
