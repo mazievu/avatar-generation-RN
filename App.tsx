@@ -143,6 +143,7 @@ const App: React.FC = () => {
             for (const charId in initialState.familyMembers) {
                 initialState.familyMembers[charId].lowHappinessYears = 0;
                 initialState.familyMembers[charId].lowHealthYears = 0;
+                initialState.familyMembers[charId].monthsInCurrentJobLevel = 0;
             }
             setGameState(initialState);
         } else {
@@ -151,6 +152,7 @@ const App: React.FC = () => {
             for (const charId in initialState.familyMembers) {
                 initialState.familyMembers[charId].lowHappinessYears = 0;
                 initialState.familyMembers[charId].lowHealthYears = 0;
+                initialState.familyMembers[charId].monthsInCurrentJobLevel = 0;
             }
             setGameState(initialState);
         }
@@ -177,6 +179,9 @@ const App: React.FC = () => {
                         }
                         if (savedState.familyMembers[charId].lowHealthYears === undefined) {
                             savedState.familyMembers[charId].lowHealthYears = 0;
+                        }
+                        if (savedState.familyMembers[charId].monthsInCurrentJobLevel === undefined) {
+                            savedState.familyMembers[charId].monthsInCurrentJobLevel = 0;
                         }
                     }
                 }
@@ -483,6 +488,28 @@ const App: React.FC = () => {
                         charUpdate.monthlyNetIncome = -personalExpenses;
                     }
 
+                    // Increment monthsInCurrentJobLevel for working characters
+                    if (char.status === CharacterStatus.Working && char.careerTrack) {
+                        charUpdate.monthsInCurrentJobLevel = (char.monthsInCurrentJobLevel || 0) + 1;
+
+                        // Check for happiness reduction due to no promotion
+                        const career = CAREER_LADDER[char.careerTrack];
+                        const isHighestLevel = char.careerLevel === career.levels.length - 1;
+                        const isWorkingInFamilyBusiness = Object.values(prevState.familyBusinesses).some(business =>
+                            business.slots.some(slot => slot.assignedCharacterId === char.id)
+                        );
+
+                        if (charUpdate.monthsInCurrentJobLevel > 12 && !isHighestLevel && !isWorkingInFamilyBusiness) {
+                            statsUpdate.happiness = Math.max(0, (statsUpdate.happiness ?? char.stats.happiness) - 3);
+                            nextGameLog.push({
+                                year: newState.currentDate.year,
+                                messageKey: 'log_happiness_no_promotion',
+                                replacements: { name: getCharacterDisplayName(char, language), jobTitle: t(career.levels[char.careerLevel].titleKey, language) },
+                                characterId: char.id,
+                            });
+                        }
+                    }
+
                     if(Object.keys(statsUpdate).length > 0) charUpdate.stats = { ...char.stats, ...statsUpdate };
 
                     totalPersonalIncome += personalIncome;
@@ -585,6 +612,8 @@ const App: React.FC = () => {
 
                     for (const id of livingMemberIds) {
                         const char = nextFamilyMembers[id];
+                        const displayName = getCharacterDisplayName(char, language);
+                        let charUpdate: Partial<Character> = {}; // Declare charUpdate here
 
                         // Update low stats counters
                         if (char.stats.happiness < 10) {
@@ -1254,13 +1283,15 @@ const App: React.FC = () => {
             if ((isMajorMatch || noMajorRequired) && isStatQualified) {
                 updatedCharacter = {
                     careerTrack: choiceKey, careerLevel: 0, status: CharacterStatus.Working,
-                    phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: 0
+                    phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: 0,
+                    monthsInCurrentJobLevel: 0
                 };
                 logEntry = { year: prevState.currentDate.year, messageKey: 'log_found_job', replacements: { name: displayName, title: t(trackDetails.levels[0].titleKey, language) }, characterId, eventTitleKey: 'event_career_choice_title' };
             } else if (hasDegree && !isMajorMatch && isStatQualified) {
                 updatedCharacter = {
                     careerTrack: choiceKey, careerLevel: 0, status: CharacterStatus.Working,
-                    phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: 0.30
+                    phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: 0.30,
+                    monthsInCurrentJobLevel: 0
                 };
                 logEntry = { year: prevState.currentDate.year, messageKey: 'log_accepted_mismatched_job', replacements: { name: displayName, title: t(trackDetails.levels[0].titleKey, language) }, characterId, eventTitleKey: 'event_career_choice_title' };
             } else { // Underqualified for other reasons (mismatched major + low stats, or no degree + low stats)
@@ -1276,7 +1307,8 @@ const App: React.FC = () => {
 
                 updatedCharacter = {
                     careerTrack: choiceKey, careerLevel: 0, status: CharacterStatus.Working,
-                    phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: combinedPenalty
+                    phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: combinedPenalty,
+                    monthsInCurrentJobLevel: 0
                 };
 
                 const messageKey = mismatchPenalty > 0 ? 'log_accepted_severely_underqualified_job' : 'log_accepted_penalized_job';
@@ -1313,6 +1345,7 @@ const App: React.FC = () => {
                     careerLevel: 0, // FIX: Added careerLevel
                     progressionPenalty: 0,
                     stats: { ...character.stats, skill: 0 },
+                    monthsInCurrentJobLevel: 0
                 };
                 logEntry = {
                     year: prevState.currentDate.year,
@@ -1336,6 +1369,7 @@ const App: React.FC = () => {
                     progressionPenalty: totalPenalty,
                     traineeForCareer: null,
                     stats: { ...character.stats, skill: 0 },
+                    monthsInCurrentJobLevel: 0
                 };
                  logEntry = {
                     year: prevState.currentDate.year,
@@ -1393,7 +1427,8 @@ const App: React.FC = () => {
             const updatedCharacter = {
                 ...character,
                 careerLevel: newLevel,
-                stats: { ...character.stats, happiness: Math.min(100, character.stats.happiness + 10), eq: Math.min(100, character.stats.eq + 5) }
+                stats: { ...character.stats, happiness: Math.min(100, character.stats.happiness + 10), eq: Math.min(100, character.stats.eq + 5) },
+                monthsInCurrentJobLevel: 0
             };
             const displayName = getCharacterDisplayName(character, language);
             const logEntry: GameLogEntry = {
@@ -1468,6 +1503,7 @@ const App: React.FC = () => {
                 char.status = CharacterStatus.Working;
                 char.careerTrack = null;
                 char.careerLevel = 0;
+                char.monthsInCurrentJobLevel = 0;
     
                 // Only reset skill if the new role requires a different major
                 const slot = businessToUpdate.slots[slotIndex];

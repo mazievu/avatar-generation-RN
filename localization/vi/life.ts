@@ -354,6 +354,7 @@ log_surprise_gift_3: 'Tôi lan tỏa hạnh phúc bằng cách khoe nó với b�
 log_death_low_happiness: "{name} qua đời do không hạnh phúc kéo dài.",
 log_death_low_health: "{name} qua đời do sức khỏe kém kéo dài.",
 log_death_low_happiness_and_health: "{name} qua đời do không hạnh phúc và sức khỏe kém kéo dài.",
+log_happiness_no_promotion: "Hạnh phúc của {name} đang giảm dần do không được thăng chức ở vị trí {jobTitle}.",
 
     // Trigger-only
     event_investment_success_large_title: 'Đầu tư lớn thành công!',

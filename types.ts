@@ -148,6 +148,7 @@ export interface Character {
   childrenEventCooldownUntil?: { day: number; year: number; } | null;
   lowHappinessYears: number; // New: Tracks years happiness is below threshold
   lowHealthYears: number; // New: Tracks years health is below threshold
+  monthsInCurrentJobLevel: number; // New: Tracks months in current job level
 }
 export enum AssetType {
     Housing = 'Housing',

@@ -246,6 +246,7 @@ export default {
     log_death_low_happiness: "{name} passed away due to prolonged unhappiness.",
     log_death_low_health: "{name} passed away due to prolonged poor health.",
     log_death_low_happiness_and_health: "{name} passed away due to prolonged unhappiness and poor health.",
+    log_happiness_no_promotion: "{name}'s happiness is decreasing due to lack of promotion in {jobTitle}.",
     // Trigger-only
     event_investment_success_large_title: 'Investment Success!',
     event_investment_success_large_desc: 'Your large investment has yielded a huge profit!',
