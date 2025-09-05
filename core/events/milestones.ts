@@ -1,6 +1,6 @@
 import { GameEvent, LifePhase, CharacterStatus, RelationshipStatus, Gender, GameState, Character, GameLogEntry } from '../types';
 import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, addDays, getCharacterDisplayName } from '../utils';
-import { exampleManifest } from '../components/AvatarBuilder';
+
 import { t } from '../localization';
 
 export const MILESTONE_EVENTS: GameEvent[] = [
@@ -16,7 +16,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
             { textKey: 'milestone_marriage_yes', effect: { 
                 statChanges: { happiness: 15 },
                 logKey: 'log_milestone_marriage_yes',
-                action: (state, charId) => {
+                                action: (state, charId, manifest) => {
                     const char1 = state.familyMembers[charId];
                     const partnerGender = char1.gender === Gender.Male ? Gender.Female : Gender.Male;
                     
@@ -32,7 +32,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
                         stats: {
                             iq: Math.max(20, Math.min(200, char1.stats.iq + (Math.floor(Math.random() * 41) - 20))),
                             happiness: Math.max(0, Math.min(100, char1.stats.happiness + (Math.floor(Math.random() * 31) - 15))),
-                            eq: Math.max(0, Math.min(100, char1.stats.eq + (Math.floor(Math.random() * 31) - 15))),
+                            eq: Math.min(100, Math.floor(((char1.stats.eq + (Math.floor(Math.random() * 31) - 15))))),
                             health: Math.max(0, Math.min(100, char1.stats.health + (Math.floor(Math.random() * 21) - 10))),
                             skill: 0,
                         },
@@ -54,9 +54,9 @@ export const MILESTONE_EVENTS: GameEvent[] = [
                         petId: null,
                         completedOneTimeEvents: [],
                         displayAdjective: null,
-                        avatarState: generateRandomAvatar(exampleManifest, char1.age, partnerGender),
+                        avatarState: generateRandomAvatar(manifest, char1.age, partnerGender),
                     };
-                    partner = { ...partner, ...assignNpcCareer(partner) };
+                    partner = { ...partner, ...assignNpcCareer(partner, manifest) };
                     
                     const updatedChar1 = {
                         ...char1,

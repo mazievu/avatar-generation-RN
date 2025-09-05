@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import type { Manifest, AvatarState, LayerKey, Character } from '../types';
-import { AVATAR_COLOR_PALETTE } from "../constants";
+import type { Manifest, AvatarState, LayerKey, Character } from '../core/types';
+import { AVATAR_COLOR_PALETTE } from "../core/constants";
 
 type AgeStage = 'baby' | 'child' | 'teen' | 'adult' | 'elder';
 

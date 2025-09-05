@@ -1,12 +1,12 @@
 import * as React from 'react';
-import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition } from '../types';
+import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition } from '../core/types';
 import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
-import { Gender, RelationshipStatus, CharacterStatus, LifePhase } from '../types';
-import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, EVENTS, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../constants';
-import { CLUBS } from '../clubsAndEventsData';
-import { SCENARIOS } from '../scenarios';
-import { Language, t, displayPhase, displayStatus, displayRelationshipStatus } from '../localization';
-import { getCharacterDisplayName, calculateEmployeeSalary } from '../utils';
+import { Gender, RelationshipStatus, CharacterStatus, LifePhase } from '../core/types';
+import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, EVENTS, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../core/constants';
+import { CLUBS } from '../core/clubsAndEventsData';
+import { SCENARIOS } from '../core/scenarios';
+import { Language, t, displayPhase, displayStatus, displayRelationshipStatus } from '../core/localization';
+import { getCharacterDisplayName, calculateEmployeeSalary } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { BusinessMap } from './BusinessMap';
 import './ui.css'

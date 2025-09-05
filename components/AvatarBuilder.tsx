@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { LayerKey, Manifest, AvatarState, Character, Gender } from "../types";
+import { LayerKey, Manifest, AvatarState, Character, Gender } from "../core/types";
 import { LockClosedIcon } from './icons';
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
 
@@ -412,7 +412,7 @@ const baseName = (path: string) =>
 
 // Backgrounds
 const backgroundOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/bg/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/bg/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })
@@ -423,7 +423,7 @@ const backgroundOptions: LayerOption[] = Object.entries(
 
 // Back Hair
 const backHairOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/hair/back/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/hair/back/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })
@@ -434,7 +434,7 @@ const backHairOptions: LayerOption[] = Object.entries(
 
 // Eyes
 const eyesOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/eyes/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/eyes/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import type { PurchasedAsset, AssetDefinition, Stats } from '../types';
-import { Language, t } from '../localization';
-import { ASSET_DEFINITIONS } from '../constants';
+import type { PurchasedAsset, AssetDefinition, Stats } from '../core/types';
+import { Language, t } from '../core/localization';
+import { ASSET_DEFINITIONS } from '../core/constants';
 import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
 
 interface AssetSlotProps {

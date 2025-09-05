@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Character, Club } from '../types';
 import { ModalBase } from './ui';
-import { t } from '../localization';
+import { t } from '../core/localization';
 
 interface ClubChoiceModalProps {
   character: Character;

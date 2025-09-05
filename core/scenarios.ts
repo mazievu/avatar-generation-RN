@@ -3,7 +3,7 @@ import { LifePhase, CharacterStatus, RelationshipStatus, Gender, PetType } from 
 import { INITIAL_FUNDS, UNIVERSITY_MAJORS } from './constants';
 import { createInitialCharacter, generateName, generateRandomAvatar, addDays } from './utils';
 import { Language } from './localization';
-import { exampleManifest } from './components/AvatarBuilder';
+import { exampleManifest } from '../components/AvatarBuilder';
 
 const createClassicState = (initialYear: number, lang: Language): GameState => {
     const firstCharacter = createInitialCharacter(initialYear, lang);

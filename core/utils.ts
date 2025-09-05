@@ -1,7 +1,7 @@
 import { Gender, LifePhase, Character, Stats, CharacterStatus, RelationshipStatus, Manifest, AvatarState, Business } from './types';
 import { LIFE_PHASE_AGES, CAREER_LADDER, UNIVERSITY_MAJORS, DAYS_IN_YEAR, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, AVATAR_COLOR_PALETTE } from './constants';
 import { Language, t } from './localization';
-import { exampleManifest } from './components/AvatarBuilder';
+
 import { CLUBS, CLUB_EVENTS } from './clubsAndEventsData';
 
 const MALE_NAMES_EN = ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Daniel", "Matthew", "Anthony", "Mark", "Donald", "Steven", "Paul", "Andrew", "Joshua", "Kevin"];
@@ -151,7 +151,7 @@ export const getLifePhase = (age: number): LifePhase => {
   return LifePhase.Retired;
 };
 
-export const createInitialCharacter = (year: number, lang: Language): Character => {
+export const createInitialCharacter = (year: number, lang: Language, manifest: Manifest): Character => {
     const gender = Math.random() < 0.5 ? Gender.Male : Gender.Female;
     const age = 0;
     return {
@@ -190,11 +190,11 @@ export const createInitialCharacter = (year: number, lang: Language): Character 
         currentClubs: [],
         completedClubEvents: [],
         displayAdjective: null,
-        avatarState: generateRandomAvatar(exampleManifest, age, gender),
+        avatarState: generateRandomAvatar(manifest, age, gender),
     };
 };
 
-export const handleBirth = (parent1: Character, parent2: Character, currentDate: { day: number, year: number }, lang: Language): Character => {
+export const handleBirth = (parent1: Character, parent2: Character, currentDate: { day: number, year: number }, lang: Language, manifest: Manifest): Character => {
     const gender = Math.random() < 0.5 ? Gender.Male : Gender.Female;
     const childStats: Stats = {
         iq: Math.min(200, Math.floor(((parent1.stats.iq + parent2.stats.iq) / 2) * (0.8 + Math.random() * 0.4))),
@@ -235,7 +235,7 @@ export const handleBirth = (parent1: Character, parent2: Character, currentDate:
         petId: null,
         completedOneTimeEvents: [],
         displayAdjective: null,
-        avatarState: generateRandomAvatar(exampleManifest, age, gender),
+        avatarState: generateRandomAvatar(manifest, age, gender),
     };
 };
 
@@ -263,7 +263,7 @@ export const formatDate = (day: number, year: number, lang: Language): string =>
   return `${month} ${dayOfMonth}, ${year}`;
 };
 
-export const assignNpcCareer = (character: Character): Partial<Character> => {
+export const assignNpcCareer = (character: Character, manifest: Manifest): Partial<Character> => {
     if (character.age < 23) {
         return { education: 'education_high_school', status: CharacterStatus.Unemployed };
     }
@@ -303,7 +303,7 @@ export const assignNpcCareer = (character: Character): Partial<Character> => {
         careerLevel,
         status: CharacterStatus.Working,
         stats: { ...character.stats, skill },
-        avatarState: generateRandomAvatar(exampleManifest, character.age, character.gender),
+        avatarState: generateRandomAvatar(manifest, character.age, character.gender),
     };
 };
 

@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useMemo } from 'react';
 import type { GameState, BusinessDefinition, Business, Character, Manifest } from '../types';
-import { Language, t } from '../localization';
-import { BUSINESS_DEFINITIONS, BUSINESS_MAP_LOCATIONS } from '../constants';
+import { Language, t } from '../core/localization';
+import { BUSINESS_DEFINITIONS, BUSINESS_MAP_LOCATIONS } from '../core/constants';
 import { BusinessMapSVG } from './BusinessMapSVG';
-import { calculateBusinessMonthlyNetIncome } from '../utils';
+import { calculateBusinessMonthlyNetIncome } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { RobotAvatarIcon } from './icons';
 

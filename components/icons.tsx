@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { PetType } from '../types';
+import { PetType } from '../core/types';
 
 interface IconProps {
     className?: string;
