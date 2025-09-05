@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club } from '../types';
-import { formatDate, getCharacterDisplayName } from '../utils';
-import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../constants';
+import { formatDate, getCharacterDisplayName } from '../core/utils';
+import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../core/constants';
 import {
     FamilyTree,
     EventModal,
@@ -21,7 +21,7 @@ import {
     BusinessManagementModal
 } from './ui';
 import { ClubChoiceModal } from './ClubChoiceModal';
-import { Language, t } from '../localization';
+import { Language, t } from '../core/localization';
 import { exampleManifest } from './AvatarBuilder';
 import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';

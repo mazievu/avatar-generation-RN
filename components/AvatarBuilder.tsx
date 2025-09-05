@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { LayerKey, Manifest, AvatarState, Character, Gender } from "../types";
 import { LockClosedIcon } from './icons';
-import { AVATAR_COLOR_PALETTE } from "../constants";
+import { AVATAR_COLOR_PALETTE } from "../core/constants";
 
 // =============================================
 // Helpers

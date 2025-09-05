@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club } from './types';
+import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club } from './core/types';
 import { LifePhase, CharacterStatus, RelationshipStatus, Gender } from './types';
 // FIX: Changed import from COST_OF_LIVING to getCostOfLiving to match the exported member from constants.
-import { GAME_SPEED_MS, DAYS_IN_YEAR, EVENTS, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './constants';
-import { CLUBS } from './clubsAndEventsData';
+import { GAME_SPEED_MS, DAYS_IN_YEAR, EVENTS, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './core/constants';
+import { CLUBS } from './core/clubsAndEventsData';
 import { GameUI } from './components/GameUI';
 import AvatarBuilder, { exampleManifest, usePreloadedImages } from './components/AvatarBuilder';
-import { SCENARIOS } from './scenarios';
-import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
-import { Language, t } from './localization';
-import { initGodMode } from './godmod';
+import { SCENARIOS } from './core/scenarios';
+import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './core/utils';
+import { Language, t } from './core/localization';
+import { initGodMode } from './core/godmod';
 
 type GameView = 'menu' | 'playing' | 'gameover' | 'welcome_back';
 const SAVE_KEY = 'generations_savegame';
