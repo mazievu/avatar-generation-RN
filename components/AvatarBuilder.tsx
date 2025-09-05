@@ -445,7 +445,7 @@ const eyesOptions: LayerOption[] = Object.entries(
 
 // Eyebrows
 const eyebrowsOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/eyebrows/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/eyebrows/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })
@@ -456,7 +456,7 @@ const eyebrowsOptions: LayerOption[] = Object.entries(
 
 // Mouth
 const mouthOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/mouth/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/mouth/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })
@@ -467,7 +467,7 @@ const mouthOptions: LayerOption[] = Object.entries(
 
 // Beard
 const beardOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/beard/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/beard/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })
@@ -478,7 +478,7 @@ const beardOptions: LayerOption[] = Object.entries(
 
 // Front Hair
 const frontHairOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/hair/front/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/hair/front/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })
@@ -489,7 +489,7 @@ const frontHairOptions: LayerOption[] = Object.entries(
 
 // Features (có subfolder: baby / normal / old / ...)
 const featureOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/features/**/*.{png,webp}', {
+  import.meta.glob('../src/asset/avatar-face/features/**/*.{png,webp}', {
     eager: true,
     query: '?url', import: 'default'
   })
