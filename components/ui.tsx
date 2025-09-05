@@ -292,9 +292,9 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
                                 <div className="mt-3">
                                     <p className="text-sm text-indigo-600 font-bold mb-1">{t('life_events_label', lang)}:</p>
                                     <ul className="list-disc list-inside text-sm text-slate-600">
-                                        {character.completedOneTimeEvents.map(eventId => {
+                                        {character.completedOneTimeEvents.map((eventId, index) => {
                                             const event = EVENTS.find(e => e.id === eventId);
-                                            return event ? <li key={eventId}>{t(event.titleKey, lang)}</li> : null;
+                                            return event ? <li key={`${eventId}-${index}`}>{t(event.titleKey, lang)}</li> : null;
                                         }) }
                                     </ul>
                                 </div>

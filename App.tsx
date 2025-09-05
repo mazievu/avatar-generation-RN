@@ -9,6 +9,7 @@ import AvatarBuilder, { exampleManifest, usePreloadedImages } from './components
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
 import { Language, t } from './localization';
+import { initGodMode } from './godmod';
 
 type GameView = 'menu' | 'playing' | 'gameover' | 'welcome_back';
 const SAVE_KEY = 'generations_savegame';
@@ -61,6 +62,10 @@ const App: React.FC = () => {
     const [customizingCharacterId, setCustomizingCharacterId] = useState<string | null>(null);
     
     const timerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        initGodMode(setGameState);
+    }, [setGameState]);
     
     const allAvatarUrls = useMemo(() => {
         const s = new Set<string>();
@@ -290,6 +295,20 @@ const App: React.FC = () => {
             const isNewYear = day === 1 && year > prevState.currentDate.year;
 
             if (isNewMonth) {
+                // Cleanup invalid business assignments
+                for (const businessId in newState.familyBusinesses) {
+                    const business = newState.familyBusinesses[businessId];
+                    for (const slot of business.slots) {
+                        if (slot.assignedCharacterId && slot.assignedCharacterId !== 'robot') {
+                            const char = nextFamilyMembers[slot.assignedCharacterId];
+                            const isWorkingAge = char && char.isAlive && char.age >= 18 && char.age < 60;
+                            if (!isWorkingAge) {
+                                slot.assignedCharacterId = null;
+                            }
+                        }
+                    }
+                }
+
                 let totalBusinessNetChange = 0;
                 let memberUpdates: Record<string, Partial<Character>> = {};
                 
@@ -611,9 +630,9 @@ const App: React.FC = () => {
                     let careerChoiceSet = false;
 
                     for (const id of livingMemberIds) {
-                        const char = nextFamilyMembers[id];
+                        let char = nextFamilyMembers[id];
                         const displayName = getCharacterDisplayName(char, language);
-                        let charUpdate: Partial<Character> = {}; // Declare charUpdate here
+                        let charUpdate: Partial<Character> = {};
 
                         // Update low stats counters
                         if (char.stats.happiness < 10) {
@@ -628,13 +647,13 @@ const App: React.FC = () => {
                         }
 
                         // Check for death due to prolonged low stats
-                        if (char.isAlive && ((charUpdate.lowHappinessYears || 0) >= 1 || (charUpdate.lowHealthYears || 0) >= 1)) {
+                        if (char.isAlive && ((charUpdate.lowHappinessYears || 0) >= 2 || (charUpdate.lowHealthYears || 0) >= 2)) {
                             charUpdate.isAlive = false;
                             charUpdate.deathDate = newState.currentDate;
                             let deathMessageKey = '';
-                            if ((charUpdate.lowHappinessYears || 0) >= 1 && (charUpdate.lowHealthYears || 0) >= 1) {
+                            if ((charUpdate.lowHappinessYears || 0) >= 2 && (charUpdate.lowHealthYears || 0) >= 2) {
                                 deathMessageKey = 'log_death_low_happiness_and_health';
-                            } else if ((charUpdate.lowHappinessYears || 0) >= 1) {
+                            } else if ((charUpdate.lowHappinessYears || 0) >= 2) {
                                 deathMessageKey = 'log_death_low_happiness';
                             } else {
                                 deathMessageKey = 'log_death_low_health';
@@ -648,11 +667,16 @@ const App: React.FC = () => {
                             });
                         }
 
-                        if (char.age === 6 && char.status === CharacterStatus.Idle) {
+                        if (Object.keys(charUpdate).length > 0) {
+                            char = { ...char, ...charUpdate };
+                            nextFamilyMembers[id] = char;
+                        }
+
+                        if (char.isAlive && char.age === 6 && char.status === CharacterStatus.Idle) {
                             newSchoolChoices.push({ characterId: id, newPhase: LifePhase.Elementary });
-                        } else if (char.age === 12 && char.status === CharacterStatus.InEducation) {
+                        } else if (char.isAlive && char.age === 12 && char.status === CharacterStatus.InEducation) {
                             newSchoolChoices.push({ characterId: id, newPhase: LifePhase.MiddleSchool });
-                        } else if (char.age === 16 && char.status === CharacterStatus.InEducation) {
+                        } else if (char.isAlive && char.age === 16 && char.status === CharacterStatus.InEducation) {
                             newSchoolChoices.push({ characterId: id, newPhase: LifePhase.HighSchool });
                         }
                     }
@@ -683,16 +707,25 @@ const App: React.FC = () => {
                                 newUniversityChoices.push({ characterId: id });
                             } 
                             else if (char.age === 60 && char.status !== CharacterStatus.Retired) {
-                                const isWorkingInFamilyBusiness = Object.values(prevState.familyBusinesses).some(business =>
-                                    business.slots.some(slot => slot.assignedCharacterId === char.id)
-                                );
-                        
-                                if (!isWorkingInFamilyBusiness) {
-                                    const charUpdate: Partial<Character> = { status: CharacterStatus.Retired, careerTrack: null, careerLevel: 0 };
-                                    nextFamilyMembers[id] = { ...char, ...charUpdate };
-                                    const displayName = getCharacterDisplayName(char, language);
-                                    nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_retirement_title', messageKey: 'log_retired', replacements: { name: displayName } });
+                                const charUpdate: Partial<Character> = { 
+                                    status: CharacterStatus.Retired, 
+                                    careerTrack: null, 
+                                    careerLevel: 0,
+                                    monthlyNetIncome: 0
+                                };
+
+                                // Unassign from any business
+                                for (const businessId in newState.familyBusinesses) {
+                                    const business = newState.familyBusinesses[businessId];
+                                    const slotIndex = business.slots.findIndex(slot => slot.assignedCharacterId === char.id);
+                                    if (slotIndex !== -1) {
+                                        business.slots[slotIndex].assignedCharacterId = null;
+                                    }
                                 }
+                                
+                                nextFamilyMembers[id] = { ...char, ...charUpdate };
+                                const displayName = getCharacterDisplayName(char, language);
+                                nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_retirement_title', messageKey: 'log_retired', replacements: { name: displayName } });
                             }
                         }
 
