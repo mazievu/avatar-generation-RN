@@ -518,7 +518,7 @@ const App: React.FC = () => {
                             business.slots.some(slot => slot.assignedCharacterId === char.id)
                         );
 
-                        if (charUpdate.monthsInCurrentJobLevel > 12 && !isHighestLevel && !isWorkingInFamilyBusiness) {
+                        if (charUpdate.monthsInCurrentJobLevel === 13 && !isHighestLevel && !isWorkingInFamilyBusiness) {
                             statsUpdate.happiness = Math.max(0, (statsUpdate.happiness ?? char.stats.happiness) - 3);
                             nextGameLog.push({
                                 year: newState.currentDate.year,
@@ -651,12 +651,16 @@ const App: React.FC = () => {
                             charUpdate.isAlive = false;
                             charUpdate.deathDate = newState.currentDate;
                             let deathMessageKey = '';
+                            let causeOfDeathKey = '';
                             if ((charUpdate.lowHappinessYears || 0) >= 2 && (charUpdate.lowHealthYears || 0) >= 2) {
                                 deathMessageKey = 'log_death_low_happiness_and_health';
+                                causeOfDeathKey = 'death_cause_low_happiness_and_health';
                             } else if ((charUpdate.lowHappinessYears || 0) >= 2) {
                                 deathMessageKey = 'log_death_low_happiness';
+                                causeOfDeathKey = 'death_cause_low_happiness';
                             } else {
                                 deathMessageKey = 'log_death_low_health';
+                                causeOfDeathKey = 'death_cause_low_health';
                             }
                             nextGameLog.push({
                                 year: newState.currentDate.year,
@@ -665,6 +669,20 @@ const App: React.FC = () => {
                                 messageKey: deathMessageKey,
                                 replacements: { name: displayName },
                             });
+
+                            const mourningEvent = EVENTS.find(e => e.id === 'milestone_mourning');
+                            if (mourningEvent) {
+                                const livingMembers = Object.values(nextFamilyMembers).filter(m => m.isAlive && m.id !== id);
+                                const newEventQueue = livingMembers.map(member => ({
+                                    characterId: member.id,
+                                    event: mourningEvent,
+                                    replacements: {
+                                        deceasedName: displayName,
+                                        causeOfDeath: t(causeOfDeathKey, language)
+                                    }
+                                }));
+                                newState.eventQueue.push(...newEventQueue);
+                            }
                         }
 
                         if (Object.keys(charUpdate).length > 0) {
@@ -1461,7 +1479,7 @@ const App: React.FC = () => {
             const updatedCharacter = {
                 ...character,
                 careerLevel: newLevel,
-                stats: { ...character.stats, happiness: Math.min(100, character.stats.happiness + 10), eq: Math.min(100, character.stats.eq + 5) },
+                stats: { ...character.stats, happiness: Math.min(100, character.stats.happiness + 20), eq: Math.min(100, character.stats.eq + 5) },
                 monthsInCurrentJobLevel: 0
             };
             const displayName = getCharacterDisplayName(character, language);
@@ -1469,7 +1487,7 @@ const App: React.FC = () => {
                 year: prevState.currentDate.year,
                 messageKey: 'log_promoted',
                 replacements: { name: displayName, title: t(newTitleKey, language) },
-                statChanges: { happiness: 10, eq: 5 },
+                statChanges: { happiness: 20, eq: 5 },
                 characterId: characterId,
                 eventTitleKey: 'event_promotion_title',
             };

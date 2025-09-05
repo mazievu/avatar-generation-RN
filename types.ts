@@ -212,7 +212,7 @@ export interface GameState {
   currentDate: { day: number, year: number };
   gameLog: GameLogEntry[];
   gameOverReason: 'victory' | 'bankruptcy' | 'debt' | null;
-  activeEvent: { characterId: string, event: GameEvent } | null;
+  activeEvent: { characterId: string, event: GameEvent, replacements?: Record<string, string | number> } | null;
   pendingSchoolChoice: { characterId: string; newPhase: LifePhase }[] | null;
   pendingUniversityChoice: { characterId: string }[] | null;
   pendingMajorChoice: { characterId: string; options: UniversityMajor[] } | null;
@@ -221,7 +221,7 @@ export interface GameState {
   pendingUnderqualifiedChoice?: { characterId: string; careerTrackKey: string; } | null;
   pendingLoanChoice: boolean | null;
   pendingPromotion: { characterId: string; newLevel: number; newTitleKey: string } | null;
-  eventQueue: { characterId: string, event: GameEvent }[];
+  eventQueue: { characterId: string, event: GameEvent, replacements?: Record<string, string | number> }[];
   activeLoans: Loan[];
   highestEducation: string;
   highestCareer: string;

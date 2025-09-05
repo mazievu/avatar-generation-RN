@@ -1,6 +1,7 @@
 import { GameEvent, LifePhase, CharacterStatus, RelationshipStatus, Gender, GameState, Character, GameLogEntry } from '../types';
-import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, addDays } from '../utils';
+import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, addDays, getCharacterDisplayName } from '../utils';
 import { exampleManifest } from '../components/AvatarBuilder';
+import { t } from '../localization';
 
 export const MILESTONE_EVENTS: GameEvent[] = [
     // Relationships & Family
@@ -209,6 +210,41 @@ export const MILESTONE_EVENTS: GameEvent[] = [
     },
     // End of Life
     {
+        id: 'milestone_mourning',
+        isMilestone: true,
+        isTriggerOnly: true,
+        applyEffectToAll: true,
+        titleKey: 'milestone_mourning_title',
+        descriptionKey: 'milestone_mourning_desc',
+        phases: [LifePhase.Newborn, LifePhase.Elementary, LifePhase.MiddleSchool, LifePhase.HighSchool, LifePhase.PostGraduation, LifePhase.Retired],
+        choices: [
+            {
+                textKey: 'milestone_mourning_choice_1',
+                effect: {
+                    fundChange: -100,
+                    statChanges: { happiness: -15 },
+                    logKey: 'log_milestone_mourning_choice_1',
+                }
+            },
+            {
+                textKey: 'milestone_mourning_choice_2',
+                effect: {
+                    fundChange: -500,
+                    statChanges: { happiness: -5 },
+                    logKey: 'log_milestone_mourning_choice_2',
+                }
+            },
+            {
+                textKey: 'milestone_mourning_choice_3',
+                effect: {
+                    fundChange: -10000,
+                    statChanges: { happiness: 10 },
+                    logKey: 'log_milestone_mourning_choice_3',
+                }
+            }
+        ]
+    },
+    {
         id: 'milestone_death_old_age',
         isMilestone: true,
         titleKey: 'milestone_death_old_age_title',
@@ -220,20 +256,27 @@ export const MILESTONE_EVENTS: GameEvent[] = [
                 logKey: 'log_milestone_death_old_age_ok',
                 action: (state, charId) => {
                     const familyMembers = { ...state.familyMembers };
-                    const char = { ...familyMembers[charId] };
-                    char.isAlive = false;
-                    char.deathDate = { ...state.currentDate };
-                    familyMembers[charId] = char;
+                    const deceasedChar = { ...familyMembers[charId] };
+                    deceasedChar.isAlive = false;
+                    deceasedChar.deathDate = { ...state.currentDate };
+                    familyMembers[charId] = deceasedChar;
 
-                    Object.values(familyMembers).forEach(m => {
-                        if (m.isAlive && m.id !== charId) {
-                            const updatedMember = { ...m, 
-                                mourningUntilYear: state.currentDate.year + 2,
-                                stats: { ...m.stats, happiness: Math.max(0, m.stats.happiness - 20) }
-                            };
-                            familyMembers[m.id] = updatedMember;
+                    const mourningEvent = MILESTONE_EVENTS.find(e => e.id === 'milestone_mourning');
+                    if (mourningEvent) {
+                        const livingMembers = Object.values(familyMembers).filter(m => m.isAlive && m.id !== charId);
+                        if (livingMembers.length > 0) {
+                            const eventRecipient = livingMembers[0];
+                            const newEventQueue = [{
+                                characterId: eventRecipient.id,
+                                event: mourningEvent,
+                                replacements: {
+                                    deceasedName: getCharacterDisplayName(deceasedChar, state.lang),
+                                    causeOfDeath: t('death_cause_old_age', state.lang)
+                                }
+                            }];
+                            state.eventQueue.push(...newEventQueue);
                         }
-                    });
+                    }
                     
                     return { familyMembers };
                 }

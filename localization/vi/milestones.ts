@@ -1,5 +1,3 @@
-
-
 export default {
     // Marriage
     milestone_marriage_title: 'Lời cầu hôn',
@@ -25,5 +23,19 @@ export default {
     milestone_death_old_age_title: 'Một cuộc đời đã sống',
     milestone_death_old_age_desc: 'Bạn đã sống một cuộc đời dài và trọn vẹn. Đã đến lúc yên nghỉ.',
     milestone_death_old_age_ok: 'Tạm biệt.',
-    log_milestone_death_old_age_ok: 'Tôi đã ra đi thanh thản, được bao bọc bởi những kỷ niệm.'
+    log_milestone_death_old_age_ok: 'Tôi đã ra đi thanh thản, được bao bọc bởi những kỷ niệm.',
+
+    // Mourning
+    milestone_mourning_title: 'Tang lễ',
+    milestone_mourning_desc: 'Hôm nay chúng ta ở đây để tưởng nhớ {deceasedName}, người đã qua đời vì {causeOfDeath}.',
+    milestone_mourning_choice_1: 'Một buổi lễ đơn giản (-$100)',
+    milestone_mourning_choice_2: 'Một đám tang truyền thống (-$500)',
+    milestone_mourning_choice_3: 'Một lễ kỷ niệm long trọng (-$2000)',
+    log_milestone_mourning_choice_1: 'Chúng tôi đã tổ chức một buổi lễ đơn giản để tưởng nhớ {deceasedName}.',
+    log_milestone_mourning_choice_2: 'Chúng tôi đã tổ chức một đám tang truyền thống cho {deceasedName}.',
+    log_milestone_mourning_choice_3: 'Chúng tôi đã tổ chức một lễ kỷ niệm long trọng cho {deceasedName}.',
+    death_cause_old_age: 'tuổi già',
+    death_cause_low_happiness: 'trầm cảm',
+    death_cause_low_health: 'bệnh tật',
+    death_cause_low_happiness_and_health: 'trầm cảm và bệnh tật',
 };
