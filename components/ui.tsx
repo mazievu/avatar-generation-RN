@@ -398,7 +398,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ characterId, allMembers,
 
 
 interface EventModalProps extends LocalizedProps {
-  eventData: { characterId: string; event: GameEvent };
+  eventData: { characterId: string; event: GameEvent; replacements?: Record<string, string | number> };
   character: Character;
   onChoice: (choice: EventChoice) => void;
   onClose: () => void;
@@ -493,7 +493,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                 </div>
             </div>
             
-            <p className="mb-6 text-slate-600">{t(displayEventData.event.descriptionKey, lang)}</p>
+            <p className="mb-6 text-slate-600">{t(displayEventData.event.descriptionKey, lang, displayEventData.replacements)}</p>
             
             {!outcome ? (
                 <div className="space-y-3">

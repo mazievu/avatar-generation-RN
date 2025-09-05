@@ -268,6 +268,7 @@ export interface GameEvent {
   isTriggerOnly?: boolean;
   isMilestone?: boolean;
   allowedRelationshipStatuses?: RelationshipStatus[];
+  applyEffectToAll?: boolean;
   condition?: (state: GameState, char: Character) => boolean;
 }
 

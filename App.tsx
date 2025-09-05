@@ -879,8 +879,7 @@ const App: React.FC = () => {
     
             let nextState = JSON.parse(JSON.stringify(prevState));
     
-            const { characterId, event } = prevState.activeEvent;
-            const character = nextState.familyMembers[characterId];
+            const { characterId, event, replacements } = prevState.activeEvent;
             const { effect } = choice;
 
             let finalEffect = effect;
@@ -894,17 +893,36 @@ const App: React.FC = () => {
             }
     
             // 1. Apply direct stat/fund changes
-            if (finalEffect.statChanges) {
-                for (const [stat, change] of Object.entries(finalEffect.statChanges)) {
-                    const key = stat as keyof Stats;
-                    if (key === 'skill' && character.phase !== LifePhase.PostGraduation && character.phase !== LifePhase.Retired) {
-                        continue;
-                    }
-                    character.stats[key] = Math.max(0, character.stats[key] + change);
-                    if (key === 'iq') {
-                        character.stats[key] = Math.min(200, character.stats[key]);
-                    } else {
-                        character.stats[key] = Math.min(100, character.stats[key]);
+            if (event.applyEffectToAll) {
+                if (finalEffect.statChanges) {
+                    Object.values(nextState.familyMembers).forEach(char => {
+                        if (char.isAlive) {
+                            for (const [stat, change] of Object.entries(finalEffect.statChanges)) {
+                                const key = stat as keyof Stats;
+                                char.stats[key] = Math.max(0, char.stats[key] + change);
+                                if (key === 'iq') {
+                                    char.stats[key] = Math.min(200, char.stats[key]);
+                                } else {
+                                    char.stats[key] = Math.min(100, char.stats[key]);
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                const character = nextState.familyMembers[characterId];
+                if (finalEffect.statChanges) {
+                    for (const [stat, change] of Object.entries(finalEffect.statChanges)) {
+                        const key = stat as keyof Stats;
+                        if (key === 'skill' && character.phase !== LifePhase.PostGraduation && character.phase !== LifePhase.Retired) {
+                            continue;
+                        }
+                        character.stats[key] = Math.max(0, character.stats[key] + change);
+                        if (key === 'iq') {
+                            character.stats[key] = Math.min(200, character.stats[key]);
+                        } else {
+                            character.stats[key] = Math.min(100, character.stats[key]);
+                        }
                     }
                 }
             }
@@ -912,14 +930,17 @@ const App: React.FC = () => {
             if (finalEffect.fundChange) {
                 nextState.familyFund += finalEffect.fundChange;
             }
+
+            if (event.applyEffectToAll) {
+                nextState.eventQueue = nextState.eventQueue.filter((e: any) => e.event.id !== event.id);
+            }
     
             // 2. Update one-time event list or cooldowns
-            // SPECIAL HANDLING for the repeating children milestone
+            const character = nextState.familyMembers[characterId];
             if (event.id === 'milestone_children') {
                 const cooldownYears = 3; // 3 years
                 character.childrenEventCooldownUntil = addDays(nextState.currentDate, cooldownYears * DAYS_IN_YEAR);
             } 
-            // HANDLING for all other one-time events
             else if (ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) {
                 character.completedOneTimeEvents = [...(character.completedOneTimeEvents || []), event.id];
             }
@@ -927,7 +948,6 @@ const App: React.FC = () => {
             // 3. Process actions, which return partial state updates
             if (finalEffect.action) {
                 const updates = finalEffect.action(nextState, characterId);
-                // Merge the partial state update.
                 Object.assign(nextState, updates);
             }
     
@@ -953,14 +973,12 @@ const App: React.FC = () => {
             }
 
             // 5. Add detailed log entry
-            // BUG FIX: The 'milestone_child_conceived' action handles its own logging to support multiples (twins, etc).
-            // To avoid a duplicate log entry, we skip the generic logging for this specific event.
             if (event.id !== 'milestone_child_conceived') {
-                const displayName = getCharacterDisplayName(character, language);
+                const logReplacements = { ...replacements, name: getCharacterDisplayName(character, language) };
                 const logMessage: GameLogEntry = {
                     year: nextState.currentDate.year,
                     messageKey: finalEffect.logKey,
-                    replacements: { name: displayName },
+                    replacements: logReplacements,
                     statChanges: finalEffect.statChanges,
                     fundChange: finalEffect.fundChange,
                     characterId: characterId,

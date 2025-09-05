@@ -265,15 +265,14 @@ export const MILESTONE_EVENTS: GameEvent[] = [
                     if (mourningEvent) {
                         const livingMembers = Object.values(familyMembers).filter(m => m.isAlive && m.id !== charId);
                         if (livingMembers.length > 0) {
-                            const eventRecipient = livingMembers[0];
-                            const newEventQueue = [{
-                                characterId: eventRecipient.id,
+                            const newEventQueue = livingMembers.map(member => ({
+                                characterId: member.id,
                                 event: mourningEvent,
                                 replacements: {
                                     deceasedName: getCharacterDisplayName(deceasedChar, state.lang),
                                     causeOfDeath: t('death_cause_old_age', state.lang)
                                 }
-                            }];
+                            }));
                             state.eventQueue.push(...newEventQueue);
                         }
                     }
