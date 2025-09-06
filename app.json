@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MyNewGame",
-    "slug": "MyNewGame",
+    "name": "Avatar Generation",
+    "slug": "avatar-generation-RN",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
