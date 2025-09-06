@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club } from '../types';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType } from 'react-native';
+import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club } from '../core/types';
 import { formatDate, getCharacterDisplayName } from '../core/utils';
 import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../core/constants';
 import {
@@ -25,6 +26,7 @@ import { Language, t } from '../core/localization';
 import { exampleManifest } from './AvatarBuilder';
 import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
+import { Picker } from '@react-native-picker/picker';
 
 type ActiveTab = 'log' | 'assets' | 'businesses';
 
@@ -33,17 +35,16 @@ const TabButtonInternal: React.FC<{
   isActive: boolean;
   onClick: () => void;
 }> = ({ label, isActive, onClick }) => {
-  const activeClasses = 'bg-white text-indigo-500';
-  const inactiveClasses = 'bg-slate-100 text-slate-500 hover:bg-slate-200';
   return (
-    <button
-      onClick={onClick}
-      className={`px-6 py-3 text-lg font-extrabold rounded-t-2xl transition-colors transform translate-y-px ${
-        isActive ? activeClasses : inactiveClasses
-      }`}
+    <TouchableOpacity
+      onPress={onClick}
+      style={[
+        gameUIStyles.tabButtonBase,
+        isActive ? gameUIStyles.tabButtonActive : gameUIStyles.tabButtonInactive,
+      ]}
     >
-      {label}
-    </button>
+      <Text style={gameUIStyles.tabButtonText}>{label}</Text>
+    </TouchableOpacity>
   );
 };
 const TabButton = React.memo(TabButtonInternal);
@@ -58,7 +59,7 @@ interface GameUIProps {
     showInstructions: boolean;
     selectedCharacter: Character | null;
     lang: Language;
-    avatarImages: Record<string, HTMLImageElement>;
+    avatarImages: Record<string, ImageSourcePropType>; // Changed HTMLImageElement to ImageSourcePropType
     onSetLang: (lang: Language) => void;
     onStartGame: (mode: string) => void;
     onShowInstructions: () => void;
@@ -161,13 +162,13 @@ export const GameUI: React.FC<GameUIProps> = ({
     }
 
     if (!gameState) {
-        return <div className="flex items-center justify-center h-screen">Loading...</div>;
+        return <View style={[gameUIStyles.flexCenter, gameUIStyles.fullScreen]}><Text>Loading...</Text></View>;
     }
 
     const rootCharacter = Object.values(gameState.familyMembers).find(c => c.generation === 1 && c.isPlayerCharacter);
 
     return (
-        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+        <View style={gameUIStyles.mainContainer}>
             {view === 'gameover' && gameState.gameOverReason && <SummaryScreen gameState={gameState} onRestart={onStartNewGame} lang={lang}/>}
             {gameState.activeEvent && (
                 <EventModal 
@@ -268,55 +269,60 @@ export const GameUI: React.FC<GameUIProps> = ({
                 />
             )}
             
-            <div className="max-w-7xl mx-auto">
-                <header className="mb-6 pb-4 flex flex-wrap gap-x-8 gap-y-4 items-center justify-between">
-                    <div className="flex flex-col">
-                        <h1 className="text-4xl font-extrabold text-pink-500" style={{textShadow: '2px 2px 0 white'}}>{t('game_title', lang)}</h1>
-                        <span className="font-bold text-slate-500">{formatDate(gameState.currentDate.day, gameState.currentDate.year, lang)}</span>
-                    </div>
-                    <div className="bg-white p-3 rounded-2xl flex items-center gap-4 soft-shadow">
-                        <div className="flex items-baseline">
-                            <span className="text-slate-500 font-bold">{t('family_fund_label', lang)}:</span>
-                            <span className={`font-extrabold text-xl ml-2 ${gameState.familyFund >= 0 ? 'text-slate-700' : 'text-red-500'}`}>
+            <View style={gameUIStyles.maxWidthContainer}>
+                <View style={gameUIStyles.headerContainer}>
+                    <View style={gameUIStyles.headerLeft}>
+                        <Text style={gameUIStyles.gameTitle}>{t('game_title', lang)}</Text>
+                        <Text style={gameUIStyles.dateText}>{formatDate(gameState.currentDate.day, gameState.currentDate.year, lang)}</Text>
+                    </View>
+                    <View style={gameUIStyles.fundContainer}>
+                        <View style={gameUIStyles.fundTextContainer}>
+                            <Text style={gameUIStyles.fundLabel}>{t('family_fund_label', lang)}:</Text>
+                            <Text style={[gameUIStyles.fundValue, gameState.familyFund >= 0 ? gameUIStyles.fundPositive : gameUIStyles.fundNegative]}>
                                 ${Math.round(gameState.familyFund).toLocaleString()}
-                            </span>
+                            </Text>
                             {gameState.monthlyNetChange !== 0 && (
-                                <span className={`text-sm ml-2 font-mono font-bold ${gameState.monthlyNetChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                <Text style={[gameUIStyles.monthlyChange, gameState.monthlyNetChange >= 0 ? gameUIStyles.monthlyChangePositive : gameUIStyles.monthlyChangeNegative]}>
                                     ({gameState.monthlyNetChange > 0 ? '+' : ''}{Math.round(gameState.monthlyNetChange).toLocaleString()}/mo)
-                                </span>
+                                </Text>
                             )}
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                         <div className="bg-white p-1 rounded-xl flex items-center gap-1 soft-shadow">
-                            <button onClick={() => onSetLang('en')} className={`px-3 py-1 text-sm font-bold rounded-lg ${lang === 'en' ? 'bg-indigo-500 text-white' : 'bg-transparent text-slate-500'}`}>EN</button>
-                            <button onClick={() => onSetLang('vi')} className={`px-3 py-1 text-sm font-bold rounded-lg ${lang === 'vi' ? 'bg-indigo-500 text-white' : 'bg-transparent text-slate-500'}`}>VI</button>
-                        </div>
-                        <button onClick={onQuitGame} className="chunky-button chunky-button-slate">{t('quit_game_button', lang)}</button>
-                        <button onClick={() => onSetIsPaused(!isPaused)} className="chunky-button chunky-button-blue">
-                            {isPaused ? t('resume_button', lang) : t('pause_button', lang)}
-                        </button>
-                        <select 
-                            value={gameSpeed} 
-                            onChange={(e) => onSetGameSpeed(Number(e.target.value))} 
-                            className="bg-white border-2 border-slate-200 rounded-xl px-3 py-2 font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                        </View>
+                    </View>
+                    <View style={gameUIStyles.headerRight}>
+                         <View style={gameUIStyles.languageButtonsContainer}>
+                            <TouchableOpacity onPress={() => onSetLang('en')} style={[gameUIStyles.languageButton, lang === 'en' ? gameUIStyles.languageButtonActive : gameUIStyles.languageButtonInactive]}>
+                                <Text style={gameUIStyles.languageButtonText}>EN</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => onSetLang('vi')} style={[gameUIStyles.languageButton, lang === 'vi' ? gameUIStyles.languageButtonActive : gameUIStyles.languageButtonInactive]}>
+                                <Text style={gameUIStyles.languageButtonText}>VI</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity onPress={onQuitGame} style={gameUIStyles.chunkyButtonSlate}><Text style={gameUIStyles.chunkyButtonText}>{t('quit_game_button', lang)}</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => onSetIsPaused(!isPaused)} style={gameUIStyles.chunkyButtonBlue}>
+                            <Text style={gameUIStyles.chunkyButtonText}>{isPaused ? t('resume_button', lang) : t('pause_button', lang)}</Text>
+                        </TouchableOpacity>
+                        <Picker
+                            selectedValue={gameSpeed}
+                            onValueChange={(itemValue) => onSetGameSpeed(Number(itemValue))}
+                            style={gameUIStyles.speedPicker}
+                            itemStyle={gameUIStyles.speedPickerItem}
                         >
-                            <option value={200}>{t('speed_slow', lang)}</option>
-                            <option value={100}>{t('speed_normal', lang)}</option>
-                            <option value={50}>{t('speed_fast', lang)}</option>
-                            <option value={10}>{t('speed_very_fast', lang)}</option>
-                        </select>
-                    </div>
-                </header>
+                            <Picker.Item label={t('speed_slow', lang)} value={200} />
+                            <Picker.Item label={t('speed_normal', lang)} value={100} />
+                            <Picker.Item label={t('speed_fast', lang)} value={50} />
+                            <Picker.Item label={t('speed_very_fast', lang)} value={10} />
+                        </Picker>
+                    </View>
+                </View>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className={`${mainView === 'business' ? 'lg:col-span-3' : 'lg:col-span-2'} bg-white/80 backdrop-blur-sm p-4 rounded-2xl h-[80vh] soft-shadow flex flex-col overflow-hidden`}>
+                <View style={gameUIStyles.mainContentGrid}>
+                    <View style={[gameUIStyles.mainContentLeft, mainView === 'business' ? gameUIStyles.mainContentLeftFull : gameUIStyles.mainContentLeftPartial]}>
                         {mainView === 'tree' ? (
                             <>
-                                <h2 className="text-2xl font-extrabold mb-4 text-indigo-500 p-2 flex-shrink-0">{t('family_tree_title', lang)}</h2>
-                                <div className="flex-grow w-full text-center p-4 overflow-auto">
-                                    {rootCharacter ? <FamilyTree characterId={rootCharacter.id} allMembers={gameState.familyMembers} onAvatarClick={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} /> : <p>Your family story begins...</p>}
-                                </div>
+                                <Text style={gameUIStyles.familyTreeTitle}>{t('family_tree_title', lang)}</Text>
+                                <View style={gameUIStyles.familyTreeContainer}>
+                                    {rootCharacter ? <FamilyTree characterId={rootCharacter.id} allMembers={gameState.familyMembers} onAvatarClick={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} /> : <Text style={gameUIStyles.noFamilyText}>Your family story begins...</Text>}
+                                </View>
                             </>
                         ) : (
                             <BusinessMap 
@@ -326,42 +332,93 @@ export const GameUI: React.FC<GameUIProps> = ({
                                 lang={lang}
                                 images={avatarImages}
                                 manifest={exampleManifest}
-                                mainView={mainView} // Pass the mainView prop
+                                mainView={mainView}
                                 onBackToTree={() => {
                                     onSetMainView('tree');
-                                    setActiveTab('log'); // Reset to log tab when going back to tree view
+                                    setActiveTab('log');
                                 }}
                             />
                         )}
-                    </div>
-                    <div className="lg:col-span-1 h-[80vh] flex flex-col">
-                        <div className="flex-shrink-0">
+                    </View>
+                    <View style={gameUIStyles.mainContentRight}>
+                        <View style={gameUIStyles.tabButtonsContainer}>
                             <TabButton label={t('tab_log', lang)} isActive={activeTab === 'log'} onClick={() => handleTabClick('log')} />
                             <TabButton label={t('tab_assets', lang)} isActive={activeTab === 'assets'} onClick={() => handleTabClick('assets')} />
                             <TabButton label={t('tab_businesses', lang)} isActive={activeTab === 'businesses'} onClick={() => handleTabClick('businesses')} />
-                        </div>
-                         <div className="flex-grow h-0 -mt-px bg-white rounded-r-2xl rounded-b-2xl soft-shadow">
-                            <div className={`h-full ${activeTab === 'log' || mainView === 'tree' && activeTab !== 'assets' ? '' : 'hidden'}`}>
+                        </View>
+                         <View style={gameUIStyles.tabContentContainer}>
+                            <View style={[gameUIStyles.tabContent, (activeTab === 'log' || (mainView === 'tree' && activeTab !== 'assets')) ? {} : gameUIStyles.hidden]}>
                                 <GameLog log={gameState.gameLog} lang={lang} familyMembers={gameState.familyMembers} />
-                            </div>
-                            <div className={`h-full ${activeTab === 'assets' ? '' : 'hidden'}`}>
+                            </View>
+                            <View style={[gameUIStyles.tabContent, activeTab === 'assets' ? {} : gameUIStyles.hidden]}>
                                 <FamilyAssetsPanel 
                                     purchasedAssets={gameState.purchasedAssets} 
                                     familyFund={gameState.familyFund}
                                     onPurchaseAsset={onPurchaseAsset}
                                     lang={lang} 
                                 />
-                            </div>
-                            <div className={`h-full ${activeTab === 'businesses' ? '' : 'hidden'}`}>
-                                 <div className="p-4 h-full overflow-y-auto">
-                                    <h3 className="text-2xl font-black mb-4 text-blue-400">{t('family_businesses_title', lang)}</h3>
-                                    <p className="text-slate-500">{t('business_map_intro', lang)}</p>
-                                </div>
-                            </div>
-                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            </View>
+                            <View style={[gameUIStyles.tabContent, activeTab === 'businesses' ? {} : gameUIStyles.hidden]}>
+                                 <View style={gameUIStyles.businessPanelInner}>
+                                    <Text style={gameUIStyles.businessPanelTitle}>{t('family_businesses_title', lang)}</Text>
+                                    <Text style={gameUIStyles.businessPanelIntro}>{t('business_map_intro', lang)}</Text>
+                                </View>
+                            </View>
+                         </View>
+                    </View>
+                </View>
+            </View>
+        </View>
     );
 };
+
+// NOTE: This is a simplified stylesheet. A real app would have more extensive styling.
+const gameUIStyles = StyleSheet.create({
+    flexCenter: { alignItems: 'center', justifyContent: 'center' },
+    fullScreen: { flex: 1 },
+    mainContainer: { flex: 1, backgroundColor: '#f0f4f8' },
+    maxWidthContainer: { flex: 1, padding: 16 },
+    headerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
+    headerLeft: { },
+    gameTitle: { fontSize: 32, fontWeight: 'bold', color: '#ec4899' },
+    dateText: { fontSize: 16, color: '#64748b' },
+    fundContainer: { },
+    fundTextContainer: { flexDirection: 'row', alignItems: 'baseline' },
+    fundLabel: { fontSize: 16, color: '#64748b' },
+    fundValue: { fontSize: 20, fontWeight: 'bold', marginLeft: 8 },
+    fundPositive: { color: '#1f2937' },
+    fundNegative: { color: '#ef4444' },
+    monthlyChange: { fontSize: 14, marginLeft: 8 },
+    monthlyChangePositive: { color: '#22c55e' },
+    monthlyChangeNegative: { color: '#ef4444' },
+    headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    languageButtonsContainer: { flexDirection: 'row', backgroundColor: 'white', borderRadius: 8, padding: 4 },
+    languageButton: { paddingVertical: 4, paddingHorizontal: 12, borderRadius: 6 },
+    languageButtonActive: { backgroundColor: '#6366f1' },
+    languageButtonInactive: { backgroundColor: 'transparent' },
+    languageButtonText: { color: 'white', fontWeight: 'bold' },
+    chunkyButtonSlate: { backgroundColor: '#64748b', padding: 12, borderRadius: 8 },
+    chunkyButtonBlue: { backgroundColor: '#3b82f6', padding: 12, borderRadius: 8 },
+    chunkyButtonText: { color: 'white', fontWeight: 'bold' },
+    speedPicker: { width: 150, height: 44 },
+    speedPickerItem: { height: 44 },
+    mainContentGrid: { flexDirection: 'row', flex: 1, gap: 16 },
+    mainContentLeft: { flex: 2, backgroundColor: 'rgba(255, 255, 255, 0.8)', borderRadius: 16, padding: 16 },
+    mainContentLeftFull: { flex: 3 },
+    mainContentLeftPartial: { flex: 2 },
+    familyTreeTitle: { fontSize: 24, fontWeight: 'bold', color: '#6366f1', marginBottom: 16 },
+    familyTreeContainer: { flex: 1 },
+    noFamilyText: { fontStyle: 'italic', color: '#64748b' },
+    mainContentRight: { flex: 1, flexDirection: 'column' },
+    tabButtonsContainer: { flexDirection: 'row' },
+    tabButtonBase: { paddingHorizontal: 24, paddingVertical: 12, borderTopLeftRadius: 16, borderTopRightRadius: 16 },
+    tabButtonActive: { backgroundColor: 'white' },
+    tabButtonInactive: { backgroundColor: '#e2e8f0' },
+    tabButtonText: { fontSize: 18, fontWeight: 'bold' },
+    tabContentContainer: { flex: 1, backgroundColor: 'white', borderRadius: 16, borderTopLeftRadius: 0 },
+    tabContent: { flex: 1, padding: 16 },
+    hidden: { display: 'none' },
+    businessPanelInner: { padding: 16 },
+    businessPanelTitle: { fontSize: 24, fontWeight: 'bold', color: '#3b82f6', marginBottom: 16 },
+    businessPanelIntro: { color: '#64748b' },
+});

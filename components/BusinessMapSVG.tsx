@@ -5,7 +5,7 @@ import { Image, StyleSheet } from "react-native";
 export const BusinessMapSVG: React.FC = () => {
   return (
     <Image
-      source={require('../../public/asset/business-map.webp')} // Adjust path as needed
+      source={require('../public/asset/business-map.webp')} // Adjust path as needed
       style={businessMapSVGStyles.image}
       accessibilityLabel="Business Map"
     />

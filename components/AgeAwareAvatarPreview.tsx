@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { View, Image, StyleSheet, ImageSourcePropType } from 'react-native';
 import type { Manifest, AvatarState, LayerKey, Character } from '../core/types';
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
 
@@ -26,8 +27,8 @@ function getVariantSrc(
     layerKey: LayerKey,
     stage: AgeStage,
     manifest: Manifest,
-    images: Record<string, HTMLImageElement>
-): { src: string | undefined, name: string | undefined } {
+    images: Record<string, ImageSourcePropType>
+): { src: ImageSourcePropType | undefined, name: string | undefined } {
     if (!optionId) return { src: undefined, name: undefined };
     
     const layer = manifest.find(l => l.key === layerKey);
@@ -40,10 +41,13 @@ function getVariantSrc(
 
     const ageVariantSrc = createVariantSrc(baseSrc, stage);
     if (images[ageVariantSrc]) {
-        return { src: ageVariantSrc, name: option.name };
+        return { src: images[ageVariantSrc], name: option.name };
+    }
+    if (images[baseSrc]) {
+        return { src: images[baseSrc], name: option.name };
     }
 
-    return { src: baseSrc, name: option.name };
+    return { src: undefined, name: option.name };
 }
 
 // Placeholder generation logic, adapted from AvatarBuilder
@@ -84,7 +88,7 @@ function makePlaceholderSVG(width: number, height: number, label: string) {
 
 interface Props {
   manifest: Manifest;
-  images: Record<string, HTMLImageElement>;
+  images: Record<string, ImageSourcePropType>;
   character: Character;
   size: { width: number; height: number };
 }
@@ -93,17 +97,19 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
     // Handle static avatars for specific characters (e.g., Mila's family)
     if (character.staticAvatarUrl) {
         return (
-            <div
-                className="relative overflow-hidden rounded-2xl shadow-md bg-slate-200"
-                style={{ width: size.width, height: size.height }}
+            <View
+                style={[
+                    ageAwareAvatarPreviewStyles.container,
+                    { width: size.width, height: size.height }
+                ]}
             >
-                <img
-                    src={character.staticAvatarUrl}
-                    alt={character.name}
-                    className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
-                    draggable={false}
+                <Image
+                    source={{ uri: character.staticAvatarUrl }}
+                    // alt={character.name} is not a prop in RN Image
+                    style={ageAwareAvatarPreviewStyles.staticImage}
+                    // draggable={false} is not a prop in RN Image
                 />
-            </div>
+            </View>
         );
     }
 
@@ -112,9 +118,11 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
   const orderedLayers = useMemo(() => [...manifest].sort((a, b) => a.zIndex - b.zIndex), [manifest]);
 
   return (
-      <div
-        className="relative overflow-hidden rounded-2xl shadow-md bg-slate-200"
-        style={{ width: size.width, height: size.height }}
+      <View
+        style={[
+            ageAwareAvatarPreviewStyles.container,
+            { width: size.width, height: size.height }
+        ]}
       >
         {orderedLayers.map((layer) => {
             const optionId = state[layer.key];
@@ -125,35 +133,56 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
 
             if (!displaySrc) return null;
 
-            const finalSrc = images[displaySrc] ? displaySrc : makePlaceholderSVG(size.width, size.height, `${layer.label}: ${optionName}`);
+            const finalSrc = displaySrc || { uri: makePlaceholderSVG(size.width, size.height, `${layer.label}: ${optionName}`) };
             
-            const isElder = stage === 'elder';
-            const isHairLikeLayer = layer.key === 'backHair' || layer.key === 'frontHair' || layer.key === 'eyebrows' || layer.key === 'beard';
-            
-            let imageFilter = 'none';
-
-            if (isElder && isHairLikeLayer) {
-                // Force white/silver hair for elders, overriding selected color
-                imageFilter = AVATAR_COLOR_PALETTE.find(c => c.name === 'White')?.filter || 'grayscale(1) brightness(2.5)';
-            } else if (isHairLikeLayer) {
-                const colorKey = `${layer.key}Color` as keyof AvatarState;
-                const colorName = state[colorKey] as string | undefined;
-                if(colorName) {
-                    imageFilter = AVATAR_COLOR_PALETTE.find(c => c.name === colorName)?.filter || 'none';
-                }
-            }
+            // Image filters are not directly supported in React Native Image component.
+            // Consider using a third-party library for image manipulation if complex filters are needed.
+            // For now, the filter property is removed.
 
             return (
-              <img
+              <Image
                 key={`${layer.key}-${optionId}`}
-                src={finalSrc}
-                alt={layer.label}
-                className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
-                style={{ filter: imageFilter }}
-                draggable={false}
+                source={finalSrc}
+                // alt={layer.label} is not a prop in RN Image
+                style={[
+                    ageAwareAvatarPreviewStyles.layerImage,
+                ]}
+                // draggable={false} is not a prop in RN Image
               />
             );
         })}
-      </div>
+      </View>
   );
 };
+
+const ageAwareAvatarPreviewStyles = StyleSheet.create({
+    container: {
+        position: 'relative',
+        overflow: 'hidden',
+        borderRadius: 16, // rounded-2xl (assuming 2xl is 16px radius)
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3, // shadow-md
+        backgroundColor: '#e2e8f0', // bg-slate-200
+    },
+    staticImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain', // object-contain
+        // select-none pointer-events-none are not direct RN styles
+    },
+    layerImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain', // object-contain
+        // select-none pointer-events-none are not direct RN styles
+    },
+});

@@ -121,7 +121,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: null,
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/mila.png`,
+        staticAvatarUrl: require('../public/asset/mila.png'),
     };
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 1,
@@ -136,7 +136,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: null,
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/max.png`,
+        staticAvatarUrl: require('../public/asset/max.png'),
     };
     const alice: Character = {
         id: aliceId, name: 'Alice', gender: Gender.Female, generation: 2,
@@ -151,7 +151,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: null,
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/alice.png`,
+        staticAvatarUrl: require('../public/asset/alice.png'),
     };
     const lucas: Character = {
         id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 2,
@@ -166,7 +166,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: null,
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/lucas.png`,
+        staticAvatarUrl: require('../public/asset/lucas.png'),
     };
     const daisy: Character = {
         id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 2,
@@ -181,7 +181,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: null,
-        staticAvatarUrl: `${import.meta.env.BASE_URL}asset/daisy.png`,
+        staticAvatarUrl: require('../public/asset/daisy.png'),
     };
     const mio: Pet = {
         id: mioId, name: 'Mio', type: PetType.Dog, ownerId: milaId, age: 2,

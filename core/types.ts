@@ -345,104 +345,151 @@ export interface ClubEvent {
 
 type AgeCategory = 'baby' | 'normal' | 'old';
 
-// Helper lấy tên file
-const baseName = (path: string) =>
-  path.split('/').pop()!.replace(/\.(png|webp)$/i, '');
 
-// Backgrounds
-const backgroundOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/bg/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `bg-${name}`, name: `Background ${name}`, src: src as string };
-});
+// --- Start of generated asset lists ---
 
-// Back Hair
-const backHairOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/hair/back/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}bh`, name, src: src as string };
-});
+const backgroundOptions: LayerOption[] = [
+  { id: 'bg-1', name: 'Background 1', src: require('../public/asset/avatar-face/bg/1.png') },
+  { id: 'bg-2', name: 'Background 2', src: require('../public/asset/avatar-face/bg/2.png') },
+  { id: 'bg-3', name: 'Background 3', src: require('../public/asset/avatar-face/bg/3.png') },
+  { id: 'bg-4', name: 'Background 4', src: require('../public/asset/avatar-face/bg/4.png') },
+  { id: 'bg-5', name: 'Background 5', src: require('../public/asset/avatar-face/bg/5.png') },
+  { id: 'bg-6', name: 'Background 6', src: require('../public/asset/avatar-face/bg/6.png') },
+  { id: 'bg-7', name: 'Background 7', src: require('../public/asset/avatar-face/bg/7.png') },
+];
 
-// Eyes
-const eyesOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/eyes/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}e`, name, src: src as string };
-});
+const backHairOptions: LayerOption[] = [
+  { id: '1bh', name: '1', src: require('../public/asset/avatar-face/hair/back/1.png') },
+  { id: '2bh', name: '2', src: require('../public/asset/avatar-face/hair/back/2.png') },
+  { id: '3bh', name: '3', src: require('../public/asset/avatar-face/hair/back/3.png') },
+  { id: '4bh', name: '4', src: require('../public/asset/avatar-face/hair/back/4.png') },
+  { id: '5bh', name: '5', src: require('../public/asset/avatar-face/hair/back/5.png') },
+];
 
-// Eyebrows
-const eyebrowsOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/eyebrows/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}eb`, name, src: src as string };
-});
+const eyesOptions: LayerOption[] = [
+  { id: '1e', name: '1', src: require('../public/asset/avatar-face/eyes/1.png') },
+  { id: '2e', name: '2', src: require('../public/asset/avatar-face/eyes/2.png') },
+  { id: '3e', name: '3', src: require('../public/asset/avatar-face/eyes/3.png') },
+  { id: '4e', name: '4', src: require('../public/asset/avatar-face/eyes/4.png') },
+  { id: '5e', name: '5', src: require('../public/asset/avatar-face/eyes/5.png') },
+  { id: '6e', name: '6', src: require('../public/asset/avatar-face/eyes/6.png') },
+  { id: '7e', name: '7', src: require('../public/asset/avatar-face/eyes/7.png') },
+  { id: '8e', name: '8', src: require('../public/asset/avatar-face/eyes/8.png') },
+  { id: '9e', name: '9', src: require('../public/asset/avatar-face/eyes/9.png') },
+  { id: '10e', name: '10', src: require('../public/asset/avatar-face/eyes/10.png') },
+  { id: '11e', name: '11', src: require('../public/asset/avatar-face/eyes/11.png') },
+  { id: '12e', name: '12', src: require('../public/asset/avatar-face/eyes/12.png') },
+  { id: '13e', name: '13', src: require('../public/asset/avatar-face/eyes/13.png') },
+  { id: '14e', name: '14', src: require('../public/asset/avatar-face/eyes/14.png') },
+  { id: '15e', name: '15', src: require('../public/asset/avatar-face/eyes/15.png') },
+  { id: '16e', name: '16', src: require('../public/asset/avatar-face/eyes/16.png') },
+  { id: '17e', name: '17', src: require('../public/asset/avatar-face/eyes/17.png') },
+  { id: '18e', name: '18', src: require('../public/asset/avatar-face/eyes/18.png') },
+  { id: '19e', name: '19', src: require('../public/asset/avatar-face/eyes/19.png') },
+  { id: '20e', name: '20', src: require('../public/asset/avatar-face/eyes/20.png') },
+  { id: '21e', name: '21', src: require('../public/asset/avatar-face/eyes/21.png') },
+  { id: '22e', name: '22', src: require('../public/asset/avatar-face/eyes/22.png') },
+  { id: '23e', name: '23', src: require('../public/asset/avatar-face/eyes/23.png') },
+  { id: '24e', name: '24', src: require('../public/asset/avatar-face/eyes/24.png') },
+  { id: '25e', name: '25', src: require('../public/asset/avatar-face/eyes/25.png') },
+  { id: '26e', name: '26', src: require('../public/asset/avatar-face/eyes/26.png') },
+  { id: '27e', name: '27', src: require('../public/asset/avatar-face/eyes/27.png') },
+  { id: '28e', name: '28', src: require('../public/asset/avatar-face/eyes/28.png') },
+  { id: '29e', name: '29', src: require('../public/asset/avatar-face/eyes/29.png') },
+  { id: '30e', name: '30', src: require('../public/asset/avatar-face/eyes/30.png') },
+  { id: '31e', name: '31', src: require('../public/asset/avatar-face/eyes/31.png') },
+  { id: '32e', name: '32', src: require('../public/asset/avatar-face/eyes/32.png') },
+];
 
-// Mouth
-const mouthOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/mouth/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}m`, name, src: src as string };
-});
+const eyebrowsOptions: LayerOption[] = [
+  { id: '1eb', name: '1', src: require('../public/asset/avatar-face/eyebrows/1.png') },
+  { id: '2eb', name: '2', src: require('../public/asset/avatar-face/eyebrows/2.png') },
+  { id: '3eb', name: '3', src: require('../public/asset/avatar-face/eyebrows/3.png') },
+  { id: '4eb', name: '4', src: require('../public/asset/avatar-face/eyebrows/4.png') },
+  { id: '5eb', name: '5', src: require('../public/asset/avatar-face/eyebrows/5.png') },
+];
 
-// Beard
-const beardOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/beard/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}b`, name, src: src as string };
-});
+const mouthOptions: LayerOption[] = [
+  { id: '1m', name: '1', src: require('../public/asset/avatar-face/mouth/1.png') },
+  { id: '2m', name: '2', src: require('../public/asset/avatar-face/mouth/2.png') },
+  { id: '3m', name: '3', src: require('../public/asset/avatar-face/mouth/3.png') },
+  { id: '4m', name: '4', src: require('../public/asset/avatar-face/mouth/4.png') },
+  { id: '5m', name: '5', src: require('../public/asset/avatar-face/mouth/5.png') },
+];
 
-// Front Hair
-const frontHairOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/hair/front/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}fh`, name, src: src as string };
-});
+const beardOptions: LayerOption[] = [
+  { id: '1b', name: '1', src: require('../public/asset/avatar-face/beard/1.png') },
+  { id: '2b', name: '2', src: require('../public/asset/avatar-face/beard/2.png') },
+  { id: '3b', name: '3', src: require('../public/asset/avatar-face/beard/3.png') },
+  { id: '4b', name: '4', src: require('../public/asset/avatar-face/beard/4.png') },
+  { id: '5b', name: '5', src: require('../public/asset/avatar-face/beard/5.png') },
+];
 
-// Features (có subfolder: baby / normal / old / ...)
-const featureOptions: LayerOption[] = Object.entries(
-  import.meta.glob('/src/asset/avatar-face/features/**/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const parts = path.split('/');
-  const ageCategory = parts[parts.length - 2] as 'baby' | 'normal' | 'old';
-  const n = baseName(path);
+const frontHairOptions: LayerOption[] = [
+  { id: '1fh', name: '1', src: require('../public/asset/avatar-face/hair/front/1.png') },
+  { id: '2fh', name: '2', src: require('../public/asset/avatar-face/hair/front/2.png') },
+  { id: '3fh', name: '3', src: require('../public/asset/avatar-face/hair/front/3.png') },
+  { id: '4fh', name: '4', src: require('../public/asset/avatar-face/hair/front/4.png') },
+  { id: '5fh', name: '5', src: require('../public/asset/avatar-face/hair/front/5.png') },
+  { id: '6fh', name: '6', src: require('../public/asset/avatar-face/hair/front/6.png') },
+  { id: '7fh', name: '7', src: require('../public/asset/avatar-face/hair/front/7.png') },
+  { id: '8fh', name: '8', src: require('../public/asset/avatar-face/hair/front/8.png') },
+  { id: '9fh', name: '9', src: require('../public/asset/avatar-face/hair/front/9.png') },
+  { id: '10fh', name: '10', src: require('../public/asset/avatar-face/hair/front/10.png') },
+  { id: '11fh', name: '11', src: require('../public/asset/avatar-face/hair/front/11.png') },
+  { id: '12fh', name: '12', src: require('../public/asset/avatar-face/hair/front/12.png') },
+  { id: '13fh', name: '13', src: require('../public/asset/avatar-face/hair/front/13.png') },
+  { id: '14fh', name: '14', src: require('../public/asset/avatar-face/hair/front/14.png') },
+  { id: '15fh', name: '15', src: require('../public/asset/avatar-face/hair/front/15.png') },
+  { id: '16fh', name: '16', src: require('../public/asset/avatar-face/hair/front/16.png') },
+  { id: '17fh', name: '17', src: require('../public/asset/avatar-face/hair/front/17.png') },
+  { id: 'babyfh', name: 'baby', src: require('../public/asset/avatar-face/hair/front/baby.png') },
+];
 
-  const name = n
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (l) => l.toUpperCase());
-
-  return { id: `feat-${n}`, name, src: src as string, ageCategory };
-});
+const featureOptions: LayerOption[] = [
+  { id: 'feat-baby-1', name: 'baby-1', src: require('../public/asset/avatar-face/features/baby/baby-1.png'), ageCategory: 'baby' },
+  { id: 'feat-blush-cheeks-round', name: 'blush-cheeks-round', src: require('../public/asset/avatar-face/features/baby/blush-cheeks-round.png'), ageCategory: 'baby' },
+  { id: 'feat-blush-heart-pink', name: 'blush-heart-pink', src: require('../public/asset/avatar-face/features/baby/blush-heart-pink.png'), ageCategory: 'baby' },
+  { id: 'feat-blush-sleepy', name: 'blush-sleepy', src: require('../public/asset/avatar-face/features/baby/blush-sleepy.png'), ageCategory: 'baby' },
+  { id: 'feat-sticker-diamond-blue', name: 'sticker-diamond-blue', src: require('../public/asset/avatar-face/features/baby/sticker-diamond-blue.png'), ageCategory: 'baby' },
+  { id: 'feat-sticker-dots-multi', name: 'sticker-dots-multi', src: require('../public/asset/avatar-face/features/baby/sticker-dots-multi.png'), ageCategory: 'baby' },
+  { id: 'feat-sticker-dots-yellow', name: 'sticker-dots-yellow', src: require('../public/asset/avatar-face/features/baby/sticker-dots-yellow.png'), ageCategory: 'baby' },
+  { id: 'feat-sticker-flower-orange', name: 'sticker-flower-orange', src: require('../public/asset/avatar-face/features/baby/sticker-flower-orange.png'), ageCategory: 'baby' },
+  { id: 'feat-sticker-flower-pink', name: 'sticker-flower-pink', src: require('../public/asset/avatar-face/features/baby/sticker-flower-pink.png'), ageCategory: 'baby' },
+  { id: 'feat-sticker-flower-red', name: 'sticker-flower-red', src: require('../public/asset/avatar-face/features/baby/sticker-flower-red.png'), ageCategory: 'baby' },
+  { id: 'feat-sticker-teardrop', name: 'sticker-teardrop', src: require('../public/asset/avatar-face/features/baby/sticker-teardrop.png'), ageCategory: 'baby' },
+  { id: 'feat-blush-cheeks-soft', name: 'blush-cheeks-soft', src: require('../public/asset/avatar-face/features/normal/blush-cheeks-soft.png'), ageCategory: 'normal' },
+  { id: 'feat-blush-full', name: 'blush-full', src: require('../public/asset/avatar-face/features/normal/blush-full.png'), ageCategory: 'normal' },
+  { id: 'feat-blush-intense', name: 'blush-intense', src: require('../public/asset/avatar-face/features/normal/blush-intense.png'), ageCategory: 'normal' },
+  { id: 'feat-blush-purple', name: 'blush-purple', src: require('../public/asset/avatar-face/features/normal/blush-purple.png'), ageCategory: 'normal' },
+  { id: 'feat-blush-simple', name: 'blush-simple', src: require('../public/asset/avatar-face/features/normal/blush-simple.png'), ageCategory: 'normal' },
+  { id: 'feat-blush-slashes', name: 'blush-slashes', src: require('../public/asset/avatar-face/features/normal/blush-slashes.png'), age_category: 'normal' },
+  { id: 'feat-blush-subtle', name: 'blush-subtle', src: require('../public/asset/avatar-face/features/normal/blush-subtle.png'), ageCategory: 'normal' },
+  { id: 'feat-blush-swirl', name: 'blush-swirl', src: require('../public/asset/avatar-face/features/normal/blush-swirl.png'), ageCategory: 'normal' },
+  { id: 'feat-blush-wide', name: 'blush-wide', src: require('../public/asset/avatar-face/features/normal/blush-wide.png'), ageCategory: 'normal' },
+  { id: 'feat-facepaint-butterfly-purple', name: 'facepaint-butterfly-purple', src: require('../public/asset/avatar-face/features/normal/facepaint-butterfly-purple.png'), ageCategory: 'normal' },
+  { id: 'feat-facepaint-butterfly', name: 'facepaint-butterfly', src: require('../public/asset/avatar-face/features/normal/facepaint-butterfly.png'), ageCategory: 'normal' },
+  { id: 'feat-facepaint-eyeshadow', name: 'facepaint-eyeshadow', src: require('../public/asset/avatar-face/features/normal/facepaint-eyeshadow.png'), ageCategory: 'normal' },
+  { id: 'feat-facepaint-tiger', name: 'facepaint-tiger', src: require('../public/asset/avatar-face/features/normal/facepaint-tiger.png'), ageCategory: 'normal' },
+  { id: 'feat-freckles-cheeks', name: 'freckles-cheeks', src: require('../public/asset/avatar-face/features/normal/freckles-cheeks.png'), ageCategory: 'normal' },
+  { id: 'feat-freckles-nose', name: 'freckles-nose', src: require('../public/asset/avatar-face/features/normal/freckles-nose.png'), ageCategory: 'normal' },
+  { id: 'feat-mark-dot-cheek', name: 'mark-dot-cheek', src: require('../public/asset/avatar-face/features/normal/mark-dot-cheek.png'), ageCategory: 'normal' },
+  { id: 'feat-mark-dot-forehead', name: 'mark-dot-forehead', src: require('../public/asset/avatar-face/features/normal/mark-dot-forehead.png'), ageCategory: 'normal' },
+  { id: 'feat-mark-fangs', name: 'mark-fangs', src: require('../public/asset/avatar-face/features/normal/mark-fangs.png'), ageCategory: 'normal' },
+  { id: 'feat-mark-heart-black', name: 'mark-heart-black', src: require('../public/asset/avatar-face/features/normal/mark-heart-black.png'), ageCategory: 'normal' },
+  { id: 'feat-mark-patch-cheek', name: 'mark-patch-cheek', src: require('../public/asset/avatar-face/features/normal/mark-patch-cheek.png'), ageCategory: 'normal' },
+  { id: 'feat-mask-face-green', name: 'mask-face-green', src: require('../public/asset/avatar-face/features/normal/mask-face-green.png'), ageCategory: 'normal' },
+  { id: 'feat-mask-sleep', name: 'mask-sleep', src: require('../public/asset/avatar-face/features/normal/mask-sleep.png'), ageCategory: 'normal' },
+  { id: 'feat-patches-white', name: 'patches-white', src: require('../public/asset/avatar-face/features/normal/patches-white.png'), ageCategory: 'normal' },
+  { id: 'feat-scar-forehead', name: 'scar-forehead', src: require('../public/asset/avatar-face/features/normal/scar-forehead.png'), ageCategory: 'normal' },
+  { id: 'feat-scratches-allover', name: 'scratches-allover', src: require('../public/asset/avatar-face/features/normal/scratches-allover.png'), ageCategory: 'normal' },
+  { id: 'feat-scratches-cheek', name: 'scratches-cheek', src: require('../public/asset/avatar-face/features/normal/scratches-cheek.png'), ageCategory: 'normal' },
+  { id: 'feat-scratches-vertical', name: 'scratches-vertical', src: require('../public/asset/avatar-face/features/normal/scratches-vertical.png'), ageCategory: 'normal' },
+  { id: 'feat-stitches-cheek', name: 'stitches-cheek', src: require('../public/asset/avatar-face/features/old/stitches-cheek.png'), ageCategory: 'old' },
+  { id: 'feat-stitches-forehead', name: 'stitches-forehead', src: require('../public/asset/avatar-face/features/old/stitches-forehead.png'), ageCategory: 'old' },
+  { id: 'feat-wrinkles-forehead-heavy', name: 'wrinkles-forehead-heavy', src: require('../public/asset/avatar-face/features/old/wrinkles-forehead-heavy.png'), ageCategory: 'old' },
+  { id: 'feat-wrinkles-mouth', name: 'wrinkles-mouth', src: require('../public/asset/avatar-face/features/old/wrinkles-mouth.png'), ageCategory: 'old' },
+];
 
 export const exampleManifest: Manifest = [
   { key: "background", label: "Background", zIndex: 0, required: true, options: backgroundOptions},
@@ -454,3 +501,4 @@ export const exampleManifest: Manifest = [
   { key: "beard", label: "Beard", zIndex: 5, allowNone: true, required: false, options: beardOptions},
   { key: "frontHair", label: "Hair (Front)", zIndex: 7, allowNone: true, required: false, options: frontHairOptions},
 ];
+

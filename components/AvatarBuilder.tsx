@@ -277,31 +277,14 @@ export default function AvatarBuilder({
 // For demonstration, a simplified manifest structure is assumed.
 
 export const exampleManifest: Manifest = [
-    { key: "background", label: "Background", zIndex: 0, required: true, options: [{ id: "bg-1", name: "Background 1", src: require('../../public/asset/avatar-face/bg/1.png') }]},
-    { key: "eyes", label: "Eyes", zIndex: 3, required: true, options: [{ id: "eyes-1", name: "Eyes 1", src: require('../../public/asset/avatar-face/eyes/1.png') }]},
-    { key: "mouth", label: "Mouth", zIndex: 6, required: true, options: [{ id: "mouth-1", name: "Mouth 1", src: require('../../public/asset/avatar-face/mouth/1.png') }]},
+    { key: "background", label: "Background", zIndex: 0, required: true, options: [{ id: "bg-1", name: "Background 1", src: require('../public/asset/avatar-face/bg/1.png') }]},
+    { key: "eyes", label: "Eyes", zIndex: 3, required: true, options: [{ id: "eyes-1", name: "Eyes 1", src: require('../public/asset/avatar-face/eyes/1.png') }]},
+    { key: "mouth", label: "Mouth", zIndex: 6, required: true, options: [{ id: "mouth-1", name: "Mouth 1", src: require('../public/asset/avatar-face/mouth/1.png') }]},
     // Add more layers and options as needed, using require() for local assets
 ];
 
 // Removed usePreloadedImages as it's web-specific. Image preloading should be handled in App.tsx
-export function usePreloadedImages(urls: string[]) {
-    const [loaded, setLoaded] = useState<Record<string, any>>({});
-    useEffect(() => {
-        const imageSources: Record<string, any> = {};
-        urls.forEach(url => {
-            // Assuming URLs are relative paths that can be resolved by require
-            // This is a simplification; a more robust solution might involve a mapping
-            // or a custom asset loading mechanism.
-            try {
-                imageSources[url] = Image.resolveAssetSource(require('../../public' + url));
-            } catch (e) {
-                console.warn(`Could not load image: ${url}`, e);
-            }
-        });
-        setLoaded(imageSources);
-    }, [urls]);
-    return { loaded };
-}
+
 
 const avatarBuilderStyles = StyleSheet.create({
     overlay: {
