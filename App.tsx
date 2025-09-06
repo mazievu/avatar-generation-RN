@@ -1,23 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club } from './core/types';
 import { LifePhase, CharacterStatus, RelationshipStatus, Gender } from './core/types';
@@ -104,22 +88,25 @@ const App: React.FC = () => {
 
     // Initial load check
     useEffect(() => {
-        try {
-            const savedGame = localStorage.getItem(SAVE_KEY);
-            if (savedGame) {
-                const savedState = JSON.parse(savedGame);
-                if (savedState.lang) {
-                    setLanguage(savedState.lang);
+        const loadSavedGame = async () => {
+            try {
+                const savedGame = await AsyncStorage.getItem(SAVE_KEY);
+                if (savedGame) {
+                    const savedState = JSON.parse(savedGame);
+                    if (savedState.lang) {
+                        setLanguage(savedState.lang);
+                    }
+                    setView('welcome_back');
+                } else {
+                    setView('menu');
                 }
-                setView('welcome_back');
-            } else {
+            } catch (error) {
+                console.error("Failed to check for saved game:", error);
                 setView('menu');
             }
-        } catch (error) {
-            console.error("Failed to check for saved game:", error);
-            setView('menu');
-        }
-        setIsInitialized(true);
+            setIsInitialized(true);
+        };
+        loadSavedGame();
     }, []);
      // Auto-save interval
     useEffect(() => {
@@ -131,13 +118,8 @@ const App: React.FC = () => {
         }
     }, [view, isPaused, saveGame, gameState]);
     
-    // Save on unload
-    useEffect(() => {
-        window.addEventListener('beforeunload', () => saveGame(gameState));
-        return () => {
-            window.removeEventListener('beforeunload', () => saveGame(gameState));
-        };
-    }, [saveGame, gameState]);
+    // Save on unload - Removed web-specific window.addEventListener
+    
     useEffect(() => {
         const isModalOrSpecialViewActive = 
             !!gameState?.activeEvent ||
@@ -160,12 +142,16 @@ const App: React.FC = () => {
     useEffect(() => {
         stopGameLoop();
         if (view === 'playing' && !isPaused && !gameState?.gameOverReason) {
-            timerRef.current = window.setInterval(() => gameLoop(), gameSpeed);
+            timerRef.current = setInterval(() => gameLoop(), gameSpeed); // Changed window.setInterval to setInterval
         }
         return () => stopGameLoop();
     }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState]);
     if (!isInitialized) {
-        return <div className="flex items-center justify-center h-screen">Initializing...</div>; // Or a proper loading screen
+        return (
+            <View style={appStyles.loadingContainer}>
+                <Text style={appStyles.loadingText}>Initializing...</Text>
+            </View>
+        ); // Or a proper loading screen
     }
 
     if (customizingCharacterId && gameState) {
@@ -223,3 +209,17 @@ const App: React.FC = () => {
 };
 
 export { App };
+
+const appStyles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f8fafc', // slate-50
+    },
+    loadingText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+});

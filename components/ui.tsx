@@ -82,13 +82,13 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
     if (!isAnimated) {
         const displayValue = Math.round(value);
         return (
-            <View>
+            <View style={statBarStyles.container}>
                 <Icon />
-                <Text>{label}</Text>
-                <View>
-                    <View style={{ width: `${(value / max) * 100}%` }}></View>
+                <Text style={statBarStyles.label}>{label}</Text>
+                <View style={statBarStyles.barBackground}>
+                    <View style={[statBarStyles.barFill, { width: `${(value / max) * 100}%`, backgroundColor: color }]}></View>
                 </View>
-                <Text>{displayValue}</Text>
+                <Text style={statBarStyles.value}>{displayValue}</Text>
             </View>
         );
     }
@@ -97,25 +97,25 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
     const displayFinalValue = Math.round(value);
     const displayInitialValue = Math.round(initialValue);
     const displayChange = displayFinalValue - displayInitialValue;
-    const changeColor = displayChange >= 0 ? 'text-green-600' : 'text-red-600'; // Still has Tailwind classes, needs conversion
-    const barColor = displayChange >= 0 ? 'bg-green-400' : 'bg-red-400'; // Still has Tailwind classes, needs conversion
+    const changeColorStyle = displayChange >= 0 ? statBarStyles.changePositive : statBarStyles.changeNegative;
+    const barColorStyle = displayChange >= 0 ? statBarStyles.barPositive : statBarStyles.barNegative;
     
     return (
-        <View>
+        <View style={statBarStyles.container}>
             <Icon />
-            <Text>{label}</Text>
-            <View>
+            <Text style={statBarStyles.label}>{label}</Text>
+            <View style={statBarStyles.barBackground}>
                 <View
-                    style={{ width: `${animatedWidth}%` }}
+                    style={[statBarStyles.barFill, { width: `${animatedWidth}%` }, barColorStyle]}
                 />
-                <View>
+                <View style={statBarStyles.particlesContainer}>
                     {particles.map(p => (
-                        <View key={p.id} style={p.style} />
+                        <View key={p.id} style={[statBarStyles.particle, p.style]} />
                     ))}
                 </View>
             </View>
-            <Text>{displayFinalValue}</Text>
-            <Text>
+            <Text style={statBarStyles.value}>{displayFinalValue}</Text>
+            <Text style={[statBarStyles.changeText, changeColorStyle]}>
                 ({displayChange >= 0 ? `+${displayChange}` : displayChange})
             </Text>
         </View>
@@ -135,12 +135,6 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
   const { isAlive, gender, age, monthlyNetIncome } = character;
   const displayName = getCharacterDisplayName(character, lang);
 
-  const nodeBgColor   = !isAlive ? 'bg-slate-200' : 'bg-transparent'; // Still has Tailwind classes, needs conversion
-  const borderColor   = isPlayerLineage ? 'border-amber-400' : 'border-slate-300'; // Still has Tailwind classes, needs conversion
-  const grayscale     = !isAlive ? 'grayscale' : ''; // Still has Tailwind classes, needs conversion
-  const netIncomeColor= monthlyNetIncome >= 0 ? 'text-green-600' : 'text-red-500'; // Still has Tailwind classes, needs conversion
-  const netIncomeSign = monthlyNetIncome > 0 ? '+' : '';
-
   // Lặp mỗi 4s nếu còn sống
   const [showMoney, setShowMoney] = React.useState(false);
   const [effectKey, setEffectKey] = React.useState(0);
@@ -157,38 +151,40 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
     return () => clearInterval(intervalId);
   }, [isAlive]);
 
-  return (
-    <TouchableOpacity onPress={onClick}>
-      <View>
-        <View>
-          {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
-            <AgeAwareAvatarPreview manifest={manifest} character={character} images={images} size={{ width: 96, height: 96 }} />
-          ) : (
-            gender === Gender.Male ? <MaleIcon /> : <FemaleIcon />
-          )}
-        </View>
+  const nodeBgColorStyle = !isAlive ? characterNodeStyles.nodeBgDeceased : characterNodeStyles.nodeBgAlive;
+  const borderColorStyle = isPlayerLineage ? characterNodeStyles.borderPlayer : characterNodeStyles.borderNormal;
+  const grayscaleStyle = !isAlive ? characterNodeStyles.grayscale : null;
+  const netIncomeColorStyle = monthlyNetIncome >= 0 ? characterNodeStyles.netIncomePositive : characterNodeStyles.netIncomeNegative;
+  const netIncomeSign = monthlyNetIncome > 0 ? '+' : '';
 
+  return (
+    <TouchableOpacity onPress={onClick} style={[characterNodeStyles.container, borderColorStyle, nodeBgColorStyle]}>
+      <View style={characterNodeStyles.avatarWrapper}>
+        {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
+          <AgeAwareAvatarPreview manifest={manifest} character={character} images={images} size={{ width: 96, height: 96 }} style={grayscaleStyle} />
+        ) : (
+          gender === Gender.Male ? <MaleIcon /> : <FemaleIcon />
+        )}
         {isAlive && (
-          <Text>
+          <Text style={characterNodeStyles.ageText}>
             {age}
           </Text>
         )}
       </View>
 
-      <Text>
+      <Text style={characterNodeStyles.displayNameText}>
         {displayName}
       </Text>
 
       {isAlive && (
-        // ⬇⬇⬇ BỌC DÒNG THU NHẬP TRONG WRAPPER RELATIVE & RENDER HIỆU ỨNG Ở ĐÂY
-        <View>
-          <Text>
+        <View style={characterNodeStyles.netIncomeWrapper}>
+          <Text style={[characterNodeStyles.netIncomeText, netIncomeColorStyle]}>
             {netIncomeSign}${Math.round(monthlyNetIncome).toLocaleString()}/mo
           </Text>
 
           {showMoney && (
-            <View key={effectKey}>
-              <Text>
+            <View key={effectKey} style={characterNodeStyles.netIncomeEffect}>
+              <Text style={[characterNodeStyles.netIncomeEffectText, netIncomeColorStyle]}>
                 {netIncomeSign}{Math.round(monthlyNetIncome).toLocaleString()}$
               </Text>
             </View>
@@ -222,120 +218,121 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
     const pet = character.petId ? PET_DATA[character.petId] : null;
 
     return (
-        <View>
-            <View>
-                <View>
+        <View style={characterDetailModalStyles.overlay}>
+            <View style={characterDetailModalStyles.modalContainer}>
+                <View style={characterDetailModalStyles.header}>
                     <View>
-                        <Text>
+                        <Text style={characterDetailModalStyles.title}>
                             {displayName} (G{character.generation})
                         </Text>
-                        <TouchableOpacity onPress={onClose}><Text>&times;</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={onClose} style={characterDetailModalStyles.closeButton}><Text style={characterDetailModalStyles.closeButtonText}>&times;</Text></TouchableOpacity>
                     </View>
 
-                    <View>
+                    <View style={characterDetailModalStyles.tabContainer}>
                         <TouchableOpacity
                             onPress={() => setActiveDetailTab('details')}
+                            style={[characterDetailModalStyles.tabButton, activeDetailTab === 'details' && characterDetailModalStyles.tabButtonActive]}
                         >
-                            <Text>
+                            <Text style={[characterDetailModalStyles.tabButtonText, activeDetailTab === 'details' && characterDetailModalStyles.tabButtonTextActive]}>
                                 {t('tab_details', lang)}
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => setActiveDetailTab('events')}
+                            style={[characterDetailModalStyles.tabButton, activeDetailTab === 'events' && characterDetailModalStyles.tabButtonActive]}
                         >
-                            <Text>
+                            <Text style={[characterDetailModalStyles.tabButtonText, activeDetailTab === 'events' && characterDetailModalStyles.tabButtonTextActive]}>
                                 {t('tab_life_events', lang)}
                             </Text>
                         </TouchableOpacity>
                     </View>
+                </View>
 
-                    
-                    {activeDetailTab === 'details' && (
-                        <View>
-                            <View>
+                {activeDetailTab === 'details' && (
+                    <ScrollView style={characterDetailModalStyles.detailsContent}>
+                        <View style={characterDetailModalStyles.detailsSection}>
+                            <View style={characterDetailModalStyles.avatarSection}>
+                                {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
+                                    <AgeAwareAvatarPreview
+                                        manifest={manifest}
+                                        character={character}
+                                        images={images}
+                                        size={{ width: 128, height: 128 }}
+                                    />
+                                ) : null}
+                            </View>
+
+                            <View style={characterDetailModalStyles.infoSection}>
                                 <View>
-                                    {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
-                                        <AgeAwareAvatarPreview
-                                            manifest={manifest}
-                                            character={character}
-                                            images={images}
-                                            size={{ width: 128, height: 128 }}
-                                        />
-                                    ) : null}
+                                    <Text style={characterDetailModalStyles.infoText}>{displayPhase(character.phase, lang)} | {displayStatus(character.status, lang)}</Text>
+                                    <Text style={characterDetailModalStyles.infoText}>{character.isAlive ? `${character.age} ${t('age_short', lang)}` : `${t('deceased_at', lang)} ${character.age}`}</Text>
                                 </View>
 
-                                <View>
-                                    <View>
-                                        <Text>{displayPhase(character.phase, lang)} | {displayStatus(character.status, lang)}</Text>
-                                        <Text>{character.isAlive ? `${character.age} ${t('age_short', lang)}` : `${t('deceased_at', lang)} ${character.age}`}</Text>
-                                    </View>
+                                <Text style={characterDetailModalStyles.infoText}>{t('relationship_label', lang)}: {displayRelationshipStatus(character.relationshipStatus, lang)}{partner ? ` ${t('with_person', lang)} ${partnerDisplayName}`: ''}</Text>
+                            </View>
+                        </View>
 
-                                    <Text>{t('relationship_label', lang)}: {displayRelationshipStatus(character.relationshipStatus, lang)}{partner ? ` ${t('with_person', lang)} ${partnerDisplayName}`: ''}</Text>
+                        {pet && <Text style={characterDetailModalStyles.infoText}>{getPetIcon(pet.type)} {t('pet_label', lang)}: {pet.name} {t('the_pet_type', lang)} {t(PET_DATA[pet.type].nameKey, lang)}</Text>}
+
+                        <Text style={characterDetailModalStyles.infoText}>{t('education_label', lang)}: {educationText}</Text>
+                        {character.major && <Text style={characterDetailModalStyles.infoText}>{t('major_label', lang)}: {t(character.major, lang)}</Text>}
+                        {career && <Text style={characterDetailModalStyles.infoText}>{t('career_label', lang)}: {t(career.titleKey, lang)} (${career.salary.toLocaleString()}/yr)</Text>}
+                        {businessRole && <Text style={characterDetailModalStyles.infoText}>{t('working_at_label', lang)}: {businessRole.businessName} ({businessRole.role})</Text>}
+
+                        {character.currentClubs && character.currentClubs.length > 0 && (
+                            <View style={characterDetailModalStyles.section}>
+                                <Text style={characterDetailModalStyles.sectionTitle}>{t('clubs_label', lang)}:</Text>
+                                <View style={characterDetailModalStyles.sectionContent}>
+                                    {character.currentClubs.map(clubId => {
+                                        const club = CLUBS.find(c => c.id === clubId);
+                                        return club ? <Text key={clubId} style={characterDetailModalStyles.sectionItem}>{t(club.nameKey, lang)}</Text> : null;
+                                    }) }
                                 </View>
                             </View>
-                            
-                            {pet && <Text>{getPetIcon(pet.type)} {t('pet_label', lang)}: {pet.name} {t('the_pet_type', lang)} {t(PET_DATA[pet.type].nameKey, lang)}</Text>}
+                        )}
 
-                            <Text>{t('education_label', lang)}: {educationText}</Text>
-                            {character.major && <Text>{t('major_label', lang)}: {t(character.major, lang)}</Text>}
-                            {career && <Text>{t('career_label', lang)}: {t(career.titleKey, lang)} (${career.salary.toLocaleString()}/yr)</Text>}
-                            {businessRole && <Text>{t('working_at_label', lang)}: {businessRole.businessName} ({businessRole.role})</Text>}
-
-                            {character.currentClubs && character.currentClubs.length > 0 && (
-                                <View>
-                                    <Text>{t('clubs_label', lang)}:</Text>
-                                    <View>
-                                        {character.currentClubs.map(clubId => {
-                                            const club = CLUBS.find(c => c.id === clubId);
-                                            return club ? <Text key={clubId}>{t(club.nameKey, lang)}</Text> : null;
-                                        }) }
-                                    </View>
+                        {character.completedOneTimeEvents && character.completedOneTimeEvents.length > 0 && (
+                            <View style={characterDetailModalStyles.section}>
+                                <Text style={characterDetailModalStyles.sectionTitle}>{t('life_events_label', lang)}:</Text>
+                                <View style={characterDetailModalStyles.sectionContent}>
+                                    {character.completedOneTimeEvents.map((eventId, index) => {
+                                        const event = EVENTS.find(e => e.id === eventId);
+                                        return event ? <Text key={`${eventId}-${index}`} style={characterDetailModalStyles.sectionItem}>{t(event.titleKey, lang)}</Text> : null;
+                                    }) }
                                 </View>
-                            )}
+                            </View>
+                        )}
 
-                            {character.completedOneTimeEvents && character.completedOneTimeEvents.length > 0 && (
-                                <View>
-                                    <Text>{t('life_events_label', lang)}:</Text>
-                                    <View>
-                                        {character.completedOneTimeEvents.map((eventId, index) => {
-                                            const event = EVENTS.find(e => e.id === eventId);
-                                            return event ? <Text key={`${eventId}-${index}`}>{t(event.titleKey, lang)}</Text> : null;
-                                        }) }
-                                    </View>
-                                </View>
-                            )}
+                        {character.isAlive && (
+                            <View style={characterDetailModalStyles.statsSection}>
+                                <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="#60a5fa" /> {/* blue-400 */}
+                                <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="#facc15" /> {/* yellow-400 */}
+                                <StatBar Icon={eqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="#a78bfa" /> {/* purple-400 */}
+                                <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="#f87171" /> {/* red-400 */}
+                                {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="#4ade80" />} {/* green-400 */}
+                            </View>
+                        )}
+                        {!character.staticAvatarUrl && (
+                            <View style={characterDetailModalStyles.customizeButtonContainer}>
+                                <TouchableOpacity onPress={() => onCustomize(character.id)} style={characterDetailModalStyles.customizeButton}>
+                                    <Text style={characterDetailModalStyles.customizeButtonText}>
+                                        Customize
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </ScrollView>
+                )}
 
-                            {character.isAlive && (
-                                <View>
-                                    <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="bg-blue-400" />
-                                    <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="bg-yellow-400" />
-                                    <StatBar Icon={eqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="bg-purple-400" />
-                                    <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="bg-red-400" />
-                                    {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="bg-green-400" />}
-                                </View>
-                            )}
-                            {!character.staticAvatarUrl && (
-                                <View>
-                                    <TouchableOpacity onPress={() => onCustomize(character.id)}>
-                                        <Text>
-                                            Customize
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </View>
-                    )}
-
-                    {activeDetailTab === 'events' && (
-                        <ScrollView>
-                            <GameLog 
-                                log={gameState.gameLog.filter(entry => entry.characterId === character.id)}
-                                lang={lang}
-                                familyMembers={gameState.familyMembers}
-                            />
-                        </ScrollView>
-                    )}
-                </View>
+                {activeDetailTab === 'events' && (
+                    <ScrollView style={characterDetailModalStyles.eventsContent}>
+                        <GameLog
+                            log={gameState.gameLog.filter(entry => entry.characterId === character.id)}
+                            lang={lang}
+                            familyMembers={gameState.familyMembers}
+                        />
+                    </ScrollView>
+                )}
             </View>
         </View>
     );
@@ -360,15 +357,15 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ characterId, allMembers,
     const children = character.childrenIds.map(id => allMembers[id]).filter(Boolean);
 
     return (
-        <View>
+        <View style={familyTreeStyles.familyTreeContainer}>
             {/* Parents Node */}
-            <View>
+            <View style={familyTreeStyles.parentsNode}>
                 <CharacterNode character={character} onClick={() => onAvatarClick(character)} lang={lang} images={images} manifest={manifest} />
                 {partner && character.relationshipStatus === RelationshipStatus.Married && (
                     <>
                         {/* Spouse Connector */}
-                        <View>
-                            <View />
+                        <View style={familyTreeStyles.spouseConnector}>
+                            <View style={familyTreeStyles.spouseConnectorVertical} />
                         </View>
                         <CharacterNode character={partner} onClick={() => onAvatarClick(partner)} lang={lang} images={images} manifest={manifest} />
                     </>
@@ -377,18 +374,21 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ characterId, allMembers,
 
             {/* Children Branch */}
             {children.length > 0 && (
-                <View>
+                <View style={familyTreeStyles.childrenBranch}>
                     {/* Vertical line from parent(s) center */}
-                    <View />
+                    <View style={familyTreeStyles.childrenVerticalLine} />
 
                     {/* Children nodes container */}
-                    <View>
+                    <View style={familyTreeStyles.childrenNodesContainer}>
                         {children.map((child, index) => (
-                            <View key={child.id}>
+                            <View key={child.id} style={familyTreeStyles.childNodeWrapper}>
                                 {/* Connector from child up to horizontal line */}
-                                <View />
-                                {/* Horizontal line segment */}
-                                <View />
+                                <View style={familyTreeStyles.childConnectorVertical} />
+                                {/* Horizontal line segment - this might need more complex positioning */}
+                                {/* For simplicity, I'll just add a small horizontal line for now */}
+                                {children.length > 1 && (
+                                    <View style={[familyTreeStyles.childConnectorHorizontal, { width: index === 0 || index === children.length - 1 ? '50%' : '100%', left: index === 0 ? '50%' : 0, right: index === children.length - 1 ? '50%' : 0 }]} />
+                                )}
                                 <FamilyTree characterId={child.id} allMembers={allMembers} onAvatarClick={onAvatarClick} lang={lang} images={images} manifest={manifest} />
                             </View>
                         ))}
@@ -475,40 +475,39 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   }
 
   return (
-    <View>
-      <View>
-        <View>
-            <View
-                onPress={() => onAvatarClick(character)} // Changed onClick to onPress
-            >
+    <View style={eventModalStyles.overlay}>
+      <View style={eventModalStyles.modalContainer}>
+        <View style={eventModalStyles.header}>
+            <TouchableOpacity onPress={() => onAvatarClick(character)} style={eventModalStyles.avatarButton}>
                 <AgeAwareAvatarPreview
                     manifest={manifest}
                     character={character}
                     images={images}
                     size={{ width: 80, height: 80 }}
                 />
-            </View>
-            <View>
-                <Text>{t(displayEventData.event.titleKey, lang)}</Text>
-                <Text>{t('event_for', lang)}: <Text>{characterDisplayName}</Text></Text>
+            </TouchableOpacity>
+            <View style={eventModalStyles.headerTextContainer}>
+                <Text style={eventModalStyles.title}>{t(displayEventData.event.titleKey, lang)}</Text>
+                <Text style={eventModalStyles.subtitle}>{t('event_for', lang)}: <Text style={eventModalStyles.characterName}>{characterDisplayName}</Text></Text>
             </View>
         </View>
         
-        <Text>{t(displayEventData.event.descriptionKey, lang, displayEventData.replacements)}</Text>
+        <Text style={eventModalStyles.description}>{t(displayEventData.event.descriptionKey, lang, displayEventData.replacements)}</Text>
         
         {!outcome ? (
-                <View>
+                <View style={eventModalStyles.choicesContainer}>
                   {displayEventData.event.choices.map((choice, index) => (
-                    <TouchableOpacity // Changed button to TouchableOpacity
+                    <TouchableOpacity
                       key={index}
-                      onPress={() => handleSelectChoice(choice)} // Changed onClick to onPress
+                      onPress={() => handleSelectChoice(choice)}
                       disabled={!!outcome}
+                      style={eventModalStyles.choiceButton}
                     >
-                      <View>
-                        <Text>
+                      <View style={eventModalStyles.choiceButtonContent}>
+                        <Text style={eventModalStyles.choiceButtonText}>
                           {t(choice.textKey, lang)}
                           {choice.effect.triggers && choice.effect.triggers.length > 0 && (
-                            <Text>
+                            <Text style={eventModalStyles.choiceTriggerText}>
                               (
                               {choice.effect.triggers.map((trigger, idx) => {
                                 const triggeredEvent = EVENTS.find(e => e.id === trigger.eventId);
@@ -522,21 +521,21 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                         </Text>
                       </View>
                       {choice.effect.fundChange && choice.effect.fundChange !== 0 && (
-                          <Text>
-                              {choice.effect.fundChange > 0 ? '+' : '-'}${Math.abs(choice.effect.fundChange).toLocaleString()}
+                          <Text style={[eventModalStyles.fundChangeText, choice.effect.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>
+                              {choice.effect.fundChange > 0 ? '+' : ''}${Math.abs(choice.effect.fundChange).toLocaleString()}
                           </Text>
                       )}
                     </TouchableOpacity>
                   ))}
                 </View>
             ) : (
-                <View>
-                    <Text>"{t(outcome.logKey, lang, { name: characterDisplayName })}"</Text>
-                    <View>
+                <View style={eventModalStyles.outcomeContainer}>
+                    <Text style={eventModalStyles.outcomeMessage}>"{t(outcome.logKey, lang, { name: characterDisplayName })}"</Text>
+                    <View style={eventModalStyles.outcomeDetails}>
                         {outcome.fundChange && (
-                            <View>
+                            <View style={eventModalStyles.fundChangeDetail}>
                                 <MoneyIcon />
-                                <Text>{t('family_fund_label', lang)}: {outcome.fundChange > 0 ? '+' : ''}${outcome.fundChange.toLocaleString()}</Text>
+                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{t('family_fund_label', lang)}: {outcome.fundChange > 0 ? '+' : ''}${outcome.fundChange.toLocaleString()}</Text>
                             </View>
                         )}
                         {outcome.statChanges && Object.entries(outcome.statChanges).map(([stat, change]) => {
@@ -552,12 +551,12 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                     initialValue={initialValue}
                                     value={finalValue}
                                     max={stat === 'iq' ? 200 : 100}
-                                    color={'bg-slate-400'} // Base color, animation handles the rest
+                                    color={'#cbd5e1'} // slate-300, base color, animation handles the rest
                                  />
                             );
                         })}
                     </View>
-                    <TouchableOpacity // Changed button to TouchableOpacity
+                    <TouchableOpacity
                         onPress={() => {
                             clearTimer();
                             const isNewEventPending = eventData.event.id !== displayEventData.event.id || eventData.characterId !== displayEventData.characterId;
@@ -571,9 +570,9 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                 onClose();
                             }
                         }}
-                        // autoFocus is a web-specific prop, removed
+                        style={eventModalStyles.okButton}
                     >
-                        <Text>
+                        <Text style={eventModalStyles.okButtonText}>
                             OK
                         </Text>
                     </TouchableOpacity>
@@ -581,7 +580,6 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
             )}
         </View>
       </View>
-    </View>
   );
 };
 
@@ -598,9 +596,9 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
     if (fundChange && fundChange !== 0) {
         const value = Math.round(fundChange);
         const sign = value > 0 ? '+' : '';
-        const color = value > 0 ? 'text-green-600' : 'text-red-600'; // Still has Tailwind classes, needs conversion
+        const colorStyle = value > 0 ? logStatChangesStyles.positiveChange : logStatChangesStyles.negativeChange;
         allChanges.push(
-            <Text key="fund">
+            <Text key="fund" style={[logStatChangesStyles.changeText, colorStyle]}>
                 <MoneyIcon /> {sign}${Math.abs(value).toLocaleString()}
             </Text>
         );
@@ -622,9 +620,9 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
 
             const value = Math.round(change);
             const sign = value > 0 ? '+' : '';
-            const color = value > 0 ? 'text-green-600' : 'text-red-600'; // Still has Tailwind classes, needs conversion
+            const colorStyle = value > 0 ? logStatChangesStyles.positiveChange : logStatChangesStyles.negativeChange;
             allChanges.push(
-                <Text key={stat}>
+                <Text key={stat} style={[logStatChangesStyles.changeText, colorStyle]}>
                     <Icon /> {sign}{value}
                 </Text>
             );
@@ -636,7 +634,7 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
     }
 
     return (
-        <View>
+        <View style={logStatChangesStyles.container}>
             {allChanges}
         </View>
     );
@@ -644,9 +642,9 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
 
 const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers }) => {
   return (
-    <ScrollView>
-      <Text>{t('family_log_title', lang)}</Text>
-      <View>
+    <ScrollView style={gameLogStyles.scrollView}>
+      <Text style={gameLogStyles.title}>{t('family_log_title', lang)}</Text>
+      <View style={gameLogStyles.logContainer}>
         {log.map((entry, index) => {
           // New detailed format
           if (entry.eventTitleKey && entry.characterId) {
@@ -655,14 +653,14 @@ const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers }) =
             const eventName = t(entry.eventTitleKey, lang);
 
             return (
-              <View key={index}>
-                <Text>{t('year_label', lang)} {entry.year}</Text>
-                <View>
-                    <Text>
-                        <Text>{characterName}:</Text>
-                        <Text>{eventName}</Text>
+              <View key={index} style={gameLogStyles.logEntry}>
+                <Text style={gameLogStyles.logEntryYear}>{t('year_label', lang)} {entry.year}</Text>
+                <View style={gameLogStyles.logEntryContent}>
+                    <Text style={gameLogStyles.logEntryText}>
+                        <Text style={gameLogStyles.logEntryCharacterName}>{characterName}:</Text>
+                        <Text style={gameLogStyles.logEntryEventName}> {eventName}</Text>
                     </Text>
-                    <Text>↳ {t(entry.messageKey, lang, entry.replacements)}</Text>
+                    <Text style={gameLogStyles.logEntryMessage}>↳ {t(entry.messageKey, lang, entry.replacements)}</Text>
                     <LogStatChanges entry={entry} lang={lang} />
                 </View>
               </View>
@@ -671,10 +669,10 @@ const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers }) =
 
           // Fallback for old format
           return (
-            <View key={index}>
-               <Text>
-                  <Text>{t('year_label', lang)} {entry.year}:</Text>
-                  <Text>{t(entry.messageKey, lang, entry.replacements)}</Text>
+            <View key={index} style={gameLogStyles.logEntry}>
+               <Text style={gameLogStyles.logEntryText}>
+                  <Text style={gameLogStyles.logEntryYear}>{t('year_label', lang)} {entry.year}:</Text>
+                  <Text style={gameLogStyles.logEntryMessage}> {t(entry.messageKey, lang, entry.replacements)}</Text>
                </Text>
                <LogStatChanges entry={entry} lang={lang} />
             </View>
@@ -704,28 +702,28 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({ gameState, onResta
   }
 
   return (
-    <View>
-      <View>
-        <View>
-            <Text>{isVictory ? t('summary_victory_title', lang) : t('summary_gameover_title', lang)}</Text>
-            <Text>
+    <View style={summaryScreenStyles.container}>
+      <View style={summaryScreenStyles.contentWrapper}>
+        <View style={summaryScreenStyles.content}>
+            <Text style={summaryScreenStyles.title}>{isVictory ? t('summary_victory_title', lang) : t('summary_gameover_title', lang)}</Text>
+            <Text style={summaryScreenStyles.description}>
                 {t(descriptionKey, lang)}
             </Text>
             
-            <View>
-              <Text><Text>{t('summary_total_generations', lang)}:</Text> {isVictory ? '6' : Object.values(gameState.familyMembers).reduce((max, m: Character) => Math.max(max, m.generation), 0)}</Text>
-              <Text><Text>{t('summary_total_members', lang)}:</Text> {gameState.totalMembers}</Text>
-              <Text><Text>{t('summary_living_members', lang)}:</Text> {livingMembers}</Text>
-              <Text><Text>{t('summary_deceased_members', lang)}:</Text> {deceasedMembers}</Text>
-              <Text><Text>{t('summary_highest_education', lang)}:</Text> {gameState.highestEducation}</Text>
-              <Text><Text>{t('summary_highest_career', lang)}:</Text> {gameState.highestCareer}</Text>
-              <Text><Text>{t('summary_final_funds', lang)}:</Text> ${gameState.familyFund.toLocaleString()}</Text>
-               <Text><Text>{t('summary_asset_value', lang)}:</Text> ${gameState.purchasedAssets.reduce((sum, a) => sum + (ASSET_DEFINITIONS[a.id]?.cost || 0), 0).toLocaleString()}</Text>
-              <Text><Text>{t('summary_ending_year', lang)}:</Text> {gameState.currentDate.year}</Text>
+            <View style={summaryScreenStyles.statsContainer}>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_total_generations', lang)}:</Text> {isVictory ? '6' : Object.values(gameState.familyMembers).reduce((max, m: Character) => Math.max(max, m.generation), 0)}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_total_members', lang)}:</Text> {gameState.totalMembers}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_living_members', lang)}:</Text> {livingMembers}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_deceased_members', lang)}:</Text> {deceasedMembers}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_education', lang)}:</Text> {gameState.highestEducation}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_career', lang)}:</Text> {gameState.highestCareer}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_final_funds', lang)}:</Text> ${gameState.familyFund.toLocaleString()}</Text>
+               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_asset_value', lang)}:</Text> ${gameState.purchasedAssets.reduce((sum, a) => sum + (ASSET_DEFINITIONS[a.id]?.cost || 0), 0).toLocaleString()}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_ending_year', lang)}:</Text> {gameState.currentDate.year}</Text>
             </View>
 
-            <TouchableOpacity onPress={onRestart}>
-              <Text>
+            <TouchableOpacity onPress={onRestart} style={summaryScreenStyles.restartButton}>
+              <Text style={summaryScreenStyles.restartButtonText}>
                 {t('play_again_button', lang)}
               </Text>
             </TouchableOpacity>
@@ -741,55 +739,163 @@ interface StartMenuProps extends LocalizedProps {
 }
 
 export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstructions, lang }) => (
-    <View>
-        <Text>{t('game_title', lang)}</Text>
-        <Text>{t('game_subtitle', lang)}</Text>
-        <View>
+    <View style={styles.startMenuContainer}>
+        <Text style={styles.gameTitle}>{t('game_title', lang)}</Text>
+        <Text style={styles.gameSubtitle}>{t('game_subtitle', lang)}</Text>
+        <View style={styles.scenarioList}>
             {SCENARIOS.map((scenario, i) => (
-                <TouchableOpacity // Changed div to TouchableOpacity
+                <TouchableOpacity
                     key={scenario.id}
-                    onPress={() => onStart(scenario.id)} // Changed onClick to onPress
+                    onPress={() => onStart(scenario.id)}
+                    style={styles.scenarioButton}
                 >
                     <View>
-                        <Text>{t(scenario.nameKey, lang)}</Text>
-                        <Text>{t(scenario.descriptionKey, lang)}</Text>
+                        <Text style={styles.scenarioName}>{t(scenario.nameKey, lang)}</Text>
+                        <Text style={styles.scenarioDescription}>{t(scenario.descriptionKey, lang)}</Text>
                     </View>
                 </TouchableOpacity>
             ))}
         </View>
-        <TouchableOpacity // Changed button to TouchableOpacity
-            onPress={onShowInstructions} // Changed onClick to onPress
+        <TouchableOpacity
+            onPress={onShowInstructions}
+            style={styles.howToPlayButton}
         >
-            <Text>
+            <Text style={styles.howToPlayButtonText}>
                 {t('how_to_play_button', lang)}
             </Text>
         </TouchableOpacity>
     </View>
 );
 
+const styles = StyleSheet.create({
+    startMenuContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+    },
+    gameTitle: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#2563eb', // blue-700
+        marginBottom: 8,
+    },
+    gameSubtitle: {
+        fontSize: 18,
+        color: '#4b5563', // slate-600
+        marginBottom: 32,
+    },
+    scenarioList: {
+        width: '100%',
+        marginBottom: 24,
+    },
+    scenarioButton: {
+        backgroundColor: '#f1f5f9', // slate-100
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 12,
+        borderBottomWidth: 4,
+        borderColor: '#e2e8f0', // slate-200
+    },
+    scenarioName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    scenarioDescription: {
+        fontSize: 14,
+        color: '#64748b', // slate-500
+        marginTop: 4,
+    },
+    howToPlayButton: {
+        backgroundColor: '#60a5fa', // blue-400
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+    },
+    howToPlayButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    // ... existing styles for InstructionsModal
+    modalOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+        zIndex: 50,
+    },
+    comicPanelWrapper: {
+        // Removed web-specific --rotate style
+    },
+    comicPanel: {
+        backgroundColor: 'white',
+        padding: 32,
+        maxWidth: 768, // max-w-2xl (32rem * 16px/rem = 512px, but 2xl is 42rem = 672px, let's use 768 for a bit more space)
+        width: '100%',
+        position: 'relative',
+        borderRadius: 8, // Example, adjust as needed
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+    },
+    closeButtonText: {
+        fontSize: 32, // text-4xl
+        fontWeight: 'bold',
+        color: '#94a3b8', // slate-400
+    },
+    instructionsTitle: {
+        fontSize: 28, // text-3xl
+        fontWeight: 'bold',
+        color: '#60a5fa', // blue-400
+        marginBottom: 16,
+    },
+    instructionsContent: {
+        // space-y-3
+    },
+    instructionsParagraph: {
+        fontSize: 14, // text-base
+        color: '#475569', // slate-600
+        marginBottom: 12, // space-y-3 equivalent
+    },
+    instructionsStrong: {
+        fontWeight: 'bold',
+    },
+});
 
 interface InstructionsModalProps extends LocalizedProps {
   onClose: () => void;
 }
 
 export const InstructionsModal: React.FC<InstructionsModalProps> = ({ onClose, lang }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="comic-panel-wrapper" style={{'--rotate': '1deg'} as React.CSSProperties}>
-            <div className="comic-panel p-8 max-w-2xl w-full relative" onClick={e => e.stopPropagation()}>
-                <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-4xl font-bold">&times;</button>
-                <h2 className="text-3xl font-black text-blue-400 mb-4">{t('instructions_title', lang)}</h2>
-                <div className="text-left space-y-3 text-slate-600">
-                    <p><strong>{t('instructions_objective_title', lang)}:</strong> {t('instructions_objective_desc', lang)}</p>
-                    <p><strong>{t('instructions_gameplay_title', lang)}:</strong> {t('instructions_gameplay_desc', lang)}</p>
-                    <p><strong>{t('instructions_events_title', lang)}:</strong> {t('instructions_events_desc', lang)}</p>
-                    <p><strong>{t('instructions_stats_title', lang)}:</strong> {t('instructions_stats_desc', lang)}</p>
-                    <p><strong>{t('instructions_phases_title', lang)}:</strong> {t('instructions_phases_desc', lang)}</p>
-                    <p><strong>{t('instructions_finance_title', lang)}:</strong> {t('instructions_finance_desc', lang)}</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <TouchableOpacity style={styles.modalOverlay} onPress={onClose} activeOpacity={1}>
+        <View style={styles.comicPanelWrapper}>
+            <View style={styles.comicPanel}>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                    <Text style={styles.closeButtonText}>&times;</Text>
+                </TouchableOpacity>
+                <Text style={styles.instructionsTitle}>{t('instructions_title', lang)}</Text>
+                <View style={styles.instructionsContent}>
+                    <Text style={styles.instructionsParagraph}><Text style={styles.instructionsStrong}>{t('instructions_objective_title', lang)}:</Text> {t('instructions_objective_desc', lang)}</Text>
+                    <Text style={styles.instructionsParagraph}><Text style={styles.instructionsStrong}>{t('instructions_gameplay_title', lang)}:</Text> {t('instructions_gameplay_desc', lang)}</Text>
+                    <Text style={styles.instructionsParagraph}><Text style={styles.instructionsStrong}>{t('instructions_events_title', lang)}:</Text> {t('instructions_events_desc', lang)}</Text>
+                    <Text style={styles.instructionsParagraph}><Text style={styles.instructionsStrong}>{t('instructions_stats_title', lang)}:</Text> {t('instructions_stats_desc', lang)}</Text>
+                    <Text style={styles.instructionsParagraph}><Text style={styles.instructionsStrong}>{t('instructions_phases_title', lang)}:</Text> {t('instructions_phases_desc', lang)}</Text>
+                    <Text style={styles.instructionsParagraph}><Text style={styles.instructionsStrong}>{t('instructions_finance_title', lang)}:</Text> {t('instructions_finance_desc', lang)}</Text>
+                </View>
+            </View>
+        </View>
+    </TouchableOpacity>
 );
+
 
 interface WelcomeBackMenuProps extends LocalizedProps {
   onContinue: () => void;
@@ -797,24 +903,28 @@ interface WelcomeBackMenuProps extends LocalizedProps {
 }
 
 export const WelcomeBackMenu: React.FC<WelcomeBackMenuProps> = ({ onContinue, onStartNew, lang }) => (
-    <div className="flex flex-col items-center justify-center h-screen text-center p-4">
-        <h1 className="text-8xl font-black text-blue-400 mb-2" style={{textShadow: '4px 4px 0 #fde047, 8px 8px 0 rgba(0,0,0,0.1)'}}>{t('welcome_back_title', lang)}</h1>
-        <p className="text-2xl text-slate-600 mb-12 font-bold">{t('welcome_back_subtitle', lang)}</p>
-        <div className="flex flex-col sm:flex-row gap-6">
-            <button
-                onClick={onContinue}
-                className="chunky-button chunky-button-green text-2xl px-12 py-4"
+    <View style={welcomeBackMenuStyles.container}>
+        <Text style={welcomeBackMenuStyles.title}>{t('welcome_back_title', lang)}</Text>
+        <Text style={welcomeBackMenuStyles.subtitle}>{t('welcome_back_subtitle', lang)}</Text>
+        <View style={welcomeBackMenuStyles.buttonGroup}>
+            <TouchableOpacity
+                onPress={onContinue}
+                style={[welcomeBackMenuStyles.button, welcomeBackMenuStyles.buttonGreen]}
             >
-                {t('continue_game_button', lang)}
-            </button>
-            <button
-                onClick={onStartNew}
-                className="chunky-button chunky-button-slate text-2xl px-12 py-4"
+                <Text style={welcomeBackMenuStyles.buttonText}>
+                    {t('continue_game_button', lang)}
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={onStartNew}
+                style={[welcomeBackMenuStyles.button, welcomeBackMenuStyles.buttonSlate]}
             >
-                {t('start_new_game_button', lang)}
-            </button>
-        </div>
-    </div>
+                <Text style={welcomeBackMenuStyles.buttonText}>
+                    {t('start_new_game_button', lang)}
+                </Text>
+            </TouchableOpacity>
+        </View>
+    </View>
 );
 
 
@@ -827,28 +937,31 @@ interface ModalBaseProps extends LocalizedProps {
 }
 
 export const ModalBase: React.FC<ModalBaseProps> = ({titleKey, characterName, descriptionKey, descriptionReplacements, children, lang}) => (
-     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-        <div className="comic-panel-wrapper" style={{'--rotate': '-1deg'} as React.CSSProperties}>
-            <div className="comic-panel p-6 max-w-lg w-full">
-                <h2 className="text-2xl font-black text-blue-400 mb-2">{t(titleKey, lang)}</h2>
-                {characterName && <p className="text-slate-500 mb-4">{t('for_char_label', lang)}: <span className="font-semibold text-slate-800">{characterName}</span></p>}
-                <p className="mb-6 text-slate-600">{t(descriptionKey, lang, { name: characterName, ...descriptionReplacements })}</p>
-                <div className="space-y-3">
+     <View style={modalBaseStyles.overlay}>
+        <View style={modalBaseStyles.comicPanelWrapper}>
+            <View style={modalBaseStyles.comicPanel}>
+                <Text style={modalBaseStyles.title}>{t(titleKey, lang)}</Text>
+                {characterName && <Text style={modalBaseStyles.characterNameLabel}>{t('for_char_label', lang)}: <Text style={modalBaseStyles.characterName}>{characterName}</Text></Text>}
+                <Text style={modalBaseStyles.description}>{t(descriptionKey, lang, { name: characterName, ...descriptionReplacements })}</Text>
+                <View style={modalBaseStyles.childrenContainer}>
                    {children}
-                </div>
-            </div>
-        </div>
-    </div>
+                </View>
+            </View>
+        </View>
+    </View>
 );
 
 const ChoiceButton: React.FC<{onClick: () => void, disabled?: boolean, children: React.ReactNode}> = ({onClick, disabled, children}) => (
-     <button
-        onClick={onClick}
+     <TouchableOpacity
+        onPress={onClick}
         disabled={disabled}
-        className="w-full text-left bg-slate-100 text-slate-700 font-bold py-3 px-4 rounded-xl transition duration-200 ease-in-out border-b-4 border-slate-200 enabled:hover:bg-blue-300 enabled:hover:text-white enabled:hover:border-blue-400 enabled:active:translate-y-1 enabled:active:border-b-2 disabled:opacity-60 disabled:cursor-not-allowed"
+        style={[
+            choiceButtonStyles.button,
+            disabled && choiceButtonStyles.buttonDisabled,
+        ]}
     >
        {children}
-    </button>
+    </TouchableOpacity>
 );
 
 
@@ -862,13 +975,13 @@ export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ character,
     <ModalBase titleKey="modal_school_title" characterName={getCharacterDisplayName(character, lang)} descriptionKey="modal_school_desc" lang={lang}>
         {schoolOptions.map((option, index) => (
             <ChoiceButton key={index} onClick={() => onSelect(option)} disabled={currentFunds < option.cost}>
-                <div className="flex justify-between items-center">
-                    <span>{t(option.nameKey, lang)}</span>
-                    <span className={currentFunds >= option.cost ? 'text-red-400' : 'text-red-500 font-extrabold'}>(-${option.cost.toLocaleString()})</span>
-                </div>
-                <div className="text-xs font-normal text-slate-500 mt-1">
+                <View style={schoolChoiceModalStyles.choiceContent}>
+                    <Text style={schoolChoiceModalStyles.choiceName}>{t(option.nameKey, lang)}</Text>
+                    <Text style={[schoolChoiceModalStyles.choiceCost, currentFunds >= option.cost ? schoolChoiceModalStyles.costAffordable : schoolChoiceModalStyles.costUnaffordable]}>(-${option.cost.toLocaleString()})</Text>
+                </View>
+                <Text style={schoolChoiceModalStyles.choiceEffects}>
                     {Object.entries(option.effects).map(([stat, val]) => `${t(`stat_${stat}` as any, lang)} ${val > 0 ? `+${val}` : val}`).join(', ')}
-                </div>
+                </Text>
             </ChoiceButton>
         ))}
     </ModalBase>
@@ -880,8 +993,12 @@ interface UniversityChoiceModalProps extends LocalizedProps {
 }
 export const UniversityChoiceModal: React.FC<UniversityChoiceModalProps> = ({ character, onSelect, lang }) => (
     <ModalBase titleKey="modal_university_title" characterName={getCharacterDisplayName(character, lang)} descriptionKey="modal_university_desc" lang={lang}>
-        <button onClick={() => onSelect(true)} className="chunky-button chunky-button-blue w-full">{t('university_choice_yes', lang)}</button>
-        <button onClick={() => onSelect(false)} className="chunky-button chunky-button-slate w-full">{t('university_choice_no', lang)}</button>
+        <TouchableOpacity onPress={() => onSelect(true)} style={[universityChoiceModalStyles.button, universityChoiceModalStyles.buttonBlue]}>
+            <Text style={universityChoiceModalStyles.buttonText}>{t('university_choice_yes', lang)}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => onSelect(false)} style={[universityChoiceModalStyles.button, universityChoiceModalStyles.buttonSlate]}>
+            <Text style={universityChoiceModalStyles.buttonText}>{t('university_choice_no', lang)}</Text>
+        </TouchableOpacity>
     </ModalBase>
 );
 
@@ -900,20 +1017,22 @@ export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProp
         <ModalBase titleKey="modal_major_title" characterName={getCharacterDisplayName(character, lang)} descriptionKey="modal_major_desc" lang={lang}>
             {majors.map((major, index) => (
                 <ChoiceButton key={index} onClick={() => onSelect(major)} disabled={currentFunds < major.cost}>
-                    <div className="flex justify-between items-center">
-                        <span>{t(major.nameKey, lang)}</span>
-                        <span className={currentFunds >= major.cost ? 'text-red-400' : 'text-red-500 font-extrabold'}>(-${major.cost.toLocaleString()})</span>
-                    </div>
-                    <p className="text-xs font-normal text-slate-500 mt-1">{t(major.descriptionKey, lang)}</p>
+                    <View style={universityMajorChoiceModalStyles.choiceContent}>
+                        <Text style={universityMajorChoiceModalStyles.choiceName}>{t(major.nameKey, lang)}</Text>
+                        <Text style={[universityMajorChoiceModalStyles.choiceCost, currentFunds >= major.cost ? universityMajorChoiceModalStyles.costAffordable : universityMajorChoiceModalStyles.costUnaffordable]}>(-${major.cost.toLocaleString()})</Text>
+                    </View>
+                    <Text style={universityMajorChoiceModalStyles.choiceDescription}>{t(major.descriptionKey, lang)}</Text>
                 </ChoiceButton>
             ))}
             {allUnaffordable && (
-                <div className="mt-4 text-center border-t pt-4">
-                    <p className="text-sm text-red-600 mb-2 font-bold">{t('modal_major_no_money', lang)}</p>
-                    <button onClick={onAbandon} className="chunky-button chunky-button-slate w-full">
-                        {t('university_choice_no', lang)}
-                    </button>
-                </div>
+                <View style={universityMajorChoiceModalStyles.unaffordableSection}>
+                    <Text style={universityMajorChoiceModalStyles.unaffordableText}>{t('modal_major_no_money', lang)}</Text>
+                    <TouchableOpacity onPress={onAbandon} style={[universityMajorChoiceModalStyles.button, universityMajorChoiceModalStyles.buttonSlate]}>
+                        <Text style={universityMajorChoiceModalStyles.buttonText}>
+                            {t('university_choice_no', lang)}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             )}
         </ModalBase>
     );
@@ -945,14 +1064,14 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
 
                 return (
                     <ChoiceButton key={index} onClick={() => onSelect(optionKey)}>
-                        <div className="flex justify-between items-center">
-                             <span className="flex items-center">
-                                {t(track.nameKey, lang)}
-                                {isMajorMatch && !isUnderqualified && <span className="ml-2 text-amber-400" title={t('major_match_tooltip', lang)}>⭐</span>}
-                                {isUnderqualified && <span className="ml-2" title={tooltipText}>⚠️</span>}
-                            </span>
-                        </div>
-                        <p className="text-xs font-normal text-slate-500 mt-1">{t(track.descriptionKey, lang)}</p>
+                        <View style={careerChoiceModalStyles.choiceContent}>
+                             <View style={careerChoiceModalStyles.choiceNameContainer}>
+                                <Text style={careerChoiceModalStyles.choiceNameText}>{t(track.nameKey, lang)}</Text>
+                                {isMajorMatch && !isUnderqualified && <Text style={careerChoiceModalStyles.majorMatchIcon} accessibilityLabel={t('major_match_tooltip', lang)}>⭐</Text>}
+                                {isUnderqualified && <Text style={careerChoiceModalStyles.underqualifiedIcon} accessibilityLabel={tooltipText}>⚠️</Text>}
+                            </View>
+                        </View>
+                        <Text style={careerChoiceModalStyles.choiceDescription}>{t(track.descriptionKey, lang)}</Text>
                     </ChoiceButton>
                 );
             } else if (optionKey === 'job' || optionKey === 'internship' || optionKey === 'vocational') {
@@ -962,15 +1081,15 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
                 
                 return (
                     <ChoiceButton key={index} onClick={() => onSelect(optionKey)} disabled={currentFunds < cost}>
-                        <div className="flex justify-between items-center">
-                            <span>{t(keyBase, lang)}</span>
+                        <View style={careerChoiceModalStyles.choiceContent}>
+                            <Text style={careerChoiceModalStyles.choiceNameText}>{t(keyBase, lang)}</Text>
                              {cost > 0 && (
-                                <span className={currentFunds >= cost ? 'text-red-400' : 'text-red-500 font-extrabold'}>
+                                <Text style={[careerChoiceModalStyles.choiceCost, currentFunds >= cost ? careerChoiceModalStyles.costAffordable : careerChoiceModalStyles.costUnaffordable]}>
                                     (-${cost.toLocaleString()})
-                                </span>
+                                </Text>
                             )}
-                        </div>
-                        <p className="text-xs font-normal text-slate-500 mt-1">{t(descKey, lang)}</p>
+                        </View>
+                        <Text style={careerChoiceModalStyles.choiceDescription}>{t(descKey, lang)}</Text>
                     </ChoiceButton>
                 );
             }
@@ -997,12 +1116,12 @@ export const UnderqualifiedChoiceModal: React.FC<UnderqualifiedChoiceModalProps>
             lang={lang}
         >
             <ChoiceButton onClick={() => onSelect(true)}>
-                <span>{t('underqualified_choice_trainee', lang)}</span>
-                <p className="text-xs font-normal text-slate-500 mt-1">{t('underqualified_choice_trainee_desc', lang)}</p>
+                <Text style={underqualifiedChoiceModalStyles.choiceTitle}>{t('underqualified_choice_trainee', lang)}</Text>
+                <Text style={underqualifiedChoiceModalStyles.choiceDescription}>{t('underqualified_choice_trainee_desc', lang)}</Text>
             </ChoiceButton>
             <ChoiceButton onClick={() => onSelect(false)}>
-                <span>{t('underqualified_choice_penalized', lang)}</span>
-                <p className="text-xs font-normal text-slate-500 mt-1">{t('underqualified_choice_penalized_desc', lang)}</p>
+                <Text style={underqualifiedChoiceModalStyles.choiceTitle}>{t('underqualified_choice_penalized', lang)}</Text>
+                <Text style={underqualifiedChoiceModalStyles.choiceDescription}>{t('underqualified_choice_penalized_desc', lang)}</Text>
             </ChoiceButton>
         </ModalBase>
     );
@@ -1021,9 +1140,11 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({ characterName, n
         descriptionReplacements={{ name: characterName, title: newTitle }}
         lang={lang}
     >
-        <button onClick={onAccept} className="chunky-button chunky-button-green w-full">
-            {t('accept_promotion_button', lang)}
-        </button>
+        <TouchableOpacity onPress={onAccept} style={[promotionModalStyles.button, promotionModalStyles.buttonGreen]}>
+            <Text style={promotionModalStyles.buttonText}>
+                {t('accept_promotion_button', lang)}
+            </Text>
+        </TouchableOpacity>
     </ModalBase>
 );
 
@@ -1037,49 +1158,61 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
     const [selectedTerm, setSelectedTerm] = React.useState(terms[0]);
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-            <div className="comic-panel-wrapper" style={{'--rotate': '-1deg'} as React.CSSProperties}>
-                <div className="comic-panel p-6 max-w-lg w-full">
-                    <h2 className="text-2xl font-black text-red-500 mb-2">{t('modal_loan_title', lang)}</h2>
-                    <p className="mb-6 text-slate-600">{t('modal_loan_desc', lang)}</p>
+        <View style={loanModalStyles.overlay}>
+            <View style={loanModalStyles.comicPanelWrapper}>
+                <View style={loanModalStyles.comicPanel}>
+                    <Text style={loanModalStyles.title}>{t('modal_loan_title', lang)}</Text>
+                    <Text style={loanModalStyles.description}>{t('modal_loan_desc', lang)}</Text>
                     
-                    <div className="space-y-4 mb-6">
-                        <div>
-                            <label className="font-bold text-slate-700">{t('loan_amount_label', lang)}</label>
-                            <div className="grid grid-cols-2 gap-2 mt-2">
+                    <View style={loanModalStyles.optionsContainer}>
+                        <View>
+                            <Text style={loanModalStyles.label}>{t('loan_amount_label', lang)}</Text>
+                            <View style={loanModalStyles.grid}>
                                 {amounts.map(amount => (
-                                    <button 
+                                    <TouchableOpacity 
                                         key={amount}
-                                        onClick={() => setSelectedAmount(amount)}
-                                        className={`p-2 rounded-lg font-bold text-sm border-b-4 transition ${selectedAmount === amount ? 'bg-blue-300 border-blue-400 text-white' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}`}
+                                        onPress={() => setSelectedAmount(amount)}
+                                        style={[
+                                            loanModalStyles.gridButton,
+                                            selectedAmount === amount ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
+                                        ]}
                                     >
-                                        ${amount.toLocaleString()}
-                                    </button>
+                                        <Text style={loanModalStyles.gridButtonText}>
+                                            ${amount.toLocaleString()}
+                                        </Text>
+                                    </TouchableOpacity>
                                 ))}
-                            </div>
-                        </div>
-                        <div>
-                             <label className="font-bold text-slate-700">{t('loan_term_label', lang)}</label>
-                             <div className="grid grid-cols-4 gap-2 mt-2">
+                            </View>
+                        </View>
+                        <View>
+                             <Text style={loanModalStyles.label}>{t('loan_term_label', lang)}</Text>
+                             <View style={loanModalStyles.grid}>
                                 {terms.map(term => (
-                                    <button 
+                                    <TouchableOpacity 
                                         key={term}
-                                        onClick={() => setSelectedTerm(term)}
-                                        className={`p-2 rounded-lg font-bold text-sm border-b-4 transition ${selectedTerm === term ? 'bg-blue-300 border-blue-400 text-white' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}`}
+                                        onPress={() => setSelectedTerm(term)}
+                                        style={[
+                                            loanModalStyles.gridButton,
+                                            selectedTerm === term ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
+                                        ]}
                                     >
-                                        {term}
-                                    </button>
+                                        <Text style={loanModalStyles.gridButtonText}>
+                                            {term}
+                                        </Text>
+                                    </TouchableOpacity>
                                 ))}
-                            </div>
-                        </div>
-                    </div>
+                            </View>
+                        </View>
+                    </View>
                     
-                    <button onClick={() => onLoanChoice(selectedAmount, selectedTerm)} className="chunky-button chunky-button-green w-full">
-                        {t('accept_loan_button', lang)}
-                    </button>
-                </div>
-            </div>
-        </div>
+                    <TouchableOpacity onPress={() => onLoanChoice(selectedAmount, selectedTerm)} style={[loanModalStyles.chunkyButton, loanModalStyles.chunkyButtonGreen]}>
+                        <Text style={loanModalStyles.chunkyButtonText}>
+                            {t('accept_loan_button', lang)}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
     );
 };
 
@@ -1135,82 +1268,1224 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="comic-panel-wrapper" style={{'--rotate': '-2deg'} as React.CSSProperties} onClick={e => e.stopPropagation()}>
-                <div className="comic-panel p-6 max-w-2xl w-full max-h-[90vh] flex flex-col">
-                    <div className="flex justify-between items-start mb-4 flex-shrink-0">
-                        <div>
-                            <h3 className="text-3xl font-black text-blue-500">{t(businessDef.nameKey, lang)}</h3>
-                            <p className="text-slate-500 font-bold">{t('level_label', lang)}: {business.level}</p>
-                        </div>
-                        <button onClick={onClose} className="text-slate-400 hover:text-slate-800 text-4xl font-bold -mt-2">&times;</button>
-                    </div>
+        <View style={businessManagementModalStyles.overlay}>
+            <View style={businessManagementModalStyles.comicPanelWrapper}>
+                <View style={businessManagementModalStyles.comicPanel}>
+                    <View style={businessManagementModalStyles.header}>
+                        <View>
+                            <Text style={businessManagementModalStyles.title}>{t(businessDef.nameKey, lang)}</Text>
+                            <Text style={businessManagementModalStyles.levelText}>{t('level_label', lang)}: {business.level}</Text>
+                        </View>
+                        <TouchableOpacity onPress={onClose} style={businessManagementModalStyles.closeButton}><Text style={businessManagementModalStyles.closeButtonText}>&times;</Text></TouchableOpacity>
+                    </View>
 
-                    <div className="space-y-4 overflow-y-auto flex-grow pr-2">
-                        <h4 className="text-lg font-extrabold text-slate-700">{t('family_members_label', lang)}</h4>
+                    <ScrollView style={businessManagementModalStyles.slotsContainer}>
+                        <Text style={businessManagementModalStyles.sectionTitle}>{t('family_members_label', lang)}</Text>
                         {business.slots.map((slot, index) => {
                              const assignedCharacter = slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? gameState.familyMembers[slot.assignedCharacterId] : null;
                              const isRobot = slot.assignedCharacterId === 'robot';
                              const salary = assignedCharacter ? calculateEmployeeSalary(assignedCharacter) : 0;
 
                              return (
-                                <div key={index} className="bg-slate-100 p-3 rounded-xl flex items-center gap-4">
-                                    <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-slate-200 flex items-center justify-center overflow-hidden">
+                                <View key={index} style={businessManagementModalStyles.slotItem}>
+                                    <View style={businessManagementModalStyles.avatarPlaceholder}>
                                         {assignedCharacter ? (
                                             <AgeAwareAvatarPreview manifest={manifest} character={assignedCharacter} images={images} size={{width: 64, height: 64}} />
                                         ) : isRobot ? (
-                                            <RobotAvatarIcon className="w-full h-full" />
+                                            <RobotAvatarIcon style={businessManagementModalStyles.robotIcon} />
                                         ) : (
-                                            <div className="w-10 h-10 bg-slate-300 rounded-full" />
+                                            <View style={businessManagementModalStyles.emptyAvatar} />
                                         )}
-                                    </div>
-                                    <div className="flex-grow">
-                                        <p className="font-bold text-slate-800">{t(slot.role, lang)}</p>
-                                        <p className="text-xs text-slate-500">{t('req_major_label', lang)}: {slot.requiredMajor === 'Unskilled' ? t('unskilled_major', lang) : t(slot.requiredMajor, lang)}</p>
+                                    </View>
+                                    <View style={businessManagementModalStyles.slotDetails}>
+                                        <Text style={businessManagementModalStyles.slotRole}>{t(slot.role, lang)}</Text>
+                                        <Text style={businessManagementModalStyles.slotRequirement}>{t('req_major_label', lang)}: {slot.requiredMajor === 'Unskilled' ? t('unskilled_major', lang) : t(slot.requiredMajor, lang)}</Text>
                                         {assignedCharacter && (
-                                            <p className="text-xs text-green-600 font-semibold mt-1">
+                                            <Text style={businessManagementModalStyles.slotSalary}>
                                                 {t('salary_label', lang)}: ${salary.toLocaleString()}/mo
-                                            </p>
+                                            </Text>
                                         )}
-                                    </div>
-                                    <select 
-                                        value={slot.assignedCharacterId || 'unassigned'}
-                                        onChange={(e) => handleAssignmentChange(index, e.target.value)}
-                                        className="bg-white border-2 border-slate-200 rounded-xl px-3 py-2 font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    </View>
+                                    <Picker
+                                        selectedValue={slot.assignedCharacterId || 'unassigned'}
+                                        onValueChange={(itemValue) => handleAssignmentChange(index, itemValue as string)}
+                                        style={businessManagementModalStyles.picker}
+                                        itemStyle={businessManagementModalStyles.pickerItem}
                                     >
-                                        <option value="unassigned">{t('unassigned_option', lang)}</option>
-                                        <option value="robot">{t('hire_robot_option', lang)} (-${ROBOT_HIRE_COST}/mo)</option>
-                                        <optgroup label={t('family_members_label', lang)}>
-                                            {availableMembers.map(char => {
-                                                const isMajorMatch = slot.requiredMajor !== 'Unskilled' && char.major === slot.requiredMajor;
-                                                return (
-                                                    <option key={char.id} value={char.id}>
-                                                        {isMajorMatch ? '⭐ ' : ''}
-                                                        {getCharacterDisplayName(char, lang)} (Skill: {Math.round(char.stats.skill)})
-                                                    </option>
-                                                )
-                                            })}
-                                        </optgroup>
-                                    </select>
-                                </div>
+                                        <Picker.Item label={t('unassigned_option', lang)} value="unassigned" />
+                                        <Picker.Item label={`${t('hire_robot_option', lang)} (-$${ROBOT_HIRE_COST}/mo)`} value="robot" />
+                                        {/* Optgroup is not directly supported in React Native Picker, so we'll just list items */}
+                                        {availableMembers.map(char => {
+                                            const isMajorMatch = slot.requiredMajor !== 'Unskilled' && char.major === slot.requiredMajor;
+                                            return (
+                                                <Picker.Item key={char.id} label={`${isMajorMatch ? '⭐ ' : ''}${getCharacterDisplayName(char, lang)} (Skill: ${Math.round(char.stats.skill)})`} value={char.id} />
+                                            )
+                                        })}
+                                    </Picker>
+                                </View>
                              )
                         })}
-                    </div>
-                    
-                    <div className="mt-6 border-t border-slate-200 pt-4 flex-shrink-0">
+                    </ScrollView>
+
+                    <View style={businessManagementModalStyles.footer}>
                          {business.level < 2 && businessDef.upgradeSlots.length > 0 && (
-                            <button 
-                                onClick={() => onUpgradeBusiness(business.id)}
+                            <TouchableOpacity
+                                onPress={() => onUpgradeBusiness(business.id)}
                                 disabled={!canUpgrade}
-                                className="chunky-button chunky-button-green w-full"
+                                style={[businessManagementModalStyles.upgradeButton, !canUpgrade && businessManagementModalStyles.upgradeButtonDisabled]}
                             >
-                                <UpgradeIcon className="inline-block w-5 h-5 mr-2" />
-                                {t('upgrade_button', lang)} (-${upgradeCost.toLocaleString()})
-                            </button>
+                                <UpgradeIcon style={businessManagementModalStyles.upgradeIcon} />
+                                <Text style={businessManagementModalStyles.upgradeButtonText}>
+                                    {t('upgrade_button', lang)} (-${upgradeCost.toLocaleString()})
+                                </Text>
+                            </TouchableOpacity>
                          )}
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </View>
+                </View>
+            </View>
+        </View>
     );
 };
+
+const statBarStyles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    label: {
+        marginLeft: 4,
+        marginRight: 8,
+        fontSize: 14,
+        color: '#333',
+    },
+    barBackground: {
+        flex: 1,
+        height: 10,
+        backgroundColor: '#e0e0e0',
+        borderRadius: 5,
+        overflow: 'hidden',
+        marginRight: 8,
+    },
+    barFill: {
+        height: '100%',
+        borderRadius: 5,
+    },
+    value: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    changeText: {
+        marginLeft: 4,
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    changePositive: {
+        color: '#22c55e', // green-500
+    },
+    changeNegative: {
+        color: '#ef4444', // red-500
+    },
+    barPositive: {
+        backgroundColor: '#4ade80', // green-400
+    },
+    barNegative: {
+        backgroundColor: '#f87171', // red-400
+    },
+    particlesContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+    particle: {
+        position: 'absolute',
+        width: 5,
+        height: 5,
+        borderRadius: 2.5,
+        backgroundColor: 'white', // Example, adjust as needed
+        opacity: 0, // Will be animated
+    },
+});
+
+const characterNodeStyles = StyleSheet.create({
+    container: {
+        padding: 8,
+        borderRadius: 8,
+        borderWidth: 2,
+        alignItems: 'center',
+        margin: 4,
+    },
+    nodeBgDeceased: {
+        backgroundColor: '#e2e8f0', // slate-200
+    },
+    nodeBgAlive: {
+        backgroundColor: 'transparent',
+    },
+    borderPlayer: {
+        borderColor: '#fbbf24', // amber-400
+    },
+    borderNormal: {
+        borderColor: '#cbd5e1', // slate-300
+    },
+    grayscale: {
+        // This would typically be an image style, not a View style.
+        // For React Native, you might need to apply a colorFilter or use a specific image processing library
+        // if a true grayscale effect is needed. For now, I'll leave it as a placeholder.
+        // If AgeAwareAvatarPreview handles image styles, it should be passed there.
+    },
+    avatarWrapper: {
+        position: 'relative',
+        width: 96,
+        height: 96,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    ageText: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        color: 'white',
+        paddingHorizontal: 4,
+        borderRadius: 4,
+        fontSize: 12,
+    },
+    displayNameText: {
+        marginTop: 4,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    netIncomeWrapper: {
+        position: 'relative',
+        marginTop: 2,
+        overflow: 'hidden', // To contain the animated money effect
+    },
+    netIncomeText: {
+        fontSize: 12,
+        textAlign: 'center',
+    },
+    netIncomePositive: {
+        color: '#22c55e', // green-600
+    },
+    netIncomeNegative: {
+        color: '#ef4444', // red-500
+    },
+    netIncomeEffect: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // Animation for this would be handled by Animated API in RN
+    },
+    netIncomeEffectText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        // Animation for this would be handled by Animated API in RN
+    },
+});
+
+const characterDetailModalStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+        zIndex: 50,
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        width: '90%',
+        maxWidth: 600,
+        maxHeight: '90%',
+        overflow: 'hidden',
+    },
+    header: {
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e2e8f0', // slate-200
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+    },
+    closeButtonText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#94a3b8', // slate-400
+    },
+    tabContainer: {
+        flexDirection: 'row',
+        marginTop: 16,
+    },
+    tabButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        marginRight: 8,
+        borderRadius: 4,
+    },
+    tabButtonActive: {
+        backgroundColor: '#eff6ff', // blue-50
+    },
+    tabButtonText: {
+        fontSize: 16,
+        color: '#475569', // slate-600
+    },
+    tabButtonTextActive: {
+        fontWeight: 'bold',
+        color: '#2563eb', // blue-700
+    },
+    detailsContent: {
+        padding: 16,
+    },
+    eventsContent: {
+        flex: 1,
+        padding: 16,
+    },
+    detailsSection: {
+        flexDirection: 'row',
+        marginBottom: 16,
+    },
+    avatarSection: {
+        marginRight: 16,
+    },
+    infoSection: {
+        flex: 1,
+    },
+    infoText: {
+        fontSize: 14,
+        marginBottom: 4,
+        color: '#333',
+    },
+    section: {
+        marginBottom: 12,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 4,
+        color: '#333',
+    },
+    sectionContent: {
+        marginLeft: 8,
+    },
+    sectionItem: {
+        fontSize: 14,
+        color: '#555',
+    },
+    statsSection: {
+        marginTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#e2e8f0', // slate-200
+        paddingTop: 16,
+    },
+    customizeButtonContainer: {
+        marginTop: 16,
+        alignItems: 'center',
+    },
+    customizeButton: {
+        backgroundColor: '#60a5fa', // blue-400
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    customizeButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
+
+const eventModalStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+        zIndex: 50,
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        width: '90%',
+        maxWidth: 600,
+        maxHeight: '90%',
+        overflow: 'hidden',
+        padding: 16,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    avatarButton: {
+        marginRight: 12,
+    },
+    headerTextContainer: {
+        flex: 1,
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#475569', // slate-600
+    },
+    characterName: {
+        fontWeight: 'bold',
+    },
+    description: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 20,
+    },
+    choicesContainer: {
+        // space-y-3
+    },
+    choiceButton: {
+        backgroundColor: '#f1f5f9', // slate-100
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 12,
+        borderBottomWidth: 4,
+        borderColor: '#e2e8f0', // slate-200
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    choiceButtonContent: {
+        flex: 1,
+    },
+    choiceButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    choiceTriggerText: {
+        fontSize: 12,
+        color: '#64748b', // slate-500
+    },
+    fundChangeText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginLeft: 8,
+    },
+    fundChangePositive: {
+        color: '#22c55e', // green-600
+    },
+    fundChangeNegative: {
+        color: '#ef4444', // red-500
+    },
+    outcomeContainer: {
+        // space-y-4
+    },
+    outcomeMessage: {
+        fontSize: 16,
+        fontStyle: 'italic',
+        color: '#475569', // slate-600
+        marginBottom: 16,
+    },
+    outcomeDetails: {
+        marginBottom: 20,
+    },
+    fundChangeDetail: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    fundChangeDetailText: {
+        marginLeft: 8,
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    okButton: {
+        backgroundColor: '#60a5fa', // blue-400
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    okButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
+
+const logStatChangesStyles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 4,
+    },
+    changeText: {
+        fontSize: 12,
+        marginRight: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    positiveChange: {
+        color: '#22c55e', // green-600
+    },
+    negativeChange: {
+        color: '#ef4444', // red-600
+    },
+});
+
+const gameLogStyles = StyleSheet.create({
+    scrollView: {
+        flex: 1,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 12,
+        color: '#1e293b', // slate-800
+    },
+    logContainer: {
+        // space-y-4
+    },
+    logEntry: {
+        marginBottom: 16,
+        paddingBottom: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e2e8f0', // slate-200
+    },
+    logEntryYear: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#64748b', // slate-500
+        marginBottom: 4,
+    },
+    logEntryContent: {
+        marginLeft: 8,
+    },
+    logEntryText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    logEntryCharacterName: {
+        fontWeight: 'bold',
+    },
+    logEntryEventName: {
+        fontStyle: 'italic',
+    },
+    logEntryMessage: {
+        fontSize: 14,
+        color: '#555',
+        marginTop: 4,
+    },
+});
+
+const summaryScreenStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f8fafc', // slate-50
+        padding: 16,
+    },
+    contentWrapper: {
+        // This was a comic-panel-wrapper, might need specific styling if it had visual effects
+        // For now, just a container
+    },
+    content: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 24,
+        alignItems: 'center',
+        maxWidth: 500,
+        width: '100%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#2563eb', // blue-700
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    description: {
+        fontSize: 16,
+        color: '#475569', // slate-600
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    statsContainer: {
+        width: '100%',
+        marginBottom: 24,
+        // space-y-2
+    },
+    statItem: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 4,
+    },
+    statLabel: {
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    restartButton: {
+        backgroundColor: '#60a5fa', // blue-400
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        marginTop: 16,
+    },
+    restartButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+});
+
+const familyTreeStyles = StyleSheet.create({
+    familyTreeContainer: {
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+    parentsNode: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    spouseConnector: {
+        width: 20, // Horizontal line
+        height: 2,
+        backgroundColor: '#ccc',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    spouseConnectorVertical: {
+        width: 2,
+        height: 20,
+        backgroundColor: '#ccc',
+    },
+    childrenBranch: {
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    childrenVerticalLine: {
+        width: 2,
+        height: 20,
+        backgroundColor: '#ccc',
+    },
+    childrenNodesContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    childNodeWrapper: {
+        alignItems: 'center',
+        marginHorizontal: 5,
+        position: 'relative',
+    },
+    childConnectorVertical: {
+        width: 2,
+        height: 20,
+        backgroundColor: '#ccc',
+    },
+    childConnectorHorizontal: {
+        height: 2,
+        backgroundColor: '#ccc',
+        position: 'absolute',
+        top: 0,
+        // These will be dynamically set based on index
+    },
+});
+
+const welcomeBackMenuStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center', // Not directly applicable to View, but for Text children
+        padding: 16,
+    },
+    title: {
+        fontSize: 64, // text-8xl, adjusted for RN
+        fontWeight: '900', // font-black
+        color: '#60a5fa', // blue-400
+        marginBottom: 8,
+        textShadowColor: '#fde047', // yellow-200
+        textShadowOffset: { width: 4, height: 4 },
+        textShadowRadius: 0,
+        // Second shadow for rgba(0,0,0,0.1) might need a separate Text component or a custom solution
+    },
+    subtitle: {
+        fontSize: 24, // text-2xl
+        color: '#475569', // slate-600
+        marginBottom: 48, // mb-12
+        fontWeight: 'bold',
+    },
+    buttonGroup: {
+        flexDirection: 'row',
+        // sm:flex-row gap-6
+        // For small screens, it might stack vertically, but for now, row.
+        // Gap can be simulated with margin.
+        gap: 24, // gap-6
+    },
+    button: {
+        paddingVertical: 16, // py-4
+        paddingHorizontal: 48, // px-12
+        borderRadius: 8,
+        // chunky-button styles need to be defined
+    },
+    buttonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderBottomWidth: 4,
+        borderColor: '#16a34a', // green-600
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderBottomWidth: 4,
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 24, // text-2xl
+        fontWeight: 'bold',
+    },
+});
+
+const modalBaseStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+        padding: 16,
+    },
+    comicPanelWrapper: {
+        // For React Native, if a rotation is desired, it would be applied directly to the style prop
+        // transform: [{ rotate: '-1deg' }], // Example rotation
+    },
+    comicPanel: {
+        backgroundColor: 'white',
+        padding: 24, // p-6
+        maxWidth: 400, // max-w-lg
+        width: '100%',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    title: {
+        fontSize: 24, // text-2xl
+        fontWeight: 'bold', // font-black
+        color: '#60a5fa', // blue-400
+        marginBottom: 8, // mb-2
+    },
+    characterNameLabel: {
+        color: '#64748b', // slate-500
+        marginBottom: 16, // mb-4
+        fontSize: 14,
+    },
+    characterName: {
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    description: {
+        marginBottom: 24, // mb-6
+        color: '#475569', // slate-600
+        fontSize: 16,
+    },
+    childrenContainer: {
+        // space-y-3
+    },
+});
+
+const choiceButtonStyles = StyleSheet.create({
+    button: {
+        width: '100%',
+        backgroundColor: '#f1f5f9', // slate-100
+        paddingVertical: 12, // py-3
+        paddingHorizontal: 16, // px-4
+        borderRadius: 12, // rounded-xl
+        borderBottomWidth: 4,
+        borderColor: '#e2e8f0', // slate-200
+        transitionDuration: 200, // transition duration-200
+        transitionTimingFunction: 'ease-in-out', // ease-in-out
+        justifyContent: 'flex-start', // text-left
+        marginBottom: 12, // For space-y-3 in parent
+    },
+    buttonDisabled: {
+        opacity: 0.6, // disabled:opacity-60
+        // cursor-not-allowed is not applicable in RN
+    },
+    // Hover and active states are handled differently in React Native,
+    // often with `TouchableHighlight` or `Pressable` and their `onPressIn`/`onPressOut`
+    // or by manually changing styles on state. For simplicity, I'm omitting them for now.
+    // enabled:hover:bg-blue-300 enabled:hover:text-white enabled:hover:border-blue-400
+    // enabled:active:translate-y-1 enabled:active:border-b-2
+});
+
+const schoolChoiceModalStyles = StyleSheet.create({
+    choiceContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    choiceName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    choiceCost: {
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    costAffordable: {
+        color: '#f87171', // red-400
+    },
+    costUnaffordable: {
+        color: '#ef4444', // red-500 font-extrabold
+        fontWeight: 'bold',
+    },
+    choiceEffects: {
+        fontSize: 12, // text-xs
+        color: '#64748b', // slate-500
+        marginTop: 4, // mt-1
+    },
+});
+
+const universityChoiceModalStyles = StyleSheet.create({
+    button: {
+        width: '100%',
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginBottom: 12, // For space-y-3 in parent
+    },
+    buttonBlue: {
+        backgroundColor: '#60a5fa', // blue-400
+        borderBottomWidth: 4,
+        borderColor: '#3b82f6', // blue-500
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderBottomWidth: 4,
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
+
+const universityMajorChoiceModalStyles = StyleSheet.create({
+    choiceContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    choiceName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    choiceCost: {
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    costAffordable: {
+        color: '#f87171', // red-400
+    },
+    costUnaffordable: {
+        color: '#ef4444', // red-500 font-extrabold
+        fontWeight: 'bold',
+    },
+    choiceDescription: {
+        fontSize: 12, // text-xs
+        color: '#64748b', // slate-500
+        marginTop: 4, // mt-1
+    },
+    unaffordableSection: {
+        marginTop: 16, // mt-4
+        borderTopWidth: 1,
+        borderTopColor: '#e2e8f0', // border-t
+        paddingTop: 16, // pt-4
+        alignItems: 'center', // text-center
+    },
+    unaffordableText: {
+        fontSize: 14, // text-sm
+        color: '#dc2626', // red-600
+        marginBottom: 8, // mb-2
+        fontWeight: 'bold',
+    },
+    button: {
+        width: '100%',
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderBottomWidth: 4,
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
+
+const careerChoiceModalStyles = StyleSheet.create({
+    choiceContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    choiceNameContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    choiceNameText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    majorMatchIcon: {
+        marginLeft: 8, // ml-2
+        color: '#fbbf24', // amber-400
+    },
+    underqualifiedIcon: {
+        marginLeft: 8, // ml-2
+    },
+    choiceCost: {
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    costAffordable: {
+        color: '#f87171', // red-400
+    },
+    costUnaffordable: {
+        color: '#ef4444', // red-500 font-extrabold
+        fontWeight: 'bold',
+    },
+    choiceDescription: {
+        fontSize: 12, // text-xs
+        color: '#64748b', // slate-500
+        marginTop: 4, // mt-1
+    },
+});
+
+const underqualifiedChoiceModalStyles = StyleSheet.create({
+    choiceTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    choiceDescription: {
+        fontSize: 12, // text-xs
+        color: '#64748b', // slate-500
+        marginTop: 4, // mt-1
+    },
+});
+
+const promotionModalStyles = StyleSheet.create({
+    button: {
+        width: '100%',
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    buttonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderBottomWidth: 4,
+        borderColor: '#16a34a', // green-600
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
+
+const loanModalStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+        padding: 16,
+    },
+    comicPanelWrapper: {
+        // transform: [{ rotate: '-1deg' }], // Example rotation
+    },
+    comicPanel: {
+        backgroundColor: 'white',
+        padding: 24, // p-6
+        maxWidth: 400, // max-w-lg
+        width: '100%',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    title: {
+        fontSize: 24, // text-2xl
+        fontWeight: 'bold', // font-black
+        color: '#ef4444', // red-500
+        marginBottom: 8, // mb-2
+    },
+    description: {
+        marginBottom: 24, // mb-6
+        color: '#475569', // slate-600
+        fontSize: 16,
+    },
+    optionsContainer: {
+        marginBottom: 24, // mb-6
+        // space-y-4
+    },
+    label: {
+        fontWeight: 'bold',
+        color: '#333', // slate-700
+        marginBottom: 8,
+    },
+    grid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8, // gap-2
+        marginTop: 8, // mt-2
+    },
+    gridButton: {
+        padding: 8, // p-2
+        borderRadius: 8, // rounded-lg
+        borderBottomWidth: 4,
+        transitionDuration: 200, // transition
+        flex: 1, // To make them take equal space
+        alignItems: 'center',
+    },
+    gridButtonSelected: {
+        backgroundColor: '#93c5fd', // blue-300
+        borderColor: '#60a5fa', // blue-400
+    },
+    gridButtonNormal: {
+        backgroundColor: '#f1f5f9', // slate-100
+        borderColor: '#e2e8f0', // slate-200
+    },
+    gridButtonText: {
+        fontWeight: 'bold',
+        fontSize: 14, // text-sm
+        color: '#333', // text-slate-600
+    },
+    chunkyButton: {
+        width: '100%',
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    chunkyButtonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderBottomWidth: 4,
+        borderColor: '#16a34a', // green-600
+    },
+    chunkyButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
+
+const businessManagementModalStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+        padding: 16,
+    },
+    comicPanelWrapper: {
+        // transform: [{ rotate: '-2deg' }], // Example rotation
+    },
+    comicPanel: {
+        backgroundColor: 'white',
+        padding: 24, // p-6
+        maxWidth: 768, // max-w-2xl
+        width: '100%',
+        maxHeight: '90%', // max-h-[90vh]
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        flexDirection: 'column', // flex flex-col
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start', // items-start
+        marginBottom: 16, // mb-4
+        flexShrink: 0, // flex-shrink-0
+    },
+    title: {
+        fontSize: 28, // text-3xl
+        fontWeight: 'bold', // font-black
+        color: '#3b82f6', // blue-500
+    },
+    levelText: {
+        color: '#64748b', // slate-500
+        fontWeight: 'bold',
+    },
+    closeButton: {
+        // -mt-2
+    },
+    closeButtonText: {
+        color: '#94a3b8', // slate-400
+        fontSize: 32, // text-4xl
+        fontWeight: 'bold',
+    },
+    slotsContainer: {
+        flexGrow: 1, // flex-grow
+        paddingRight: 8, // pr-2
+        // space-y-4
+    },
+    sectionTitle: {
+        fontSize: 18, // text-lg
+        fontWeight: 'bold', // font-extrabold
+        color: '#333', // slate-700
+        marginBottom: 12,
+    },
+    slotItem: {
+        backgroundColor: '#f1f5f9', // slate-100
+        padding: 12, // p-3
+        borderRadius: 12, // rounded-xl
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16, // gap-4
+        marginBottom: 12, // For space-y-4 in parent
+    },
+    avatarPlaceholder: {
+        flexShrink: 0, // flex-shrink-0
+        width: 64, // w-16
+        height: 64, // h-16
+        borderRadius: 8, // rounded-lg
+        backgroundColor: '#e2e8f0', // bg-slate-200
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
+    },
+    robotIcon: {
+        width: '100%',
+        height: '100%',
+    },
+    emptyAvatar: {
+        width: 40, // w-10
+        height: 40, // h-10
+        backgroundColor: '#cbd5e1', // bg-slate-300
+        borderRadius: 20, // rounded-full
+    },
+    slotDetails: {
+        flexGrow: 1, // flex-grow
+    },
+    slotRole: {
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    slotRequirement: {
+        fontSize: 12, // text-xs
+        color: '#64748b', // slate-500
+    },
+    slotSalary: {
+        fontSize: 12, // text-xs
+        color: '#22c55e', // green-600
+        fontWeight: 'bold',
+        marginTop: 4, // mt-1
+    },
+    picker: {
+        backgroundColor: 'white',
+        borderWidth: 2,
+        borderColor: '#e2e8f0', // slate-200
+        borderRadius: 12, // rounded-xl
+        // px-3 py-2 font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400
+        // These styles are harder to apply directly to Picker, might need custom wrapper
+        height: 40, // Example height
+        width: 150, // Example width
+    },
+    pickerItem: {
+        fontSize: 14,
+        color: '#475569', // slate-600
+    },
+    footer: {
+        marginTop: 24, // mt-6
+        borderTopWidth: 1,
+        borderTopColor: '#e2e8f0', // border-t border-slate-200
+        paddingTop: 16, // pt-4
+        flexShrink: 0, // flex-shrink-0
+    },
+    upgradeButton: {
+        backgroundColor: '#22c55e', // green-500
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        borderBottomWidth: 4,
+        borderColor: '#16a34a', // green-600
+    },
+    upgradeButtonDisabled: {
+        opacity: 0.6,
+    },
+    upgradeIcon: {
+        width: 20, // w-5
+        height: 20, // h-5
+        marginRight: 8, // mr-2
+        color: 'white', // Assuming icon color should be white
+    },
+    upgradeButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});

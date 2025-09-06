@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
 import { LayerKey, Manifest, AvatarState, Character, Gender } from "../core/types";
 import { LockClosedIcon } from './icons';
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
+import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
 // =============================================
-// Helpers
+// Helpers (Simplified for React Native)
 // =============================================
 function mulberry32(seed: number) {
   return function () {
@@ -27,151 +29,17 @@ function hashString(str: string): number {
   }
   return h >>> 0;
 }
-function colorFrom(text: string) {
-  const h = hashString(text);
-  const hue = h % 360;
-  const sat = 45 + (h % 30);
-  const light = 45 + (Math.floor(h / 360) % 20);
-  return `hsl(${hue} ${sat}% ${light}%)`;
-}
-function makePlaceholderSVG(width: number, height: number, label: string) {
-  const bg = colorFrom(label + "bg");
-  const fg = "#ffffff";
-  const svg = `<?xml version='1.0' encoding='UTF-8'?>
-  <svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'>
-    <defs>
-      <pattern id='grid' width='16' height='16' patternUnits='userSpaceOnUse'>
-        <rect width='16' height='16' fill='${bg}' opacity='0.25'/>
-        <path d='M16 0 L0 0 0 16' stroke='${fg}' stroke-opacity='0.15' stroke-width='1'/>
-      </pattern>
-    </defs>
-    <rect width='100%' height='100%' fill='url(#grid)'/>
-    <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='28' fill='${fg}' fill-opacity='0.75'>${label}</text>
-  </svg>`;
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-}
 
-// Preload images - Exported for use in App.tsx
-export function usePreloadedImages(urls: string[]) {
-  const [loaded, setLoaded] = useState<Record<string, HTMLImageElement>>({});
-  useEffect(() => {
-    let cancelled = false;
-    const cache: Record<string, HTMLImageElement> = {};
-    let remaining = urls.length;
-    if (remaining === 0) { setLoaded({}); return; }
-    urls.forEach((u) => {
-      if (!u) { remaining -= 1; if (remaining === 0) setLoaded(cache); return; }
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => { if (!cancelled) { cache[u] = img; if (--remaining === 0) setLoaded(cache);} };
-      img.onerror = () => { if (!cancelled) { if (--remaining === 0) setLoaded(cache);} };
-      img.src = u;
-    });
-    return () => { cancelled = true; };
-  }, [JSON.stringify(urls.slice().sort())]);
-  return { loaded };
-}
-
-// Draw to canvas with placeholder fallback
-async function drawAvatarToCanvas(
-  canvas: HTMLCanvasElement,
-  manifest: Manifest,
-  state: AvatarState,
-  images: Record<string, HTMLImageElement>,
-  size: { width: number; height: number }
-) {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-  canvas.width = size.width;
-  canvas.height = size.height;
-  ctx.clearRect(0, 0, size.width, size.height);
-  const ordered = [...manifest].sort((a, b) => a.zIndex - b.zIndex);
-  for (const layer of ordered) {
-    const id = state[layer.key];
-    if (!id && !layer.required) continue;
-    if (id === null) continue;
-    const opt = layer.options.find((o) => o.id === id);
-    if (!opt) continue;
-    const src = opt.src || opt.previewSrc || "";
-    let img = images[src];
-    if (!img && src) { // only create placeholder if src is defined but not loaded
-      const url = makePlaceholderSVG(size.width, size.height, `${layer.label}: ${opt.name}`);
-      img = await new Promise((resolve: (v: HTMLImageElement) => void) => {
-        const i = new Image();
-        i.onload = () => resolve(i);
-        i.src = url;
-      });
-    }
-     if (img) {
-        const isHairLikeLayer = ['backHair', 'frontHair', 'eyebrows', 'beard'].includes(layer.key);
-        let filter = 'none';
-        if (isHairLikeLayer) {
-            const colorName = state[`${layer.key}Color` as keyof AvatarState] as string | undefined;
-            if (colorName) {
-                filter = AVATAR_COLOR_PALETTE.find(c => c.name === colorName)?.filter || 'none';
-            }
-        }
-        ctx.filter = filter;
-        ctx.drawImage(img, 0, 0, size.width, size.height);
-        ctx.filter = 'none'; // Reset filter for next layer
-    }
-  }
-}
-
-// =============================================
-// AvatarPreview (stacked <img> with placeholders)
-// =============================================
-export function AvatarPreview({
-  manifest,
-  state,
-  images,
-  size = { width: 512, height: 512 },
-}: {
-  manifest: Manifest;
-  state: AvatarState;
-  images: Record<string, HTMLImageElement>;
-  size?: { width: number; height: number };
-}) {
-  const ordered = useMemo(() => [...manifest].sort((a, b) => a.zIndex - b.zIndex), [manifest]);
+// Placeholder for image options - simplified to a colored View with text
+function makePlaceholderComponent(label: string) {
   return (
-    <div
-      className="relative overflow-hidden rounded-2xl shadow-md bg-slate-200"
-      style={{ width: size.width, height: size.height }}
-    >
-      {ordered.map((layer) => {
-        const id = state[layer.key];
-        if (!id && !layer.required) return null;
-        if (id === null) return null;
-        const opt = layer.options.find((o) => o.id === id);
-        if (!opt) return null;
-        const src = opt.previewSrc || opt.src;
-        if (!src) return null; // Don't render anything for "none" options
-        const hasImg = !!images[src];
-        const displaySrc = hasImg ? src : makePlaceholderSVG(size.width, size.height, `${layer.label}: ${opt.name}`);
-
-        const isHairLikeLayer = ['backHair', 'frontHair', 'eyebrows', 'beard'].includes(layer.key);
-        let imageFilter = 'none';
-        if (isHairLikeLayer) {
-            const colorName = state[`${layer.key}Color` as keyof AvatarState] as string | undefined;
-            if (colorName) {
-                imageFilter = AVATAR_COLOR_PALETTE.find(c => c.name === colorName)?.filter || 'none';
-            }
-        }
-
-        return (
-          <img
-            key={`${layer.key}:${id}`}
-            src={displaySrc}
-            alt={`${layer.label}: ${opt.name}`}
-            className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
-            style={{ filter: imageFilter }}
-            draggable={false}
-          />
-        );
-      })}
-    </div>
+    <View style={avatarBuilderStyles.placeholderContainer}>
+      <Text style={avatarBuilderStyles.placeholderText}>{label}</Text>
+    </View>
   );
 }
+
+// Removed usePreloadedImages, drawAvatarToCanvas, exportPNG as they are web-specific
 
 // =============================================
 // Main Component
@@ -201,7 +69,7 @@ export default function AvatarBuilder({
 }: {
     manifest: Manifest;
     character: Character;
-    images: Record<string, HTMLImageElement>;
+    images: Record<string, any>; // Changed from HTMLImageElement to any for RN compatibility
     onSave: (newState: AvatarState) => void;
     onClose: () => void;
 }) {
@@ -287,17 +155,7 @@ export default function AvatarBuilder({
     setState(next);
   }
 
-  async function exportPNG() {
-    const canvas = document.createElement("canvas");
-    const size = { width: 1024, height: 1024 };
-    await drawAvatarToCanvas(canvas, manifest, state, images, size);
-    const url = canvas.toDataURL("image/png");
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `avatar-${Date.now()}.png`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  // Removed exportPNG function
 
     const renderLayerOptions = (layer: (typeof manifest)[0]) => {
     const options = getAgeAppropriateOptions(layer, characterAgeCategory);
@@ -308,73 +166,88 @@ export default function AvatarBuilder({
     if (layer.key === 'beard') activeColorName = state.beardColor;
 
     return (
-      <div key={layer.key} className="rounded-2xl border bg-white p-3 shadow-sm">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold">{layer.label}</h3>
+      <View key={layer.key} style={avatarBuilderStyles.layerOptionContainer}>
+        <View style={avatarBuilderStyles.layerOptionHeader}>
+          <Text style={avatarBuilderStyles.layerOptionTitle}>{layer.label}</Text>
           {layer.allowNone && (
-            <button className="text-sm underline text-slate-500 hover:text-slate-800" onClick={() => setLayer(layer.key, null)}>None</button>
+            <TouchableOpacity onPress={() => setLayer(layer.key, null)}>
+                <Text style={avatarBuilderStyles.noneButtonText}>None</Text>
+            </TouchableOpacity>
           )}
-        </div>
-        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+        </View>
+        <View style={avatarBuilderStyles.optionsGrid}>
           {options.map((opt) => {
             const selected = state[layer.key] === opt.id;
             const src = opt.previewSrc || opt.src;
-            if (!src) return null;
-            const hasImg = !!images[src];
-            const displaySrc = hasImg ? src : makePlaceholderSVG(64, 64, opt.name);
+            // For React Native, `images` prop should contain preloaded ImageSourcePropType values
+            const displaySource = images[src]; // Assuming images[src] is already a valid ImageSourcePropType
 
             return (
-              <button
+              <TouchableOpacity
                 key={opt.id}
-                className={`relative rounded-xl border-2 overflow-hidden aspect-square focus:outline-none focus:ring-2 ring-offset-2 ring-blue-400 ${selected ? "border-blue-500 ring-2" : "border-slate-200"}`}
-                title={opt.name}
-                onClick={() => setLayer(layer.key, opt.id)}
+                style={[
+                    avatarBuilderStyles.optionButton,
+                    selected ? avatarBuilderStyles.optionButtonSelected : avatarBuilderStyles.optionButtonNormal,
+                ]}
+                onPress={() => setLayer(layer.key, opt.id)}
               >
-                <img src={displaySrc} alt={opt.name} className="absolute inset-0 w-full h-full object-contain" style={{filter: layer.key === 'eyebrows' ? 'brightness(0.2) grayscale(1)' : 'none'}} draggable={false} />
-              </button>
+                {displaySource ? (
+                    <Image source={displaySource} style={avatarBuilderStyles.optionImage} />
+                ) : (
+                    makePlaceholderComponent(opt.name) // Use placeholder component
+                )}
+              </TouchableOpacity>
             );
           })}
-        </div>
+        </View>
         {isColorable && state[layer.key] && (
-            <div className="mt-3 pt-3 border-t">
-                <h4 className="text-sm font-semibold mb-2 text-slate-600">Color</h4>
-                <div className="flex flex-wrap gap-2">
+            <View style={avatarBuilderStyles.colorPickerContainer}>
+                <Text style={avatarBuilderStyles.colorPickerTitle}>Color</Text>
+                <View style={avatarBuilderStyles.colorPalette}>
                     {AVATAR_COLOR_PALETTE.map(color => (
-                        <button
+                        <TouchableOpacity
                             key={color.name}
-                            title={color.name}
-                            onClick={() => setColorForLayer(layer.key, color.name)}
-                            className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${activeColorName === color.name ? 'border-blue-500 ring-2 ring-blue-400' : 'border-white'}`}
-                            style={{ backgroundColor: color.previewBackground }}
+                            onPress={() => setColorForLayer(layer.key, color.name)}
+                            style={[
+                                avatarBuilderStyles.colorSwatch,
+                                { backgroundColor: color.previewBackground },
+                                activeColorName === color.name && avatarBuilderStyles.colorSwatchSelected,
+                            ]}
                         />
                     ))}
-                </div>
-            </div>
+                </View>
+            </View>
         )}
-      </div>
+      </View>
     );
   };
 
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="comic-panel-wrapper" style={{'--rotate': '0deg'} as React.CSSProperties} onClick={e => e.stopPropagation()}>
-            <div className="comic-panel p-4 bg-slate-50 max-h-[90vh] overflow-y-auto w-full max-w-6xl">
-                <h2 className="text-3xl font-black text-blue-400 mb-4 text-center">Customize Avatar</h2>
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <div className="flex flex-col items-center gap-4">
-                    <AvatarPreview manifest={manifest} state={state} images={images} size={{width: 512, height: 512}} />
-                    <div className="flex items-center gap-2 flex-wrap justify-center p-2 bg-slate-100 rounded-2xl">
-                      <button className="chunky-button chunky-button-pink" onClick={randomize}>Randomize</button>
-                      <button className="chunky-button chunky-button-slate" onClick={exportPNG}>Export PNG</button>
-                      <div className="flex items-center gap-1">
-                        <label className="text-sm font-bold">Seed</label>
-                        <input className="px-3 py-2 rounded-xl border w-28" value={seed} onChange={(e) => setSeed(parseInt(e.target.value || "0", 10) || 0)} />
-                      </div>
-                    </div>
-                  </div>
+    <View style={avatarBuilderStyles.overlay}>
+        <View style={avatarBuilderStyles.comicPanelWrapper}>
+            <View style={avatarBuilderStyles.comicPanel}>
+                <Text style={avatarBuilderStyles.mainTitle}>Customize Avatar</Text>
+                <View style={avatarBuilderStyles.mainContentGrid}>
+                  <View style={avatarBuilderStyles.previewColumn}>
+                    {/* AgeAwareAvatarPreview handles layering and image display */}
+                    <AgeAwareAvatarPreview manifest={manifest} character={character} images={images} size={{width: 256, height: 256}} />
+                    <View style={avatarBuilderStyles.controlsContainer}>
+                      <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonPink]} onPress={randomize}><Text style={avatarBuilderStyles.chunkyButtonText}>Randomize</Text></TouchableOpacity>
+                      {/* Removed Export PNG button */}
+                      <View style={avatarBuilderStyles.seedInputContainer}>
+                        <Text style={avatarBuilderStyles.seedLabel}>Seed</Text>
+                        <TextInput
+                            style={avatarBuilderStyles.seedInput}
+                            value={seed.toString()}
+                            onChangeText={(text) => setSeed(parseInt(text || "0", 10) || 0)}
+                            keyboardType="numeric"
+                        />
+                      </View>
+                    </View>
+                  </View>
             
-                  <div className="grid gap-4 content-start max-h-[60vh] lg:max-h-[65vh] overflow-y-auto pr-2">
+                  <ScrollView style={avatarBuilderStyles.layersColumn}>
                     {ordered.map(layer => {
                         if (layer.key === 'backHair' && character.gender === Gender.Male) {
                             return null;
@@ -387,131 +260,261 @@ export default function AvatarBuilder({
                         // The color picker for backHair is intentionally omitted as its color is linked to frontHair.
                         return renderLayerOptions(layer);
                     })}
-                  </div>
-                </div>
-                 <div className="mt-6 flex justify-center gap-4 border-t border-slate-200 pt-4">
-                    <button className="chunky-button chunky-button-slate" onClick={onClose}>Cancel</button>
-                    <button className="chunky-button chunky-button-green" onClick={() => onSave(state)}>Save</button>
-                 </div>
-            </div>
-        </div>
-    </div>
+                  </ScrollView>
+                </View>
+                 <View style={avatarBuilderStyles.footerButtonsContainer}>
+                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonSlate]} onPress={onClose}><Text style={avatarBuilderStyles.chunkyButtonText}>Cancel</Text></TouchableOpacity>
+                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonGreen]} onPress={() => onSave(state)}><Text style={avatarBuilderStyles.chunkyButtonText}>Save</Text></TouchableOpacity>
+                 </View>
+            </View>
+        </View>
+    </View>
   );
 }
-// Định nghĩa kiểu chung cho layer
-type LayerOption = {
-  id: string;
-  name: string;
-  src: string;
-  ageCategory?: 'baby' | 'normal' | 'old';
-};
 
-// Helper lấy tên file
-const baseName = (path: string) =>
-  path.split('/').pop()!.replace(/\.(png|webp)$/i, '');
-
-// Backgrounds
-const backgroundOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/bg/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `bg-${name}`, name: `Background ${name}`, src: src as string };
-});
-
-// Back Hair
-const backHairOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/hair/back/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}bh`, name, src: src as string };
-});
-
-// Eyes
-const eyesOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/eyes/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}e`, name, src: src as string };
-});
-
-// Eyebrows
-const eyebrowsOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/eyebrows/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}eb`, name, src: src as string };
-});
-
-// Mouth
-const mouthOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/mouth/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}m`, name, src: src as string };
-});
-
-// Beard
-const beardOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/beard/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}b`, name, src: src as string };
-});
-
-// Front Hair
-const frontHairOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/hair/front/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const name = baseName(path);
-  return { id: `${name}fh`, name, src: src as string };
-});
-
-// Features (có subfolder: baby / normal / old / ...)
-const featureOptions: LayerOption[] = Object.entries(
-  import.meta.glob('../src/asset/avatar-face/features/**/*.{png,webp}', {
-    eager: true,
-    query: '?url', import: 'default'
-  })
-).map(([path, src]) => {
-  const parts = path.split('/');
-  const ageCategory = parts[parts.length - 2] as 'baby' | 'normal' | 'old';
-  const n = baseName(path);
-
-  const name = n
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (l) => l.toUpperCase());
-
-  return { id: `feat-${n}`, name, src: src as string, ageCategory };
-});
+// Removed web-specific asset loading (import.meta.glob) and exampleManifest
+// The manifest should be provided as a prop or loaded via React Native's asset system.
+// For demonstration, a simplified manifest structure is assumed.
 
 export const exampleManifest: Manifest = [
-  { key: "background", label: "Background", zIndex: 0, required: true, options: backgroundOptions},
-  { key: "backHair", label: "Hair (Back)", zIndex: 1, allowNone: true, required: false, options: backHairOptions},
-  { key: "features", label: "Face Features", zIndex: 2, allowNone: false, required: false, options: featureOptions},
-  { key: "eyes", label: "Eyes", zIndex: 3, required: true, options: eyesOptions},
-  { key: "eyebrows", label: "Eyebrows", zIndex: 4, allowNone: true, required: false, options: eyebrowsOptions},
-  { key: "mouth", label: "Mouth", zIndex: 6, required: true, options: mouthOptions},
-  { key: "beard", label: "Beard", zIndex: 5, allowNone: true, required: false, options: beardOptions},
-  { key: "frontHair", label: "Hair (Front)", zIndex: 7, allowNone: true, required: false, options: frontHairOptions},
+    { key: "background", label: "Background", zIndex: 0, required: true, options: [{ id: "bg-1", name: "Background 1", src: require('../../public/asset/avatar-face/bg/1.png') }]},
+    { key: "eyes", label: "Eyes", zIndex: 3, required: true, options: [{ id: "eyes-1", name: "Eyes 1", src: require('../../public/asset/avatar-face/eyes/1.png') }]},
+    { key: "mouth", label: "Mouth", zIndex: 6, required: true, options: [{ id: "mouth-1", name: "Mouth 1", src: require('../../public/asset/avatar-face/mouth/1.png') }]},
+    // Add more layers and options as needed, using require() for local assets
 ];
+
+// Removed usePreloadedImages as it's web-specific. Image preloading should be handled in App.tsx
+export function usePreloadedImages(urls: string[]) {
+    const [loaded, setLoaded] = useState<Record<string, any>>({});
+    useEffect(() => {
+        const imageSources: Record<string, any> = {};
+        urls.forEach(url => {
+            // Assuming URLs are relative paths that can be resolved by require
+            // This is a simplification; a more robust solution might involve a mapping
+            // or a custom asset loading mechanism.
+            try {
+                imageSources[url] = Image.resolveAssetSource(require('../../public' + url));
+            } catch (e) {
+                console.warn(`Could not load image: ${url}`, e);
+            }
+        });
+        setLoaded(imageSources);
+    }, [urls]);
+    return { loaded };
+}
+
+const avatarBuilderStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+        padding: 16,
+    },
+    comicPanelWrapper: {
+        // transform: [{ rotate: '0deg' }], // Example rotation
+    },
+    comicPanel: {
+        backgroundColor: '#f8fafc', // bg-slate-50
+        padding: 16, // p-4
+        maxHeight: '90%', // max-h-[90vh]
+        width: '100%',
+        maxWidth: 960, // max-w-6xl
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    mainTitle: {
+        fontSize: 28, // text-3xl
+        fontWeight: 'bold', // font-black
+        color: '#60a5fa', // blue-400
+        marginBottom: 16, // mb-4
+        textAlign: 'center',
+    },
+    mainContentGrid: {
+        flexDirection: 'row',
+        gap: 24, // gap-6
+        // lg:grid-cols-2 - handled by flex direction and flex:1
+    },
+    previewColumn: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 16, // gap-4
+    },
+    controlsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 8, // gap-2
+        padding: 8, // p-2
+        backgroundColor: '#f1f5f9', // bg-slate-100
+        borderRadius: 12, // rounded-2xl
+    },
+    chunkyButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottomWidth: 4,
+    },
+    chunkyButtonPink: {
+        backgroundColor: '#ec4899', // pink-500
+        borderColor: '#db2777', // pink-600
+    },
+    chunkyButtonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderColor: '#475569', // slate-600
+    },
+    chunkyButtonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderColor: '#16a34a', // green-600
+    },
+    chunkyButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    seedInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4, // gap-1
+    },
+    seedLabel: {
+        fontSize: 14, // text-sm
+        fontWeight: 'bold',
+    },
+    seedInput: {
+        paddingHorizontal: 12, // px-3
+        paddingVertical: 8, // py-2
+        borderRadius: 12, // rounded-xl
+        borderWidth: 1,
+        borderColor: '#e2e8f0', // border
+        width: 80, // w-28
+        backgroundColor: 'white',
+    },
+    layersColumn: {
+        flex: 1,
+        gap: 16, // gap-4
+        maxHeight: '60%', // max-h-[60vh] lg:max-h-[65vh]
+        overflow: 'scroll',
+        paddingRight: 8, // pr-2
+    },
+    layerOptionContainer: {
+        borderRadius: 12, // rounded-2xl
+        borderWidth: 1,
+        borderColor: '#e2e8f0', // border
+        backgroundColor: 'white',
+        padding: 12, // p-3
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2, // shadow-sm
+        elevation: 1,
+    },
+    layerOptionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 8, // mb-2
+    },
+    layerOptionTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    noneButtonText: {
+        fontSize: 14, // text-sm
+        textDecorationLine: 'underline',
+        color: '#64748b', // slate-500
+    },
+    optionsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8, // gap-2
+        // grid-cols-4 sm:grid-cols-6 - handled by flexWrap and width
+    },
+    optionButton: {
+        position: 'relative',
+        borderRadius: 12, // rounded-xl
+        borderWidth: 2,
+        overflow: 'hidden',
+        aspectRatio: 1, // aspect-square
+        width: '23%', // Approx for 4 cols with gap
+        // focus:outline-none focus:ring-2 ring-offset-2 ring-blue-400 - not directly applicable
+    },
+    optionButtonSelected: {
+        borderColor: '#3b82f6', // blue-500
+        // ring-2 - not directly applicable
+    },
+    optionButtonNormal: {
+        borderColor: '#e2e8f0', // slate-200
+    },
+    optionImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain', // object-contain
+        // select-none pointer-events-none - not directly applicable
+    },
+    placeholderContainer: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#e2e8f0', // Example background
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    placeholderText: {
+        fontSize: 10,
+        textAlign: 'center',
+        color: '#64748b',
+    },
+    colorPickerContainer: {
+        marginTop: 12, // mt-3
+        paddingTop: 12, // pt-3
+        borderTopWidth: 1,
+        borderColor: '#e2e8f0', // border-t
+    },
+    colorPickerTitle: {
+        fontSize: 14, // text-sm
+        fontWeight: 'bold',
+        marginBottom: 8, // mb-2
+        color: '#475569', // slate-600
+    },
+    colorPalette: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8, // gap-2
+    },
+    colorSwatch: {
+        width: 32, // w-8
+        height: 32, // h-8
+        borderRadius: 9999, // rounded-full
+        borderWidth: 2,
+        // transition-transform hover:scale-110 - not directly applicable
+    },
+    colorSwatchSelected: {
+        borderColor: '#3b82f6', // blue-500
+        // ring-2 ring-blue-400 - not directly applicable
+    },
+    footerButtonsContainer: {
+        marginTop: 24, // mt-6
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 16, // gap-4
+        borderTopWidth: 1,
+        borderColor: '#e2e8f0', // border-t border-slate-200
+        paddingTop: 16, // pt-4
+    },
+});

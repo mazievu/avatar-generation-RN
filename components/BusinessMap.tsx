@@ -1,13 +1,15 @@
-
-
 import React, { useState, useRef, useMemo } from 'react';
-import type { GameState, BusinessDefinition, Business, Character, Manifest } from '../types';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import Slider from '@react-native-community/slider'; // Import Slider
+
+import type { GameState, BusinessDefinition, Business, Character, Manifest } from '../core/types';
 import { Language, t } from '../core/localization';
 import { BUSINESS_DEFINITIONS, BUSINESS_MAP_LOCATIONS } from '../core/constants';
 import { BusinessMapSVG } from './BusinessMapSVG';
 import { calculateBusinessMonthlyNetIncome } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { RobotAvatarIcon } from './icons';
+import { ModalBase } from './ui'; // Assuming ModalBase is now in ui.tsx
 
 // Modal for purchasing
 const BusinessPurchaseModal: React.FC<{
@@ -20,26 +22,67 @@ const BusinessPurchaseModal: React.FC<{
 }> = ({ businessKey, businessDef, familyFund, onBuy, onClose, lang }) => {
     const canAfford = familyFund >= businessDef.cost;
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="comic-panel-wrapper" style={{'--rotate': '1deg'} as React.CSSProperties} onClick={e => e.stopPropagation()}>
-                <div className="comic-panel p-6 max-w-md w-full">
-                    <h3 className="text-2xl font-black text-blue-400 mb-2">{t(businessDef.nameKey, lang)}</h3>
-                    <p className="text-slate-500 mb-1">{t('base_revenue_label', lang)}: ${businessDef.baseRevenue.toLocaleString()}/mo</p>
-                    <p className="text-slate-500 mb-4">{t('cost_label', lang)}: ${businessDef.cost.toLocaleString()}</p>
-                    
-                    <div className="flex justify-end gap-3">
-                        <button onClick={onClose} className="chunky-button chunky-button-slate">
-                            {t('cancel_button', lang)}
-                        </button>
-                        <button onClick={() => onBuy(businessKey)} disabled={!canAfford} className="chunky-button chunky-button-green">
-                            {t('buy_button', lang)} (${businessDef.cost.toLocaleString()})
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ModalBase
+            titleKey={businessDef.nameKey}
+            descriptionKey="cost_label"
+            descriptionReplacements={{ cost: businessDef.cost.toLocaleString() }}
+            lang={lang}
+        >
+            <Text style={businessPurchaseModalStyles.baseRevenueText}>{t('base_revenue_label', lang)}: ${businessDef.baseRevenue.toLocaleString()}/mo</Text>
+            <View style={businessPurchaseModalStyles.buttonGroup}>
+                <TouchableOpacity onPress={onClose} style={[businessPurchaseModalStyles.button, businessPurchaseModalStyles.buttonSlate]}>
+                    <Text style={businessPurchaseModalStyles.buttonText}>
+                        {t('cancel_button', lang)}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => onBuy(businessKey)} disabled={!canAfford} style={[businessPurchaseModalStyles.button, businessPurchaseModalStyles.buttonGreen, !canAfford && businessPurchaseModalStyles.buttonDisabled]}>
+                    <Text style={businessPurchaseModalStyles.buttonText}>
+                        {t('buy_button', lang)} (${businessDef.cost.toLocaleString()})
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </ModalBase>
     );
 };
+
+const businessPurchaseModalStyles = StyleSheet.create({
+    baseRevenueText: {
+        color: '#64748b', // slate-500
+        marginBottom: 4,
+        fontSize: 14,
+    },
+    buttonGroup: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 12, // gap-3
+        marginTop: 16, // mt-4
+    },
+    button: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderBottomWidth: 4,
+        borderColor: '#475569', // slate-600
+    },
+    buttonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderBottomWidth: 4,
+        borderColor: '#16a34a', // green-600
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+    buttonDisabled: {
+        opacity: 0.6,
+    },
+});
 
 // Modal for selecting which business to manage
 const BusinessManageSelectionModal: React.FC<{
@@ -49,49 +92,106 @@ const BusinessManageSelectionModal: React.FC<{
     onClose: () => void;
     lang: Language;
 }> = ({ businessType, ownedBusinesses, onManage, onClose, lang }) => {
-    const businessDef = BUSINESS_DEFINITIONS[businessType]; // Assuming businessType is like 'culinary_t1' or 'medicine_t1'
+    const businessDef = BUSINESS_DEFINITIONS[businessType];
     if (!businessDef) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="comic-panel-wrapper" style={{ '--rotate': '-1deg' } as React.CSSProperties} onClick={e => e.stopPropagation()}>
-                <div className="comic-panel p-6 max-w-md w-full">
-                    <h3 className="text-2xl font-black text-blue-400 mb-4">
-                        {t('manage_business_title', lang)}: {t(businessDef.nameKey, lang)}
-                    </h3>
-                    <p className="text-slate-500 mb-4">{t('select_business_to_manage', lang)}:</p>
-                    <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                        {ownedBusinesses.map(business => (
-                            <div key={business.id} className="flex items-center justify-between bg-slate-100 p-3 rounded-lg shadow-sm">
-                                <span className="font-semibold text-slate-800">
-                                    {t(BUSINESS_DEFINITIONS[business.type]?.nameKey || 'unknown_business', lang)} (ID: {business.id.substring(0, 4)}...)
-                                </span>
-                                <button
-                                    onClick={() => onManage(business)}
-                                    className="chunky-button chunky-button-blue text-sm"
-                                >
-                                    {t('manage_button', lang)}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-end gap-3 mt-6">
-                        <button onClick={onClose} className="chunky-button chunky-button-slate">
-                            {t('cancel_button', lang)}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ModalBase
+            titleKey="manage_business_title"
+            descriptionKey="select_business_to_manage"
+            descriptionReplacements={{ businessName: t(businessDef.nameKey, lang) }}
+            lang={lang}
+        >
+            <ScrollView style={businessManageSelectionModalStyles.scrollView}>
+                {ownedBusinesses.map(business => (
+                    <View key={business.id} style={businessManageSelectionModalStyles.businessItem}>
+                        <Text style={businessManageSelectionModalStyles.businessName}>
+                            {t(BUSINESS_DEFINITIONS[business.type]?.nameKey || 'unknown_business', lang)} (ID: {business.id.substring(0, 4)}...)
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => onManage(business)}
+                            style={[businessManageSelectionModalStyles.button, businessManageSelectionModalStyles.buttonBlue]}
+                        >
+                            <Text style={businessManageSelectionModalStyles.buttonText}>
+                                {t('manage_button', lang)}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </ScrollView>
+            <View style={businessManageSelectionModalStyles.buttonGroup}>
+                <TouchableOpacity onPress={onClose} style={[businessManageSelectionModalStyles.button, businessManageSelectionModalStyles.buttonSlate]}>
+                    <Text style={businessManageSelectionModalStyles.buttonText}>
+                        {t('cancel_button', lang)}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </ModalBase>
     );
 };
+
+const businessManageSelectionModalStyles = StyleSheet.create({
+    scrollView: {
+        maxHeight: 240, // max-h-60
+        marginBottom: 16, // mb-4
+        paddingRight: 8, // pr-2
+    },
+    businessItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#f1f5f9', // slate-100
+        padding: 12, // p-3
+        borderRadius: 8, // rounded-lg
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
+        marginBottom: 8, // space-y-2
+    },
+    businessName: {
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+        flex: 1,
+        marginRight: 8,
+    },
+    buttonGroup: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 12, // gap-3
+        marginTop: 24, // mt-6
+    },
+    button: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonBlue: {
+        backgroundColor: '#60a5fa', // blue-400
+        borderBottomWidth: 4,
+        borderColor: '#3b82f6', // blue-500
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderBottomWidth: 4,
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+});
 
 export const BusinessMap: React.FC<{
     gameState: GameState;
     onBuyBusiness: (businessType: string) => void;
     onManageBusiness: (business: Business) => void;
     lang: Language;
-    images: Record<string, HTMLImageElement>;
+    images: Record<string, HTMLImageElement>; // This might need to be ImageSourcePropType
     manifest: Manifest;
     mainView: 'tree' | 'business';
     onBackToTree: () => void;
@@ -99,12 +199,7 @@ export const BusinessMap: React.FC<{
     const [selectedLocationKey, setSelectedLocationKey] = useState<string | null>(null);
     const [showManageModalForType, setShowManageModalForType] = useState<string | null>(null);
     const [zoom, setZoom] = useState(1);
-    const mapContainerRef = useRef<HTMLDivElement>(null);
-    const isDragging = useRef(false);
-    const startX = useRef(0);
-    const startY = useRef(0);
-    const scrollLeft = useRef(0);
-    const scrollTop = useRef(0);
+    // Removed mapContainerRef and dragging related refs/state
 
     const ownedBusinessesByType = useMemo(() => {
         const map = new Map<string, Business[]>();
@@ -117,63 +212,33 @@ export const BusinessMap: React.FC<{
         return map;
     }, [gameState.familyBusinesses]);
 
-    const handleMouseDown = (e: React.MouseEvent) => {
-        if (!mapContainerRef.current) return;
-        isDragging.current = true;
-        startX.current = e.pageX - mapContainerRef.current.offsetLeft;
-        startY.current = e.pageY - mapContainerRef.current.offsetTop;
-        scrollLeft.current = mapContainerRef.current.scrollLeft;
-        scrollTop.current = mapContainerRef.current.scrollTop;
-        mapContainerRef.current.style.cursor = 'grabbing';
-    };
-
-    const handleMouseLeaveOrUp = () => {
-        if (!mapContainerRef.current) return;
-        isDragging.current = false;
-        mapContainerRef.current.style.cursor = 'grab';
-    };
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging.current || !mapContainerRef.current) return;
-        e.preventDefault();
-        const x = e.pageX - mapContainerRef.current.offsetLeft;
-        const y = e.pageY - mapContainerRef.current.offsetTop;
-        const walkX = (x - startX.current) * 2;
-        const walkY = (y - startY.current) * 2;
-        mapContainerRef.current.scrollLeft = scrollLeft.current - walkX;
-        mapContainerRef.current.scrollTop = scrollTop.current - walkY;
-    };
-    
     const handleBuy = (key: string) => {
         onBuyBusiness(key);
         setSelectedLocationKey(null);
     }
-    
+
     const businessDefForModal = selectedLocationKey ? BUSINESS_DEFINITIONS[selectedLocationKey] : null;
 
     return (
-        <div className="h-full w-full flex flex-col">
-            <div className="flex justify-between items-center mb-2 p-2 flex-shrink-0">
-                <h3 className="text-2xl font-black text-indigo-500">{t('purchase_business_title', lang)}</h3>
-                <button onClick={onBackToTree} className="chunky-button chunky-button-slate">{t('back_button', lang)}</button>
-            </div>
-            <div className="flex-grow relative">
-                <div 
-                    ref={mapContainerRef}
-                    className={`absolute inset-0 bg-slate-200 rounded-xl overflow-auto cursor-grab border-4 border-slate-300 shadow-inner ${mainView === 'business' ? 'w-full h-full' : 'max-w-[800px] max-h-[600px]'}`}
-                    onMouseDown={handleMouseDown}
-                    onMouseLeave={handleMouseLeaveOrUp}
-                    onMouseUp={handleMouseLeaveOrUp}
-                    onMouseMove={handleMouseMove}
+        <View style={businessMapStyles.container}>
+            <View style={businessMapStyles.header}>
+                <Text style={businessMapStyles.title}>{t('purchase_business_title', lang)}</Text>
+                <TouchableOpacity onPress={onBackToTree} style={[businessMapStyles.button, businessMapStyles.buttonSlate]}>
+                    <Text style={businessMapStyles.buttonText}>{t('back_button', lang)}</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={businessMapStyles.mapWrapper}>
+                <View
+                    style={[
+                        businessMapStyles.mapContainer,
+                        mainView === 'business' ? businessMapStyles.mapContainerFull : businessMapStyles.mapContainerPartial
+                    ]}
                 >
-                    <div 
-                        className="relative" 
-                        style={{ 
-                            width: '3000px', 
-                            height: '3000px',
-                            transform: `scale(${zoom})`,
-                            transformOrigin: 'top left'
-                        }}
+                    <View
+                        style={[
+                            businessMapStyles.mapContent,
+                            { transform: [{ scale: zoom }] }
+                        ]}
                     >
                         <BusinessMapSVG />
 
@@ -184,7 +249,7 @@ export const BusinessMap: React.FC<{
                             const ownedOfType = ownedBusinessesByType.get(businessDefKey);
                             const isOwned = ownedOfType && ownedOfType.length > 0;
                             const businessToManage = isOwned ? ownedOfType[0] : null;
-                            
+
                             const bubbleWidth = 180;
                             const bubbleHeight = businessToManage ? 120 : 90;
 
@@ -192,17 +257,19 @@ export const BusinessMap: React.FC<{
                             const leftPosition = loc.x + (loc.width / 2) - (bubbleWidth / 2);
 
                             return (
-                                <button
+                                <TouchableOpacity
                                     key={businessDefKey}
-                                    className={`business-hotspot ${businessToManage ? 'business-hotspot--owned' : 'business-hotspot--available'}`}
-                                    style={{
-                                        left: `${leftPosition}px`,
-                                        top: `${topPosition}px`,
-                                        width: `${bubbleWidth}px`,
-                                        height: `${bubbleHeight}px`,
-                                    }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
+                                    style={[
+                                        businessMapStyles.businessHotspot,
+                                        isOwned ? businessMapStyles.businessHotspotOwned : businessMapStyles.businessHotspotAvailable,
+                                        {
+                                            left: leftPosition,
+                                            top: topPosition,
+                                            width: bubbleWidth,
+                                            height: bubbleHeight,
+                                        }
+                                    ]}
+                                    onPress={() => {
                                         if (isOwned) {
                                             if (ownedOfType && ownedOfType.length === 1) {
                                                 onManageBusiness(ownedOfType[0]);
@@ -213,66 +280,63 @@ export const BusinessMap: React.FC<{
                                             setSelectedLocationKey(businessDefKey);
                                         }
                                     }}
-                                    aria-label={t(businessDef.nameKey, lang)}
+                                    accessibilityLabel={t(businessDef.nameKey, lang)}
                                 >
-                                    <span className="font-bold text-sm drop-shadow-sm">{t(businessDef.nameKey, lang)}</span>
-                                     {businessToManage ? 
+                                    <Text style={businessMapStyles.hotspotName}>{t(businessDef.nameKey, lang)}</Text>
+                                     {businessToManage ?
                                         (
-                                            <div className="mt-1 w-full">
-                                                <p className={`font-mono font-bold text-sm ${calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                            <View style={businessMapStyles.ownedBusinessDetails}>
+                                                <Text style={[businessMapStyles.ownedBusinessNetIncome, calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? businessMapStyles.netIncomePositive : businessMapStyles.netIncomeNegative]}>
                                                     {calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? '+' : ''}${Math.round(calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers)).toLocaleString()}/mo
-                                                </p>
-                                                <div className="flex justify-center items-center gap-1 mt-2 -mb-1">
+                                                </Text>
+                                                <View style={businessMapStyles.assignedWorkers}>
                                                      {businessToManage.slots.map((slot, i) => {
                                                          if (!slot.assignedCharacterId) return null;
-                                                         
+
                                                          if (slot.assignedCharacterId === 'robot') {
                                                             return (
-                                                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-slate-300 shadow-sm">
-                                                                    <RobotAvatarIcon className="w-full h-full" />
-                                                                </div>
+                                                                <View key={i} style={businessMapStyles.workerAvatar}>
+                                                                    <RobotAvatarIcon style={businessMapStyles.robotAvatarIcon} />
+                                                                </View>
                                                             );
                                                          }
-                                                         
+
                                                          const char = gameState.familyMembers[slot.assignedCharacterId];
                                                          if (!char) return null;
-                                                         
+
                                                          return (
-                                                            <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-slate-300 shadow-sm">
+                                                            <View key={i} style={businessMapStyles.workerAvatar}>
                                                                 <AgeAwareAvatarPreview manifest={manifest} character={char} images={images} size={{width: 32, height: 32}} />
-                                                            </div>
+                                                            </View>
                                                          );
                                                      })}
-                                                </div>
-                                                <span className="block text-xs font-semibold text-blue-600 mt-2">{t('manage_button', lang)}</span>
-                                            </div>
+                                                </View>
+                                                <Text style={businessMapStyles.manageButtonText}>{t('manage_button', lang)}</Text>
+                                            </View>
                                         )
-                                        : <span className="block text-sm text-amber-500 font-bold mt-1">${businessDef.cost.toLocaleString()}</span>
+                                        : <Text style={businessMapStyles.costText}>${businessDef.cost.toLocaleString()}</Text>
                                     }
-                                </button>
+                                </TouchableOpacity>
                             );
                         })}
-                    </div>
-                </div>
-                 <div className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-md flex items-center gap-2 z-20">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                    </svg>
-                    <input
-                        type="range"
-                        min="0.5"
-                        max="2"
-                        step="0.1"
+                    </View>
+                </View>
+                 <View style={businessMapStyles.zoomControl}>
+                    <Text style={businessMapStyles.zoomIcon}>-</Text>
+                    <Slider
+                        style={businessMapStyles.slider}
+                        minimumValue={0.5}
+                        maximumValue={2}
+                        step={0.1}
                         value={zoom}
-                        onChange={(e) => setZoom(parseFloat(e.target.value))}
-                        className="w-32 cursor-pointer"
-                        aria-label="Zoom slider"
+                        onValueChange={setZoom}
+                        minimumTrackTintColor="#60a5fa" // blue-400
+                        maximumTrackTintColor="#cbd5e1" // slate-300
+                        thumbTintColor="#2563eb" // blue-700
                     />
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                </div>
-            </div>
+                    <Text style={businessMapStyles.zoomIcon}>+</Text>
+                </View>
+            </View>
 
             {selectedLocationKey && businessDefForModal && (
                 <BusinessPurchaseModal 
@@ -297,6 +361,191 @@ export const BusinessMap: React.FC<{
                     lang={lang}
                 />
             )}
-        </div>
+        </View>
     );
 };
+
+const businessMapStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8, // mb-2
+        padding: 8, // p-2
+        flexShrink: 0, // flex-shrink-0
+    },
+    title: {
+        fontSize: 24, // text-2xl
+        fontWeight: 'bold', // font-black
+        color: '#4f46e5', // indigo-500
+    },
+    button: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderBottomWidth: 4,
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+    mapWrapper: {
+        flexGrow: 1, // flex-grow
+        position: 'relative',
+    },
+    mapContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#e2e8f0', // bg-slate-200
+        borderRadius: 12, // rounded-xl
+        overflow: 'hidden',
+        borderWidth: 4,
+        borderColor: '#cbd5e1', // border-4 border-slate-300
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1, // shadow-inner
+    },
+    mapContainerFull: {
+        width: '100%',
+        height: '100%',
+    },
+    mapContainerPartial: {
+        maxWidth: 800,
+        maxHeight: 600,
+    },
+    mapContent: {
+        position: 'relative',
+        width: 3000, // Fixed size for the map content
+        height: 3000, // Fixed size for the map content
+        // transform handled by state
+        // transformOrigin: 'top left' is default for scale in RN
+    },
+    businessHotspot: {
+        position: 'absolute',
+        borderRadius: 8,
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    businessHotspotOwned: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)', // bg-white/90
+        borderColor: '#22c55e', // border-green-500
+        borderWidth: 2,
+    },
+    businessHotspotAvailable: {
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', // bg-white/80
+        borderColor: '#fbbf24', // border-amber-400
+        borderWidth: 2,
+    },
+    hotspotName: {
+        fontWeight: 'bold',
+        fontSize: 14, // text-sm
+        textShadowColor: 'rgba(0,0,0,0.1)', // drop-shadow-sm
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 1,
+    },
+    ownedBusinessDetails: {
+        marginTop: 4, // mt-1
+        width: '100%',
+        alignItems: 'center',
+    },
+    ownedBusinessNetIncome: {
+        fontFamily: 'monospace', // font-mono
+        fontWeight: 'bold',
+        fontSize: 14, // text-sm
+    },
+    netIncomePositive: {
+        color: '#22c55e', // text-green-600
+    },
+    netIncomeNegative: {
+        color: '#ef4444', // text-red-600
+    },
+    assignedWorkers: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 4, // gap-1
+        marginTop: 8, // mt-2
+        marginBottom: -4, // -mb-1
+    },
+    workerAvatar: {
+        width: 32, // w-8
+        height: 32, // h-8
+        borderRadius: 16, // rounded-full
+        borderWidth: 2,
+        borderColor: 'white',
+        overflow: 'hidden',
+        backgroundColor: '#cbd5e1', // bg-slate-300
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 1, // shadow-sm
+    },
+    robotAvatarIcon: {
+        width: '100%',
+        height: '100%',
+    },
+    manageButtonText: {
+        // display: 'flex', // block
+        fontSize: 12, // text-xs
+        fontWeight: 'bold',
+        color: '#2563eb', // text-blue-600
+        marginTop: 8, // mt-2
+    },
+    costText: {
+        // display: 'flex', // block
+        fontSize: 14, // text-sm
+        color: '#f59e0b', // text-amber-500
+        fontWeight: 'bold',
+        marginTop: 4, // mt-1
+    },
+    zoomControl: {
+        position: 'absolute',
+        bottom: 16, // bottom-4
+        right: 16, // right-4
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', // bg-white/80
+        // backdrop-blur-sm is not directly supported
+        padding: 8, // p-2
+        borderRadius: 8, // rounded-lg
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3, // shadow-md
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8, // gap-2
+        zIndex: 20,
+    },
+    zoomIcon: {
+        fontSize: 24, // h-6 w-6
+        color: '#475569', // text-slate-600
+        fontWeight: 'bold',
+    },
+    slider: {
+        width: 128, // w-32
+        height: 40, // Example height, adjust as needed
+    },
+});

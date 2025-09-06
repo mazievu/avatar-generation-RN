@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import type { PurchasedAsset, AssetDefinition, Stats } from '../core/types';
 import { Language, t } from '../core/localization';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
+import { ModalBase } from './ui'; // Assuming ModalBase is now in ui.tsx
 
 interface AssetSlotProps {
     asset: AssetDefinition;
@@ -23,31 +25,324 @@ const statIcons: Record<keyof Stats, React.ElementType> = {
 
 const AssetSlot: React.FC<AssetSlotProps> = ({ asset, isOwned, canAfford, onPurchase, lang, onViewDetails }) => {
     return (
-        <div
-            onClick={() => onViewDetails(asset)} // Make the entire slot clickable
-            className={`relative p-2 rounded-lg flex flex-col items-center justify-between text-center text-sm transition-all duration-200 ease-in-out cursor-pointer aspect-square
-            ${isOwned ? 'bg-green-100 border-green-300' : 'bg-slate-50 border-slate-200'}
-            ${!isOwned && canAfford ? 'hover:bg-blue-100 hover:border-blue-300' : ''}
-            border-2 shadow-sm overflow-hidden`}>
-            
+        <TouchableOpacity
+            onPress={() => onViewDetails(asset)} // Make the entire slot clickable
+            style={[
+                assetSlotStyles.container,
+                isOwned ? assetSlotStyles.owned : assetSlotStyles.available,
+                !isOwned && canAfford && assetSlotStyles.canAfford,
+            ]}
+        >
             {asset.imageSrc && (
-                <div className="flex-shrink-0 w-full h-2/3 flex items-center justify-center p-1">
-                    <img src={asset.imageSrc} alt={t(asset.nameKey, lang)} className="max-w-full max-h-full object-contain" />
-                </div>
+                <View style={assetSlotStyles.imageContainer}>
+                    <Image source={asset.imageSrc} style={assetSlotStyles.image} accessibilityLabel={t(asset.nameKey, lang)} />
+                </View>
             )}
 
-            <div className="flex-grow flex flex-col justify-end w-full">
-                <p className="font-bold text-slate-700 text-xs truncate w-full px-1">{t(asset.nameKey, lang)}</p>
-                <p className="text-xs font-mono text-slate-500">Tier: {asset.tier}</p>
-            </div>
+            <View style={assetSlotStyles.detailsContainer}>
+                <Text style={assetSlotStyles.name} numberOfLines={1} ellipsizeMode="tail">{t(asset.nameKey, lang)}</Text>
+                <Text style={assetSlotStyles.tier}>Tier: {asset.tier}</Text>
+            </View>
             {isOwned && (
-                <span className="absolute top-1 right-1 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {t('asset_owned_label', lang)}
-                </span>
+                <View style={assetSlotStyles.ownedLabelContainer}>
+                    <Text style={assetSlotStyles.ownedLabelText}>
+                        {t('asset_owned_label', lang)}
+                    </Text>
+                </View>
             )}
-        </div>
+        </TouchableOpacity>
     );
 };
+
+const assetSlotStyles = StyleSheet.create({
+    container: {
+        position: 'relative',
+        padding: 8, // p-2
+        borderRadius: 8, // rounded-lg
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        textAlign: 'center', // text-center
+        fontSize: 14, // text-sm
+        // transitionProperty: 'all', // transition-all
+        // transitionDuration: 200, // duration-200
+        // transitionTimingFunction: 'ease-in-out', // ease-in-out
+        // cursor: 'pointer', // cursor-pointer (not directly applicable in RN)
+        aspectRatio: 1, // aspect-square
+        borderWidth: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1, // shadow-sm
+        overflow: 'hidden',
+    },
+    owned: {
+        backgroundColor: '#dcfce7', // bg-green-100
+        borderColor: '#86efad', // border-green-300
+    },
+    available: {
+        backgroundColor: '#f8fafc', // bg-slate-50
+        borderColor: '#e2e8f0', // border-slate-200
+    },
+    canAfford: {
+        // hover:bg-blue-100 hover:border-blue-300 - not directly applicable
+    },
+    imageContainer: {
+        flexShrink: 0,
+        width: '100%',
+        height: '66%', // h-2/3
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 4, // p-1
+    },
+    image: {
+        maxWidth: '100%',
+        maxHeight: '100%',
+        resizeMode: 'contain', // object-contain
+    },
+    detailsContainer: {
+        flexGrow: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        width: '100%',
+    },
+    name: {
+        fontWeight: 'bold',
+        color: '#333', // slate-700
+        fontSize: 12, // text-xs
+        width: '100%',
+        paddingHorizontal: 4, // px-1
+    },
+    tier: {
+        fontSize: 12, // text-xs
+        // fontFamily: 'monospace', // font-mono
+        color: '#64748b', // slate-500
+    },
+    ownedLabelContainer: {
+        position: 'absolute',
+        top: 4, // top-1
+        right: 4, // right-1
+        backgroundColor: '#22c55e', // bg-green-500
+        borderRadius: 9999, // rounded-full
+        paddingHorizontal: 8, // px-2
+        paddingVertical: 2, // py-0.5
+    },
+    ownedLabelText: {
+        color: 'white',
+        fontSize: 12, // text-xs
+        fontWeight: 'bold',
+    },
+});
+
+
+interface AssetDetailModalProps {
+    asset: AssetDefinition;
+    isOwned: boolean;
+    canAfford: boolean;
+    onPurchase: (assetId: string) => void;
+    onClose: () => void;
+    lang: Language;
+}
+
+const AssetDetailModal: React.FC<AssetDetailModalProps> = ({ asset, isOwned, canAfford, onPurchase, onClose, lang }) => {
+    return (
+        <View style={assetDetailModalStyles.overlay}>
+            <View style={assetDetailModalStyles.comicPanelWrapper}>
+                <View style={assetDetailModalStyles.comicPanel}>
+                    <TouchableOpacity onPress={onClose} style={assetDetailModalStyles.closeButton}>
+                        <Text style={assetDetailModalStyles.closeButtonText}>&times;</Text>
+                    </TouchableOpacity>
+
+                    <Text style={assetDetailModalStyles.title}>{t(asset.nameKey, lang)}</Text>
+
+                    {asset.imageSrc && (
+                        <View style={assetDetailModalStyles.imageContainer}>
+                            <Image source={asset.imageSrc} style={assetDetailModalStyles.image} accessibilityLabel={t(asset.nameKey, lang)} />
+                        </View>
+                    )}
+
+                    <Text style={assetDetailModalStyles.description}>{t(asset.descriptionKey, lang)}</Text>
+
+                    <View style={assetDetailModalStyles.detailsSection}>
+                        <Text style={assetDetailModalStyles.detailText}>
+                            <Text style={assetDetailModalStyles.detailLabel}>{t('asset_cost_label', lang)}:</Text> ${asset.cost.toLocaleString()}
+                        </Text>
+                        <Text style={assetDetailModalStyles.detailText}>
+                            <Text style={assetDetailModalStyles.detailLabel}>{t('asset_tier', lang)}:</Text> {asset.tier}
+                        </Text>
+                        {Object.keys(asset.effects).length > 0 && (
+                            <View style={assetDetailModalStyles.effectsContainer}>
+                                <Text style={assetDetailModalStyles.detailLabel}>{t('asset_effects', lang)}:</Text>
+                                {Object.entries(asset.effects).map(([stat, val]) => {
+                                    const Icon = statIcons[stat as keyof Stats];
+                                    return (
+                                        <View key={stat} style={assetDetailModalStyles.effectItem}>
+                                            {Icon && <Icon style={assetDetailModalStyles.effectIcon} />}
+                                            <Text style={assetDetailModalStyles.effectText}>
+                                                {t(`stat_${stat}` as any, lang)} {val > 0 ? `+${(val * 100).toFixed(0)}%` : `${(val * 100).toFixed(0)}%`}
+                                            </Text>
+                                        </View>
+                                    );
+                                })}
+                            </View>
+                        )}
+                    </View>
+
+                    <View style={assetDetailModalStyles.actionButtonContainer}>
+                        {isOwned ? (
+                            <View style={[assetDetailModalStyles.chunkyButton, assetDetailModalStyles.chunkyButtonSlate]}>
+                                <Text style={assetDetailModalStyles.chunkyButtonText}>
+                                    {t('asset_owned_label', lang)}
+                                </Text>
+                            </View>
+                        ) : (
+                            <TouchableOpacity
+                                onPress={() => { onPurchase(asset.id); onClose(); }}
+                                disabled={!canAfford}
+                                style={[assetDetailModalStyles.chunkyButton, assetDetailModalStyles.chunkyButtonGreen, !canAfford && assetDetailModalStyles.chunkyButtonDisabled]}
+                            >
+                                <Text style={assetDetailModalStyles.chunkyButtonText}>
+                                    {t('asset_purchase_button', lang)} (${asset.cost.toLocaleString()})
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                </View>
+            </View>
+        </View>
+    );
+};
+
+const assetDetailModalStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+        padding: 16,
+    },
+    comicPanelWrapper: {
+        // transform: [{ rotate: '1deg' }], // Example rotation
+    },
+    comicPanel: {
+        backgroundColor: 'white',
+        padding: 24, // p-6
+        maxWidth: 400, // max-w-md
+        width: '100%',
+        position: 'relative',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 16, // top-4
+        right: 16, // right-4
+    },
+    closeButtonText: {
+        color: '#94a3b8', // slate-400
+        fontSize: 32, // text-4xl
+        fontWeight: 'bold',
+    },
+    title: {
+        fontSize: 28, // text-3xl
+        fontWeight: 'bold', // font-black
+        color: '#ec4899', // pink-400
+        marginBottom: 16, // mb-4
+    },
+    imageContainer: {
+        width: '100%',
+        height: 192, // h-48
+        backgroundColor: 'white',
+        borderRadius: 8, // rounded-md
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#e2e8f0', // border-slate-200
+        marginBottom: 16, // mb-4
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain', // object-contain
+    },
+    description: {
+        color: '#475569', // slate-600
+        marginBottom: 12, // mb-3
+        fontSize: 16,
+    },
+    detailsSection: {
+        // space-y-2
+        marginBottom: 16, // mb-4
+    },
+    detailText: {
+        fontSize: 14, // text-sm
+        color: '#333', // slate-700
+        marginBottom: 8, // for space-y-2
+    },
+    detailLabel: {
+        fontWeight: 'bold',
+    },
+    effectsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8, // gap-x-2
+        alignItems: 'center',
+        fontSize: 14, // text-sm
+        color: '#333', // slate-700
+    },
+    effectItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 8, // mr-2
+    },
+    effectIcon: {
+        width: 16, // w-4
+        height: 16, // h-4
+        marginRight: 4, // mr-1
+        color: '#a78bfa', // purple-500
+    },
+    effectText: {
+        fontSize: 14,
+    },
+    actionButtonContainer: {
+        alignItems: 'center', // text-center
+    },
+    chunkyButton: {
+        width: '100%',
+        paddingVertical: 12, // py-3
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottomWidth: 4,
+    },
+    chunkyButtonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderColor: '#475569', // slate-600
+    },
+    chunkyButtonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderColor: '#16a34a', // green-600
+    },
+    chunkyButtonText: {
+        color: 'white',
+        fontSize: 18, // text-lg
+        fontWeight: 'bold',
+    },
+    chunkyButtonDisabled: {
+        opacity: 0.6,
+    },
+});
 
 
 const FamilyAssetsPanelInternal: React.FC<{
@@ -73,18 +368,18 @@ const FamilyAssetsPanelInternal: React.FC<{
     }, 0);
 
     return (
-        <div className="p-4 h-full overflow-y-auto">
-            <h3 className="text-2xl font-black mb-2 text-blue-400">{t('family_assets_title', lang)}</h3>
-            <p className="mb-4 text-slate-600">
-                {t('total_value_label', lang)}: <span className="font-bold text-green-600">${totalAssetValue.toLocaleString()}</span>
-            </p>
+        <ScrollView style={familyAssetsPanelStyles.container}>
+            <Text style={familyAssetsPanelStyles.title}>{t('family_assets_title', lang)}</Text>
+            <Text style={familyAssetsPanelStyles.totalValueText}>
+                {t('total_value_label', lang)}: <Text style={familyAssetsPanelStyles.totalValueAmount}>${totalAssetValue.toLocaleString()}</Text>
+            </Text>
             
-            <h4 className="text-md font-extrabold mb-2 text-blue-400">{t('assets_purchase', lang)}</h4>
-            <div className="space-y-4">
+            <Text style={familyAssetsPanelStyles.purchaseSectionTitle}>{t('assets_purchase', lang)}</Text>
+            <View style={familyAssetsPanelStyles.assetTypesContainer}>
                 {Object.entries(assetsByType).map(([type, assets]) => (
-                    <div key={type}>
-                        <h5 className="font-bold text-slate-600 mb-1">{t(`asset_type_${type}` as any, lang)}</h5>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <View key={type} style={familyAssetsPanelStyles.assetTypeSection}>
+                        <Text style={familyAssetsPanelStyles.assetTypeTitle}>{t(`asset_type_${type}` as any, lang)}</Text>
+                        <View style={familyAssetsPanelStyles.assetGrid}>
                             {assets.sort((a,b) => a.tier - b.tier).map(asset => {
                                 const isOwned = ownedAssetIds.has(asset.id);
                                 const canAfford = familyFund >= asset.cost;
@@ -100,10 +395,10 @@ const FamilyAssetsPanelInternal: React.FC<{
                                     />
                                 );
                             })}
-                        </div>
-                    </div>
+                        </View>
+                    </View>
                 ))}
-            </div>
+            </View>
 
             {selectedAsset && (
                 <AssetDetailModal
@@ -115,78 +410,52 @@ const FamilyAssetsPanelInternal: React.FC<{
                     lang={lang}
                 />
             )}
-        </div>
+        </ScrollView>
     );
 };
 export const FamilyAssetsPanel = React.memo(FamilyAssetsPanelInternal);
 
-
-// New AssetDetailModal component
-interface AssetDetailModalProps {
-    asset: AssetDefinition;
-    isOwned: boolean;
-    canAfford: boolean;
-    onPurchase: (assetId: string) => void;
-    onClose: () => void;
-    lang: Language;
-}
-
-const AssetDetailModal: React.FC<AssetDetailModalProps> = ({ asset, isOwned, canAfford, onPurchase, onClose, lang }) => {
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-            <div className="comic-panel-wrapper" style={{ '--rotate': '1deg' } as React.CSSProperties}>
-                <div className="comic-panel p-6 max-w-md w-full relative">
-                    <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-4xl font-bold">&times;</button>
-                    
-                    <h2 className="text-3xl font-black text-pink-400 mb-4">{t(asset.nameKey, lang)}</h2>
-                    
-                    {asset.imageSrc && (
-                        <div className="w-full h-48 bg-white rounded-md overflow-hidden border border-slate-200 mb-4 flex items-center justify-center">
-                            <img src={asset.imageSrc} alt={t(asset.nameKey, lang)} className="w-full h-full object-contain" />
-                        </div>
-                    )}
-
-                    <p className="text-slate-600 mb-3">{t(asset.descriptionKey, lang)}</p>
-                    
-                    <div className="space-y-2 mb-4">
-                        <p className="text-sm text-slate-700">
-                            <span className="font-bold">{t('asset_cost_label', lang)}:</span> ${asset.cost.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-slate-700">
-                            <span className="font-bold">{t('asset_tier', lang)}:</span> {asset.tier}
-                        </p>
-                        {Object.keys(asset.effects).length > 0 && (
-                            <div className="flex flex-wrap gap-x-2 items-center text-sm text-slate-700">
-                                <span className="font-bold">{t('asset_effects', lang)}:</span>
-                                {Object.entries(asset.effects).map(([stat, val]) => {
-                                    const Icon = statIcons[stat as keyof Stats];
-                                    return (
-                                        <span key={stat} className="inline-flex items-center mr-2">
-                                            {Icon && <Icon className="w-4 h-4 mr-1 text-purple-500" />}
-                                            {t(`stat_${stat}` as any, lang)} {val > 0 ? `+${(val * 100).toFixed(0)}%` : `${(val * 100).toFixed(0)}%`}
-                                        </span>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="text-center">
-                        {isOwned ? (
-                            <span className="chunky-button chunky-button-slate text-lg cursor-default">
-                                {t('asset_owned_label', lang)}
-                            </span>
-                        ) : (
-                            <button
-                                onClick={() => { onPurchase(asset.id); onClose(); }}
-                                disabled={!canAfford}
-                                className="chunky-button chunky-button-green text-lg">
-                                {t('asset_purchase_button', lang)} (${asset.cost.toLocaleString()})
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
+const familyAssetsPanelStyles = StyleSheet.create({
+    container: {
+        padding: 16, // p-4
+        flex: 1, // h-full
+    },
+    title: {
+        fontSize: 24, // text-2xl
+        fontWeight: 'bold', // font-black
+        marginBottom: 8, // mb-2
+        color: '#60a5fa', // blue-400
+    },
+    totalValueText: {
+        marginBottom: 16, // mb-4
+        color: '#475569', // slate-600
+        fontSize: 16,
+    },
+    totalValueAmount: {
+        fontWeight: 'bold',
+        color: '#22c55e', // green-600
+    },
+    purchaseSectionTitle: {
+        fontSize: 18, // text-md
+        fontWeight: 'bold', // font-extrabold
+        marginBottom: 8, // mb-2
+        color: '#60a5fa', // blue-400
+    },
+    assetTypesContainer: {
+        // space-y-4
+    },
+    assetTypeSection: {
+        marginBottom: 16, // for space-y-4
+    },
+    assetTypeTitle: {
+        fontWeight: 'bold',
+        color: '#475569', // slate-600
+        marginBottom: 4, // mb-1
+    },
+    assetGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between', // For grid-cols-2/3/4 with gap
+        gap: 16, // gap-4
+    },
+});

@@ -4,6 +4,7 @@ import { CLUBS } from './clubsAndEventsData';
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
 import { t } from './localization';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const SAVE_KEY = 'generations_savegame';
@@ -53,11 +54,11 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         }
     };
 
-    const saveGame = (gameState: GameState) => {
+    const saveGame = async (gameState: GameState) => {
         if (gameState) {
             try {
                 const stateToSave = { ...gameState, lang: language };
-                localStorage.setItem(SAVE_KEY, JSON.stringify(stateToSave));
+                await AsyncStorage.setItem(SAVE_KEY, JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Failed to save game:", error);
             }
@@ -94,9 +95,9 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         setView('playing');
     };
 
-    const handleContinueGame = () => {
+    const handleContinueGame = async () => {
         try {
-            const savedGame = localStorage.getItem(SAVE_KEY);
+            const savedGame = await AsyncStorage.getItem(SAVE_KEY);
             if (savedGame) {
                 const savedState = JSON.parse(savedGame);
 
@@ -133,13 +134,13 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             }
         } catch (error) {
             console.error("Failed to load game:", error);
-            localStorage.removeItem(SAVE_KEY);
+            await AsyncStorage.removeItem(SAVE_KEY);
             setView('menu');
         }
     };
 
-    const handleStartNewGame = () => {
-        localStorage.removeItem(SAVE_KEY);
+    const handleStartNewGame = async () => {
+        await AsyncStorage.removeItem(SAVE_KEY);
         setGameState(null);
         setView('menu');
     };
@@ -459,14 +460,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 const totalNetChange = totalPersonalIncome + totalBusinessNetChange - totalPersonalExpenses;
                 newState.familyFund = prevState.familyFund + totalNetChange;
                 newState.monthlyNetChange = totalNetChange;
-
-                if (Object.keys(memberUpdates).length > 0) {
-                    const updatedFamilyMembers = { ...prevState.familyMembers };
-                    for (const id in memberUpdates) {
-                        updatedFamilyMembers[id] = { ...updatedFamilyMembers[id], ...memberUpdates[id] };
-                    }
-                    nextFamilyMembers = updatedFamilyMembers;
-                }
 
                 if (newState.familyFund < 0 && !prevState.pendingLoanChoice) {
                     newState.pendingLoanChoice = true;
@@ -1357,7 +1350,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         setGameState(prevState => {
             if (!prevState) return null;
             const newLoan: Loan = {
-                id: crypto.randomUUID(),
+                id: '' + Math.random(), // Replaced crypto.randomUUID() with a simple random string
                 amount: amount,
                 dueDate: { day: prevState.currentDate.day, year: prevState.currentDate.year + term }
             };
@@ -1527,7 +1520,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             }
     
             const newBusiness: Business = {
-                id: crypto.randomUUID(),
+                id: '' + Math.random(), // Replaced crypto.randomUUID() with a simple random string
                 name: t(definition.nameKey, language),
                 type: businessType,
                 level: 1,
