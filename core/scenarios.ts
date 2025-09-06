@@ -4,6 +4,7 @@ import { INITIAL_FUNDS, UNIVERSITY_MAJORS } from './constants';
 import { createInitialCharacter, generateName, generateRandomAvatar, addDays } from './utils';
 import { Language } from './localization';
 import { exampleManifest } from '../components/AvatarBuilder';
+import { randomUUID } from 'expo-crypto';
 
 const createClassicState = (initialYear: number, lang: Language): GameState => {
     const firstCharacter = createInitialCharacter(initialYear, lang);
@@ -41,7 +42,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
     const major = UNIVERSITY_MAJORS[Math.floor(Math.random() * UNIVERSITY_MAJORS.length)];
     const age = 24;
     const character: Character = {
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         name: generateName(gender, lang),
         gender,
         generation: 1,
@@ -101,12 +102,12 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
 };
 
 const createMilaFamilyState = (initialYear: number, lang: Language): GameState => {
-    const milaId = crypto.randomUUID();
-    const maxId = crypto.randomUUID();
-    const aliceId = crypto.randomUUID();
-    const lucasId = crypto.randomUUID();
-    const daisyId = crypto.randomUUID();
-    const mioId = crypto.randomUUID();
+    const milaId = randomUUID();
+    const maxId = randomUUID();
+    const aliceId = randomUUID();
+    const lucasId = randomUUID();
+    const daisyId = randomUUID();
+    const mioId = randomUUID();
 
     const mila: Character = {
         id: milaId, name: 'Mila', gender: Gender.Female, generation: 1,

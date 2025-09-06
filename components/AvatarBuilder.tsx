@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
-import { LayerKey, Manifest, AvatarState, Character, Gender } from "../core/types";
+import { LayerKey, Manifest, AvatarState, Character, Gender, LayerDefinition, exampleManifest } from "../core/types";
 import { LockClosedIcon } from './icons';
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
@@ -52,7 +52,7 @@ function ageCategoryFromAge(age: number): AgeCategory {
   return 'old'; // Corresponds to Retired
 }
 
-function getAgeAppropriateOptions(layer: (typeof exampleManifest)[0], ageCategory: AgeCategory) {
+function getAgeAppropriateOptions(layer: LayerDefinition, ageCategory: AgeCategory) {
     if (layer.key === 'features') {
         return layer.options.filter(o => o.ageCategory === ageCategory);
     }
@@ -276,12 +276,12 @@ export default function AvatarBuilder({
 // The manifest should be provided as a prop or loaded via React Native's asset system.
 // For demonstration, a simplified manifest structure is assumed.
 
-export const exampleManifest: Manifest = [
-    { key: "background", label: "Background", zIndex: 0, required: true, options: [{ id: "bg-1", name: "Background 1", src: require('../public/asset/avatar-face/bg/1.png') }]},
-    { key: "eyes", label: "Eyes", zIndex: 3, required: true, options: [{ id: "eyes-1", name: "Eyes 1", src: require('../public/asset/avatar-face/eyes/1.png') }]},
-    { key: "mouth", label: "Mouth", zIndex: 6, required: true, options: [{ id: "mouth-1", name: "Mouth 1", src: require('../public/asset/avatar-face/mouth/1.png') }]},
-    // Add more layers and options as needed, using require() for local assets
-];
+// Removed web-specific asset loading (import.meta.glob) and exampleManifest
+// The manifest should be provided as a prop or loaded via React Native's asset system.
+// For demonstration, a simplified manifest structure is assumed.
+
+// Removed usePreloadedImages as it's web-specific. Image preloading should be handled in App.tsx
+
 
 // Removed usePreloadedImages as it's web-specific. Image preloading should be handled in App.tsx
 

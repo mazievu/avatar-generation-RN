@@ -3,8 +3,11 @@
 import React from 'react';
 import { PetType } from '../core/types';
 
+import { StyleProp, ViewStyle } from 'react-native';
+
 interface IconProps {
     className?: string;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const IqIcon: React.FC<IconProps> = ({ className }) => (

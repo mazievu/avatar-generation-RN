@@ -4,12 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club } from './core/types';
-import { LifePhase, CharacterStatus, RelationshipStatus, Gender } from './core/types';
+import { LifePhase, CharacterStatus, RelationshipStatus, Gender, exampleManifest } from './core/types';
 // FIX: Changed import from COST_OF_LIVING to getCostOfLiving to match the exported member from constants.
 import { GAME_SPEED_MS, DAYS_IN_YEAR, EVENTS, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './core/constants';
 import { CLUBS } from './core/clubsAndEventsData';
 import { GameUI } from './components/GameUI';
-import AvatarBuilder, { exampleManifest, usePreloadedImages } from './components/AvatarBuilder';
+import AvatarBuilder from './components/AvatarBuilder';
 import { SCENARIOS } from './core/scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './core/utils';
 import { Language, t } from './core/localization';
@@ -17,6 +17,28 @@ import { initGodMode } from './core/godmod';
 import { createGameLogicHandlers } from './core/game';
 
 type GameView = 'menu' | 'playing' | 'gameover' | 'welcome_back';
+
+const allAvatarUrls = new Set<string>();
+exampleManifest.forEach((layer) =>
+  layer.options.forEach((o) => {
+    allAvatarUrls.add(o.previewSrc || o.src);
+  })
+);
+Object.values(ASSET_DEFINITIONS).forEach((asset) => {
+    if (asset.imageSrc) {
+        allAvatarUrls.add(asset.imageSrc);
+    }
+});
+
+allAvatarUrls.add('../public/asset/mila.png');
+allAvatarUrls.add('../public/asset/max.png');
+allAvatarUrls.add('../public/asset/alice.png');
+allAvatarUrls.add('../public/asset/lucas.png');
+allAvatarUrls.add('../public/asset/daisy.png');
+
+import { imageAssets } from './components/ImageAssets';
+
+const avatarImages: Record<string, any> = imageAssets;
 
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -64,27 +86,6 @@ const App: React.FC = () => {
     useEffect(() => {
         initGodMode(setGameState);
     }, [setGameState]);
-    
-    const allAvatarUrls = useMemo(() => {
-        const s = new Set<string>();
-        exampleManifest.forEach((layer) =>
-          layer.options.forEach((o) => {
-            s.add(o.previewSrc || o.src);
-          })
-        );
-        s.add('/asset/avatar-face/face/old.png');
-        s.add('/asset/mila.png');
-        s.add('/asset/max.png');
-        s.add('/asset/alice.png');
-        s.add('/asset/lucas.png');
-        s.add('/asset/daisy.png');
-        s.add('/asset/avatar-face/face/baby.png');
-        s.add('/asset/avatar-face/face/normal.png');
-        return Array.from(s);
-    }, []);
-    const { loaded: avatarImages } = usePreloadedImages(allAvatarUrls);
-
-    
 
     // Initial load check
     useEffect(() => {
@@ -112,9 +113,11 @@ const App: React.FC = () => {
     useEffect(() => {
         if (view === 'playing' && !isPaused) {
             const interval = setInterval(() => {
-                saveGame(gameState);
-            }, 60000); // 60 seconds
-            return () => clearInterval(interval);
+                if (gameState) {
+                    saveGame(gameState);
+                }
+            }, 60000) as unknown as number; // 60 seconds
+            return () => (clearInterval as (timerId: number) => void)(interval);
         }
     }, [view, isPaused, saveGame, gameState]);
     
@@ -142,7 +145,7 @@ const App: React.FC = () => {
     useEffect(() => {
         stopGameLoop();
         if (view === 'playing' && !isPaused && !gameState?.gameOverReason) {
-            timerRef.current = setInterval(() => gameLoop(), gameSpeed); // Changed window.setInterval to setInterval
+            timerRef.current = setInterval(() => gameLoop(), gameSpeed) as unknown as number; // Changed window.setInterval to setInterval
         }
         return () => stopGameLoop();
     }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState]);

@@ -151,11 +151,13 @@ export const getLifePhase = (age: number): LifePhase => {
   return LifePhase.Retired;
 };
 
+import { randomUUID } from 'expo-crypto';
+
 export const createInitialCharacter = (year: number, lang: Language, manifest: Manifest): Character => {
     const gender = Math.random() < 0.5 ? Gender.Male : Gender.Female;
     const age = 0;
     return {
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         name: generateName(gender, lang),
         gender,
         generation: 1,
@@ -208,7 +210,7 @@ export const handleBirth = (parent1: Character, parent2: Character, currentDate:
     const age = 0;
 
     return {
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         name: generateName(gender, lang),
         gender,
         generation: parent1.generation + 1,

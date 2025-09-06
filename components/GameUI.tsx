@@ -23,7 +23,7 @@ import {
 } from './ui';
 import { ClubChoiceModal } from './ClubChoiceModal';
 import { Language, t } from '../core/localization';
-import { exampleManifest } from './AvatarBuilder';
+import { exampleManifest } from '../core/types';
 import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { Picker } from '@react-native-picker/picker';

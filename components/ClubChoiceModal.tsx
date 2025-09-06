@@ -2,14 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import type { Character, Club } from '../core/types';
 import { ModalBase } from './ui';
-import { t } from '../core/localization';
+import { t, Language } from '../core/localization';
 
 interface ClubChoiceModalProps {
   character: Character;
   clubs: Club[];
   onSelect: (clubId: string) => void;
   onSkip: () => void;
-  lang: string;
+  lang: Language;
 }
 
 export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clubs, onSelect, onSkip, lang }) => {

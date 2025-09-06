@@ -3,7 +3,7 @@
 // Some web-specific features (like custom CSS properties in style objects) have been removed or simplified.
 
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // For select/option/optgroup replacement
 
 import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition } from '../core/types';
@@ -126,7 +126,7 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
 interface CharacterNodeProps extends LocalizedProps {
     character: Character;
     onClick: () => void;
-    images: Record<string, HTMLImageElement>;
+    images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
     manifest: Manifest;
 }
 
@@ -161,7 +161,7 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
     <TouchableOpacity onPress={onClick} style={[characterNodeStyles.container, borderColorStyle, nodeBgColorStyle]}>
       <View style={characterNodeStyles.avatarWrapper}>
         {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
-          <AgeAwareAvatarPreview manifest={manifest} character={character} images={images} size={{ width: 96, height: 96 }} style={grayscaleStyle} />
+          <AgeAwareAvatarPreview manifest={manifest} character={character} images={images} size={{ width: 96, height: 96 }} style={grayscaleStyle === null ? undefined : grayscaleStyle} />
         ) : (
           gender === Gender.Male ? <MaleIcon /> : <FemaleIcon />
         )}
@@ -202,7 +202,7 @@ interface CharacterDetailModalProps extends LocalizedProps {
     gameState: GameState;
     onClose: () => void;
     onCustomize: (characterId: string) => void;
-    images: Record<string, HTMLImageElement>; // HTMLImageElement might need to be ImageSourcePropType
+    images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
     manifest: Manifest;
 }
 
@@ -215,7 +215,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
     const educationText = character.universityDegree ? t(character.universityDegree, lang) : (character.schoolHistory && character.schoolHistory.length > 0 ? t('education_some_school', lang) : t('education_none', lang));
     const career = character.careerTrack && character.careerLevel !== undefined ? CAREER_LADDER[character.careerTrack]?.levels[character.careerLevel] : null;
     const businessRole = character.businessId && character.businessSlotIndex !== undefined ? gameState.familyBusinesses[character.businessId]?.slots[character.businessSlotIndex] : null;
-    const pet = character.petId ? PET_DATA[character.petId] : null;
+    const pet = character.petId ? gameState.familyPets[character.petId] : null;
 
     return (
         <View style={characterDetailModalStyles.overlay}>
@@ -345,7 +345,7 @@ interface FamilyTreeProps extends LocalizedProps {
   characterId: string;
   allMembers: Record<string, Character>;
   onAvatarClick: (character: Character) => void;
-  images: Record<string, HTMLImageElement>; // HTMLImageElement might need to be ImageSourcePropType
+  images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
   manifest: Manifest;
 }
 
@@ -405,7 +405,7 @@ interface EventModalProps extends LocalizedProps {
   character: Character;
   onChoice: (choice: EventChoice) => void;
   onClose: () => void;
-  images: Record<string, HTMLImageElement>; // HTMLImageElement might need to be ImageSourcePropType
+  images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
   manifest: Manifest;
   onAvatarClick: (character: Character) => void;
 }
@@ -415,7 +415,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   const [displayEventData, setDisplayEventData] = React.useState(eventData);
   const [outcome, setOutcome] = React.useState<EventEffect | null>(null);
 
-  const timerRef = React.useRef<number | null>(null);
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const characterDisplayName = getCharacterDisplayName(character, lang);
 
   const clearTimer = () => {
@@ -942,7 +942,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({titleKey, characterName, de
             <View style={modalBaseStyles.comicPanel}>
                 <Text style={modalBaseStyles.title}>{t(titleKey, lang)}</Text>
                 {characterName && <Text style={modalBaseStyles.characterNameLabel}>{t('for_char_label', lang)}: <Text style={modalBaseStyles.characterName}>{characterName}</Text></Text>}
-                <Text style={modalBaseStyles.description}>{t(descriptionKey, lang, { name: characterName, ...descriptionReplacements })}</Text>
+                <Text style={modalBaseStyles.description}>{t(descriptionKey, lang, { name: characterName ?? '', ...descriptionReplacements })}</Text>
                 <View style={modalBaseStyles.childrenContainer}>
                    {children}
                 </View>
@@ -1222,7 +1222,7 @@ interface BusinessManagementModalProps extends LocalizedProps {
     onAssignToBusiness: (businessId: string, slotIndex: number, characterId: string | null) => void;
     onUpgradeBusiness: (businessId: string) => void;
     onClose: () => void;
-    images: Record<string, HTMLImageElement>;
+    images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
     manifest: Manifest;
 }
 
@@ -1998,494 +1998,31 @@ const modalBaseStyles = StyleSheet.create({
         padding: 24, // p-6
         maxWidth: 400, // max-w-lg
         width: '100%',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
     },
     title: {
-        fontSize: 24, // text-2xl
-        fontWeight: 'bold', // font-black
-        color: '#60a5fa', // blue-400
-        marginBottom: 8, // mb-2
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+        marginBottom: 8,
+        textAlign: 'center',
     },
     characterNameLabel: {
-        color: '#64748b', // slate-500
-        marginBottom: 16, // mb-4
         fontSize: 14,
+        color: '#475569', // slate-600
+        marginBottom: 4,
+        textAlign: 'center',
     },
     characterName: {
         fontWeight: 'bold',
-        color: '#1e293b', // slate-800
     },
     description: {
-        marginBottom: 24, // mb-6
-        color: '#475569', // slate-600
         fontSize: 16,
+        color: '#333',
+        marginBottom: 16,
+        textAlign: 'center',
     },
     childrenContainer: {
+        marginTop: 16,
         // space-y-3
-    },
-});
-
-const choiceButtonStyles = StyleSheet.create({
-    button: {
-        width: '100%',
-        backgroundColor: '#f1f5f9', // slate-100
-        paddingVertical: 12, // py-3
-        paddingHorizontal: 16, // px-4
-        borderRadius: 12, // rounded-xl
-        borderBottomWidth: 4,
-        borderColor: '#e2e8f0', // slate-200
-        transitionDuration: 200, // transition duration-200
-        transitionTimingFunction: 'ease-in-out', // ease-in-out
-        justifyContent: 'flex-start', // text-left
-        marginBottom: 12, // For space-y-3 in parent
-    },
-    buttonDisabled: {
-        opacity: 0.6, // disabled:opacity-60
-        // cursor-not-allowed is not applicable in RN
-    },
-    // Hover and active states are handled differently in React Native,
-    // often with `TouchableHighlight` or `Pressable` and their `onPressIn`/`onPressOut`
-    // or by manually changing styles on state. For simplicity, I'm omitting them for now.
-    // enabled:hover:bg-blue-300 enabled:hover:text-white enabled:hover:border-blue-400
-    // enabled:active:translate-y-1 enabled:active:border-b-2
-});
-
-const schoolChoiceModalStyles = StyleSheet.create({
-    choiceContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    choiceName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    choiceCost: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    costAffordable: {
-        color: '#f87171', // red-400
-    },
-    costUnaffordable: {
-        color: '#ef4444', // red-500 font-extrabold
-        fontWeight: 'bold',
-    },
-    choiceEffects: {
-        fontSize: 12, // text-xs
-        color: '#64748b', // slate-500
-        marginTop: 4, // mt-1
-    },
-});
-
-const universityChoiceModalStyles = StyleSheet.create({
-    button: {
-        width: '100%',
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginBottom: 12, // For space-y-3 in parent
-    },
-    buttonBlue: {
-        backgroundColor: '#60a5fa', // blue-400
-        borderBottomWidth: 4,
-        borderColor: '#3b82f6', // blue-500
-    },
-    buttonSlate: {
-        backgroundColor: '#64748b', // slate-500
-        borderBottomWidth: 4,
-        borderColor: '#475569', // slate-600
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-});
-
-const universityMajorChoiceModalStyles = StyleSheet.create({
-    choiceContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    choiceName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    choiceCost: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    costAffordable: {
-        color: '#f87171', // red-400
-    },
-    costUnaffordable: {
-        color: '#ef4444', // red-500 font-extrabold
-        fontWeight: 'bold',
-    },
-    choiceDescription: {
-        fontSize: 12, // text-xs
-        color: '#64748b', // slate-500
-        marginTop: 4, // mt-1
-    },
-    unaffordableSection: {
-        marginTop: 16, // mt-4
-        borderTopWidth: 1,
-        borderTopColor: '#e2e8f0', // border-t
-        paddingTop: 16, // pt-4
-        alignItems: 'center', // text-center
-    },
-    unaffordableText: {
-        fontSize: 14, // text-sm
-        color: '#dc2626', // red-600
-        marginBottom: 8, // mb-2
-        fontWeight: 'bold',
-    },
-    button: {
-        width: '100%',
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    buttonSlate: {
-        backgroundColor: '#64748b', // slate-500
-        borderBottomWidth: 4,
-        borderColor: '#475569', // slate-600
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-});
-
-const careerChoiceModalStyles = StyleSheet.create({
-    choiceContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    choiceNameContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    choiceNameText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    majorMatchIcon: {
-        marginLeft: 8, // ml-2
-        color: '#fbbf24', // amber-400
-    },
-    underqualifiedIcon: {
-        marginLeft: 8, // ml-2
-    },
-    choiceCost: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    costAffordable: {
-        color: '#f87171', // red-400
-    },
-    costUnaffordable: {
-        color: '#ef4444', // red-500 font-extrabold
-        fontWeight: 'bold',
-    },
-    choiceDescription: {
-        fontSize: 12, // text-xs
-        color: '#64748b', // slate-500
-        marginTop: 4, // mt-1
-    },
-});
-
-const underqualifiedChoiceModalStyles = StyleSheet.create({
-    choiceTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    choiceDescription: {
-        fontSize: 12, // text-xs
-        color: '#64748b', // slate-500
-        marginTop: 4, // mt-1
-    },
-});
-
-const promotionModalStyles = StyleSheet.create({
-    button: {
-        width: '100%',
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    buttonGreen: {
-        backgroundColor: '#22c55e', // green-500
-        borderBottomWidth: 4,
-        borderColor: '#16a34a', // green-600
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-});
-
-const loanModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 50,
-        padding: 16,
-    },
-    comicPanelWrapper: {
-        // transform: [{ rotate: '-1deg' }], // Example rotation
-    },
-    comicPanel: {
-        backgroundColor: 'white',
-        padding: 24, // p-6
-        maxWidth: 400, // max-w-lg
-        width: '100%',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    title: {
-        fontSize: 24, // text-2xl
-        fontWeight: 'bold', // font-black
-        color: '#ef4444', // red-500
-        marginBottom: 8, // mb-2
-    },
-    description: {
-        marginBottom: 24, // mb-6
-        color: '#475569', // slate-600
-        fontSize: 16,
-    },
-    optionsContainer: {
-        marginBottom: 24, // mb-6
-        // space-y-4
-    },
-    label: {
-        fontWeight: 'bold',
-        color: '#333', // slate-700
-        marginBottom: 8,
-    },
-    grid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8, // gap-2
-        marginTop: 8, // mt-2
-    },
-    gridButton: {
-        padding: 8, // p-2
-        borderRadius: 8, // rounded-lg
-        borderBottomWidth: 4,
-        transitionDuration: 200, // transition
-        flex: 1, // To make them take equal space
-        alignItems: 'center',
-    },
-    gridButtonSelected: {
-        backgroundColor: '#93c5fd', // blue-300
-        borderColor: '#60a5fa', // blue-400
-    },
-    gridButtonNormal: {
-        backgroundColor: '#f1f5f9', // slate-100
-        borderColor: '#e2e8f0', // slate-200
-    },
-    gridButtonText: {
-        fontWeight: 'bold',
-        fontSize: 14, // text-sm
-        color: '#333', // text-slate-600
-    },
-    chunkyButton: {
-        width: '100%',
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    chunkyButtonGreen: {
-        backgroundColor: '#22c55e', // green-500
-        borderBottomWidth: 4,
-        borderColor: '#16a34a', // green-600
-    },
-    chunkyButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-});
-
-const businessManagementModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 50,
-        padding: 16,
-    },
-    comicPanelWrapper: {
-        // transform: [{ rotate: '-2deg' }], // Example rotation
-    },
-    comicPanel: {
-        backgroundColor: 'white',
-        padding: 24, // p-6
-        maxWidth: 768, // max-w-2xl
-        width: '100%',
-        maxHeight: '90%', // max-h-[90vh]
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-        flexDirection: 'column', // flex flex-col
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start', // items-start
-        marginBottom: 16, // mb-4
-        flexShrink: 0, // flex-shrink-0
-    },
-    title: {
-        fontSize: 28, // text-3xl
-        fontWeight: 'bold', // font-black
-        color: '#3b82f6', // blue-500
-    },
-    levelText: {
-        color: '#64748b', // slate-500
-        fontWeight: 'bold',
-    },
-    closeButton: {
-        // -mt-2
-    },
-    closeButtonText: {
-        color: '#94a3b8', // slate-400
-        fontSize: 32, // text-4xl
-        fontWeight: 'bold',
-    },
-    slotsContainer: {
-        flexGrow: 1, // flex-grow
-        paddingRight: 8, // pr-2
-        // space-y-4
-    },
-    sectionTitle: {
-        fontSize: 18, // text-lg
-        fontWeight: 'bold', // font-extrabold
-        color: '#333', // slate-700
-        marginBottom: 12,
-    },
-    slotItem: {
-        backgroundColor: '#f1f5f9', // slate-100
-        padding: 12, // p-3
-        borderRadius: 12, // rounded-xl
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 16, // gap-4
-        marginBottom: 12, // For space-y-4 in parent
-    },
-    avatarPlaceholder: {
-        flexShrink: 0, // flex-shrink-0
-        width: 64, // w-16
-        height: 64, // h-16
-        borderRadius: 8, // rounded-lg
-        backgroundColor: '#e2e8f0', // bg-slate-200
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
-    },
-    robotIcon: {
-        width: '100%',
-        height: '100%',
-    },
-    emptyAvatar: {
-        width: 40, // w-10
-        height: 40, // h-10
-        backgroundColor: '#cbd5e1', // bg-slate-300
-        borderRadius: 20, // rounded-full
-    },
-    slotDetails: {
-        flexGrow: 1, // flex-grow
-    },
-    slotRole: {
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-    },
-    slotRequirement: {
-        fontSize: 12, // text-xs
-        color: '#64748b', // slate-500
-    },
-    slotSalary: {
-        fontSize: 12, // text-xs
-        color: '#22c55e', // green-600
-        fontWeight: 'bold',
-        marginTop: 4, // mt-1
-    },
-    picker: {
-        backgroundColor: 'white',
-        borderWidth: 2,
-        borderColor: '#e2e8f0', // slate-200
-        borderRadius: 12, // rounded-xl
-        // px-3 py-2 font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400
-        // These styles are harder to apply directly to Picker, might need custom wrapper
-        height: 40, // Example height
-        width: 150, // Example width
-    },
-    pickerItem: {
-        fontSize: 14,
-        color: '#475569', // slate-600
-    },
-    footer: {
-        marginTop: 24, // mt-6
-        borderTopWidth: 1,
-        borderTopColor: '#e2e8f0', // border-t border-slate-200
-        paddingTop: 16, // pt-4
-        flexShrink: 0, // flex-shrink-0
-    },
-    upgradeButton: {
-        backgroundColor: '#22c55e', // green-500
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        borderBottomWidth: 4,
-        borderColor: '#16a34a', // green-600
-    },
-    upgradeButtonDisabled: {
-        opacity: 0.6,
-    },
-    upgradeIcon: {
-        width: 20, // w-5
-        height: 20, // h-5
-        marginRight: 8, // mr-2
-        color: 'white', // Assuming icon color should be white
-    },
-    upgradeButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });

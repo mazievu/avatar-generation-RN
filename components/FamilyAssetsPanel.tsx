@@ -5,6 +5,7 @@ import { Language, t } from '../core/localization';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
 import { ModalBase } from './ui'; // Assuming ModalBase is now in ui.tsx
+import { imageAssets } from './ImageAssets';
 
 interface AssetSlotProps {
     asset: AssetDefinition;
@@ -35,7 +36,7 @@ const AssetSlot: React.FC<AssetSlotProps> = ({ asset, isOwned, canAfford, onPurc
         >
             {asset.imageSrc && (
                 <View style={assetSlotStyles.imageContainer}>
-                    <Image source={asset.imageSrc} style={assetSlotStyles.image} accessibilityLabel={t(asset.nameKey, lang)} />
+                    <Image source={imageAssets[asset.imageSrc]} style={assetSlotStyles.image} accessibilityLabel={t(asset.nameKey, lang)} />
                 </View>
             )}
 
@@ -158,7 +159,7 @@ const AssetDetailModal: React.FC<AssetDetailModalProps> = ({ asset, isOwned, can
 
                     {asset.imageSrc && (
                         <View style={assetDetailModalStyles.imageContainer}>
-                            <Image source={asset.imageSrc} style={assetDetailModalStyles.image} accessibilityLabel={t(asset.nameKey, lang)} />
+                            <Image source={imageAssets[asset.imageSrc]} style={assetDetailModalStyles.image} accessibilityLabel={t(asset.nameKey, lang)} />
                         </View>
                     )}
 

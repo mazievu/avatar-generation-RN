@@ -1,5 +1,6 @@
 import { GameEvent, LifePhase, Pet, PetType, Stats, Character } from '../types';
 import { PET_DATA } from '../constants';
+import { randomUUID } from 'expo-crypto';
 
 // Helper for pet name generation
 const PET_NAMES: Record<PetType, string[]> = {
@@ -74,7 +75,7 @@ export const PET_EVENTS: GameEvent[] = [
                         const petName = getRandomPetName(randomPetType);
                         
                         const newPet: Pet = {
-                            id: crypto.randomUUID(),
+                            id: randomUUID(),
                             name: petName,
                             type: randomPetType,
                             ownerId: charId,

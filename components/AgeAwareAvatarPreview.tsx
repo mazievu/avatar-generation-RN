@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Image, StyleSheet, ImageSourcePropType } from 'react-native';
+import { View, Image, StyleSheet, ImageSourcePropType, ViewStyle } from 'react-native';
 import type { Manifest, AvatarState, LayerKey, Character } from '../core/types';
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
 
@@ -91,16 +91,18 @@ interface Props {
   images: Record<string, ImageSourcePropType>;
   character: Character;
   size: { width: number; height: number };
+  style?: ViewStyle; // Added
 }
 
-export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, character, size }) => {
+export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, character, size, style }) => {
     // Handle static avatars for specific characters (e.g., Mila's family)
     if (character.staticAvatarUrl) {
         return (
             <View
                 style={[
                     ageAwareAvatarPreviewStyles.container,
-                    { width: size.width, height: size.height }
+                    { width: size.width, height: size.height },
+                    style
                 ]}
             >
                 <Image
@@ -121,7 +123,8 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
       <View
         style={[
             ageAwareAvatarPreviewStyles.container,
-            { width: size.width, height: size.height }
+            { width: size.width, height: size.height },
+            style
         ]}
       >
         {orderedLayers.map((layer) => {

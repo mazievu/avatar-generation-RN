@@ -1,5 +1,6 @@
 import { GameEvent, LifePhase, CharacterStatus, RelationshipStatus, Gender, GameState, Character, GameLogEntry } from '../types';
 import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, addDays, getCharacterDisplayName } from '../utils';
+import { randomUUID } from 'expo-crypto';
 
 import { t } from '../localization';
 
@@ -21,7 +22,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
                     const partnerGender = char1.gender === Gender.Male ? Gender.Female : Gender.Male;
                     
                     let partner: Character = {
-                        id: crypto.randomUUID(),
+                        id: randomUUID(),
                         name: generateName(partnerGender, state.lang),
                         gender: partnerGender,
                         generation: char1.generation,
