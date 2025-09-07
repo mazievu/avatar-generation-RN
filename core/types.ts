@@ -260,26 +260,39 @@ export interface EventEffect {
   getDynamicEffect?: () => DynamicEffectResult;
 }
 
-export interface GameEvent {
+// Choice "draft" do content viết (chưa có id/labelKey).
+export type EventChoiceDraft = {
+  textKey: string;
+  stableKey?: string;
+  effect?: unknown;
+  condition?: (state: GameState, char: Character) => boolean;
+};
+
+// Event "draft" do content viết (chưa attach id/labelKey vào choices).
+export type EventDraft = {
   id: string;
   titleKey: string;
   descriptionKey: string;
-  phases: LifePhase[];
-  choices: EventChoice[];
+  phases: readonly unknown[];
+  choices: readonly EventChoiceDraft[];
   isTriggerOnly?: boolean;
   isMilestone?: boolean;
   allowedRelationshipStatuses?: RelationshipStatus[];
   applyEffectToAll?: boolean;
   condition?: (state: GameState, char: Character) => boolean;
-}
+};
 
-export interface EventChoice {
+// Choice hoàn chỉnh để runtime dùng.
+export type EventChoice = EventChoiceDraft & {
   id: string;
   labelKey: string;
-  textKey: string;
   effect: EventEffect;
-  condition?: (state: GameState, char: Character) => boolean;
-}
+};
+
+// Event hoàn chỉnh để runtime dùng.
+export type GameEvent = Omit<EventDraft, "choices"> & {
+  choices: EventChoice[];
+};
 
 export interface SchoolOption {
     nameKey: string;
@@ -514,4 +527,3 @@ export const exampleManifest: Manifest = [
   { key: "beard", label: "Beard", zIndex: 5, allowNone: true, required: false, options: beardOptions},
   { key: "frontHair", label: "Hair (Front)", zIndex: 7, allowNone: true, required: false, options: frontHairOptions},
 ];
-
