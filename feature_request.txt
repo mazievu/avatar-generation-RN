@@ -1,0 +1,82 @@
+Kế hoạch chi tiết 20 bước triển khai Hệ thống ID Ổn định
+Giai đoạn 1: Nền tảng và Thiết lập (Foundation & Setup)
+Bước 1: Xác định và Phân loại tất cả các Thực thể cần ID
+Tổ chức một buổi họp với team để rà soát toàn bộ codebase và tài liệu thiết kế game. Lập danh sách chi tiết tất cả các "thực thể" sẽ cần ID ổn định, phân chúng thành các domain rõ ràng như bạn đã đề xuất: Core (Event, Choice), Economy (Job, Organization), Education (School, Major), Gameplay (Trait, Item), v.v.
+Bước 2: Thiết kế Cấu trúc Thư mục và Lockfile
+Tạo một thư mục gốc, ví dụ game_content/ hoặc definitions/. Bên trong, tạo các thư mục con cho từng domain (events/, jobs/, schools/). Quyết định một cấu trúc thư mục nhất quán cho các "draft" (file định nghĩa nội dung gốc, ví dụ: events/life.ts) và nơi lưu trữ các lockfile (ví dụ: game_content/locks/events-lock.json).
+Bước 3: Lựa chọn Công nghệ và Xây dựng 
+Quyết định một thư viện sinh ID duy nhất (ví dụ: nanoid vì nó nhỏ gọn và an toàn cho URL). Tạo một module tiện ích, ví dụ scripts/utils/idFactory.ts, để xuất ra một hàm generateId(prefix: string) trả về một ID có tiền tố (ví dụ: ch_Abc123Xy).
+Bước 4: Viết Script Quét "Draft" ban đầu (
+Bắt đầu xây dựng script content:sync (ví dụ: scripts/syncContent.ts). Chức năng đầu tiên của nó là quét qua tất cả các file "draft" trong các thư mục nội dung, đọc chúng và trích xuất ra các lockKey cần thiết. Ví dụ, với một sự kiện, nó sẽ trích xuất eventId và các choiceLockKey (eventId|choiceStableKey).
+Bước 5: Viết Logic Cập nhật Lockfile
+Mở rộng script content:sync. Sau khi thu thập tất cả các lockKey, script sẽ:
+Đọc lockfile hiện có của domain tương ứng.
+Với mỗi lockKey mới, gọi idFactory để tạo ID mới và thêm vào lockfile.
+(Tùy chọn) Tìm các ID trong lockfile không còn lockKey tương ứng trong draft và đánh dấu chúng là "orphan" hoặc xóa đi.
+Ghi lại lockfile đã cập nhật, đảm bảo các key được sắp xếp theo alphabet để dễ review trong git diff.
+Giai đoạn 2: Sinh mã và Tích hợp vào Runtime (Codegen & Integration)
+Bước 6: Viết Logic Sinh Artefact Code (
+Thêm một bước vào script content:sync. Sau khi lockfile được cập nhật, script sẽ tự động tạo ra các file TypeScript (artefact) cho từng domain. Ví dụ, từ events-lock.json, nó sẽ sinh ra src/generated/eventIds.ts chứa export const EventIdByKey = { ... } as const; và export type EventId = ....
+Bước 7: Tạo Codegen riêng cho các Hằng số Cốt lõi (StatKey)
+Tạo một script riêng hoặc một phần trong content:sync để sinh ra các hằng số cốt lõi không có lockfile, như StatKey. Điều này đảm bảo toàn bộ ứng dụng sử dụng StatKey.Happiness thay vì "happiness", loại bỏ lỗi chính tả và giúp TypeScript kiểm tra kiểu dữ liệu.
+Bước 8: Xây dựng các Hàm 
+Trong runtime của ứng dụng (ví dụ: trong core/), tạo các hàm "builder". Ví dụ: buildEvent(draft: EventDraft): GameEvent. Hàm này sẽ nhận một đối tượng "draft" thô, sử dụng artefact đã được codegen để tra cứu và gắn các ID ổn định vào đối tượng cuối cùng sẽ được sử dụng trong game.
+Bước 9: Tích hợp Builder vào Logic Game
+Thay thế logic khởi tạo nội dung hiện tại. Thay vì trực tiếp import ALL_EVENTS, bạn sẽ import mảng "draft" và truyền nó qua một hàm initializeAllGameData() sử dụng các builder (buildEvent, buildJob, v.v.) để tạo ra dữ liệu runtime cuối cùng.
+Bước 10: Cập nhật Hệ thống Lưu/Tải Game
+Sửa đổi logic saveGame và handleContinueGame. Đảm bảo rằng mọi tham chiếu trong file save đều sử dụng ID ổn định (ví dụ: completedOneTimeEvents lưu eventId thay vì event.titleKey). File save cũng cần lưu contentVersion hiện tại.
+Giai đoạn 3: Đảm bảo Chất lượng và Quy trình (Validation & Workflow)
+Bước 11: Xây dựng Hệ thống Kiểm thử Dữ liệu (Validators)
+Thêm một bước quan trọng vào script content:sync: validation. Script sẽ kiểm tra:
+lockKey trùng lặp trong cùng một domain.
+Tham chiếu chéo không hợp lệ (ví dụ: một choice tham chiếu đến eventId không tồn tại).
+statChanges sử dụng các key không có trong StatKey.
+Các giá trị bất thường (lương âm, xác suất > 1).
+Nếu có lỗi, script sẽ thất bại và ngăn việc build.
+Bước 12: Tích hợp Script vào Quy trình Phát triển
+Thêm script content:sync vào package.json (ví dụ: "sync": "ts-node scripts/syncContent.ts"). Sử dụng các công cụ như husky để tự động chạy script này trước mỗi lần git commit. Điều này đảm bảo rằng lockfile và artefact luôn được đồng bộ với nội dung.
+Bước 13: Tinh chỉnh Hệ thống Dịch thuật (i18n)
+Đảm bảo hệ thống i18n của bạn có thể xử lý các key mới (labelKey, descriptionKey). Triển khai logic fallback như t(labelKey, { defaultValue: t(textKey) }) để các nhà phát triển nội dung không cần tạo ngay key dịch cho label mà vẫn có thể thấy text hiển thị.
+Bước 14: Viết Logic Di chuyển Dữ liệu (Migration) cho Save File Cũ
+Trong handleContinueGame, trước khi tải dữ liệu, hãy kiểm tra contentVersion của file save. Nếu nó cũ hơn phiên bản hiện tại, hãy chạy một loạt các hàm di chuyển (migration) để cập nhật cấu trúc và các ID cũ sang ID mới (dựa trên một mapping được định nghĩa trước).
+Bước 15: Soạn thảo Quy tắc và Tài liệu Hướng dẫn
+Viết tài liệu rõ ràng về quy trình thêm/sửa nội dung mới. Quy định cách đặt tên cho stableKey (ví dụ: snake_case, có ngữ nghĩa, ngắn gọn). Hướng dẫn cách chạy script content:sync và cách khắc phục các lỗi validation phổ biến.
+Giai đoạn 4: Mở rộng và Tối ưu (Advanced Tooling & Optimization)
+Bước 16: Xây dựng Công cụ Xem trước Nội dung (Preview Tool)
+Tạo một công cụ đơn giản (CLI hoặc trang web local) cho phép các nhà thiết kế nội dung xem trước một sự kiện hoặc một chuỗi sự kiện mà không cần phải build toàn bộ ứng dụng React Native. Công cụ này có thể mô phỏng các thay đổi về chỉ số và tài chính.
+Bước 17: Tự động hóa hoàn toàn với CI/CD
+Tích hợp script content:sync và các validator vào pipeline CI/CD (ví dụ: GitHub Actions). Mỗi khi một Pull Request được tạo, CI sẽ tự động chạy kiểm tra để đảm bảo nội dung mới không làm hỏng game.
+Bước 18: Tích hợp ID vào Hệ thống Phân tích (Analytics)
+Khi log các sự kiện analytics (ví dụ: người chơi đã chọn lựa chọn nào), hãy sử dụng các ID ổn định (eventId, choiceId). Điều này giúp dữ liệu phân tích trở nên nhất quán và không bị ảnh hưởng bởi việc thay đổi văn bản trong game.
+Bước 19: Đào tạo Đội ngũ
+Tổ chức một buổi giới thiệu và đào tạo cho tất cả các thành viên (lập trình viên, nhà thiết kế game, người viết nội dung) về hệ thống mới, quy trình làm việc và các công cụ hỗ trợ.
+Bước 20: Chạy Toàn bộ Hệ thống lần đầu và Refactor
+Sau khi tất cả các bước trên đã được chuẩn bị, hãy thực hiện một lần chạy "khô": xóa tất cả các lockfile và artefact, sau đó chạy content:sync từ đầu. Script sẽ quét toàn bộ nội dung, tạo tất cả các ID mới và sinh ra code. Cuối cùng, tiến hành refactor toàn bộ ứng dụng để sử dụng hệ thống mới này.
+
+Đề xuất thêm phương án tối ưu hiệu năng cho React Native
+Việc có một hệ thống ID ổn định mở ra nhiều cơ hội tối ưu hiệu năng, đặc biệt quan trọng trên thiết bị di động.
+Memoization Hiệu quả hơn với ID ổn định:
+Sử dụng React.memo cho các component hiển thị dữ liệu từ các thực thể (ví dụ: EventModal, ChoiceButton). Vì các đối tượng giờ đây có ID ổn định, React có thể dễ dàng so sánh props và tránh render lại không cần thiết, ngay cả khi đối tượng cha bị render lại.
+Bọc các hàm xử lý sự kiện (ví dụ: handleChoiceSelect) trong useCallback với dependency là ID (useCallback(() => onSelect(choiceId), [choiceId, onSelect])).
+
+
+Ảo hóa Danh sách (List Virtualization) với 
+Đối với các danh sách dài như nhật ký game (gameLog) hoặc danh sách tài sản, hãy sử dụng component FlatList của React Native.
+Cung cấp ID ổn định của mỗi mục cho prop keyExtractor (keyExtractor={item => item.id}). Điều này giúp FlatList tối ưu hóa việc render và quản lý bộ nhớ một cách hiệu quả nhất.
+
+
+Chuẩn hóa Trạng thái Game (State Normalization):
+Thay vì lưu familyMembers dưới dạng một mảng các đối tượng, hãy chuẩn hóa nó thành một đối tượng phẳng, nơi key là character.id.
+Trước (Mảng): familyMembers: [ { id: 'char_1', ... }, { id: 'char_2', ... } ]
+Sau (Đối tượng phẳng): familyMembers: { 'char_1': { ... }, 'char_2': { ... } }
+Lợi ích: Việc tìm kiếm, cập nhật, hoặc xóa một nhân vật trở thành một thao tác O(1) (truy cập trực tiếp qua key) thay vì phải lặp qua mảng O(n). Các thư viện quản lý trạng thái như Redux Toolkit (createEntityAdapter) được xây dựng dựa trên nguyên tắc này.
+
+
+Giảm Kích thước Gói ứng dụng (Bundle Size) với Code Splitting:
+Các file artefact được sinh ra có thể trở nên rất lớn khi nội dung game phình to. Thay vì import tất cả vào lúc khởi động, hãy xem xét việc chia nhỏ chúng.
+Tách artefact theo domain (eventIds.ts, jobIds.ts).
+Sử dụng dynamic import (import()) để chỉ tải dữ liệu của một "content pack" hoặc một phần của game khi người chơi thực sự cần đến nó.
+
+
+Tối ưu hóa Serialization cho File Save:
+Khi lưu game, bạn có thể thực hiện một bước nén dữ liệu. Thay vì lưu các key dài như "happiness", hãy sử dụng mapping số đã được codegen (StatIndex: { happiness: 0, ... }). Điều này làm giảm kích thước file save và tăng tốc độ đọc/ghi, dù không đáng kể nhưng là một thực hành tốt.
