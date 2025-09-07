@@ -290,9 +290,11 @@ export type EventChoice = EventChoiceDraft & {
 };
 
 // Event hoàn chỉnh để runtime dùng.
-export type GameEvent = Omit<EventDraft, "choices"> & {
-  choices: EventChoice[];
-};
+export interface GameEvent extends Omit<EventDraft, "choices"> { // Omit choices from EventDraft to redefine explicitly
+  id: string; // Runtime ID for the event
+  choices: EventChoice[]; // Runtime choices (using EventChoice)
+  // stableKey and other properties are inherited from EventDraft
+}
 
 export interface SchoolOption {
     nameKey: string;
@@ -333,7 +335,7 @@ export interface BusinessDefinition {
     id: string;
     type: string;
     tier: number;
-    nameKey: string;
+    nameKey: string; // Retained for display in content editor / during loading
     cost: number;
     baseRevenue: number; // monthly
     costOfGoodsSold: number; // percentage of revenue
