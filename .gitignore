@@ -35,5 +35,5 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
-
+genesis.session.json
 .env
