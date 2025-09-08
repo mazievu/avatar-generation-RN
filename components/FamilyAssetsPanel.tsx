@@ -27,12 +27,13 @@ const statIcons: Record<keyof Stats, React.ElementType> = {
 const AssetSlot: React.FC<AssetSlotProps> = ({ asset, isOwned, canAfford, onPurchase, lang, onViewDetails }) => {
     return (
         <TouchableOpacity
-            onPress={() => onViewDetails(asset)} // Make the entire slot clickable
+            onPress={() => onViewDetails(asset)}
             style={[
                 assetSlotStyles.container,
                 isOwned ? assetSlotStyles.owned : assetSlotStyles.available,
                 !isOwned && canAfford && assetSlotStyles.canAfford,
             ]}
+            activeOpacity={0.7}
         >
             {asset.imageSrc && (
                 <View style={assetSlotStyles.imageContainer}>
@@ -58,18 +59,14 @@ const AssetSlot: React.FC<AssetSlotProps> = ({ asset, isOwned, canAfford, onPurc
 const assetSlotStyles = StyleSheet.create({
     container: {
         position: 'relative',
-        padding: 8, // p-2
-        borderRadius: 8, // rounded-lg
+        padding: 8,
+        borderRadius: 8,
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'space-between',
-        textAlign: 'center', // text-center
-        fontSize: 14, // text-sm
-        // transitionProperty: 'all', // transition-all
-        // transitionDuration: 200, // duration-200
-        // transitionTimingFunction: 'ease-in-out', // ease-in-out
-        // cursor: 'pointer', // cursor-pointer (not directly applicable in RN)
-        aspectRatio: 1, // aspect-square
+        textAlign: 'center',
+        fontSize: 14,
+        aspectRatio: 1,
         borderWidth: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -77,6 +74,8 @@ const assetSlotStyles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 1, // shadow-sm
         overflow: 'hidden',
+        flexGrow: 1,
+        flexBasis: '30%', // For a ~3 column layout with gaps
     },
     owned: {
         backgroundColor: '#dcfce7', // bg-green-100
@@ -456,7 +455,7 @@ const familyAssetsPanelStyles = StyleSheet.create({
     assetGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between', // For grid-cols-2/3/4 with gap
-        gap: 16, // gap-4
+        justifyContent: 'flex-start',
+        gap: 12,
     },
 });

@@ -2,6 +2,7 @@
 // Styling (Tailwind CSS classes) has been removed and needs to be re-implemented using React Native's StyleSheet.
 // Some web-specific features (like custom CSS properties in style objects) have been removed or simplified.
 import * as React from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withRepeat, withSequence, useDerivedValue } from 'react-native-reanimated';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType, FlatList } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // For select/option/optgroup replacement
 import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition, Language, Club } from '../core/types';
@@ -37,47 +38,21 @@ type Particle = {
 };
 
 const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initialValue }) => {
-    const isAnimated = typeof initialValue === 'number';
-    const [animatedWidth, setAnimatedWidth] = React.useState(isAnimated ? (initialValue / max) * 100 : (value / max) * 100);
-    const [particles, setParticles] = React.useState<Particle[]>([]);
+    const isAnimated = typeof initialValue === 'number' && initialValue !== value;
+    const progress = useSharedValue(isAnimated ? initialValue : value);
 
     React.useEffect(() => {
-        if (isAnimated && typeof initialValue === 'number') {
-            const timer = setTimeout(() => {
-                setAnimatedWidth((value / max) * 100);
-
-                // Particle generation
-                const change = value - initialValue;
-                if (change !== 0) {
-                    const newParticles: Particle[] = [];
-                    const particleType = change > 0 ? 'sparkle' : 'smoke';
-                    const numParticles = Math.min(Math.abs(Math.round(change)), 10); // Max 10 particles
-                    
-                    for (let i = 0; i < numParticles; i++) {
-                        const startXPercent = (initialValue / max) * 100;
-                        const endXPercent = (value / max) * 100;
-                        const particleStartX = Math.random() * Math.abs(endXPercent - startXPercent) + Math.min(startXPercent, endXPercent);
-                        
-                        newParticles.push({
-                            id: Math.random(),
-                            type: particleType,
-                            style: {
-                                left: `${particleStartX}%`,
-                                // Removed web-specific CSS variables: '--x-end', '--y-end', 'animationDelay'
-                            },
-                        });
-                    }
-                    setParticles(newParticles);
-                    // Cleanup particles after animation
-                    const particleTimer = setTimeout(() => setParticles([]), 1000);
-                    return () => clearTimeout(particleTimer);
-                }
-            }, 100);
-            return () => clearTimeout(timer);
+        if (isAnimated) {
+            progress.value = withTiming(value, { duration: 800, easing: Easing.out(Easing.quad) });
+        } else {
+            progress.value = value;
         }
-    }, [isAnimated, value, initialValue, max]);
+    }, [value, isAnimated, progress]);
 
-    // Regular, non-animated StatBar used in the Character Detail Modal
+    const animatedStyle = useAnimatedStyle(() => ({
+        width: `${(progress.value / max) * 100}%`,
+    }));
+
     if (!isAnimated) {
         const displayValue = Math.round(value);
         return (
@@ -85,7 +60,7 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
                 <Icon />
                 <Text style={statBarStyles.label}>{label}</Text>
                 <View style={statBarStyles.barBackground}>
-                    <View style={[statBarStyles.barFill, { width: `${(value / max) * 100}%`, backgroundColor: color }]}></View>
+                    <View style={[statBarStyles.barFill, { width: `${(value / max) * 100}%`, backgroundColor: color }]} />
                 </View>
                 <Text style={statBarStyles.value}>{displayValue}</Text>
             </View>
@@ -93,27 +68,20 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
     }
 
     // Animated StatBar for the Event Outcome Modal
-    const displayFinalValue = Math.round(value);
-    const displayInitialValue = Math.round(initialValue);
+    const displayFinalValue = useDerivedValue(() => Math.round(progress.value));
+    const displayInitialValue = Math.round(initialValue || 0);
     const displayChange = displayFinalValue - displayInitialValue;
     const changeColorStyle = displayChange >= 0 ? statBarStyles.changePositive : statBarStyles.changeNegative;
     const barColorStyle = displayChange >= 0 ? statBarStyles.barPositive : statBarStyles.barNegative;
     
     return (
         <View style={statBarStyles.container}>
-            <Icon />
+            <Icon style={{ color: barColorStyle.backgroundColor }} />
             <Text style={statBarStyles.label}>{label}</Text>
             <View style={statBarStyles.barBackground}>
-                <View
-                    style={[statBarStyles.barFill, { width: `${animatedWidth}%` }, barColorStyle]}
-                />
-                <View style={statBarStyles.particlesContainer}>
-                    {particles.map(p => (
-                        <View key={p.id} style={[statBarStyles.particle, p.style]} />
-                    ))}
-                </View>
+                <Animated.View style={[statBarStyles.barFill, barColorStyle, animatedStyle]} />
             </View>
-            <Text style={statBarStyles.value}>{displayFinalValue}</Text>
+            <Animated.Text style={statBarStyles.value}>{displayFinalValue}</Animated.Text>
             <Text style={[statBarStyles.changeText, changeColorStyle]}>
                 ({displayChange >= 0 ? `+${displayChange}` : displayChange})
             </Text>
@@ -134,28 +102,33 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
   const { isAlive, gender, age, monthlyNetIncome } = character;
   const displayName = getCharacterDisplayName(character, lang);
 
-  // Lặp mỗi 4s nếu còn sống
-  const [showMoney, setShowMoney] = React.useState(false);
-  const [effectKey, setEffectKey] = React.useState(0);
+  const moneyEffectOpacity = useSharedValue(0);
+  const moneyEffectTranslateY = useSharedValue(0);
 
   React.useEffect(() => {
     if (!isAlive) return;
     const intervalId = setInterval(() => {
-      setShowMoney(true);
-      setEffectKey(k => k + 1);
-      const hide = setTimeout(() => setShowMoney(false), 1200);
-      // dọn dẹp timeout lần gần nhất khi unmount
-      return () => clearTimeout(hide);
+        moneyEffectOpacity.value = 1;
+        moneyEffectTranslateY.value = 0;
+        moneyEffectOpacity.value = withSequence(
+            withTiming(1, { duration: 200 }),
+            withTiming(0, { duration: 1000 })
+        );
+        moneyEffectTranslateY.value = withTiming(-20, { duration: 1200 });
     }, 2000);
     return () => clearInterval(intervalId);
-  }, [isAlive]);
+  }, [isAlive, moneyEffectOpacity, moneyEffectTranslateY]);
+
+  const moneyEffectStyle = useAnimatedStyle(() => ({
+      opacity: moneyEffectOpacity.value,
+      transform: [{ translateY: moneyEffectTranslateY.value }],
+  }));
 
   const nodeBgColorStyle = !isAlive ? characterNodeStyles.nodeBgDeceased : characterNodeStyles.nodeBgAlive;
   const borderColorStyle = isPlayerLineage ? characterNodeStyles.borderPlayer : characterNodeStyles.borderNormal;
   const grayscaleStyle = !isAlive ? characterNodeStyles.grayscale : null;
   const netIncomeColorStyle = monthlyNetIncome >= 0 ? characterNodeStyles.netIncomePositive : characterNodeStyles.netIncomeNegative;
   const netIncomeSign = monthlyNetIncome > 0 ? '+' : '';
-
   return (
     <TouchableOpacity onPress={onClick} style={[characterNodeStyles.container, borderColorStyle, nodeBgColorStyle]}>
       <View style={characterNodeStyles.avatarWrapper}>
@@ -181,13 +154,11 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
             {netIncomeSign}${Math.round(monthlyNetIncome).toLocaleString()}/mo
           </Text>
 
-          {showMoney && (
-            <View key={effectKey} style={characterNodeStyles.netIncomeEffect}>
-              <Text style={[characterNodeStyles.netIncomeEffectText, netIncomeColorStyle]}>
-                {netIncomeSign}{Math.round(monthlyNetIncome).toLocaleString()}$
-              </Text>
-            </View>
-          )}
+          <Animated.View style={[characterNodeStyles.netIncomeEffect, moneyEffectStyle]}>
+            <Text style={[characterNodeStyles.netIncomeEffectText, netIncomeColorStyle]}>
+              {netIncomeSign}{Math.round(monthlyNetIncome).toLocaleString()}$
+            </Text>
+          </Animated.View>
         </View>
       )}
     </TouchableOpacity>
