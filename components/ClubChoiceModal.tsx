@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import type { Character, Club } from '../core/types';
+import type { Character, Club, Language } from '../core/types';
 import { ModalBase } from './ui';
-import { t, Language } from '../core/localization';
+import { t } from '../core/localization';
 
 interface ClubChoiceModalProps {
   character: Character;

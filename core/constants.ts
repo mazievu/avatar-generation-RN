@@ -52,9 +52,9 @@ export const getCostOfLiving = (phase: LifePhase): number => {
 // ==============================
 export const SCHOOL_OPTIONS: Record<LifePhase.Elementary | LifePhase.MiddleSchool | LifePhase.HighSchool, SchoolOption[]> = {
     [LifePhase.Elementary]: [
-                { nameKey: 'school_public', cost: 0, effects: { iq: 5, eq: 2 }, logKey: 'log_enrolled_public_elementary' },,
+        { nameKey: 'school_public', cost: 0, effects: { iq: 5, eq: 2 }, logKey: 'log_enrolled_public_elementary' },
         { nameKey: 'school_private', cost: 20000, effects: { iq: 10, eq: 5 }, logKey: 'log_enrolled_private_elementary' },
-                { nameKey: 'school_royal', cost: 100000, effects: { iq: 20, eq: 10 }, logKey: 'log_enrolled_royal_elementary' },,
+        { nameKey: 'school_royal', cost: 100000, effects: { iq: 20, eq: 10 }, logKey: 'log_enrolled_royal_elementary' },
     ],
     [LifePhase.MiddleSchool]: [
         { nameKey: 'school_public', cost: 0, effects: { iq: 8, eq: 3 }, logKey: 'log_enrolled_public_middle' },

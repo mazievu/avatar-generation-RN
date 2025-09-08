@@ -1,8 +1,6 @@
-import { LifePhase, CharacterStatus, RelationshipStatus, Stats } from './types';
+import { LifePhase, CharacterStatus, RelationshipStatus, Stats, Language } from './types';
 import translationsEn from '../localization/en';
 import translationsVi from '../localization/vi';
-
-export type Language = 'en' | 'vi';
 
 const translations = {
   en: translationsEn,

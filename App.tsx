@@ -3,16 +3,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club } from './core/types';
+import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, Language } from './core/types';
 import { LifePhase, CharacterStatus, RelationshipStatus, Gender, exampleManifest } from './core/types';
 // FIX: Changed import from COST_OF_LIVING to getCostOfLiving to match the exported member from constants.
-import { GAME_SPEED_MS, DAYS_IN_YEAR, EVENTS, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './core/constants';
+import { GAME_SPEED_MS, DAYS_IN_YEAR, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './core/constants';
 import { CLUBS } from './core/clubsAndEventsData';
 import { GameUI } from './components/GameUI';
 import AvatarBuilder from './components/AvatarBuilder';
 import { SCENARIOS } from './core/scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './core/utils';
-import { Language, t } from './core/localization';
+import { t } from './core/localization';
 import { initGodMode } from './core/godmod';
 import { createGameLogicHandlers } from './core/game';
 
@@ -52,7 +52,7 @@ const App: React.FC = () => {
     const [language, setLanguage] = useState<Language>('vi');
     const [customizingCharacterId, setCustomizingCharacterId] = useState<string | null>(null);
     
-    const timerRef = useRef<number | null>(null);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const {
         saveGame,
@@ -116,8 +116,8 @@ const App: React.FC = () => {
                 if (gameState) {
                     saveGame(gameState);
                 }
-            }, 60000) as unknown as number; // 60 seconds
-            return () => (clearInterval as (timerId: number) => void)(interval);
+            }, 60000); // 60 seconds
+            return () => clearInterval(interval);
         }
     }, [view, isPaused, saveGame, gameState]);
     
@@ -145,17 +145,23 @@ const App: React.FC = () => {
     useEffect(() => {
         stopGameLoop();
         if (view === 'playing' && !isPaused && !gameState?.gameOverReason) {
-            timerRef.current = setInterval(() => gameLoop(), gameSpeed) as unknown as number; // Changed window.setInterval to setInterval
+            timerRef.current = setInterval(gameLoop, gameSpeed);
         }
         return () => stopGameLoop();
     }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState]);
     if (!isInitialized) {
+        // Simple loading screen
         return (
             <View style={appStyles.loadingContainer}>
                 <Text style={appStyles.loadingText}>Initializing...</Text>
             </View>
         ); // Or a proper loading screen
     }
+
+    const handleSetSelectedCharacter = useCallback((character: Character | null) => {
+        setSelectedCharacter(character);
+    }, []);
+
 
     if (customizingCharacterId && gameState) {
         const characterToCustomize = gameState.familyMembers[customizingCharacterId];
@@ -187,7 +193,7 @@ const App: React.FC = () => {
             onQuitGame={handleStartNewGame}
             onSetIsPaused={setIsPaused}
             onSetGameSpeed={(speed) => setGameSpeed(Number(speed))}
-            onSetSelectedCharacter={setSelectedCharacter}
+            onSetSelectedCharacter={handleSetSelectedCharacter}
             onOpenAvatarBuilder={setCustomizingCharacterId}
             onEventChoice={handleEventChoice}
             onEventModalClose={handleCloseEventModal}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
-import type { PurchasedAsset, AssetDefinition, Stats } from '../core/types';
-import { Language, t } from '../core/localization';
+import type { PurchasedAsset, AssetDefinition, Stats, Language } from '../core/types';
+import { t } from '../core/localization';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
 import { ModalBase } from './ui'; // Assuming ModalBase is now in ui.tsx
@@ -347,12 +347,12 @@ const assetDetailModalStyles = StyleSheet.create({
 
 
 const FamilyAssetsPanelInternal: React.FC<{
-    purchasedAssets: PurchasedAsset[];
+    purchasedAssets: Record<string, PurchasedAsset>;
     familyFund: number;
     onPurchaseAsset: (assetId: string) => void;
     lang: Language;
 }> = ({ purchasedAssets, familyFund, onPurchaseAsset, lang }) => {
-    const ownedAssetIds = new Set(purchasedAssets.map(a => a.id));
+    const ownedAssetIds = new Set(Object.keys(purchasedAssets));
     const [selectedAsset, setSelectedAsset] = React.useState<AssetDefinition | null>(null); // New state for selected asset
     
     const assetsByType = Object.values(ASSET_DEFINITIONS).reduce((acc, asset) => {
@@ -363,7 +363,7 @@ const FamilyAssetsPanelInternal: React.FC<{
         return acc;
     }, {} as Record<string, AssetDefinition[]>);
 
-    const totalAssetValue = purchasedAssets.reduce((sum, asset) => {
+    const totalAssetValue = Object.values(purchasedAssets).reduce((sum, asset) => {
         const def = ASSET_DEFINITIONS[asset.id];
         return sum + (def ? def.cost : 0);
     }, 0);

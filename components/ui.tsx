@@ -1,18 +1,17 @@
 // NOTE: This file has been converted from web-based React to React Native.
 // Styling (Tailwind CSS classes) has been removed and needs to be re-implemented using React Native's StyleSheet.
 // Some web-specific features (like custom CSS properties in style objects) have been removed or simplified.
-
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType, FlatList } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // For select/option/optgroup replacement
-
-import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition } from '../core/types';
+import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition, Language } from '../core/types';
+import { getAllEvents } from '../core/gameData';
 import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
 import { Gender, RelationshipStatus, CharacterStatus, LifePhase } from '../core/types';
-import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, EVENTS, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../core/constants';
+import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../core/constants';
 import { CLUBS } from '../core/clubsAndEventsData';
 import { SCENARIOS } from '../core/scenarios';
-import { Language, t, displayPhase, displayStatus, displayRelationshipStatus } from '../core/localization';
+import { t, displayPhase, displayStatus, displayRelationshipStatus } from '../core/localization';
 import { getCharacterDisplayName, calculateEmployeeSalary } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { BusinessMap } from './BusinessMap';
@@ -296,7 +295,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
                                 <Text style={characterDetailModalStyles.sectionTitle}>{t('life_events_label', lang)}:</Text>
                                 <View style={characterDetailModalStyles.sectionContent}>
                                     {character.completedOneTimeEvents.map((eventId, index) => {
-                                        const event = EVENTS.find(e => e.id === eventId);
+                                        const event = getAllEvents().find(e => e.id === eventId);
                                         return event ? <Text key={`${eventId}-${index}`} style={characterDetailModalStyles.sectionItem}>{t(event.titleKey, lang)}</Text> : null;
                                     }) }
                                 </View>
@@ -509,8 +508,8 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                           {choice.effect.triggers && choice.effect.triggers.length > 0 && (
                             <Text style={eventModalStyles.choiceTriggerText}>
                               (
-                              {choice.effect.triggers.map((trigger, idx) => {
-                                const triggeredEvent = EVENTS.find(e => e.id === trigger.eventId);
+                              {choice.effect.triggers.map((trigger, idx) => { // Changed window.setTimeout to setTimeout
+                                const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
                                 if (!triggeredEvent) return null;
                                 const triggerText = t(triggeredEvent.titleKey, lang);
                                 return `${Math.round(trigger.chance * 100)}% ${triggerText}${idx < choice.effect.triggers!.length - 1 ? ', ' : ''}`;
@@ -640,20 +639,15 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
     );
 };
 
-const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers }) => {
-  return (
-    <ScrollView style={gameLogStyles.scrollView}>
-      <Text style={gameLogStyles.title}>{t('family_log_title', lang)}</Text>
-      <View style={gameLogStyles.logContainer}>
-        {log.map((entry, index) => {
-          // New detailed format
-          if (entry.eventTitleKey && entry.characterId) {
-            const character = familyMembers[entry.characterId];
-            const characterName = character ? getCharacterDisplayName(character, lang) : (entry.replacements?.name || 'Unknown');
-            const eventName = t(entry.eventTitleKey, lang);
+const LogEntry: React.FC<{ entry: GameLogEntry; lang: Language; familyMembers: Record<string, Character> }> = ({ entry, lang, familyMembers }) => {
+    // New detailed format
+    if (entry.eventTitleKey && entry.characterId) {
+        const character = familyMembers[entry.characterId];
+        const characterName = character ? getCharacterDisplayName(character, lang) : (entry.replacements?.name || 'Unknown');
+        const eventName = t(entry.eventTitleKey, lang);
 
-            return (
-              <View key={index} style={gameLogStyles.logEntry}>
+        return (
+            <View style={gameLogStyles.logEntry}>
                 <Text style={gameLogStyles.logEntryYear}>{t('year_label', lang)} {entry.year}</Text>
                 <View style={gameLogStyles.logEntryContent}>
                     <Text style={gameLogStyles.logEntryText}>
@@ -663,23 +657,31 @@ const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers }) =
                     <Text style={gameLogStyles.logEntryMessage}>↳ {t(entry.messageKey, lang, entry.replacements)}</Text>
                     <LogStatChanges entry={entry} lang={lang} />
                 </View>
-              </View>
-            );
-          }
-
-          // Fallback for old format
-          return (
-            <View key={index} style={gameLogStyles.logEntry}>
-               <Text style={gameLogStyles.logEntryText}>
-                  <Text style={gameLogStyles.logEntryYear}>{t('year_label', lang)} {entry.year}:</Text>
-                  <Text style={gameLogStyles.logEntryMessage}> {t(entry.messageKey, lang, entry.replacements)}</Text>
-               </Text>
-               <LogStatChanges entry={entry} lang={lang} />
             </View>
-          );
-        })}
-      </View>
-    </ScrollView>
+        );
+    }
+
+    // Fallback for old format
+    return (
+        <View style={gameLogStyles.logEntry}>
+            <Text style={gameLogStyles.logEntryText}>
+                <Text style={gameLogStyles.logEntryYear}>{t('year_label', lang)} {entry.year}:</Text>
+                <Text style={gameLogStyles.logEntryMessage}> {t(entry.messageKey, lang, entry.replacements)}</Text>
+            </Text>
+            <LogStatChanges entry={entry} lang={lang} />
+        </View>
+    );
+};
+
+const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers }) => {
+  return (
+    <FlatList
+        data={log}
+        renderItem={({ item }) => <LogEntry entry={item} lang={lang} familyMembers={familyMembers} />}
+        keyExtractor={(item, index) => item.id || `${item.year}-${index}`} // Assuming log entries have a unique 'id'
+        ListHeaderComponent={<Text style={gameLogStyles.title}>{t('family_log_title', lang)}</Text>}
+        style={gameLogStyles.scrollView}
+    />
   );
 };
 export const GameLog = React.memo(GameLogInternal);
@@ -718,7 +720,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({ gameState, onResta
               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_education', lang)}:</Text> {gameState.highestEducation}</Text>
               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_career', lang)}:</Text> {gameState.highestCareer}</Text>
               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_final_funds', lang)}:</Text> ${gameState.familyFund.toLocaleString()}</Text>
-               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_asset_value', lang)}:</Text> ${gameState.purchasedAssets.reduce((sum, a) => sum + (ASSET_DEFINITIONS[a.id]?.cost || 0), 0).toLocaleString()}</Text>
+               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_asset_value', lang)}:</Text> ${Object.values(gameState.purchasedAssets).reduce((sum, a) => sum + (ASSET_DEFINITIONS[a.id]?.cost || 0), 0).toLocaleString()}</Text>
               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_ending_year', lang)}:</Text> {gameState.currentDate.year}</Text>
             </View>
 
@@ -1347,6 +1349,136 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     );
 };
 
+const businessManagementModalStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+        padding: 16,
+    },
+    comicPanelWrapper: {
+        // transform: [{ rotate: '-1deg' }],
+    },
+    comicPanel: {
+        backgroundColor: 'white',
+        padding: 24,
+        maxWidth: 640, // max-w-2xl
+        width: '100%',
+        maxHeight: '90%',
+        borderRadius: 8,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 16,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    levelText: {
+        fontSize: 14,
+        color: '#64748b', // slate-500
+    },
+    closeButton: {
+        // No direct equivalent for absolute positioning within a flex item without more structure
+    },
+    closeButtonText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#94a3b8', // slate-400
+    },
+    slotsContainer: {
+        // maxHeight: 400, // Example max height
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#334155', // slate-700
+        marginBottom: 8,
+    },
+    slotItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f1f5f9', // slate-100
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    avatarPlaceholder: {
+        width: 64,
+        height: 64,
+        marginRight: 12,
+    },
+    robotIcon: {
+        width: '100%',
+        height: '100%',
+    },
+    emptyAvatar: {
+        width: 64,
+        height: 64,
+        backgroundColor: '#e2e8f0', // slate-200
+        borderRadius: 32,
+    },
+    slotDetails: {
+        flex: 1,
+    },
+    slotRole: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    slotRequirement: {
+        fontSize: 12,
+        color: '#64748b', // slate-500
+    },
+    slotSalary: {
+        fontSize: 12,
+        color: '#16a34a', // green-600
+    },
+    picker: {
+        width: 200,
+        // RN Picker styling is limited. This is a basic width.
+    },
+    pickerItem: {
+        // itemStyle is iOS only.
+    },
+    footer: {
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderColor: '#e2e8f0', // slate-200
+    },
+    upgradeButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#60a5fa', // blue-400
+        padding: 12,
+        borderRadius: 8,
+    },
+    upgradeButtonDisabled: {
+        opacity: 0.5,
+    },
+    upgradeIcon: {
+        width: 20,
+        height: 20,
+        marginRight: 8,
+        color: 'white',
+    },
+    upgradeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+});
+
 const statBarStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
@@ -1610,6 +1742,194 @@ const characterDetailModalStyles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+});
+
+const choiceButtonStyles = StyleSheet.create({
+    button: {
+        backgroundColor: '#f1f5f9', // slate-100
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 12,
+        borderBottomWidth: 4,
+        borderColor: '#e2e8f0', // slate-200
+    },
+    buttonDisabled: {
+        opacity: 0.5,
+        backgroundColor: '#e2e8f0', // slate-200
+    },
+});
+
+const schoolChoiceModalStyles = StyleSheet.create({
+    choiceContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+    },
+    choiceName: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    choiceCost: {
+        fontSize: 14,
+    },
+    costAffordable: {
+        color: '#64748b', // slate-500
+    },
+    costUnaffordable: {
+        color: '#ef4444', // red-500
+    },
+    choiceEffects: {
+        fontSize: 12,
+        color: '#475569', // slate-600
+        marginTop: 4,
+    },
+});
+
+const universityChoiceModalStyles = StyleSheet.create({
+    button: {
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginBottom: 12,
+        borderBottomWidth: 4,
+    },
+    buttonBlue: {
+        backgroundColor: '#60a5fa', // blue-400
+        borderColor: '#3b82f6', // blue-500
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+});
+
+const universityMajorChoiceModalStyles = StyleSheet.create({
+    choiceContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+    },
+    choiceName: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    choiceCost: {
+        fontSize: 14,
+    },
+    costAffordable: {
+        color: '#64748b', // slate-500
+    },
+    costUnaffordable: {
+        color: '#ef4444', // red-500
+    },
+    choiceDescription: {
+        fontSize: 12,
+        color: '#475569', // slate-600
+        marginTop: 4,
+    },
+    unaffordableSection: {
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderColor: '#e2e8f0', // slate-200
+        alignItems: 'center',
+    },
+    unaffordableText: {
+        color: '#ef4444', // red-500
+        marginBottom: 8,
+    },
+    button: {
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginBottom: 12,
+        borderBottomWidth: 4,
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+});
+
+const careerChoiceModalStyles = StyleSheet.create({
+    choiceContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    choiceNameContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    choiceNameText: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    majorMatchIcon: {
+        marginLeft: 8,
+        fontSize: 16,
+    },
+    underqualifiedIcon: {
+        marginLeft: 8,
+        fontSize: 16,
+    },
+    choiceCost: {
+        fontSize: 14,
+    },
+    costAffordable: {
+        color: '#64748b', // slate-500
+    },
+    costUnaffordable: {
+        color: '#ef4444', // red-500
+    },
+    choiceDescription: {
+        fontSize: 12,
+        color: '#475569', // slate-600
+        marginTop: 4,
+    },
+});
+
+const underqualifiedChoiceModalStyles = StyleSheet.create({
+    choiceTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    choiceDescription: {
+        fontSize: 12,
+        color: '#475569', // slate-600
+        marginTop: 4,
+    },
+});
+
+const promotionModalStyles = StyleSheet.create({
+    button: {
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        alignItems: 'center',
+        borderBottomWidth: 4,
+    },
+    buttonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderColor: '#16a34a', // green-600
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });
 
@@ -1919,6 +2239,97 @@ const familyTreeStyles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         // These will be dynamically set based on index
+    },
+});
+
+const loanModalStyles = StyleSheet.create({
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+        padding: 16,
+    },
+    comicPanelWrapper: {
+        // transform: [{ rotate: '-1deg' }],
+    },
+    comicPanel: {
+        backgroundColor: 'white',
+        padding: 24,
+        maxWidth: 500,
+        width: '100%',
+        borderRadius: 8,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    description: {
+        fontSize: 16,
+        color: '#475569', // slate-600
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    optionsContainer: {
+        marginBottom: 24,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#334155', // slate-700
+        marginBottom: 8,
+    },
+    grid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginBottom: 16,
+    },
+    gridButton: {
+        flexGrow: 1,
+        minWidth: '45%', // for 2-column layout
+        paddingVertical: 12,
+        borderRadius: 8,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    gridButtonSelected: {
+        backgroundColor: '#dbeafe', // blue-100
+        borderColor: '#60a5fa', // blue-400
+    },
+    gridButtonNormal: {
+        backgroundColor: '#f1f5f9', // slate-100
+        borderColor: '#e2e8f0', // slate-200
+    },
+    gridButtonText: {
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+    },
+    chunkyButton: {
+        width: '100%',
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottomWidth: 4,
+    },
+    chunkyButtonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderColor: '#16a34a', // green-600
+    },
+    chunkyButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
 

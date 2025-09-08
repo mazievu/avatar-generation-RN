@@ -1,9 +1,9 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType } from 'react-native';
 import Slider from '@react-native-community/slider'; // Import Slider
 
-import type { GameState, BusinessDefinition, Business, Character, Manifest } from '../core/types';
-import { Language, t } from '../core/localization';
+import type { GameState, BusinessDefinition, Business, Character, Manifest, Language } from '../core/types';
+import { t } from '../core/localization';
 import { BUSINESS_DEFINITIONS, BUSINESS_MAP_LOCATIONS } from '../core/constants';
 import { BusinessMapSVG } from './BusinessMapSVG';
 import { calculateBusinessMonthlyNetIncome } from '../core/utils';
@@ -191,7 +191,7 @@ export const BusinessMap: React.FC<{
     onBuyBusiness: (businessType: string) => void;
     onManageBusiness: (business: Business) => void;
     lang: Language;
-    images: Record<string, HTMLImageElement>; // This might need to be ImageSourcePropType
+    images: Record<string, ImageSourcePropType>;
     manifest: Manifest;
     mainView: 'tree' | 'business';
     onBackToTree: () => void;

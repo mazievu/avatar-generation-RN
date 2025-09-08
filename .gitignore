@@ -1,6 +1,7 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 # dependencies
+/pnpm-lock.yaml
 node_modules/
 
 # Expo
@@ -29,6 +30,16 @@ yarn-error.*
 # macOS
 .DS_Store
 *.pem
+.AppleDouble
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # local env files
 .env*.local
@@ -40,3 +51,15 @@ genesis.session.json
 
 # Generated scripts output
 dist-scripts/
+
+# Log files
+*.log
+
+# Yarn berry
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

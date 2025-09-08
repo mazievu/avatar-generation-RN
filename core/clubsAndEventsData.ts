@@ -1,4 +1,4 @@
-import { Club, ClubEvent, LifePhase, GameState, Character } from './types';
+import { Club, ClubEventDraft, LifePhase, GameState, Character, EventChoiceDraft } from './types';
 
 // Define 20 Clubs with corrected career influences
 export const CLUBS: Club[] = [
@@ -187,7 +187,7 @@ export const CLUBS: Club[] = [
 ];
 
 // Define 20 Club Events
-export const CLUB_EVENTS: ClubEvent[] = [
+export const CLUB_EVENT_DRAFTS: ClubEventDraft[] = [
   // Original 10 Events
   {
     id: 'science_fair',

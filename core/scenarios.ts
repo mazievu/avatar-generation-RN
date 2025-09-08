@@ -1,18 +1,16 @@
-import type { GameState, Character, Pet, GameScenario, Club } from './types';
-import { LifePhase, CharacterStatus, RelationshipStatus, Gender, PetType } from './types';
+import type { GameState, Character, Pet, GameScenario, Club, Language, PurchasedAsset } from './types';
+import { LifePhase, CharacterStatus, RelationshipStatus, Gender, PetType, exampleManifest } from './types';
 import { INITIAL_FUNDS, UNIVERSITY_MAJORS } from './constants';
 import { createInitialCharacter, generateName, generateRandomAvatar, addDays } from './utils';
-import { Language } from './localization';
-import { exampleManifest } from '../components/AvatarBuilder';
 import { randomUUID } from 'expo-crypto';
 
 const createClassicState = (initialYear: number, lang: Language): GameState => {
-    const firstCharacter = createInitialCharacter(initialYear, lang);
+    const firstCharacter = createInitialCharacter(initialYear, lang, exampleManifest);
     const initialDate = { day: 1, year: initialYear };
     return {
         familyMembers: { [firstCharacter.id]: firstCharacter },
         familyFund: INITIAL_FUNDS,
-        purchasedAssets: [],
+        purchasedAssets: {},
         familyPets: {},
         familyBusinesses: {},
         currentDate: initialDate,
@@ -34,6 +32,7 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         monthlyNetChange: 0,
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
+        contentVersion: 1,
     };
 };
 
@@ -76,12 +75,17 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: generateRandomAvatar(exampleManifest, age, gender),
+        currentClubs: [],
+        completedClubEvents: [],
+        lowHappinessYears: 0,
+        lowHealthYears: 0,
+        monthsInCurrentJobLevel: 0,
     };
     const initialDate = { day: 1, year: initialYear };
     return {
         familyMembers: { [character.id]: character },
         familyFund: 50000,
-        purchasedAssets: [],
+        purchasedAssets: {},
         familyPets: {},
         familyBusinesses: {},
         currentDate: initialDate,
@@ -98,6 +102,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         monthlyNetChange: 0,
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
+        contentVersion: 1,
     };
 };
 
@@ -123,6 +128,11 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         displayAdjective: null,
         avatarState: null,
         staticAvatarUrl: require('../public/asset/mila.png'),
+        currentClubs: [],
+        completedClubEvents: [],
+        lowHappinessYears: 0,
+        lowHealthYears: 0,
+        monthsInCurrentJobLevel: 0,
     };
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 1,
@@ -138,6 +148,11 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         displayAdjective: null,
         avatarState: null,
         staticAvatarUrl: require('../public/asset/max.png'),
+        currentClubs: [],
+        completedClubEvents: [],
+        lowHappinessYears: 0,
+        lowHealthYears: 0,
+        monthsInCurrentJobLevel: 0,
     };
     const alice: Character = {
         id: aliceId, name: 'Alice', gender: Gender.Female, generation: 2,
@@ -153,6 +168,11 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         displayAdjective: null,
         avatarState: null,
         staticAvatarUrl: require('../public/asset/alice.png'),
+        currentClubs: [],
+        completedClubEvents: [],
+        lowHappinessYears: 0,
+        lowHealthYears: 0,
+        monthsInCurrentJobLevel: 0,
     };
     const lucas: Character = {
         id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 2,
@@ -168,6 +188,11 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         displayAdjective: null,
         avatarState: null,
         staticAvatarUrl: require('../public/asset/lucas.png'),
+        currentClubs: [],
+        completedClubEvents: [],
+        lowHappinessYears: 0,
+        lowHealthYears: 0,
+        monthsInCurrentJobLevel: 0,
     };
     const daisy: Character = {
         id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 2,
@@ -183,6 +208,11 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         displayAdjective: null,
         avatarState: null,
         staticAvatarUrl: require('../public/asset/daisy.png'),
+        currentClubs: [],
+        completedClubEvents: [],
+        lowHappinessYears: 0,
+        lowHealthYears: 0,
+        monthsInCurrentJobLevel: 0,
     };
     const mio: Pet = {
         id: mioId, name: 'Mio', type: PetType.Dog, ownerId: milaId, age: 2,
@@ -192,7 +222,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     return {
         familyMembers: { [mila.id]: mila, [max.id]: max, [alice.id]: alice, [lucas.id]: lucas, [daisy.id]: daisy },
         familyFund: 75000,
-        purchasedAssets: [],
+        purchasedAssets: {},
         familyPets: { [mio.id]: mio },
         familyBusinesses: {},
         currentDate: initialDate,
@@ -208,6 +238,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         monthlyNetChange: 0,
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
+        contentVersion: 1,
     };
 };
 

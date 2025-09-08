@@ -1,4 +1,4 @@
-import { EventDraft, GameEvent, EventChoice, EventChoiceDraft, EventEffect, GameState, Character } from './types';
+import { EventDraft, GameEvent, EventChoice, EventChoiceDraft, EventEffect, GameState, Character, ClubEventDraft, ClubEvent } from './types';
 import { EventIdByKey, ChoiceIdByKey } from '../src/generated/eventIds';
 
 // Helper to ensure effect is properly typed
@@ -43,6 +43,40 @@ export function buildEvent(draft: EventDraft): GameEvent {
             return {
                 ...choiceDraft,
                 id: choiceLockKey, // Use lockKey as fallback
+                labelKey: choiceDraft.textKey,
+                effect: ensureEventEffect(choiceDraft.effect),
+            };
+        }
+
+        return {
+            ...choiceDraft,
+            id: choiceId,
+            labelKey: choiceDraft.textKey,
+            effect: ensureEventEffect(choiceDraft.effect),
+        };
+    });
+
+    return {
+        ...draft,
+        id: eventId,
+        choices: builtChoices,
+    };
+}
+
+export function buildClubEvent(draft: ClubEventDraft): ClubEvent {
+    const eventId = draft.id; // Club events use their draft ID directly for now.
+
+    const builtChoices: EventChoice[] = draft.choices.map(choiceDraft => {
+        // For club events, we can construct a unique key for choices as well.
+        const choiceLockKey = `${draft.id}|${choiceDraft.textKey}`;
+        // We assume club event choices also have stable IDs generated.
+        const choiceId = ChoiceIdByKey[choiceLockKey];
+
+        if (!choiceId) {
+            console.warn(`Warning: No stable ID found for club choice lock key: ${choiceLockKey}. This choice might not be properly linked.`);
+            return {
+                ...choiceDraft,
+                id: choiceLockKey, // Fallback
                 labelKey: choiceDraft.textKey,
                 effect: ensureEventEffect(choiceDraft.effect),
             };

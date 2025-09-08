@@ -47,7 +47,7 @@ const ONE_TIME_EVENT_IDS = [
 ];
 
 // This function will encapsulate all game logic handlers
-export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<number | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: any) => {
+export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: any) => {
 
     // Initialize game data (build events, etc.)
     initializeAllGameData();
@@ -127,8 +127,16 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                         }
                     }
                 }
-                 if (!savedState.purchasedAssets) { // Migration for old saves
-                    savedState.purchasedAssets = [];
+                 if (!savedState.purchasedAssets || Array.isArray(savedState.purchasedAssets)) { // Migration for old saves
+                    // If it's an array from an old save, convert it to a record
+                    if (Array.isArray(savedState.purchasedAssets)) {
+                        savedState.purchasedAssets = savedState.purchasedAssets.reduce((acc: Record<string, PurchasedAsset>, asset: PurchasedAsset) => {
+                            acc[asset.id] = asset;
+                            return acc;
+                        }, {});
+                    } else {
+                        savedState.purchasedAssets = {};
+                    }
                 }
                 if (!savedState.familyBusinesses) { // Migration for old saves
                     savedState.familyBusinesses = {}; // Initialize as an empty object
@@ -202,7 +210,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         return finalChoices.slice(0, 5);
     };
     
-    const gameLoop = (currentGameState: GameState) => {
+    const gameLoop = () => {
         setGameState(prevState => {
             if (!prevState || prevState.gameOverReason) {
                 return prevState;
@@ -770,7 +778,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         setGameState(prevState => {
             if (!prevState || !prevState.activeEvent) return prevState;
     
-            let nextState = JSON.parse(JSON.stringify(prevState));
+            let nextState: GameState = JSON.parse(JSON.stringify(prevState));
     
             const { characterId, event, replacements } = prevState.activeEvent;
             const { effect } = choice;
@@ -840,7 +848,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     
             // 3. Process actions, which return partial state updates
             if (finalEffect.action) {
-                const updates = finalEffect.action(nextState, characterId, exampleManifest);
+                const updates = finalEffect.action(nextState, characterId);
                 Object.assign(nextState, updates);
             }
     
@@ -1042,12 +1050,12 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     };
 
     const handleUniversityChoice = (goToUniversity: boolean) => {
-        if (currentGameState?.pendingUniversityChoice?.length === 1) {
-            setIsPaused(false);
-        }
         setGameState(prevState => {
             if (!prevState || !prevState.pendingUniversityChoice || prevState.pendingUniversityChoice.length === 0) return prevState;
 
+            if (prevState.pendingUniversityChoice.length === 1) {
+                setIsPaused(false);
+            }
             const currentChoice = prevState.pendingUniversityChoice[0];
             const { characterId } = currentChoice;
             const character = prevState.familyMembers[characterId];
@@ -1320,7 +1328,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 const iqPenalty = track.iqRequired > 0 ? iqDeficit / track.iqRequired : 0;
                 const eqPenalty = track.eqRequired > 0 ? eqDeficit / track.eqRequired : 0;
                 const numDeficits = (iqDeficit > 0 ? 1 : 0) + (eqDeficit > 0 ? 1 : 0);
-                const totalPenalty = numDeficits > 0 ? (iqPenalty + eqPenalty) / numDeficits : 0; // FIX: Changed from eqDeficit to eqPenalty
+                const totalPenalty = numDeficits > 0 ? (iqPenalty + eqPenalty) / numDeficits : 0;
                 
                 updatedCharacter = {
                     status: CharacterStatus.Working,
@@ -1416,7 +1424,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const business = prevState.familyBusinesses[businessId];
             if (!business) return prevState;
     
-            const nextState = JSON.parse(JSON.stringify(prevState));
+            let nextState: GameState = JSON.parse(JSON.stringify(prevState));
             const businessToUpdate = nextState.familyBusinesses[businessId];
             const oldCharacterId = businessToUpdate.slots[slotIndex].assignedCharacterId;
     
@@ -1558,7 +1566,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         setGameState(prevState => {
             if (!prevState) return null;
             const assetDef = ASSET_DEFINITIONS[assetId];
-            if (!assetDef || prevState.familyFund < assetDef.cost || prevState.purchasedAssets.some(a => a.id === assetId)) {
+            if (!assetDef || prevState.familyFund < assetDef.cost || prevState.purchasedAssets[assetId]) {
                 return prevState;
             }
     
@@ -1593,7 +1601,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             return {
                 ...prevState,
                 familyFund: prevState.familyFund - assetDef.cost,
-                purchasedAssets: [...prevState.purchasedAssets, newAsset],
+                purchasedAssets: { ...prevState.purchasedAssets, [assetId]: newAsset },
                 gameLog: [...prevState.gameLog, {
                     year: prevState.currentDate.year,
                     messageKey: 'log_asset_purchased',

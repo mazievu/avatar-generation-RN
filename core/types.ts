@@ -1,3 +1,5 @@
+export type Language = 'en' | 'vi';
+
 export enum Gender {
   Male = 'Male',
   Female = 'Female'
@@ -190,6 +192,7 @@ export interface CareerChoice {
 }
 
 export interface GameLogEntry {
+    id?: string;
     year: number;
     messageKey: string;
     replacements?: Record<string, string | number>;
@@ -210,7 +213,7 @@ export interface Loan {
 export interface GameState {
   familyMembers: Record<string, Character>;
   familyFund: number;
-  purchasedAssets: PurchasedAsset[];
+  purchasedAssets: Record<string, PurchasedAsset>;
   familyPets: Record<string, Pet>;
   familyBusinesses: Record<string, Business>;
   currentDate: { day: number, year: number };
@@ -361,12 +364,21 @@ export interface Club {
   lifePhase: LifePhase[];
 }
 
-export interface ClubEvent {
+export interface ClubEvent extends Omit<ClubEventDraft, 'choices'> {
   id: string;
   titleKey: string;
   descriptionKey: string;
   clubId: string;
   choices: EventChoice[];
+  condition?: (state: GameState, char: Character) => boolean;
+}
+
+export interface ClubEventDraft {
+  id: string;
+  titleKey: string;
+  descriptionKey: string;
+  clubId: string;
+  choices: EventChoiceDraft[];
   condition?: (state: GameState, char: Character) => boolean;
 }
 
