@@ -1,7 +1,7 @@
-import { GameEvent, LifePhase, Business, GameState, CharacterStatus } from '../types';
+import { EventDraft, LifePhase, Business, GameState, CharacterStatus } from '../types';
 import { BUSINESS_DEFINITIONS } from '../constants';
 
-export const LIFE_EVENTS: GameEvent[] = [
+export const LIFE_EVENTS: EventDraft[] = [
     {
         id: 'flu',
         titleKey: 'event_flu_title',
@@ -146,12 +146,12 @@ export const LIFE_EVENTS: GameEvent[] = [
         phases: [LifePhase.PostGraduation],
         condition: (state, char) => char.status === CharacterStatus.Working,
         choices: [
-            { textKey: 'choice_job_loss_social_crisis_1', effect: { logKey: 'log_job_loss_social_crisis_1', action: (state, charId) => {
+            { textKey: 'choice_job_loss_social_crisis_1', effect: { logKey: 'log_job_loss_social_crisis_1', action: (state, charId, manifest) => {
                 const char = state.familyMembers[charId];
                 const updatedChar = { ...char, status: CharacterStatus.Unemployed, careerTrack: null, careerLevel: 0 };
                 return { familyMembers: { ...state.familyMembers, [charId]: updatedChar }};
             }}},
-            { textKey: 'choice_job_loss_social_crisis_2', effect: { logKey: 'log_job_loss_social_crisis_2', action: (state, charId) => {
+            { textKey: 'choice_job_loss_social_crisis_2', effect: { logKey: 'log_job_loss_social_crisis_2', action: (state, charId, manifest) => {
                 const char = state.familyMembers[charId];
                 const updatedChar = { ...char, status: CharacterStatus.Unemployed, careerTrack: null, careerLevel: 0 };
                 return { familyMembers: { ...state.familyMembers, [charId]: updatedChar }};

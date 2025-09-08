@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "sync-choices": "ts-node scripts/sync-choices.ts",
+    "build:scripts": "tsc --project tsconfig.scripts.json",
+    "sync-choices": "npm run build:scripts && node dist-scripts/syncContent.js",
     "sync-content": "node dist-scripts/syncContent.js",
     "prepare": "husky install"
   },

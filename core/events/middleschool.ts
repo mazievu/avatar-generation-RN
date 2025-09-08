@@ -1,6 +1,6 @@
-import { GameEvent, LifePhase } from '../types';
+import { EventDraft, LifePhase } from '../types';
 
-export const MIDDLE_SCHOOL_EVENTS: GameEvent[] = [
+export const MIDDLE_SCHOOL_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
         id: 'middleschool_late_for_school',

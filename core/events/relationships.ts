@@ -1,6 +1,6 @@
-import { GameEvent, LifePhase, RelationshipStatus } from '../types';
+import { EventDraft, LifePhase, RelationshipStatus } from '../types';
 
-export const RELATIONSHIP_EVENTS: GameEvent[] = [
+export const RELATIONSHIP_EVENTS: EventDraft[] = [
     // 10 MAIN EVENTS
     {
         id: 'relationship_first_date',
@@ -83,7 +83,7 @@ export const RELATIONSHIP_EVENTS: GameEvent[] = [
             { textKey: 'choice_relationship_first_argument_3', effect: { 
                 statChanges: { happiness: -2, eq: -2 }, 
                 logKey: 'log_relationship_first_argument_3',
-                action: (state, charId) => {
+                action: (state, charId, manifest) => {
                     const char = state.familyMembers[charId];
                     if (char.partnerId && state.familyMembers[char.partnerId]) {
                         const partner = state.familyMembers[char.partnerId];

@@ -258,7 +258,7 @@ export interface EventEffect {
   fundChange?: number;
   logKey: string;
   triggers?: TriggeredEvent[];
-  action?: (state: GameState, charId: string) => Partial<GameState>;
+  action?: (state: GameState, charId: string, manifest: Manifest) => Partial<GameState>;
   getDynamicEffect?: () => DynamicEffectResult;
 }
 

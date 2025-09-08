@@ -1,6 +1,6 @@
-import { GameEvent, LifePhase } from '../types';
+import { EventDraft, LifePhase } from '../types';
 
-export const RETIRED_EVENTS: GameEvent[] = [
+export const RETIRED_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
         id: 'retired_official_retirement_day',

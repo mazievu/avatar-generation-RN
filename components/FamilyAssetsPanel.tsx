@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'rea
 import type { PurchasedAsset, AssetDefinition, Stats, Language } from '../core/types';
 import { t } from '../core/localization';
 import { ASSET_DEFINITIONS } from '../core/constants';
-import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
+import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
 import { ModalBase } from './ui'; // Assuming ModalBase is now in ui.tsx
 import { imageAssets } from './ImageAssets';
 
@@ -19,7 +19,7 @@ interface AssetSlotProps {
 const statIcons: Record<keyof Stats, React.ElementType> = {
     iq: IqIcon,
     happiness: HappinessIcon,
-    eq: eqIcon,
+    eq: EqIcon,
     health: HealthIcon,
     skill: SkillIcon,
 };

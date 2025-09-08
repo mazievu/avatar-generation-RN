@@ -1,10 +1,10 @@
-import { GameEvent, LifePhase, CharacterStatus, RelationshipStatus, Gender, GameState, Character, GameLogEntry } from '../types';
+import { EventDraft, LifePhase, CharacterStatus, RelationshipStatus, Gender, GameState, Character, GameLogEntry } from '../types';
 import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, addDays, getCharacterDisplayName } from '../utils';
 import { randomUUID } from 'expo-crypto';
 
 import { t } from '../localization';
 
-export const MILESTONE_EVENTS: GameEvent[] = [
+export const MILESTONE_EVENTS: EventDraft[] = [
     // Relationships & Family
     {
         id: 'milestone_marriage',
@@ -17,7 +17,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
             { textKey: 'milestone_marriage_yes', effect: { 
                 statChanges: { happiness: 15 },
                 logKey: 'log_milestone_marriage_yes',
-                                action: (state, charId, manifest) => {
+                action: (state, charId, manifest) => {
                     const char1 = state.familyMembers[charId];
                     const partnerGender = char1.gender === Gender.Male ? Gender.Female : Gender.Male;
                     
@@ -56,6 +56,11 @@ export const MILESTONE_EVENTS: GameEvent[] = [
                         completedOneTimeEvents: [],
                         displayAdjective: null,
                         avatarState: generateRandomAvatar(manifest, char1.age, partnerGender),
+                        currentClubs: [],
+                        completedClubEvents: [],
+                        lowHappinessYears: 0,
+                        lowHealthYears: 0,
+                        monthsInCurrentJobLevel: 0,
                     };
                     partner = { ...partner, ...assignNpcCareer(partner, manifest) };
                     
@@ -141,7 +146,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'milestone_child_conceived_ok', effect: {
                 logKey: 'log_milestone_child_conceived_ok',
-                action: (state, charId) => {
+                action: (state, charId, manifest) => {
                     const parent1 = state.familyMembers[charId];
                     if (!parent1.partnerId) return {};
                     const parent2 = state.familyMembers[parent1.partnerId];
@@ -157,7 +162,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
 
                     const children: Character[] = [];
                     for (let i = 0; i < numberOfChildren; i++) {
-                        children.push(handleBirth(parent1, parent2, state.currentDate, state.lang));
+                        children.push(handleBirth(parent1, parent2, state.currentDate, state.lang, manifest));
                     }
                     
                     const newFamilyMembers = { ...state.familyMembers };
@@ -256,7 +261,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
             { textKey: 'milestone_death_old_age_ok', effect: {
                 logKey: 'log_milestone_death_old_age_ok',
                 action: (state, charId) => {
-                    const familyMembers = { ...state.familyMembers };
+                    const familyMembers: Record<string, Character> = { ...state.familyMembers };
                     const deceasedChar = { ...familyMembers[charId] };
                     deceasedChar.isAlive = false;
                     deceasedChar.deathDate = { ...state.currentDate };
@@ -264,7 +269,7 @@ export const MILESTONE_EVENTS: GameEvent[] = [
 
                     const mourningEvent = MILESTONE_EVENTS.find(e => e.id === 'milestone_mourning');
                     if (mourningEvent) {
-                        const livingMembers = Object.values(familyMembers).filter(m => m.isAlive && m.id !== charId);
+                        const livingMembers = Object.values(familyMembers).filter((m: Character) => m.isAlive && m.id !== charId);
                         if (livingMembers.length > 0) {
                             const newEventQueue = livingMembers.map(member => ({
                                 characterId: member.id,

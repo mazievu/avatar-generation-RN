@@ -1,4 +1,4 @@
-import { EventDraft, GameEvent } from '../types';
+import { EventDraft } from '../types';
 import { ELEMENTARY_SCHOOL_EVENTS } from './elementary';
 import { MIDDLE_SCHOOL_EVENTS } from './middleschool';
 import { HIGH_SCHOOL_EVENTS } from './highschool';

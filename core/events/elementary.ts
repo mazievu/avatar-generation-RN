@@ -1,6 +1,6 @@
-import { GameEvent, LifePhase } from '../types';
+import { EventDraft, LifePhase } from '../types';
 
-export const ELEMENTARY_SCHOOL_EVENTS: GameEvent[] = [
+export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
         id: 'elementary_first_day',

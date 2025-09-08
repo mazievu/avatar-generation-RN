@@ -4,9 +4,9 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType, FlatList } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // For select/option/optgroup replacement
-import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition, Language } from '../core/types';
+import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition, Language, Club } from '../core/types';
 import { getAllEvents } from '../core/gameData';
-import { IqIcon, HappinessIcon, eqIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
+import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon, MaleIcon, FemaleIcon, MoneyIcon, getPetIcon, RobotIcon, UpgradeIcon, RobotAvatarIcon } from './icons';
 import { Gender, RelationshipStatus, CharacterStatus, LifePhase } from '../core/types';
 import { CAREER_LADDER, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, VOCATIONAL_TRAINING, ASSET_DEFINITIONS } from '../core/constants';
 import { CLUBS } from '../core/clubsAndEventsData';
@@ -306,7 +306,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
                             <View style={characterDetailModalStyles.statsSection}>
                                 <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="#60a5fa" /> {/* blue-400 */}
                                 <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="#facc15" /> {/* yellow-400 */}
-                                <StatBar Icon={eqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="#a78bfa" /> {/* purple-400 */}
+                                <StatBar Icon={EqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="#a78bfa" /> {/* purple-400 */}
                                 <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="#f87171" /> {/* red-400 */}
                                 {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="#4ade80" />} {/* green-400 */}
                             </View>
@@ -460,7 +460,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   const statIcons: Record<string, React.ElementType> = {
     iq: IqIcon,
     happiness: HappinessIcon,
-    eq: eqIcon,
+    eq: EqIcon,
     health: HealthIcon,
     skill: SkillIcon,
   };
@@ -607,7 +607,7 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
         const statIconMap: Record<keyof Stats, React.ElementType> = {
             iq: IqIcon,
             happiness: HappinessIcon,
-            eq: eqIcon,
+            eq: EqIcon,
             health: HealthIcon,
             skill: SkillIcon,
         };

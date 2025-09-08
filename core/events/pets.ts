@@ -1,4 +1,4 @@
-import { GameEvent, LifePhase, Pet, PetType, Stats, Character } from '../types';
+import { EventDraft, LifePhase, Pet, PetType, Stats, Character } from '../types';
 import { PET_DATA } from '../constants';
 import { randomUUID } from 'expo-crypto';
 
@@ -50,7 +50,7 @@ const removePetFromOwner = (state: any, charId: string) => {
 };
 
 
-export const PET_EVENTS: GameEvent[] = [
+export const PET_EVENTS: EventDraft[] = [
     {
         id: 'pet_adoption',
         titleKey: 'event_pet_adoption_title',
@@ -63,7 +63,7 @@ export const PET_EVENTS: GameEvent[] = [
                 effect: { 
                     fundChange: -50, 
                     logKey: 'log_pet_adoption_1',
-                    action: (state, charId) => {
+                    action: (state, charId, manifest) => {
                         const char = state.familyMembers[charId];
 
                         if (char.petId) {
@@ -170,7 +170,7 @@ export const PET_EVENTS: GameEvent[] = [
                 effect: { 
                     statChanges: { happiness: -2 },
                     logKey: 'log_pet_gets_old_2',
-                    action: (state, charId) => removePetFromOwner(state, charId)
+                    action: (state, charId, manifest) => removePetFromOwner(state, charId)
                 } 
             },
         ]
@@ -208,7 +208,7 @@ export const PET_EVENTS: GameEvent[] = [
             { textKey: 'choice_pet_lost_forever_1', effect: { 
                 statChanges: { happiness: -2 }, 
                 logKey: 'log_pet_lost_forever_1', 
-                action: (state, charId) => removePetFromOwner(state, charId)
+                action: (state, charId, manifest) => removePetFromOwner(state, charId)
             }}
         ]
     },
@@ -242,7 +242,7 @@ export const PET_EVENTS: GameEvent[] = [
              { textKey: 'choice_pet_dies_1', effect: { 
                 statChanges: { happiness: -4 }, 
                 logKey: 'log_pet_dies_1', 
-                action: (state, charId) => removePetFromOwner(state, charId)
+                action: (state, charId, manifest) => removePetFromOwner(state, charId)
             }}
         ]
     }

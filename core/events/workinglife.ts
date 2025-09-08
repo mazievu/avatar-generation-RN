@@ -1,6 +1,6 @@
-import { GameEvent, LifePhase, CharacterStatus } from '../types';
+import { EventDraft, LifePhase, CharacterStatus } from '../types';
 
-export const WORKING_LIFE_EVENTS: GameEvent[] = [
+export const WORKING_LIFE_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
         id: 'workinglife_first_day',
@@ -257,7 +257,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
             { textKey: 'choice_workinglife_new_project_1', effect: { 
                 statChanges: { skill: 2, eq: 1 }, 
                 logKey: 'log_workinglife_new_project_1',
-                action: (state, charId) => {
+                action: (state, charId, manifest) => {
                     const char = state.familyMembers[charId];
                     if (Math.random() < 0.2) { // 20% chance of a bonus
                         const bonusAmount = 500;
@@ -416,7 +416,7 @@ export const WORKING_LIFE_EVENTS: GameEvent[] = [
             { textKey: 'choice_workinglife_bonus_cut_3', effect: { 
                 statChanges: { eq: -1 }, 
                 logKey: 'log_workinglife_bonus_cut_3',
-                action: (state, charId) => {
+                action: (state, charId, manifest) => {
                     const char = state.familyMembers[charId];
                     const updatedChar = { 
                         ...char, 

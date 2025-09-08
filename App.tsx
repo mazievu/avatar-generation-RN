@@ -149,6 +149,10 @@ const App: React.FC = () => {
         }
         return () => stopGameLoop();
     }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState]);
+    const handleSetSelectedCharacter = useCallback((character: Character | null) => {
+        setSelectedCharacter(character);
+    }, []);
+
     if (!isInitialized) {
         // Simple loading screen
         return (
@@ -157,11 +161,6 @@ const App: React.FC = () => {
             </View>
         ); // Or a proper loading screen
     }
-
-    const handleSetSelectedCharacter = useCallback((character: Character | null) => {
-        setSelectedCharacter(character);
-    }, []);
-
 
     if (customizingCharacterId && gameState) {
         const characterToCustomize = gameState.familyMembers[customizingCharacterId];

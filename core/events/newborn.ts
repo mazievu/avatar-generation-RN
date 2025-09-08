@@ -1,6 +1,6 @@
-import { GameEvent, LifePhase } from '../types';
+import { EventDraft, LifePhase } from '../types';
 
-export const NEWBORN_EVENTS: GameEvent[] = [
+export const NEWBORN_EVENTS: EventDraft[] = [
     // 10 Main Events
     {
         id: 'newborn_first_night_crying',
@@ -132,7 +132,7 @@ export const NEWBORN_EVENTS: GameEvent[] = [
         choices: [
             { textKey: 'choice_newborn_parents_sleepless_1', effect: { 
                 logKey: 'log_newborn_parents_sleepless_1',
-                action: (state, parentId) => {
+                action: (state, parentId, manifest) => {
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
@@ -151,7 +151,7 @@ export const NEWBORN_EVENTS: GameEvent[] = [
             } },
             { textKey: 'choice_newborn_parents_sleepless_2', effect: { 
                 logKey: 'log_newborn_parents_sleepless_2',
-                action: (state, parentId) => {
+                action: (state, parentId, manifest) => {
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
@@ -170,7 +170,7 @@ export const NEWBORN_EVENTS: GameEvent[] = [
             } },
             { textKey: 'choice_newborn_parents_sleepless_3', effect: { 
                 logKey: 'log_newborn_parents_sleepless_3',
-                action: (state, parentId) => {
+                action: (state, parentId, manifest) => {
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
