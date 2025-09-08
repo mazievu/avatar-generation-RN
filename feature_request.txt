@@ -1,8 +1,0 @@
-Nhiệm vụ: Refactor toàn bộ dự án để triển khai một Hệ thống ID Ổn định cho tất cả các thực thể trong game như Event, Choice, Job, School, etc.
-
-Mục tiêu chính:
-1.  Tạo ra một cấu trúc dữ liệu "thô" (draft) cho các thực thể và một hệ thống "lockfile" JSON để lưu trữ các ID ổn định.
-2.  Xây dựng một script (ví dụ: `scripts/syncContent.ts`) có khả năng quét các file "draft", tự động sinh ID mới cho các thực thể chưa có, và cập nhật vào lockfile.
-3.  Script này cũng phải sinh ra các file TypeScript (artefact) chứa các ID đã được tạo, để mã nguồn có thể tham chiếu đến chúng một cách an toàn.
-4.  Tích hợp một hàm "builder" vào logic game. Hàm này sẽ nhận dữ liệu "draft", đọc artefact, và tạo ra dữ liệu runtime hoàn chỉnh đã được gắn ID.
-5.  Cập nhật toàn bộ mã nguồn để sử dụng hệ thống mới này, đảm bảo không còn lỗi TypeScript nào liên quan đến việc thiếu ID hoặc kiểu dữ liệu không khớp.

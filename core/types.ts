@@ -1,4 +1,3 @@
-
 export enum Gender {
   Male = 'Male',
   Female = 'Female'
@@ -234,6 +233,7 @@ export interface GameState {
   monthlyNetChange: number;
   eventCooldownUntil: { day: number, year: number } | null;
   lang: Language;
+  contentVersion: number; // Added content version
 }
 
 export type StatChanges = Partial<Stats>;
@@ -470,7 +470,7 @@ const frontHairOptions: LayerOption[] = [
   { id: '15fh', name: '15', src: '../public/asset/avatar-face/hair/front/15.png' },
   { id: '16fh', name: '16', src: '../public/asset/avatar-face/hair/front/16.png' },
   { id: '17fh', name: '17', src: '../public/asset/avatar-face/hair/front/17.png' },
-  { id: 'babyfh', name: 'baby', src: '../public/asset/avatar-face/hair/front/baby.png' },
+  { id: 'babyfh', name: 'baby', src: '../public/asset/avatar-face/hair/front/baby.png', ageCategory: 'baby' },
 ];
 
 const featureOptions: LayerOption[] = [

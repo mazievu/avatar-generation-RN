@@ -1,5 +1,4 @@
 import { GameEvent, LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, BusinessDefinition, CareerTrack, AssetDefinition, AssetType } from './types';
-import { ALL_EVENTS } from './events';
 
 // ==============================
 // GAME ECONOMY CORE
@@ -9,6 +8,8 @@ export const GAME_SPEED_MS = 50; // 0.1 seconds = 1 day
 export const DAYS_IN_YEAR = 365;
 export const MOURNING_PERIOD_YEARS = 3;
 export const PENSION_AMOUNT = 4200; // Per year (~$50/mo savings)
+
+export const CONTENT_VERSION = 1; // Added content version
 
 // Trần lương tuyệt đối
 export const SALARY_CAP_MONTHLY = 1400;
@@ -157,7 +158,7 @@ export const TRAINEE_SALARY = 5400; // 450/tháng
 // ==============================
 // EVENTS
 // ==============================
-export const EVENTS = ALL_EVENTS;
+// export const EVENTS = ALL_EVENTS; // This line will be removed or commented out
 
 // ==============================
 // PETS & AVATAR
@@ -186,7 +187,6 @@ export const AVATAR_COLOR_PALETTE = [
 // ==============================
 // BUSINESS ECONOMY
 // ==============================
-// Doanh thu & cost scale
 export const BUSINESS_REVENUE_SCALE = 0.06;
 export const BUSINESS_FIXED_COST_SCALE = 0.10;
 export const BUSINESS_COGS_BONUS_ABS = 0.05;

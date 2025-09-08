@@ -1,4 +1,3 @@
-
 import { LifePhase, CharacterStatus, RelationshipStatus, Stats } from './types';
 import translationsEn from '../localization/en';
 import translationsVi from '../localization/vi';
@@ -10,8 +9,8 @@ const translations = {
   vi: translationsVi,
 };
 
-export const t = (key: string, lang: Language, replacements?: Record<string, string | number>): string => {
-    let translation = translations[lang][key as keyof typeof translations[typeof lang]] || translations['en'][key as keyof typeof translations['en']] || key;
+export const t = (key: string, lang: Language, replacements?: Record<string, string | number>, options?: { defaultValue?: string }): string => {
+    let translation = translations[lang][key as keyof typeof translations[typeof lang]] || translations['en'][key as keyof typeof translations['en']] || options?.defaultValue || key;
     
     if (replacements) {
         Object.keys(replacements).forEach(rKey => {

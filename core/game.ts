@@ -1,10 +1,12 @@
 import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, RelationshipStatus, Gender, Language } from './types';
-import { GAME_SPEED_MS, DAYS_IN_YEAR, EVENTS, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './constants';
+import { GAME_SPEED_MS, DAYS_IN_YEAR, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION } from './constants';
 import { CLUBS } from './clubsAndEventsData';
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
 import { t } from './localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeAllGameData, getAllEvents } from './gameData';
+import { applyMigrations } from './migrations';
 
 
 const SAVE_KEY = 'generations_savegame';
@@ -47,6 +49,9 @@ const ONE_TIME_EVENT_IDS = [
 // This function will encapsulate all game logic handlers
 export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<number | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: any) => {
 
+    // Initialize game data (build events, etc.)
+    initializeAllGameData();
+
     const stopGameLoop = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
@@ -57,7 +62,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     const saveGame = async (gameState: GameState) => {
         if (gameState) {
             try {
-                const stateToSave = { ...gameState, lang: language };
+                const stateToSave = { ...gameState, lang: language, contentVersion: CONTENT_VERSION };
                 await AsyncStorage.setItem(SAVE_KEY, JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Failed to save game:", error);
@@ -99,7 +104,10 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         try {
             const savedGame = await AsyncStorage.getItem(SAVE_KEY);
             if (savedGame) {
-                const savedState = JSON.parse(savedGame);
+                let savedState = JSON.parse(savedGame);
+
+                // Apply migrations
+                savedState = applyMigrations(savedState);
 
                 // Data migration: Ensure all characters have completedOneTimeEvents array
                 if (savedState.familyMembers) {
@@ -125,7 +133,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 if (!savedState.familyBusinesses) { // Migration for old saves
                     savedState.familyBusinesses = {}; // Initialize as an empty object
                 }
-
 
                 setLanguage(savedState.lang || 'vi');
                 setGameState(savedState);
@@ -508,7 +515,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 if(healthDecay > 0) statsUpdate.health = Math.max(0, character.stats.health - healthDecay);
                 
                 if (character.isAlive && (statsUpdate.health ?? character.stats.health) <= 0) {
-                     const lastDayEvent = EVENTS.find(e => e.id === 'milestone_death_old_age');
+                     const lastDayEvent = getAllEvents().find(e => e.id === 'milestone_death_old_age');
                      if (lastDayEvent) {
                         newState.eventQueue = [{ characterId: character.id, event: lastDayEvent }, ...newState.eventQueue];
                      }
@@ -584,7 +591,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                                 replacements: { name: displayName },
                             });
 
-                            const mourningEvent = EVENTS.find(e => e.id === 'milestone_mourning');
+                            const mourningEvent = getAllEvents().find(e => e.id === 'milestone_mourning');
                             if (mourningEvent) {
                                 const livingMembers = Object.values(nextFamilyMembers).filter(m => m.isAlive && m.id !== id);
                                 const newEventQueue = livingMembers.map(member => ({
@@ -686,7 +693,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 }
 
                 if (!((newState.pendingSchoolChoice && newState.pendingSchoolChoice.length > 0) || (newState.pendingUniversityChoice && newState.pendingUniversityChoice.length > 0) || newState.pendingCareerChoice || newState.pendingUnderqualifiedChoice)) {
-                    const MILESTONE_EVENTS = EVENTS.filter(e => e.isMilestone);
+                    const MILESTONE_EVENTS = getAllEvents().filter(e => e.isMilestone);
                     const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers, gameLog: nextGameLog };
 
                     for (const event of MILESTONE_EVENTS) {
@@ -716,7 +723,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                     let event: GameEvent | undefined;
 
-                    const possibleEvents = EVENTS.filter(e =>
+                    const possibleEvents = getAllEvents().filter(e =>
                         !e.isMilestone &&
                         e.phases.includes(chosenCharacter.phase) &&
                         !e.isTriggerOnly &&
@@ -842,7 +849,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             if (finalEffect.triggers) {
                 for (const trigger of finalEffect.triggers) {
                     if (Math.random() < trigger.chance) {
-                        const triggeredEvent = EVENTS.find(e => e.id === trigger.eventId);
+                        const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
                         if (triggeredEvent) {
                             let newCharacterId = characterId;
                             if (trigger.reTarget === 'parents') {
@@ -906,7 +913,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             let newStats = { ...character.stats };
 
             for (const [stat, change] of Object.entries(option.effects)) {
-                const key = stat as keyof typeof character.stats;
+                const key = stat as keyof Stats;
                 newStats[key] = Math.max(0, newStats[key] + change);
                 if (key === 'iq') newStats[key] = Math.min(200, newStats[key]);
                 else if (key !== 'skill') newStats[key] = Math.min(100, newStats[key]);
@@ -949,7 +956,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     }
                     if (club.prerequisites.stats) {
                         for (const [stat, requiredValue] of Object.entries(club.prerequisites.stats)) {
-                            if (updatedCharacter.stats[stat as keyof Stats] < requiredValue) {
+                            const key = stat as keyof Stats;
+                            if (updatedCharacter.stats[key] < requiredValue) {
                                 return false;
                             }
                         }
@@ -1063,7 +1071,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                         ...prevState.familyMembers,
                         [characterId]: { ...character, status: CharacterStatus.Idle, phase: LifePhase.PostGraduation }
                     },
-                    pendingCareerChoice: { characterId: characterId, options: careerOptions },
                     gameLog: [...prevState.gameLog, { 
                         year: prevState.currentDate.year, 
                         messageKey: 'log_graduated_enter_workforce', 
@@ -1084,7 +1091,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const character = prevState.familyMembers[characterId];
             let newStats = { ...character.stats };
             for (const [stat, change] of Object.entries(major.effects)) {
-                const key = stat as keyof typeof character.stats;
+                const key = stat as keyof Stats;
                 if (key === 'skill') {
                     continue;
                 }

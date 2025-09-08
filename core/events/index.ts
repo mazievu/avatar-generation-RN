@@ -1,5 +1,4 @@
-
-import { GameEvent } from '../types';
+import { EventDraft, GameEvent } from '../types';
 import { ELEMENTARY_SCHOOL_EVENTS } from './elementary';
 import { MIDDLE_SCHOOL_EVENTS } from './middleschool';
 import { HIGH_SCHOOL_EVENTS } from './highschool';
@@ -13,7 +12,7 @@ import { PET_EVENTS } from './pets';
 import { MILESTONE_EVENTS } from './milestones';
 
 // Deduplicate events by ID, as some events can exist in multiple files (e.g., 'school_exam')
-const allEvents: GameEvent[] = [
+const allEventDrafts: EventDraft[] = [
     ...NEWBORN_EVENTS,
     ...ELEMENTARY_SCHOOL_EVENTS,
     ...MIDDLE_SCHOOL_EVENTS,
@@ -27,4 +26,4 @@ const allEvents: GameEvent[] = [
     ...MILESTONE_EVENTS,
 ];
 
-export const ALL_EVENTS: GameEvent[] = Array.from(new Map(allEvents.map(event => [event.id, event])).values());
+export const ALL_EVENT_DRAFTS: EventDraft[] = Array.from(new Map(allEventDrafts.map(event => [event.id, event])).values());

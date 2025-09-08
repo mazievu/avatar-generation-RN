@@ -37,3 +37,6 @@ yarn-error.*
 *.tsbuildinfo
 genesis.session.json
 .env
+
+# Generated scripts output
+dist-scripts/
