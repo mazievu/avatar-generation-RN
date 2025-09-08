@@ -5,12 +5,10 @@ import { formatDate, getCharacterDisplayName } from '../core/utils';
 import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../core/constants';
 import {
     FamilyTree,
-    EventModal,
     GameLog,
     SummaryScreen,
     StartMenu,
-    InstructionsModal,
-    CharacterDetailModal,
+    InstructionsModal,    
     SchoolChoiceModal,
     UniversityChoiceModal,
     UniversityMajorChoiceModal,
@@ -19,8 +17,10 @@ import {
     LoanModal,
     WelcomeBackMenu,
     UnderqualifiedChoiceModal,
-    BusinessManagementModal
-} from './ui';
+} from './ui'; 
+import { EventModal } from './EventModal';
+import { BusinessManagementModal } from './BusinessManagementModal';
+import { CharacterDetailModal } from './CharacterDetailModal';
 import { ClubChoiceModal } from './ClubChoiceModal';
 import { t } from '../core/localization';
 import { exampleManifest } from '../core/types';
@@ -28,26 +28,30 @@ import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { Picker } from '@react-native-picker/picker';
 
-type ActiveTab = 'log' | 'assets' | 'businesses';
+type SceneName = 'tree' | 'log' | 'assets' | 'business';
 
-const TabButtonInternal: React.FC<{
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}> = ({ label, isActive, onClick }) => {
+const BottomNav: React.FC<{
+  activeScene: SceneName;
+  onSceneChange: (scene: SceneName) => void;
+  lang: Language;
+}> = ({ activeScene, onSceneChange, lang }) => {
   return (
-    <TouchableOpacity
-      onPress={onClick}
-      style={[
-        gameUIStyles.tabButtonBase,
-        isActive ? gameUIStyles.tabButtonActive : gameUIStyles.tabButtonInactive,
-      ]}
-    >
-      <Text style={gameUIStyles.tabButtonText}>{label}</Text>
-    </TouchableOpacity>
+    <View style={gameUIStyles.bottomNavContainer}>
+      <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
+        <Text>{t('scene_tree', lang)}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => onSceneChange('log')} style={[gameUIStyles.bottomNavButton, activeScene === 'log' && gameUIStyles.bottomNavButtonActive]}>
+        <Text>{t('scene_log', lang)}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
+        <Text>{t('scene_assets', lang)}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => onSceneChange('business')} style={[gameUIStyles.bottomNavButton, activeScene === 'business' && gameUIStyles.bottomNavButtonActive]}>
+        <Text>{t('scene_business', lang)}</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
-const TabButton = React.memo(TabButtonInternal);
 
 
 interface GameUIProps {
@@ -127,7 +131,7 @@ export const GameUI: React.FC<GameUIProps> = ({
     onPurchaseAsset,
     onSetMainView,
 }) => {
-    const [activeTab, setActiveTab] = useState<ActiveTab>('log');
+    const [activeScene, setActiveScene] = useState<SceneName>('tree');
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     
     useEffect(() => {
@@ -139,14 +143,9 @@ export const GameUI: React.FC<GameUIProps> = ({
         }
     }, [gameState?.familyBusinesses, editingBusiness]);
 
-    const handleTabClick = useCallback((tabName: ActiveTab) => {
-        setActiveTab(tabName);
-        if (tabName === 'businesses') {
-            onSetMainView('business');
-        } else {
-            onSetMainView('tree');
-        }
-    }, [onSetMainView]);
+    const handleSceneChange = (scene: SceneName) => {
+        setActiveScene(scene);
+    };
     
     if (view === 'welcome_back') {
         return <WelcomeBackMenu onContinue={onContinueGame} onStartNew={onStartNewGame} lang={lang} />;
@@ -166,6 +165,45 @@ export const GameUI: React.FC<GameUIProps> = ({
     }
 
     const rootCharacter = Object.values(gameState.familyMembers).find(c => c.generation === 1 && c.isPlayerCharacter);
+
+    const renderScene = () => {
+        switch (activeScene) {
+            case 'tree':
+                return (
+                    <>
+                        <Text style={gameUIStyles.familyTreeTitle}>{t('family_tree_title', lang)}</Text>
+                        <View style={gameUIStyles.familyTreeContainer}>
+                            {rootCharacter ? <FamilyTree characterId={rootCharacter.id} allMembers={gameState.familyMembers} onAvatarClick={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} /> : <Text style={gameUIStyles.noFamilyText}>Your family story begins...</Text>}
+                        </View>
+                    </>
+                );
+            case 'log':
+                return <GameLog log={gameState.gameLog} lang={lang} familyMembers={gameState.familyMembers} />;
+            case 'assets':
+                return <FamilyAssetsPanel 
+                            purchasedAssets={gameState.purchasedAssets} 
+                            familyFund={gameState.familyFund}
+                            onPurchaseAsset={onPurchaseAsset}
+                            lang={lang} 
+                        />;
+            case 'business':
+                return <BusinessMap 
+                            gameState={gameState} 
+                            onBuyBusiness={onBuyBusiness}
+                            onManageBusiness={(business) => setEditingBusiness(business)}
+                            lang={lang}
+                            images={avatarImages}
+                            manifest={exampleManifest}
+                            mainView={mainView}
+                            onBackToTree={() => {
+                                onSetMainView('tree');
+                                setActiveScene('tree');
+                            }}
+                        />;
+            default:
+                return null;
+        }
+    }
 
     return (
         <View style={gameUIStyles.mainContainer}>
@@ -290,11 +328,11 @@ export const GameUI: React.FC<GameUIProps> = ({
                     </View>
                     <View style={gameUIStyles.headerRight}>
                          <View style={gameUIStyles.languageButtonsContainer}>
-                            <TouchableOpacity onPress={() => onSetLang('en')} style={[gameUIStyles.languageButton, lang === 'en' ? gameUIStyles.languageButtonActive : gameUIStyles.languageButtonInactive]}>
-                                <Text style={gameUIStyles.languageButtonText}>EN</Text>
+                            <TouchableOpacity onPress={() => onSetLang('en')} style={[gameUIStyles.languageButton, lang === 'en' && gameUIStyles.languageButtonActive]}>
+                                <Text style={[gameUIStyles.languageButtonText, lang === 'en' ? gameUIStyles.languageButtonTextActive : gameUIStyles.languageButtonTextInactive]}>EN</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => onSetLang('vi')} style={[gameUIStyles.languageButton, lang === 'vi' ? gameUIStyles.languageButtonActive : gameUIStyles.languageButtonInactive]}>
-                                <Text style={gameUIStyles.languageButtonText}>VI</Text>
+                            <TouchableOpacity onPress={() => onSetLang('vi')} style={[gameUIStyles.languageButton, lang === 'vi' && gameUIStyles.languageButtonActive]}>
+                                <Text style={[gameUIStyles.languageButtonText, lang === 'vi' ? gameUIStyles.languageButtonTextActive : gameUIStyles.languageButtonTextInactive]}>VI</Text>
                             </TouchableOpacity>
                         </View>
                         <TouchableOpacity onPress={onQuitGame} style={gameUIStyles.chunkyButtonSlate}><Text style={gameUIStyles.chunkyButtonText}>{t('quit_game_button', lang)}</Text></TouchableOpacity>
@@ -316,58 +354,10 @@ export const GameUI: React.FC<GameUIProps> = ({
                 </View>
 
                 <View style={gameUIStyles.mainContentGrid}>
-                    <View style={[gameUIStyles.mainContentLeft, mainView === 'business' ? gameUIStyles.mainContentLeftFull : gameUIStyles.mainContentLeftPartial]}>
-                        {mainView === 'tree' ? (
-                            <>
-                                <Text style={gameUIStyles.familyTreeTitle}>{t('family_tree_title', lang)}</Text>
-                                <View style={gameUIStyles.familyTreeContainer}>
-                                    {rootCharacter ? <FamilyTree characterId={rootCharacter.id} allMembers={gameState.familyMembers} onAvatarClick={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} /> : <Text style={gameUIStyles.noFamilyText}>Your family story begins...</Text>}
-                                </View>
-                            </>
-                        ) : (
-                            <BusinessMap 
-                                gameState={gameState} 
-                                onBuyBusiness={onBuyBusiness}
-                                onManageBusiness={(business) => setEditingBusiness(business)}
-                                lang={lang}
-                                images={avatarImages}
-                                manifest={exampleManifest}
-                                mainView={mainView}
-                                onBackToTree={() => {
-                                    onSetMainView('tree');
-                                    setActiveTab('log');
-                                }}
-                            />
-                        )}
-                    </View>
-                    <View style={gameUIStyles.mainContentRight}>
-                        <View style={gameUIStyles.tabButtonsContainer}>
-                            <TabButton label={t('tab_log', lang)} isActive={activeTab === 'log'} onClick={() => handleTabClick('log')} />
-                            <TabButton label={t('tab_assets', lang)} isActive={activeTab === 'assets'} onClick={() => handleTabClick('assets')} />
-                            <TabButton label={t('tab_businesses', lang)} isActive={activeTab === 'businesses'} onClick={() => handleTabClick('businesses')} />
-                        </View>
-                         <View style={gameUIStyles.tabContentContainer}>
-                            <View style={[gameUIStyles.tabContent, (activeTab === 'log' || (mainView === 'tree' && activeTab !== 'assets')) ? {} : gameUIStyles.hidden]}>
-                                <GameLog log={gameState.gameLog} lang={lang} familyMembers={gameState.familyMembers} />
-                            </View>
-                            <View style={[gameUIStyles.tabContent, activeTab === 'assets' ? {} : gameUIStyles.hidden]}>
-                                <FamilyAssetsPanel 
-                                    purchasedAssets={gameState.purchasedAssets} 
-                                    familyFund={gameState.familyFund}
-                                    onPurchaseAsset={onPurchaseAsset}
-                                    lang={lang} 
-                                />
-                            </View>
-                            <View style={[gameUIStyles.tabContent, activeTab === 'businesses' ? {} : gameUIStyles.hidden]}>
-                                 <View style={gameUIStyles.businessPanelInner}>
-                                    <Text style={gameUIStyles.businessPanelTitle}>{t('family_businesses_title', lang)}</Text>
-                                    <Text style={gameUIStyles.businessPanelIntro}>{t('business_map_intro', lang)}</Text>
-                                </View>
-                            </View>
-                         </View>
-                    </View>
+                    {renderScene()}
                 </View>
             </View>
+            <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} lang={lang} />
         </View>
     );
 };
@@ -377,7 +367,7 @@ const gameUIStyles = StyleSheet.create({
     flexCenter: { alignItems: 'center', justifyContent: 'center' },
     fullScreen: { flex: 1 },
     mainContainer: { flex: 1, backgroundColor: '#f0f4f8' },
-    maxWidthContainer: { flex: 1, padding: 16 },
+    maxWidthContainer: { flex: 1, padding: 16, paddingBottom: 60 }, // Added paddingBottom to avoid overlap with bottom nav
     headerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
     headerLeft: { },
     gameTitle: { fontSize: 32, fontWeight: 'bold', color: '#ec4899' },
@@ -394,31 +384,37 @@ const gameUIStyles = StyleSheet.create({
     headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     languageButtonsContainer: { flexDirection: 'row', backgroundColor: 'white', borderRadius: 8, padding: 4 },
     languageButton: { paddingVertical: 4, paddingHorizontal: 12, borderRadius: 6 },
-    languageButtonActive: { backgroundColor: '#6366f1' },
-    languageButtonInactive: { backgroundColor: 'transparent' },
-    languageButtonText: { color: 'white', fontWeight: 'bold' },
+    languageButtonActive: { backgroundColor: '#6366f1' }, // indigo-500
+    languageButtonText: { fontWeight: 'bold' },
+    languageButtonTextActive: { color: 'white' },
+    languageButtonTextInactive: { color: '#475569' }, // slate-600
     chunkyButtonSlate: { backgroundColor: '#64748b', padding: 12, borderRadius: 8 },
     chunkyButtonBlue: { backgroundColor: '#3b82f6', padding: 12, borderRadius: 8 },
     chunkyButtonText: { color: 'white', fontWeight: 'bold' },
     speedPicker: { width: 150, height: 44 },
     speedPickerItem: { height: 44 },
-    mainContentGrid: { flexDirection: 'row', flex: 1, gap: 16 },
-    mainContentLeft: { flex: 2, backgroundColor: 'rgba(255, 255, 255, 0.8)', borderRadius: 16, padding: 16 },
-    mainContentLeftFull: { flex: 3 },
-    mainContentLeftPartial: { flex: 2 },
+    mainContentGrid: { flex: 1 },
     familyTreeTitle: { fontSize: 24, fontWeight: 'bold', color: '#6366f1', marginBottom: 16 },
     familyTreeContainer: { flex: 1 },
     noFamilyText: { fontStyle: 'italic', color: '#64748b' },
-    mainContentRight: { flex: 1, flexDirection: 'column' },
-    tabButtonsContainer: { flexDirection: 'row' },
-    tabButtonBase: { paddingHorizontal: 24, paddingVertical: 12, borderTopLeftRadius: 16, borderTopRightRadius: 16 },
-    tabButtonActive: { backgroundColor: 'white' },
-    tabButtonInactive: { backgroundColor: '#e2e8f0' },
-    tabButtonText: { fontSize: 18, fontWeight: 'bold' },
-    tabContentContainer: { flex: 1, backgroundColor: 'white', borderRadius: 16, borderTopLeftRadius: 0 },
-    tabContent: { flex: 1, padding: 16 },
-    hidden: { display: 'none' },
-    businessPanelInner: { padding: 16 },
-    businessPanelTitle: { fontSize: 24, fontWeight: 'bold', color: '#3b82f6', marginBottom: 16 },
-    businessPanelIntro: { color: '#64748b' },
+    bottomNavContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        borderTopWidth: 1,
+        borderColor: '#ccc',
+        backgroundColor: '#f0f4f8',
+        paddingVertical: 8,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+    bottomNavButton: {
+        alignItems: 'center',
+        padding: 8,
+    },
+    bottomNavButtonActive: {
+        backgroundColor: '#e0e0e0',
+        borderRadius: 8,
+    },
 });

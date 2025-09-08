@@ -2,7 +2,8 @@
 // Styling (Tailwind CSS classes) has been removed and needs to be re-implemented using React Native's StyleSheet.
 // Some web-specific features (like custom CSS properties in style objects) have been removed or simplified.
 import * as React from 'react';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, useAnimatedProps, withSequence } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, useAnimatedProps, withSequence, runOnJS, withDelay } from 'react-native-reanimated';
+import { BlurView } from '@react-native-community/blur';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType, FlatList, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // For select/option/optgroup replacement
 import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition, Language, Club } from '../core/types';
@@ -16,6 +17,7 @@ import { t, displayPhase, displayStatus, displayRelationshipStatus } from '../co
 import { getCharacterDisplayName, calculateEmployeeSalary } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { BusinessMap } from './BusinessMap';
+import { CharacterDetailModal } from './CharacterDetailModal';
 interface LocalizedProps {
     lang: Language;
 }
@@ -37,15 +39,59 @@ type Particle = {
   style: object; // Changed from React.CSSProperties to object
 };
 
+const Particle: React.FC<{ onAnimationComplete: () => void, type: 'sparkle' | 'smoke' }> = ({ onAnimationComplete, type }) => {
+    const opacity = useSharedValue(1);
+    const translateY = useSharedValue(0);
+    const translateX = useSharedValue((Math.random() - 0.5) * 40);
+    const scale = useSharedValue(1);
+
+    React.useEffect(() => {
+        const randomDelay = Math.random() * 300;
+        opacity.value = withDelay(randomDelay, withTiming(0, { duration: 700 }));
+        translateY.value = withDelay(randomDelay, withTiming(-50, { duration: 1000, easing: Easing.out(Easing.quad) }));
+        scale.value = withDelay(randomDelay, withTiming(0.5, { duration: 1000 }));
+        
+        const timer = setTimeout(() => {
+            runOnJS(onAnimationComplete)();
+        }, 1000 + randomDelay);
+        
+        return () => clearTimeout(timer);
+    }, [onAnimationComplete, opacity, scale, translateX, translateY]);
+
+    const animatedStyle = useAnimatedStyle(() => {
+        const transform: any = [
+            { translateX: translateX.value },
+            { translateY: translateY.value },
+            { scale: scale.value },
+        ];
+        return {
+            opacity: opacity.value,
+            transform,
+        };
+    });
+
+    const particleStyle = type === 'sparkle' ? statBarStyles.sparkleParticle : statBarStyles.smokeParticle;
+
+    return <Animated.View style={[statBarStyles.particleBase, particleStyle, animatedStyle]} />;
+};
+
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initialValue }) => {
+export const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initialValue }) => {
     const isAnimated = typeof initialValue === 'number' && initialValue !== value;
     const progress = useSharedValue(isAnimated ? initialValue : value);
+    const [particles, setParticles] = React.useState<{ id: number; type: 'sparkle' | 'smoke' }[]>([]);
 
     React.useEffect(() => {
         if (isAnimated) {
             progress.value = withTiming(value, { duration: 800, easing: Easing.out(Easing.quad) });
+            const change = value - (initialValue ?? value);
+            if (change !== 0) {
+                const numParticles = Math.min(Math.abs(Math.round(change)), 8);
+                const particleType: 'sparkle' | 'smoke' = change > 0 ? 'sparkle' : 'smoke';
+                const newParticles = Array.from({ length: numParticles }, () => ({ id: Math.random(), type: particleType }));
+                setParticles(p => [...p, ...newParticles]);
+            }
         } else {
             progress.value = value;
         }
@@ -54,6 +100,10 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
     const animatedStyle = useAnimatedStyle(() => ({
         width: `${(progress.value / max) * 100}%`,
     }));
+
+    const removeParticle = (id: number) => {
+        setParticles(currentParticles => currentParticles.filter(p => p.id !== id));
+    };
 
     if (!isAnimated) {
         const displayValue = Math.round(value);
@@ -91,6 +141,12 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
     const animatedBarFillStyle = useAnimatedStyle(() => ({
         backgroundColor: progress.value >= (initialValue || 0) ? '#4ade80' : '#f87171', // green-400 or red-400
     }));
+
+    const animatedParticlesContainerStyle = useAnimatedStyle(() => {
+        return {
+            left: `${(progress.value / max) * 100}%`,
+        };
+    });
     
     return (
         <View style={statBarStyles.container}>
@@ -98,6 +154,11 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
             <Text style={statBarStyles.label}>{label}</Text>
             <View style={statBarStyles.barBackground}>
                 <Animated.View style={[statBarStyles.barFill, animatedBarFillStyle, animatedStyle]} />
+                <Animated.View style={[statBarStyles.particlesContainer, animatedParticlesContainerStyle]}>
+                    {particles.map(p => (
+                        <Particle key={p.id} onAnimationComplete={() => removeParticle(p.id)} type={p.type} />
+                    ))}
+                </Animated.View>
             </View>
             <AnimatedTextInput editable={false} style={statBarStyles.value} animatedProps={animatedFinalValueProps} />
             <AnimatedTextInput editable={false} style={[statBarStyles.changeText, animatedColorStyle]} animatedProps={animatedChangeProps} />
@@ -183,150 +244,6 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
 
 
 
-interface CharacterDetailModalProps extends LocalizedProps {
-    character: Character;
-    gameState: GameState;
-    onClose: () => void;
-    onCustomize: (characterId: string) => void;
-    images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
-    manifest: Manifest;
-}
-
-export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ character, gameState, onClose, onCustomize, images, manifest, lang }) => {
-    const [activeDetailTab, setActiveDetailTab] = React.useState('details');
-    const displayName = getCharacterDisplayName(character, lang);
-    const partner = character.partnerId ? gameState.familyMembers[character.partnerId] : null;
-    const partnerDisplayName = partner ? getCharacterDisplayName(partner, lang) : '';
-
-    const educationText = character.universityDegree ? t(character.universityDegree, lang) : (character.schoolHistory && character.schoolHistory.length > 0 ? t('education_some_school', lang) : t('education_none', lang));
-    const career = character.careerTrack && character.careerLevel !== undefined ? CAREER_LADDER[character.careerTrack]?.levels[character.careerLevel] : null;
-    const businessRole = character.businessId && character.businessSlotIndex !== undefined ? gameState.familyBusinesses[character.businessId]?.slots[character.businessSlotIndex] : null;
-    const pet = character.petId ? gameState.familyPets[character.petId] : null;
-
-    return (
-        <View style={characterDetailModalStyles.overlay}>
-            <View style={characterDetailModalStyles.modalContainer}>
-                <View style={characterDetailModalStyles.header}>
-                    <View>
-                        <Text style={characterDetailModalStyles.title}>
-                            {displayName} (G{character.generation})
-                        </Text>
-                        <TouchableOpacity onPress={onClose} style={characterDetailModalStyles.closeButton}><Text style={characterDetailModalStyles.closeButtonText}>&times;</Text></TouchableOpacity>
-                    </View>
-
-                    <View style={characterDetailModalStyles.tabContainer}>
-                        <TouchableOpacity
-                            onPress={() => setActiveDetailTab('details')}
-                            style={[characterDetailModalStyles.tabButton, activeDetailTab === 'details' && characterDetailModalStyles.tabButtonActive]}
-                        >
-                            <Text style={[characterDetailModalStyles.tabButtonText, activeDetailTab === 'details' && characterDetailModalStyles.tabButtonTextActive]}>
-                                {t('tab_details', lang)}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setActiveDetailTab('events')}
-                            style={[characterDetailModalStyles.tabButton, activeDetailTab === 'events' && characterDetailModalStyles.tabButtonActive]}
-                        >
-                            <Text style={[characterDetailModalStyles.tabButtonText, activeDetailTab === 'events' && characterDetailModalStyles.tabButtonTextActive]}>
-                                {t('tab_life_events', lang)}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                {activeDetailTab === 'details' && (
-                    <ScrollView style={characterDetailModalStyles.detailsContent}>
-                        <View style={characterDetailModalStyles.detailsSection}>
-                            <View style={characterDetailModalStyles.avatarSection}>
-                                {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
-                                    <AgeAwareAvatarPreview
-                                        manifest={manifest}
-                                        character={character}
-                                        images={images}
-                                        size={{ width: 128, height: 128 }}
-                                    />
-                                ) : null}
-                            </View>
-
-                            <View style={characterDetailModalStyles.infoSection}>
-                                <View>
-                                    <Text style={characterDetailModalStyles.infoText}>{displayPhase(character.phase, lang)} | {displayStatus(character.status, lang)}</Text>
-                                    <Text style={characterDetailModalStyles.infoText}>{character.isAlive ? `${character.age} ${t('age_short', lang)}` : `${t('deceased_at', lang)} ${character.age}`}</Text>
-                                </View>
-
-                                <Text style={characterDetailModalStyles.infoText}>{t('relationship_label', lang)}: {displayRelationshipStatus(character.relationshipStatus, lang)}{partner ? ` ${t('with_person', lang)} ${partnerDisplayName}`: ''}</Text>
-                            </View>
-                        </View>
-
-                        {pet && <Text style={characterDetailModalStyles.infoText}>{getPetIcon(pet.type)} {t('pet_label', lang)}: {pet.name} {t('the_pet_type', lang)} {t(PET_DATA[pet.type].nameKey, lang)}</Text>}
-
-                        <Text style={characterDetailModalStyles.infoText}>{t('education_label', lang)}: {educationText}</Text>
-                        {character.major && <Text style={characterDetailModalStyles.infoText}>{t('major_label', lang)}: {t(character.major, lang)}</Text>}
-                        {career && <Text style={characterDetailModalStyles.infoText}>{t('career_label', lang)}: {t(career.titleKey, lang)} (${career.salary.toLocaleString()}/yr)</Text>}
-                        {businessRole && <Text style={characterDetailModalStyles.infoText}>{t('working_at_label', lang)}: {businessRole.businessName} ({businessRole.role})</Text>}
-
-                        {character.currentClubs && character.currentClubs.length > 0 && (
-                            <View style={characterDetailModalStyles.section}>
-                                <Text style={characterDetailModalStyles.sectionTitle}>{t('clubs_label', lang)}:</Text>
-                                <View style={characterDetailModalStyles.sectionContent}>
-                                    {character.currentClubs.map(clubId => {
-                                        const club = CLUBS.find(c => c.id === clubId);
-                                        return club ? <Text key={clubId} style={characterDetailModalStyles.sectionItem}>{t(club.nameKey, lang)}</Text> : null;
-                                    }) }
-                                </View>
-                            </View>
-                        )}
-
-                        {character.completedOneTimeEvents && character.completedOneTimeEvents.length > 0 && (
-                            <View style={characterDetailModalStyles.section}>
-                                <Text style={characterDetailModalStyles.sectionTitle}>{t('life_events_label', lang)}:</Text>
-                                <View style={characterDetailModalStyles.sectionContent}>
-                                    {character.completedOneTimeEvents.map((eventId, index) => {
-                                        const event = getAllEvents().find(e => e.id === eventId);
-                                        return event ? <Text key={`${eventId}-${index}`} style={characterDetailModalStyles.sectionItem}>{t(event.titleKey, lang)}</Text> : null;
-                                    }) }
-                                </View>
-                            </View>
-                        )}
-
-                        {character.isAlive && (
-                            <View style={characterDetailModalStyles.statsSection}>
-                                <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="#60a5fa" /> {/* blue-400 */}
-                                <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="#facc15" /> {/* yellow-400 */}
-                                <StatBar Icon={EqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="#a78bfa" /> {/* purple-400 */}
-                                <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="#f87171" /> {/* red-400 */}
-                                {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="#4ade80" />} {/* green-400 */}
-                            </View>
-                        )}
-                        {!character.staticAvatarUrl && (
-                            <View style={characterDetailModalStyles.customizeButtonContainer}>
-                                <TouchableOpacity onPress={() => onCustomize(character.id)} style={characterDetailModalStyles.customizeButton}>
-                                    <Text style={characterDetailModalStyles.customizeButtonText}>
-                                        Customize
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    </ScrollView>
-                )}
-
-                {activeDetailTab === 'events' && (
-                    <ScrollView style={characterDetailModalStyles.eventsContent}>
-                        <GameLog
-                            log={gameState.gameLog.filter(entry => entry.characterId === character.id)}
-                            lang={lang}
-                            familyMembers={gameState.familyMembers}
-                        />
-                    </ScrollView>
-                )}
-            </View>
-        </View>
-    );
-};
-
-
-
-
 interface FamilyTreeProps extends LocalizedProps {
   characterId: string;
   allMembers: Record<string, Character>;
@@ -385,191 +302,6 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ characterId, allMembers,
     );
 };
 
-
-interface EventModalProps extends LocalizedProps {
-  eventData: { characterId: string; event: GameEvent; replacements?: Record<string, string | number> };
-  character: Character;
-  onChoice: (choice: EventChoice) => void;
-  onClose: () => void;
-  images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
-  manifest: Manifest;
-  onAvatarClick: (character: Character) => void;
-}
-
-export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest, onAvatarClick }) => {
-  const [initialCharacterState, setInitialCharacterState] = React.useState(character);
-  const [displayEventData, setDisplayEventData] = React.useState(eventData);
-  const [outcome, setOutcome] = React.useState<EventEffect | null>(null);
-
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const characterDisplayName = getCharacterDisplayName(character, lang);
-
-  const clearTimer = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  };
-
-  React.useEffect(() => {
-    // This effect handles the transition to a triggered event
-    if (eventData.event.id !== displayEventData.event.id || eventData.characterId !== displayEventData.characterId) {
-      clearTimer(); // A new event is coming, cancel any pending close
-
-      // Wait for the outcome of the previous choice to be visible
-      timerRef.current = setTimeout(() => { // Changed window.setTimeout to setTimeout
-        setDisplayEventData(eventData);
-        setInitialCharacterState(character); // Capture new character state for next event
-        setOutcome(null);
-      }, 2500);
-    }
-
-    // Cleanup timer on unmount
-    return () => clearTimer();
-  }, [eventData, displayEventData, character]);
-
-  const handleSelectChoice = (choice: EventChoice) => {
-    if (outcome) return;
-    setOutcome(choice.effect);
-    onChoice(choice);
-    // No longer auto-closes here
-  };
-  
-  React.useEffect(() => {
-    if (outcome) {
-      timerRef.current = setTimeout(() => { // Changed window.setTimeout to setTimeout
-        onClose();
-      }, 10000); // 10 seconds
-      return () => clearTimeout(timerRef.current!);
-    }
-  }, [outcome, onClose]);
-
-  const statIcons: Record<string, React.ElementType> = {
-    iq: IqIcon,
-    happiness: HappinessIcon,
-    eq: EqIcon,
-    health: HealthIcon,
-    skill: SkillIcon,
-  };
-
-  const statLabels: Record<string, string> = {
-    iq: 'IQ',
-    happiness: t('stat_happiness', lang),
-    eq: t('stat_eq', lang),
-    health: t('stat_health', lang),
-    skill: t('stat_skill', lang),
-  }
-
-  return (
-    <View style={eventModalStyles.overlay}>
-      <View style={eventModalStyles.modalContainer}>
-        <View style={eventModalStyles.header}>
-            <TouchableOpacity onPress={() => onAvatarClick(character)} style={eventModalStyles.avatarButton}>
-                <AgeAwareAvatarPreview
-                    manifest={manifest}
-                    character={character}
-                    images={images}
-                    size={{ width: 80, height: 80 }}
-                />
-            </TouchableOpacity>
-            <View style={eventModalStyles.headerTextContainer}>
-                <Text style={eventModalStyles.title}>{t(displayEventData.event.titleKey, lang)}</Text>
-                <Text style={eventModalStyles.subtitle}>{t('event_for', lang)}: <Text style={eventModalStyles.characterName}>{characterDisplayName}</Text></Text>
-            </View>
-        </View>
-        
-        <Text style={eventModalStyles.description}>{t(displayEventData.event.descriptionKey, lang, displayEventData.replacements)}</Text>
-        
-        {!outcome ? (
-                <View style={eventModalStyles.choicesContainer}>
-                  {displayEventData.event.choices.map((choice, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => handleSelectChoice(choice)}
-                      disabled={!!outcome}
-                      style={eventModalStyles.choiceButton}
-                    >
-                      <View style={eventModalStyles.choiceButtonContent}>
-                        <Text style={eventModalStyles.choiceButtonText}>
-                          {t(choice.textKey, lang)}
-                          {choice.effect.triggers && choice.effect.triggers.length > 0 && (
-                            <Text style={eventModalStyles.choiceTriggerText}>
-                              (
-                              {choice.effect.triggers.map((trigger, idx) => { // Changed window.setTimeout to setTimeout
-                                const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
-                                if (!triggeredEvent) return null;
-                                const triggerText = t(triggeredEvent.titleKey, lang);
-                                return `${Math.round(trigger.chance * 100)}% ${triggerText}${idx < choice.effect.triggers!.length - 1 ? ', ' : ''}`;
-                              }).filter(Boolean).join(', ')}
-                              )
-                            </Text>
-                          )}
-                        </Text>
-                      </View>
-                      {choice.effect.fundChange && choice.effect.fundChange !== 0 && (
-                          <Text style={[eventModalStyles.fundChangeText, choice.effect.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>
-                              {choice.effect.fundChange > 0 ? '+' : ''}${Math.abs(choice.effect.fundChange).toLocaleString()}
-                          </Text>
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-            ) : (
-                <View style={eventModalStyles.outcomeContainer}>
-                    <Text style={eventModalStyles.outcomeMessage}>"{t(outcome.logKey, lang, { name: characterDisplayName })}"</Text>
-                    <View style={eventModalStyles.outcomeDetails}>
-                        {outcome.fundChange && (
-                            <View style={eventModalStyles.fundChangeDetail}>
-                                <MoneyIcon />
-                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{t('family_fund_label', lang)}: {outcome.fundChange > 0 ? '+' : ''}${outcome.fundChange.toLocaleString()}</Text>
-                            </View>
-                        )}
-                        {outcome.statChanges && Object.entries(outcome.statChanges).map(([stat, change]) => {
-                            if (change === 0) return null; // Don't show bars for no change
-                            const key = stat as keyof typeof initialCharacterState.stats;
-                            const initialValue = initialCharacterState.stats[key];
-                            const finalValue = initialValue + change;
-                            return (
-                                <StatBar
-                                    key={stat}
-                                    Icon={statIcons[stat] || IqIcon}
-                                    label={statLabels[stat]}
-                                    initialValue={initialValue}
-                                    value={finalValue}
-                                    max={stat === 'iq' ? 200 : 100}
-                                    color={'#cbd5e1'} // slate-300, base color, animation handles the rest
-                                 />
-                            );
-                        })}
-                    </View>
-                    <TouchableOpacity
-                        onPress={() => {
-                            clearTimer();
-                            const isNewEventPending = eventData.event.id !== displayEventData.event.id || eventData.characterId !== displayEventData.characterId;
-                            if (isNewEventPending) {
-                                // A new event is waiting. Fast-forward to it.
-                                setDisplayEventData(eventData);
-                                setInitialCharacterState(character);
-                                setOutcome(null);
-                            } else {
-                                // No new event, safe to close.
-                                onClose();
-                            }
-                        }}
-                        style={eventModalStyles.okButton}
-                    >
-                        <Text style={eventModalStyles.okButtonText}>
-                            OK
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-        </View>
-      </View>
-  );
-};
-
-
 interface GameLogProps extends LocalizedProps {
   log: GameLogEntry[];
   familyMembers: Record<string, Character>;
@@ -584,9 +316,10 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
         const sign = value > 0 ? '+' : '';
         const colorStyle = value > 0 ? logStatChangesStyles.positiveChange : logStatChangesStyles.negativeChange;
         allChanges.push(
-            <Text key="fund" style={[logStatChangesStyles.changeText, colorStyle]}>
-                <MoneyIcon /> {sign}${Math.abs(value).toLocaleString()}
-            </Text>
+            <View key="fund" style={logStatChangesStyles.changeItem}>
+                <MoneyIcon color={colorStyle.color} style={logStatChangesStyles.icon} />
+                <Text style={[logStatChangesStyles.changeText, colorStyle]}>{sign}${Math.abs(value).toLocaleString()}</Text>
+            </View>
         );
     }
 
@@ -821,12 +554,19 @@ const styles = StyleSheet.create({
         padding: 16,
         zIndex: 50,
     },
+    absolute: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
+    },
     comicPanelWrapper: {
-        // Removed web-specific --rotate style
+        // transform: [{ rotate: '1deg' }],
     },
     comicPanel: {
         backgroundColor: 'white',
-        padding: 32,
+        padding: 24,
         maxWidth: 768, // max-w-2xl (32rem * 16px/rem = 512px, but 2xl is 42rem = 672px, let's use 768 for a bit more space)
         width: '100%',
         position: 'relative',
@@ -866,7 +606,11 @@ interface InstructionsModalProps extends LocalizedProps {
 }
 
 export const InstructionsModal: React.FC<InstructionsModalProps> = ({ onClose, lang }) => (
-    <TouchableOpacity style={styles.modalOverlay} onPress={onClose} activeOpacity={1}>
+    <View style={styles.modalOverlay}>
+        <BlurView
+            style={styles.absolute}
+            blurType="dark"
+            blurAmount={10} />
         <View style={styles.comicPanelWrapper}>
             <View style={styles.comicPanel}>
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -883,7 +627,7 @@ export const InstructionsModal: React.FC<InstructionsModalProps> = ({ onClose, l
                 </View>
             </View>
         </View>
-    </TouchableOpacity>
+    </View>
 );
 
 
@@ -927,7 +671,12 @@ interface ModalBaseProps extends LocalizedProps {
 }
 
 export const ModalBase: React.FC<ModalBaseProps> = ({titleKey, characterName, descriptionKey, descriptionReplacements, children, lang}) => (
-     <View style={modalBaseStyles.overlay}>
+    <View style={modalBaseStyles.overlay}>
+        <BlurView
+            style={modalBaseStyles.absolute}
+            blurType="dark"
+            blurAmount={10}
+        />
         <View style={modalBaseStyles.comicPanelWrapper}>
             <View style={modalBaseStyles.comicPanel}>
                 <Text style={modalBaseStyles.title}>{t(titleKey, lang)}</Text>
@@ -941,18 +690,36 @@ export const ModalBase: React.FC<ModalBaseProps> = ({titleKey, characterName, de
     </View>
 );
 
-const ChoiceButton: React.FC<{onClick: () => void, disabled?: boolean, children: React.ReactNode}> = ({onClick, disabled, children}) => (
-     <TouchableOpacity
-        onPress={onClick}
-        disabled={disabled}
-        style={[
-            choiceButtonStyles.button,
-            disabled && choiceButtonStyles.buttonDisabled,
-        ]}
-    >
-       {children}
-    </TouchableOpacity>
-);
+const ChoiceButton: React.FC<{onClick: () => void, disabled?: boolean, children: React.ReactNode}> = ({onClick, disabled, children}) => {
+    const pressState = useSharedValue(0); // 0 for up, 1 for down
+
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ translateY: withTiming(pressState.value * 2, { duration: 75 }) }],
+            borderBottomWidth: withTiming(4 - pressState.value * 2, { duration: 75 }),
+        };
+    });
+
+    const handlePressIn = () => {
+        if (!disabled) {
+            pressState.value = 1;
+        }
+    };
+
+    const handlePressOut = () => {
+        if (!disabled) {
+            pressState.value = 0;
+        }
+    };
+
+    return (
+        <TouchableOpacity onPress={onClick} onPressIn={handlePressIn} onPressOut={handlePressOut} disabled={disabled} activeOpacity={1}>
+            <Animated.View style={[choiceButtonStyles.button, disabled && choiceButtonStyles.buttonDisabled, animatedStyle]}>
+                {children}
+            </Animated.View>
+        </TouchableOpacity>
+    );
+};
 
 
 interface SchoolChoiceModalProps extends LocalizedProps {
@@ -1148,7 +915,12 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
     const [selectedTerm, setSelectedTerm] = React.useState(terms[0]);
 
     return (
-        <View style={loanModalStyles.overlay}>
+        <View style={loanModalStyles.overlay} >
+            <BlurView
+                style={loanModalStyles.absolute}
+                blurType="dark"
+                blurAmount={10}
+            />
             <View style={loanModalStyles.comicPanelWrapper}>
                 <View style={loanModalStyles.comicPanel}>
                     <Text style={loanModalStyles.title}>{t('modal_loan_title', lang)}</Text>
@@ -1206,267 +978,6 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
     );
 };
 
-interface BusinessManagementModalProps extends LocalizedProps {
-    business: Business;
-    gameState: GameState;
-    onAssignToBusiness: (businessId: string, slotIndex: number, characterId: string | null) => void;
-    onUpgradeBusiness: (businessId: string) => void;
-    onClose: () => void;
-    images: Record<string, ImageSourcePropType>; // Changed from HTMLImageElement
-    manifest: Manifest;
-}
-
-export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = ({
-    business,
-    gameState,
-    onAssignToBusiness,
-    onUpgradeBusiness,
-    onClose,
-    lang,
-    images,
-    manifest
-}) => {
-    const businessDef = BUSINESS_DEFINITIONS[business.type];
-    if (!businessDef) return null;
-
-    const upgradeCost = businessDef.cost * 0.75;
-    const canUpgrade = business.level < 2 && gameState.familyFund >= upgradeCost;
-
-    const availableMembers = Object.values(gameState.familyMembers).filter(char => {
-        if (!char.isAlive || char.age < 18 || char.phase === LifePhase.Retired) return false;
-        
-        const isCurrentlyAssignedHere = business.slots.some(slot => slot.assignedCharacterId === char.id);
-        if (isCurrentlyAssignedHere) return true;
-        
-        const isAvailableForWork = [CharacterStatus.Unemployed, CharacterStatus.Idle, CharacterStatus.Working].includes(char.status);
-        
-        const isWorkingInAnotherBusiness = Object.values(gameState.familyBusinesses).some(b => 
-            b.id !== business.id && b.slots.some(s => s.assignedCharacterId === char.id)
-        );
-
-        return isAvailableForWork && !isWorkingInAnotherBusiness;
-    });
-
-    const handleAssignmentChange = (slotIndex: number, newCharacterId: string) => {
-        if (newCharacterId === 'unassigned') {
-            onAssignToBusiness(business.id, slotIndex, null);
-        } else if (newCharacterId === 'robot') {
-            onAssignToBusiness(business.id, slotIndex, 'robot');
-        } else {
-            onAssignToBusiness(business.id, slotIndex, newCharacterId);
-        }
-    };
-
-    return (
-        <View style={businessManagementModalStyles.overlay}>
-            <View style={businessManagementModalStyles.comicPanelWrapper}>
-                <View style={businessManagementModalStyles.comicPanel}>
-                    <View style={businessManagementModalStyles.header}>
-                        <View>
-                            <Text style={businessManagementModalStyles.title}>{t(businessDef.nameKey, lang)}</Text>
-                            <Text style={businessManagementModalStyles.levelText}>{t('level_label', lang)}: {business.level}</Text>
-                        </View>
-                        <TouchableOpacity onPress={onClose} style={businessManagementModalStyles.closeButton}><Text style={businessManagementModalStyles.closeButtonText}>&times;</Text></TouchableOpacity>
-                    </View>
-
-                    <ScrollView style={businessManagementModalStyles.slotsContainer}>
-                        <Text style={businessManagementModalStyles.sectionTitle}>{t('family_members_label', lang)}</Text>
-                        {business.slots.map((slot, index) => {
-                             const assignedCharacter = slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? gameState.familyMembers[slot.assignedCharacterId] : null;
-                             const isRobot = slot.assignedCharacterId === 'robot';
-                             const salary = assignedCharacter ? calculateEmployeeSalary(assignedCharacter) : 0;
-
-                             return (
-                                <View key={index} style={businessManagementModalStyles.slotItem}>
-                                    <View style={businessManagementModalStyles.avatarPlaceholder}>
-                                        {assignedCharacter ? (
-                                            <AgeAwareAvatarPreview manifest={manifest} character={assignedCharacter} images={images} size={{width: 64, height: 64}} />
-                                        ) : isRobot ? (
-                                            <RobotAvatarIcon style={businessManagementModalStyles.robotIcon} />
-                                        ) : (
-                                            <View style={businessManagementModalStyles.emptyAvatar} />
-                                        )}
-                                    </View>
-                                    <View style={businessManagementModalStyles.slotDetails}>
-                                        <Text style={businessManagementModalStyles.slotRole}>{t(slot.role, lang)}</Text>
-                                        <Text style={businessManagementModalStyles.slotRequirement}>{t('req_major_label', lang)}: {slot.requiredMajor === 'Unskilled' ? t('unskilled_major', lang) : t(slot.requiredMajor, lang)}</Text>
-                                        {assignedCharacter && (
-                                            <Text style={businessManagementModalStyles.slotSalary}>
-                                                {t('salary_label', lang)}: ${salary.toLocaleString()}/mo
-                                            </Text>
-                                        )}
-                                    </View>
-                                    <Picker
-                                        selectedValue={slot.assignedCharacterId || 'unassigned'}
-                                        onValueChange={(itemValue) => handleAssignmentChange(index, itemValue as string)}
-                                        style={businessManagementModalStyles.picker}
-                                        itemStyle={businessManagementModalStyles.pickerItem}
-                                    >
-                                        <Picker.Item label={t('unassigned_option', lang)} value="unassigned" />
-                                        <Picker.Item label={`${t('hire_robot_option', lang)} (-$${ROBOT_HIRE_COST}/mo)`} value="robot" />
-                                        {/* Optgroup is not directly supported in React Native Picker, so we'll just list items */}
-                                        {availableMembers.map(char => {
-                                            const isMajorMatch = slot.requiredMajor !== 'Unskilled' && char.major === slot.requiredMajor;
-                                            return (
-                                                <Picker.Item key={char.id} label={`${isMajorMatch ? '⭐ ' : ''}${getCharacterDisplayName(char, lang)} (Skill: ${Math.round(char.stats.skill)})`} value={char.id} />
-                                            )
-                                        })}
-                                    </Picker>
-                                </View>
-                             )
-                        })}
-                    </ScrollView>
-
-                    <View style={businessManagementModalStyles.footer}>
-                         {business.level < 2 && businessDef.upgradeSlots.length > 0 && (
-                            <TouchableOpacity
-                                onPress={() => onUpgradeBusiness(business.id)}
-                                disabled={!canUpgrade}
-                                style={[businessManagementModalStyles.upgradeButton, !canUpgrade && businessManagementModalStyles.upgradeButtonDisabled]}
-                            >
-                                <UpgradeIcon style={businessManagementModalStyles.upgradeIcon} />
-                                <Text style={businessManagementModalStyles.upgradeButtonText}>
-                                    {t('upgrade_button', lang)} (-${upgradeCost.toLocaleString()})
-                                </Text>
-                            </TouchableOpacity>
-                         )}
-                    </View>
-                </View>
-            </View>
-        </View>
-    );
-};
-
-const businessManagementModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 50,
-        padding: 16,
-    },
-    comicPanelWrapper: {
-        // transform: [{ rotate: '-1deg' }],
-    },
-    comicPanel: {
-        backgroundColor: 'white',
-        padding: 24,
-        maxWidth: 640, // max-w-2xl
-        width: '100%',
-        maxHeight: '90%',
-        borderRadius: 8,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-    },
-    levelText: {
-        fontSize: 14,
-        color: '#64748b', // slate-500
-    },
-    closeButton: {
-        // No direct equivalent for absolute positioning within a flex item without more structure
-    },
-    closeButtonText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#94a3b8', // slate-400
-    },
-    slotsContainer: {
-        // maxHeight: 400, // Example max height
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#334155', // slate-700
-        marginBottom: 8,
-    },
-    slotItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#f1f5f9', // slate-100
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    avatarPlaceholder: {
-        width: 64,
-        height: 64,
-        marginRight: 12,
-    },
-    robotIcon: {
-        width: '100%',
-        height: '100%',
-    },
-    emptyAvatar: {
-        width: 64,
-        height: 64,
-        backgroundColor: '#e2e8f0', // slate-200
-        borderRadius: 32,
-    },
-    slotDetails: {
-        flex: 1,
-    },
-    slotRole: {
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    slotRequirement: {
-        fontSize: 12,
-        color: '#64748b', // slate-500
-    },
-    slotSalary: {
-        fontSize: 12,
-        color: '#16a34a', // green-600
-    },
-    picker: {
-        width: 200,
-        // RN Picker styling is limited. This is a basic width.
-    },
-    pickerItem: {
-        // itemStyle is iOS only.
-    },
-    footer: {
-        marginTop: 16,
-        paddingTop: 16,
-        borderTopWidth: 1,
-        borderColor: '#e2e8f0', // slate-200
-    },
-    upgradeButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#60a5fa', // blue-400
-        padding: 12,
-        borderRadius: 8,
-    },
-    upgradeButtonDisabled: {
-        opacity: 0.5,
-    },
-    upgradeIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 8,
-        color: 'white',
-    },
-    upgradeButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-});
-
 const statBarStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
@@ -1496,6 +1007,13 @@ const statBarStyles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
+    absolute: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
+    },
     changeText: {
         marginLeft: 4,
         fontSize: 12,
@@ -1516,17 +1034,20 @@ const statBarStyles = StyleSheet.create({
     particlesContainer: {
         position: 'absolute',
         top: 0,
-        left: 0,
-        right: 0,
         bottom: 0,
     },
-    particle: {
+    particleBase: {
         position: 'absolute',
-        width: 5,
-        height: 5,
-        borderRadius: 2.5,
-        backgroundColor: 'white', // Example, adjust as needed
-        opacity: 0, // Will be animated
+        top: '50%', // Center vertically
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    sparkleParticle: {
+        backgroundColor: '#facc15', // yellow-400
+    },
+    smokeParticle: {
+        backgroundColor: '#94a3b8', // slate-400
     },
 });
 
@@ -1733,6 +1254,8 @@ const characterDetailModalStyles = StyleSheet.create({
     },
 });
 
+export { CharacterDetailModal };
+
 const choiceButtonStyles = StyleSheet.create({
     button: {
         backgroundColor: '#f1f5f9', // slate-100
@@ -1918,129 +1441,6 @@ const promotionModalStyles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 16,
-    },
-});
-
-const eventModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-        zIndex: 50,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        borderRadius: 8,
-        width: '90%',
-        maxWidth: 600,
-        maxHeight: '90%',
-        overflow: 'hidden',
-        padding: 16,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    avatarButton: {
-        marginRight: 12,
-    },
-    headerTextContainer: {
-        flex: 1,
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-    },
-    subtitle: {
-        fontSize: 14,
-        color: '#475569', // slate-600
-    },
-    characterName: {
-        fontWeight: 'bold',
-    },
-    description: {
-        fontSize: 16,
-        color: '#333',
-        marginBottom: 20,
-    },
-    choicesContainer: {
-        // space-y-3
-    },
-    choiceButton: {
-        backgroundColor: '#f1f5f9', // slate-100
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 12,
-        borderBottomWidth: 4,
-        borderColor: '#e2e8f0', // slate-200
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    choiceButtonContent: {
-        flex: 1,
-    },
-    choiceButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    choiceTriggerText: {
-        fontSize: 12,
-        color: '#64748b', // slate-500
-    },
-    fundChangeText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginLeft: 8,
-    },
-    fundChangePositive: {
-        color: '#22c55e', // green-600
-    },
-    fundChangeNegative: {
-        color: '#ef4444', // red-500
-    },
-    outcomeContainer: {
-        // space-y-4
-    },
-    outcomeMessage: {
-        fontSize: 16,
-        fontStyle: 'italic',
-        color: '#475569', // slate-600
-        marginBottom: 16,
-    },
-    outcomeDetails: {
-        marginBottom: 20,
-    },
-    fundChangeDetail: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    fundChangeDetailText: {
-        marginLeft: 8,
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    okButton: {
-        backgroundColor: '#60a5fa', // blue-400
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 16,
-    },
-    okButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });
 
@@ -2251,6 +1651,13 @@ const loanModalStyles = StyleSheet.create({
         zIndex: 50,
         padding: 16,
     },
+    absolute: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
+    },
     comicPanelWrapper: {
         // transform: [{ rotate: '-1deg' }],
     },
@@ -2396,9 +1803,16 @@ const modalBaseStyles = StyleSheet.create({
         zIndex: 50,
         padding: 16,
     },
+    absolute: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
+    },
     comicPanelWrapper: {
-        // For React Native, if a rotation is desired, it would be applied directly to the style prop
-        // transform: [{ rotate: '-1deg' }], // Example rotation
+        // For React Native, if a rotation is desired, it would be applied directly to the style prop.
+        transform: [{ rotate: '-1deg' }], // Example rotation
     },
     comicPanel: {
         backgroundColor: 'white',
