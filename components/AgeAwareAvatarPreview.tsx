@@ -106,7 +106,7 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
                 ]}
             >
                 <Image
-                    source={{ uri: character.staticAvatarUrl }}
+                    source={character.staticAvatarUrl}
                     // alt={character.name} is not a prop in RN Image
                     style={ageAwareAvatarPreviewStyles.staticImage}
                     // draggable={false} is not a prop in RN Image

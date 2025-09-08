@@ -176,10 +176,11 @@ const AssetDetailModal: React.FC<AssetDetailModalProps> = ({ asset, isOwned, can
                                 <Text style={assetDetailModalStyles.detailLabel}>{t('asset_effects', lang)}:</Text>
                                 {Object.entries(asset.effects).map(([stat, val]) => {
                                     const Icon = statIcons[stat as keyof Stats];
+                                    const color = '#a78bfa'; // purple-500
                                     return (
                                         <View key={stat} style={assetDetailModalStyles.effectItem}>
-                                            {Icon && <Icon style={assetDetailModalStyles.effectIcon} />}
-                                            <Text style={assetDetailModalStyles.effectText}>
+                                            {Icon && <Icon color={color} style={assetDetailModalStyles.effectIcon} />}
+                                            <Text style={[assetDetailModalStyles.effectText, { color }]}>
                                                 {t(`stat_${stat}` as any, lang)} {val > 0 ? `+${(val * 100).toFixed(0)}%` : `${(val * 100).toFixed(0)}%`}
                                             </Text>
                                         </View>
@@ -310,7 +311,6 @@ const assetDetailModalStyles = StyleSheet.create({
         width: 16, // w-4
         height: 16, // h-4
         marginRight: 4, // mr-1
-        color: '#a78bfa', // purple-500
     },
     effectText: {
         fontSize: 14,

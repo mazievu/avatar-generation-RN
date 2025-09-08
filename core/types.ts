@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 export type Language = 'en' | 'vi';
 
 export enum Gender {
@@ -147,7 +149,7 @@ export interface Character {
   completedClubEvents: string[];
   displayAdjective: { key: string; year: number; } | null;
   avatarState: AvatarState;
-  staticAvatarUrl?: string;
+  staticAvatarUrl?: ImageSourcePropType;
   progressionPenalty?: number;
   traineeForCareer?: string | null;
   childrenEventCooldownUntil?: { day: number, year: number; } | null;

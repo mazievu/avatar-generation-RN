@@ -2,8 +2,8 @@
 // Styling (Tailwind CSS classes) has been removed and needs to be re-implemented using React Native's StyleSheet.
 // Some web-specific features (like custom CSS properties in style objects) have been removed or simplified.
 import * as React from 'react';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withRepeat, withSequence, useDerivedValue } from 'react-native-reanimated';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType, FlatList } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, useAnimatedProps, withSequence } from 'react-native-reanimated';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageSourcePropType, FlatList, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // For select/option/optgroup replacement
 import type { Character, GameState, GameEvent, EventChoice, SchoolOption, PurchasedAsset, UniversityMajor, EventEffect, Business, GameLogEntry, Manifest, Stats, AssetDefinition, Language, Club } from '../core/types';
 import { getAllEvents } from '../core/gameData';
@@ -37,6 +37,8 @@ type Particle = {
   style: object; // Changed from React.CSSProperties to object
 };
 
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
 const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initialValue }) => {
     const isAnimated = typeof initialValue === 'number' && initialValue !== value;
     const progress = useSharedValue(isAnimated ? initialValue : value);
@@ -68,23 +70,37 @@ const StatBar: React.FC<StatBarProps> = ({ Icon, value, max, label, color, initi
     }
 
     // Animated StatBar for the Event Outcome Modal
-    const displayFinalValue = useDerivedValue(() => Math.round(progress.value));
-    const displayInitialValue = Math.round(initialValue || 0);
-    const displayChange = displayFinalValue - displayInitialValue;
-    const changeColorStyle = displayChange >= 0 ? statBarStyles.changePositive : statBarStyles.changeNegative;
-    const barColorStyle = displayChange >= 0 ? statBarStyles.barPositive : statBarStyles.barNegative;
+    const animatedFinalValueProps = useAnimatedProps(() => ({
+        value: `${Math.round(progress.value)}`
+    }));
+
+    const animatedChangeProps = useAnimatedProps(() => {
+        const change = Math.round(progress.value) - Math.round(initialValue || 0);
+        return {
+            value: `(${change >= 0 ? '+' : ''}${change})`
+        };
+    });
+
+    const animatedColorStyle = useAnimatedStyle(() => {
+        const change = progress.value - (initialValue || 0);
+        return {
+            color: change >= 0 ? '#22c55e' : '#ef4444', // green-500 or red-500
+        };
+    });
+
+    const animatedBarFillStyle = useAnimatedStyle(() => ({
+        backgroundColor: progress.value >= (initialValue || 0) ? '#4ade80' : '#f87171', // green-400 or red-400
+    }));
     
     return (
         <View style={statBarStyles.container}>
-            <Icon style={{ color: barColorStyle.backgroundColor }} />
+            <Icon color={animatedColorStyle.color} />
             <Text style={statBarStyles.label}>{label}</Text>
             <View style={statBarStyles.barBackground}>
-                <Animated.View style={[statBarStyles.barFill, barColorStyle, animatedStyle]} />
+                <Animated.View style={[statBarStyles.barFill, animatedBarFillStyle, animatedStyle]} />
             </View>
-            <Animated.Text style={statBarStyles.value}>{displayFinalValue}</Animated.Text>
-            <Text style={[statBarStyles.changeText, changeColorStyle]}>
-                ({displayChange >= 0 ? `+${displayChange}` : displayChange})
-            </Text>
+            <AnimatedTextInput editable={false} style={statBarStyles.value} animatedProps={animatedFinalValueProps} />
+            <AnimatedTextInput editable={false} style={[statBarStyles.changeText, animatedColorStyle]} animatedProps={animatedChangeProps} />
         </View>
     );
 };
@@ -592,9 +608,10 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
             const sign = value > 0 ? '+' : '';
             const colorStyle = value > 0 ? logStatChangesStyles.positiveChange : logStatChangesStyles.negativeChange;
             allChanges.push(
-                <Text key={stat} style={[logStatChangesStyles.changeText, colorStyle]}>
-                    <Icon /> {sign}{value}
-                </Text>
+                <View key={stat} style={logStatChangesStyles.changeItem}>
+                    <Icon color={colorStyle.color} style={logStatChangesStyles.icon} />
+                    <Text style={[logStatChangesStyles.changeText, colorStyle]}>{sign}{value}</Text>
+                </View>
             );
         }
     }
@@ -2032,12 +2049,20 @@ const logStatChangesStyles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 4,
+        alignItems: 'center',
+    },
+    changeItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    icon: {
+        width: 14,
+        height: 14,
+        marginRight: 2,
     },
     changeText: {
         fontSize: 12,
-        marginRight: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
     },
     positiveChange: {
         color: '#22c55e', // green-600
