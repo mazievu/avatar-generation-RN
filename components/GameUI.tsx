@@ -3,21 +3,19 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club, Language } from '../core/types';
 import { formatDate, getCharacterDisplayName } from '../core/utils';
 import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../core/constants';
-import {
-    FamilyTree,
-    GameLog,
-    SummaryScreen,
-    StartMenu,
-    InstructionsModal,    
-    SchoolChoiceModal,
-    UniversityChoiceModal,
-    UniversityMajorChoiceModal,
-    CareerChoiceModal,
-    PromotionModal,
-    LoanModal,
-    WelcomeBackMenu,
-    UnderqualifiedChoiceModal,
-} from './ui'; 
+import { FamilyTree } from './FamilyTree';
+import { GameLog } from './GameLog';
+import { SummaryScreen } from './SummaryScreen';
+import { StartMenu } from './StartMenu';
+import { InstructionsModal } from './InstructionsModal';    
+import { SchoolChoiceModal } from './SchoolChoiceModal';
+import { UniversityChoiceModal } from './UniversityChoiceModal';
+import { UniversityMajorChoiceModal } from './UniversityMajorChoiceModal';
+import { CareerChoiceModal } from './CareerChoiceModal';
+import { PromotionModal } from './PromotionModal';
+import { LoanModal } from './LoanModal';
+import { WelcomeBackMenu } from './WelcomeBackMenu';
+import { UnderqualifiedChoiceModal } from './UnderqualifiedChoiceModal'; 
 import { EventModal } from './EventModal';
 import { BusinessManagementModal } from './BusinessManagementModal';
 import { CharacterDetailModal } from './CharacterDetailModal';

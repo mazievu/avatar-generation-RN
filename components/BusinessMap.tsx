@@ -9,7 +9,7 @@ import { BusinessMapSVG } from './BusinessMapSVG';
 import { calculateBusinessMonthlyNetIncome } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { RobotAvatarIcon } from './icons';
-import { ModalBase } from './ui'; // Assuming ModalBase is now in ui.tsx
+import { ModalBase } from './ModalBase';
 
 // Modal for purchasing
 const BusinessPurchaseModal: React.FC<{

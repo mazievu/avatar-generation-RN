@@ -8,7 +8,8 @@ import { getAllEvents } from '../core/gameData';
 import { t, displayPhase, displayStatus, displayRelationshipStatus } from '../core/localization';
 import { getCharacterDisplayName } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
-import { GameLog, StatBar } from './ui';
+import { GameLog } from './GameLog';
+import { StatBar } from './StatBar';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon, getPetIcon } from './icons';
 
 interface CharacterDetailModalProps {

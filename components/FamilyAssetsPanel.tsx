@@ -4,7 +4,7 @@ import type { PurchasedAsset, AssetDefinition, Stats, Language } from '../core/t
 import { t } from '../core/localization';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
-import { ModalBase } from './ui'; // Assuming ModalBase is now in ui.tsx
+import { ModalBase } from './ModalBase';
 import { imageAssets } from './ImageAssets';
 
 interface AssetSlotProps {

@@ -7,7 +7,7 @@ import { getAllEvents } from '../core/gameData';
 import { t } from '../core/localization';
 import { getCharacterDisplayName } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
-import { StatBar } from './ui'; // StatBar is in ui.tsx
+import { StatBar } from './StatBar';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon, MoneyIcon } from './icons';
 
 interface EventModalProps {
