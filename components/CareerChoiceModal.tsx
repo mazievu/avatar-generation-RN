@@ -1,11 +1,20 @@
 import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+
+
 import type { Character, Language } from '../core/types';
-import { ModalBase } from './ModalBase';
+import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { CAREER_LADDER, VOCATIONAL_TRAINING } from '../core/constants';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface LocalizedProps {
     lang: Language;
@@ -18,7 +27,9 @@ interface CareerChoiceModalProps extends LocalizedProps {
     currentFunds: number;
 }
 export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character, options, onSelect, currentFunds, lang }) => (
-     <ModalBase titleKey="modal_career_title" characterName={getCharacterDisplayName(character, lang)} descriptionKey="modal_career_desc" lang={lang}>
+     <ComicPanelModal visible={true} onClose={() => {}} rotate="1deg">
+        <Text style={careerChoiceModalStyles.title}>{t('modal_career_title', lang)}</Text>
+        <Text style={careerChoiceModalStyles.description}>{t('modal_career_desc', lang)}</Text>
         {options.map((optionKey, index) => {
              if (CAREER_LADDER[optionKey]) {
                 const track = CAREER_LADDER[optionKey];
@@ -68,10 +79,21 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
             }
             return null;
         })}
-    </ModalBase>
+    </ComicPanelModal>
 );
 
 const careerChoiceModalStyles = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#1e293b',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 16,
+    color: '#475569',
+    marginBottom: 24,
+  },
     choiceContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -102,7 +124,7 @@ const careerChoiceModalStyles = StyleSheet.create({
     costUnaffordable: {
         color: '#ef4444', // red-500
     },
-    choiceDescription: {
+    choiceEffects: {
         fontSize: 12,
         color: '#475569', // slate-600
         marginTop: 4,

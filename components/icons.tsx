@@ -9,6 +9,8 @@ import { StyleProp, ViewStyle } from 'react-native';
 interface IconProps {
     style?: StyleProp<ViewStyle>;
     color?: string;
+    width?: number;
+    height?: number;
 }
 
 export const IqIcon: React.FC<IconProps> = ({ style, color }) => (
@@ -118,3 +120,9 @@ export const LockClosedIcon: React.FC<IconProps> = ({ style, color }) => (
       <Path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
     </Svg>
   );
+
+export const CloseIcon: React.FC<IconProps> = ({ style, color }) => (
+  <Svg style={style} viewBox="0 0 24 24" fill={color || "currentColor"}>
+    <Path fillRule="evenodd" d="M12 10.586l4.95-4.95a1 1 0 111.414 1.414L13.414 12l4.95 4.95a1 1 0 01-1.414 1.414L12 13.414l-4.95 4.95a1 1 0 01-1.414-1.414L10.586 12 5.636 7.05a1 1 0 011.414-1.414L12 10.586z" clipRule="evenodd" />
+  </Svg>
+);

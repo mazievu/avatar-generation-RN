@@ -1,6 +1,13 @@
 import * as React from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 const ChoiceButton: React.FC<{onClick: () => void, disabled?: boolean, children: React.ReactNode}> = ({onClick, disabled, children}) => {
     const pressState = useSharedValue(0); // 0 for up, 1 for down

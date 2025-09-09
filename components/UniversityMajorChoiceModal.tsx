@@ -1,10 +1,20 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+
+
+
 import type { Character, UniversityMajor, Language } from '../core/types';
-import { ModalBase } from './ModalBase';
+import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface LocalizedProps {
     lang: Language;
@@ -53,10 +63,10 @@ const universityMajorChoiceModalStyles = StyleSheet.create({
     },
     choiceName: {
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: responsiveFontSize(16),
     },
     choiceCost: {
-        fontSize: 14,
+        fontSize: responsiveFontSize(14),
     },
     costAffordable: {
         color: '#64748b', // slate-500
@@ -65,9 +75,9 @@ const universityMajorChoiceModalStyles = StyleSheet.create({
         color: '#ef4444', // red-500
     },
     choiceDescription: {
-        fontSize: 12,
+        fontSize: responsiveFontSize(12),
         color: '#475569', // slate-600
-        marginTop: 4,
+        marginTop: responsiveSize(4),
     },
     unaffordableSection: {
         marginTop: 16,
@@ -78,14 +88,14 @@ const universityMajorChoiceModalStyles = StyleSheet.create({
     },
     unaffordableText: {
         color: '#ef4444', // red-500
-        marginBottom: 8,
+        marginBottom: responsiveSize(8),
     },
     button: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
+        paddingVertical: responsiveSize(12),
+        paddingHorizontal: responsiveSize(24),
         borderRadius: 8,
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: responsiveSize(12),
         borderBottomWidth: 4,
     },
     buttonSlate: {
@@ -95,6 +105,6 @@ const universityMajorChoiceModalStyles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: responsiveFontSize(16),
     },
 });

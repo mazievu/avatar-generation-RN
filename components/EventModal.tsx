@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageSourcePropType, Dimensions } from 'react-native';
+
+
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { BlurView } from '@react-native-community/blur';
 import type { Character, GameEvent, EventChoice, EventEffect, Manifest, Language, Stats } from '../core/types';
 import { getAllEvents } from '../core/gameData';
 import { t } from '../core/localization';
@@ -9,6 +10,14 @@ import { getCharacterDisplayName } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { StatBar } from './StatBar';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon, MoneyIcon } from './icons';
+import { ComicPanelModal } from './ComicPanelModal';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface EventModalProps {
   lang: Language;
@@ -99,20 +108,16 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   }
 
   return (
-    <View style={eventModalStyles.overlay}>
-        <BlurView
-            style={eventModalStyles.absolute}
-            blurType="dark"
-            blurAmount={10}
-        />
-      <View style={eventModalStyles.modalContainer}>
+    <ComicPanelModal visible={true} onClose={onClose} rotate="2deg">
+        
+      
         <View style={eventModalStyles.header}>
             <TouchableOpacity onPress={() => onAvatarClick(character)} style={eventModalStyles.avatarButton}>
                 <AgeAwareAvatarPreview
                     manifest={manifest}
                     character={character}
                     images={images}
-                    size={{ width: 80, height: 80 }}
+                    size={{ width: responsiveSize(80), height: responsiveSize(80) }}
                 />
             </TouchableOpacity>
             <View style={eventModalStyles.headerTextContainer}>
@@ -175,7 +180,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                     key={stat}
                                     Icon={statIcons[stat] || IqIcon}
                                     label={statLabels[stat]}
-                                    initialValue={initialValue}
+                                    
                                     value={finalValue}
                                     max={stat === 'iq' ? 200 : 100}
                                     color={'#cbd5e1'}
@@ -206,40 +211,10 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                 </View>
             )}
         </View>
-      </View>
-  );
+      </ComicPanelModal>
 };
 
 const eventModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-        zIndex: 50,
-    },
-    absolute: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        borderRadius: 8,
-        width: '90%',
-        maxWidth: 600,
-        maxHeight: '90%',
-        overflow: 'hidden',
-        padding: 16,
-        transform: [{ rotate: '2deg' }],
-    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -252,21 +227,22 @@ const eventModalStyles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 22,
+        fontSize: responsiveFontSize(22),
         fontWeight: 'bold',
         color: '#1e293b', // slate-800
     },
     subtitle: {
-        fontSize: 14,
+        fontSize: responsiveFontSize(14),
         color: '#475569', // slate-600
     },
     characterName: {
         fontWeight: 'bold',
     },
     description: {
-        fontSize: 16,
+        fontSize: responsiveFontSize(16),
         color: '#333',
         marginBottom: 20,
+        flexWrap: 'wrap',
     },
     choicesContainer: {
         // space-y-3
@@ -286,16 +262,17 @@ const eventModalStyles = StyleSheet.create({
         flex: 1,
     },
     choiceButtonText: {
-        fontSize: 16,
+        fontSize: responsiveFontSize(16),
         fontWeight: 'bold',
         color: '#333',
+        flexWrap: 'wrap',
     },
     choiceTriggerText: {
-        fontSize: 12,
+        fontSize: responsiveFontSize(12),
         color: '#64748b', // slate-500
     },
     fundChangeText: {
-        fontSize: 14,
+        fontSize: responsiveFontSize(14),
         fontWeight: 'bold',
         marginLeft: 8,
     },
@@ -309,7 +286,7 @@ const eventModalStyles = StyleSheet.create({
         // space-y-4
     },
     outcomeMessage: {
-        fontSize: 16,
+        fontSize: responsiveFontSize(16),
         fontStyle: 'italic',
         color: '#475569', // slate-600
         marginBottom: 16,
@@ -324,7 +301,7 @@ const eventModalStyles = StyleSheet.create({
     },
     fundChangeDetailText: {
         marginLeft: 8,
-        fontSize: 14,
+        fontSize: responsiveFontSize(14),
         fontWeight: 'bold',
     },
     okButton: {
@@ -338,7 +315,7 @@ const eventModalStyles = StyleSheet.create({
     },
     okButtonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: responsiveFontSize(16),
         fontWeight: 'bold',
     },
 });

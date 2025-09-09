@@ -1,5 +1,6 @@
-import React, { useState, useRef, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType, Dimensions } from 'react-native';
+
+
 import Slider from '@react-native-community/slider'; // Import Slider
 
 import type { GameState, BusinessDefinition, Business, Character, Manifest, Language } from '../core/types';
@@ -10,6 +11,13 @@ import { calculateBusinessMonthlyNetIncome } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { RobotAvatarIcon } from './icons';
 import { ModalBase } from './ModalBase';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 // Modal for purchasing
 const BusinessPurchaseModal: React.FC<{

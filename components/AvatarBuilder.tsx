@@ -1,9 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Dimensions } from 'react-native';
+
+
 import { LayerKey, Manifest, AvatarState, Character, Gender, LayerDefinition, exampleManifest } from "../core/types";
 import { LockClosedIcon } from './icons';
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 // =============================================
 // Helpers (Simplified for React Native)

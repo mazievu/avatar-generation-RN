@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType, Dimensions } from 'react-native';
+
+
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club, Language } from '../core/types';
 import { formatDate, getCharacterDisplayName } from '../core/utils';
 import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../core/constants';
@@ -25,6 +27,13 @@ import { exampleManifest } from '../core/types';
 import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { Picker } from '@react-native-picker/picker';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 type SceneName = 'tree' | 'log' | 'assets' | 'business';
 

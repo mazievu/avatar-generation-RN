@@ -1,10 +1,19 @@
 import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+
+
 import type { Character, SchoolOption, Language } from '../core/types';
-import { ModalBase } from './ModalBase';
+import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface LocalizedProps {
     lang: Language;
@@ -17,7 +26,9 @@ interface SchoolChoiceModalProps extends LocalizedProps {
     currentFunds: number;
 }
 export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ character, schoolOptions, onSelect, currentFunds, lang }) => (
-    <ModalBase titleKey="modal_school_title" characterName={getCharacterDisplayName(character, lang)} descriptionKey="modal_school_desc" lang={lang}>
+    <ComicPanelModal visible={true} onClose={() => {}} rotate="2deg">
+      <Text style={schoolChoiceModalStyles.title}>{t('modal_school_title', lang)}</Text>
+      <Text style={schoolChoiceModalStyles.description}>{t('modal_school_desc', lang)}</Text>
         {schoolOptions.map((option, index) => (
             <ChoiceButton key={index} onClick={() => onSelect(option)} disabled={currentFunds < option.cost}>
                 <View style={schoolChoiceModalStyles.choiceContent}>
@@ -29,10 +40,24 @@ export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ character,
                 </Text>
             </ChoiceButton>
         ))}
-    </ModalBase>
+    </ComicPanelModal>
 );
 
 const schoolChoiceModalStyles = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#1e293b',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 16,
+    color: '#475569',
+    marginBottom: 24,
+  },
+  choicesContainer: {
+    gap: 12,
+  },
     choiceContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',

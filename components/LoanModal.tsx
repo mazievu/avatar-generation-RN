@@ -1,8 +1,17 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+
+
 import type { Language } from '../core/types';
 import { t } from '../core/localization';
+import { ComicPanelModal } from './ComicPanelModal';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface LocalizedProps {
     lang: Language;
@@ -18,99 +27,61 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
     const [selectedTerm, setSelectedTerm] = React.useState(terms[0]);
 
     return (
-        <View style={loanModalStyles.overlay} >
-            <BlurView
-                style={loanModalStyles.absolute}
-                blurType="dark"
-                blurAmount={10}
-            />
-            <View style={loanModalStyles.comicPanelWrapper}>
-                <View style={loanModalStyles.comicPanel}>
-                    <Text style={loanModalStyles.title}>{t('modal_loan_title', lang)}</Text>
-                    <Text style={loanModalStyles.description}>{t('modal_loan_desc', lang)}</Text>
-                    
-                    <View style={loanModalStyles.optionsContainer}>
-                        <View>
-                            <Text style={loanModalStyles.label}>{t('loan_amount_label', lang)}</Text>
-                            <View style={loanModalStyles.grid}>
-                                {amounts.map(amount => (
-                                    <TouchableOpacity 
-                                        key={amount}
-                                        onPress={() => setSelectedAmount(amount)}
-                                        style={[
-                                            loanModalStyles.gridButton,
-                                            selectedAmount === amount ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
-                                        ]}
-                                    >
-                                        <Text style={loanModalStyles.gridButtonText}>
-                                            ${amount.toLocaleString()}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </View>
-                        <View>
-                             <Text style={loanModalStyles.label}>{t('loan_term_label', lang)}</Text>
-                             <View style={loanModalStyles.grid}>
-                                {terms.map(term => (
-                                    <TouchableOpacity 
-                                        key={term}
-                                        onPress={() => setSelectedTerm(term)}
-                                        style={[
-                                            loanModalStyles.gridButton,
-                                            selectedTerm === term ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
-                                        ]}
-                                    >
-                                        <Text style={loanModalStyles.gridButtonText}>
-                                            {term}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </View>
+        <ComicPanelModal visible={true} onClose={() => {}} rotate="-1deg">
+            <Text style={loanModalStyles.title}>{t('modal_loan_title', lang)}</Text>
+            <Text style={loanModalStyles.description}>{t('modal_loan_desc', lang)}</Text>
+            
+            <View style={loanModalStyles.optionsContainer}>
+                <View>
+                    <Text style={loanModalStyles.label}>{t('loan_amount_label', lang)}</Text>
+                    <View style={loanModalStyles.grid}>
+                        {amounts.map(amount => (
+                            <TouchableOpacity 
+                                key={amount}
+                                onPress={() => setSelectedAmount(amount)}
+                                style={[
+                                    loanModalStyles.gridButton,
+                                    selectedAmount === amount ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
+                                ]}
+                            >
+                                <Text style={loanModalStyles.gridButtonText}>
+                                    ${amount.toLocaleString()}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
                     </View>
-                    
-                    <TouchableOpacity onPress={() => onLoanChoice(selectedAmount, selectedTerm)} style={[loanModalStyles.chunkyButton, loanModalStyles.chunkyButtonGreen]}>
-                        <Text style={loanModalStyles.chunkyButtonText}>
-                            {t('accept_loan_button', lang)}
-                        </Text>
-                    </TouchableOpacity>
+                </View>
+                <View>
+                        <Text style={loanModalStyles.label}>{t('loan_term_label', lang)}</Text>
+                        <View style={loanModalStyles.grid}>
+                        {terms.map(term => (
+                            <TouchableOpacity 
+                                key={term}
+                                onPress={() => setSelectedTerm(term)}
+                                style={[
+                                    loanModalStyles.gridButton,
+                                    selectedTerm === term ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
+                                ]}
+                            >
+                                <Text style={loanModalStyles.gridButtonText}>
+                                    {term}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 </View>
             </View>
-        </View>
+            
+            <TouchableOpacity onPress={() => onLoanChoice(selectedAmount, selectedTerm)} style={[loanModalStyles.chunkyButton, loanModalStyles.chunkyButtonGreen]}>
+                <Text style={loanModalStyles.chunkyButtonText}>
+                    {t('accept_loan_button', lang)}
+                </Text>
+            </TouchableOpacity>
+        </ComicPanelModal>
     );
 };
 
 const loanModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 50,
-        padding: 16,
-    },
-    absolute: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0
-    },
-    comicPanelWrapper: {
-        // transform: [{ rotate: '-1deg' }],
-    },
-    comicPanel: {
-        backgroundColor: 'white',
-        padding: 24,
-        maxWidth: 500,
-        width: '100%',
-        borderRadius: 8,
-    },
     title: {
         fontSize: 24,
         fontWeight: 'bold',

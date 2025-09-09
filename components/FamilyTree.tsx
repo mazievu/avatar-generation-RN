@@ -1,8 +1,17 @@
 import * as React from 'react';
-import { View, StyleSheet, ImageSourcePropType } from 'react-native';
+import { View, StyleSheet, ImageSourcePropType, Dimensions } from 'react-native';
+
+
 import type { Character, Manifest, Language } from '../core/types';
 import { RelationshipStatus } from '../core/types';
 import { CharacterNode } from './CharacterNode';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface LocalizedProps {
   lang: Language;

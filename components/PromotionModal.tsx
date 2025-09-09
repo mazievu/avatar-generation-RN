@@ -1,8 +1,17 @@
 import * as React from 'react';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+
+
 import type { Language } from '../core/types';
-import { ModalBase } from './ModalBase';
+import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface LocalizedProps {
     lang: Language;
@@ -14,22 +23,35 @@ interface PromotionModalProps extends LocalizedProps {
     onAccept: () => void;
 }
 export const PromotionModal: React.FC<PromotionModalProps> = ({ characterName, newTitle, onAccept, lang }) => (
-    <ModalBase
-        titleKey="modal_promotion_title"
-        characterName={characterName}
-        descriptionKey="modal_promotion_desc"
-        descriptionReplacements={{ name: characterName, title: newTitle }}
-        lang={lang}
+    <ComicPanelModal
+        visible={true}
+        onClose={() => {}} // No explicit close button, so provide a dummy
+        rotate="0deg"
     >
+        <Text style={promotionModalStyles.title}>{t('modal_promotion_title', lang)}</Text>
+        <Text style={promotionModalStyles.description}>{t('modal_promotion_desc', lang, { name: characterName, title: newTitle })}</Text>
         <TouchableOpacity onPress={onAccept} style={[promotionModalStyles.button, promotionModalStyles.buttonGreen]}>
             <Text style={promotionModalStyles.buttonText}>
                 {t('accept_promotion_button', lang)}
             </Text>
         </TouchableOpacity>
-    </ModalBase>
+    </ComicPanelModal>
 );
 
 const promotionModalStyles = StyleSheet.create({
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    description: {
+        fontSize: 16,
+        color: '#475569', // slate-600
+        marginBottom: 24,
+        textAlign: 'center',
+    },
     button: {
         paddingVertical: 12,
         paddingHorizontal: 24,

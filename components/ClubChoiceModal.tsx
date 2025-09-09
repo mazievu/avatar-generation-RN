@@ -1,8 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+
+
 import type { Character, Club, Language } from '../core/types';
-import { ModalBase } from './ModalBase';
+import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface ClubChoiceModalProps {
   character: Character;
@@ -14,12 +23,13 @@ interface ClubChoiceModalProps {
 
 export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clubs, onSelect, onSkip, lang }) => {
   return (
-    <ModalBase 
-      titleKey="modal_club_choice_title"
-      descriptionKey="modal_club_choice_desc"
-      characterName={character.name}
-      lang={lang}
+    <ComicPanelModal 
+      visible={true}
+      onClose={() => {}} // onClose should be passed from parent
+      rotate="-1deg"
     >
+      <Text style={clubChoiceModalStyles.title}>{t('modal_club_choice_title', lang)}</Text>
+      <Text style={clubChoiceModalStyles.description}>{t('modal_club_choice_desc', lang)}</Text>
       <View style={clubChoiceModalStyles.gridContainer}>
         {clubs.map((club) => (
           <View key={club.id} style={clubChoiceModalStyles.clubItem}>
@@ -41,11 +51,22 @@ export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clu
           {t('skip_clubs', lang)}
         </Text>
       </TouchableOpacity>
-    </ModalBase>
+    </ComicPanelModal>
   );
 };
 
 const clubChoiceModalStyles = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#1e293b',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 16,
+    color: '#475569',
+    marginBottom: 24,
+  },
     gridContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',

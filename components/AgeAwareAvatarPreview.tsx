@@ -1,7 +1,16 @@
 import React, { useMemo } from "react";
-import { View, Image, StyleSheet, ImageSourcePropType, ViewStyle } from 'react-native';
+import { View, Image, StyleSheet, ImageSourcePropType, ViewStyle, Dimensions } from 'react-native';
+
+
 import type { Manifest, AvatarState, LayerKey, Character } from '../core/types';
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 type AgeStage = 'baby' | 'child' | 'teen' | 'adult' | 'elder';
 

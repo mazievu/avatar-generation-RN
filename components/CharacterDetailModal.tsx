@@ -1,291 +1,255 @@
-import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType } from 'react-native';
-import type { Character, GameState, Manifest, Language } from '../core/types';
-import { BlurView } from '@react-native-community/blur';
-import { CAREER_LADDER, PET_DATA } from '../core/constants';
-import { CLUBS } from '../core/clubsAndEventsData';
-import { getAllEvents } from '../core/gameData';
-import { t, displayPhase, displayStatus, displayRelationshipStatus } from '../core/localization';
-import { getCharacterDisplayName } from '../core/utils';
+// src/components/CharacterDetailModal.tsx
+
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, ScrollView, FlatList, TouchableOpacity, Dimensions } from 'react-native';
+
+
+import { ComicPanelModal } from './ComicPanelModal';
+import type { Character, GameState, Language, Manifest, Club } from '../core/types';
+import { ImageSourcePropType } from 'react-native';
+import { t } from '../core/localization';
+
+// Import các component con và icons
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
-import { GameLog } from './GameLog';
-import { StatBar } from './StatBar';
-import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon, getPetIcon } from './icons';
+import { StatBar } from './StatBar'; 
+import { GameLog } from './GameLog'; 
+import { CloseIcon, IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons'; // Import tất cả icon cần thiết
 
 interface CharacterDetailModalProps {
-    lang: Language;
-    character: Character;
-    gameState: GameState;
-    onClose: () => void;
-    onCustomize: (characterId: string) => void;
-    images: Record<string, ImageSourcePropType>;
-    manifest: Manifest;
+  character: Character | null;
+  gameState: GameState;
+  onClose: () => void;
+  onCustomize: (characterId: string) => void;
+  lang: Language;
+  manifest: Manifest;
+  images: Record<string, ImageSourcePropType>;
+  clubs: Club[];
 }
 
-export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ character, gameState, onClose, onCustomize, images, manifest, lang }) => {
-    const [activeDetailTab, setActiveDetailTab] = React.useState('details');
-    const displayName = getCharacterDisplayName(character, lang);
-    const partner = character.partnerId ? gameState.familyMembers[character.partnerId] : null;
-    const partnerDisplayName = partner ? getCharacterDisplayName(partner, lang) : '';
+export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ character, gameState, onClose, onCustomize, lang, manifest, images, clubs }) => {
+  const [activeTab, setActiveTab] = useState('details');
 
-    const educationText = character.universityDegree ? t(character.universityDegree, lang) : (character.schoolHistory && character.schoolHistory.length > 0 ? t('education_some_school', lang) : t('education_none', lang));
-    const career = character.careerTrack && character.careerLevel !== undefined ? CAREER_LADDER[character.careerTrack]?.levels[character.careerLevel] : null;
-    const businessRole = character.businessId && character.businessSlotIndex !== undefined ? gameState.familyBusinesses[character.businessId]?.slots[character.businessSlotIndex] : null;
-    const pet = character.petId ? gameState.familyPets[character.petId] : null;
+  if (!character) {
+    return null;
+  }
 
-    return (
-        <View style={characterDetailModalStyles.overlay}>
-            <BlurView
-                style={characterDetailModalStyles.absolute}
-                blurType="dark"
-                blurAmount={10}
-            />
-            <View style={characterDetailModalStyles.modalContainer}>
-                <View style={characterDetailModalStyles.header}>
-                    <View>
-                        <Text style={characterDetailModalStyles.title}>
-                            {displayName} (G{character.generation})
-                        </Text>
-                        <TouchableOpacity onPress={onClose} style={characterDetailModalStyles.closeButton}><Text style={characterDetailModalStyles.closeButtonText}>&times;</Text></TouchableOpacity>
-                    </View>
-
-                    <View style={characterDetailModalStyles.tabContainer}>
-                        <TouchableOpacity
-                            onPress={() => setActiveDetailTab('details')}
-                            style={[characterDetailModalStyles.tabButton, activeDetailTab === 'details' && characterDetailModalStyles.tabButtonActive]}
-                        >
-                            <Text style={[characterDetailModalStyles.tabButtonText, activeDetailTab === 'details' && characterDetailModalStyles.tabButtonTextActive]}>
-                                {t('tab_details', lang)}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setActiveDetailTab('events')}
-                            style={[characterDetailModalStyles.tabButton, activeDetailTab === 'events' && characterDetailModalStyles.tabButtonActive]}
-                        >
-                            <Text style={[characterDetailModalStyles.tabButtonText, activeDetailTab === 'events' && characterDetailModalStyles.tabButtonTextActive]}>
-                                {t('tab_life_events', lang)}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                {activeDetailTab === 'details' && (
-                    <ScrollView style={characterDetailModalStyles.detailsContent}>
-                        <View style={characterDetailModalStyles.detailsSection}>
-                            <View style={characterDetailModalStyles.avatarSection}>
-                                {(character.avatarState || character.staticAvatarUrl) && Object.keys(images).length > 0 ? (
-                                    <AgeAwareAvatarPreview
-                                        manifest={manifest}
-                                        character={character}
-                                        images={images}
-                                        size={{ width: 128, height: 128 }}
-                                    />
-                                ) : null}
-                            </View>
-
-                            <View style={characterDetailModalStyles.infoSection}>
-                                <View>
-                                    <Text style={characterDetailModalStyles.infoText}>{displayPhase(character.phase, lang)} | {displayStatus(character.status, lang)}</Text>
-                                    <Text style={characterDetailModalStyles.infoText}>{character.isAlive ? `${character.age} ${t('age_short', lang)}` : `${t('deceased_at', lang)} ${character.age}`}</Text>
-                                </View>
-
-                                <Text style={characterDetailModalStyles.infoText}>{t('relationship_label', lang)}: {displayRelationshipStatus(character.relationshipStatus, lang)}{partner ? ` ${t('with_person', lang)} ${partnerDisplayName}`: ''}</Text>
-                            </View>
-                        </View>
-
-                        {pet && (
-                            <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 4}}>
-                                {getPetIcon(pet.type)}
-                                <Text style={[characterDetailModalStyles.infoText, {marginLeft: 4}]}>
-                                    {t('pet_label', lang)}: {pet.name} {t('the_pet_type', lang)} {t(PET_DATA[pet.type].nameKey, lang)}
-                                </Text>
-                            </View>
-                        )}
-
-                        <Text style={characterDetailModalStyles.infoText}>{t('education_label', lang)}: {educationText}</Text>
-                        {character.major && <Text style={characterDetailModalStyles.infoText}>{t('major_label', lang)}: {t(character.major, lang)}</Text>}
-                        {career && <Text style={characterDetailModalStyles.infoText}>{t('career_label', lang)}: {t(career.titleKey, lang)} (${career.salary.toLocaleString()}/yr)</Text>}
-                        {businessRole && <Text style={characterDetailModalStyles.infoText}>{t('working_at_label', lang)}: {businessRole.businessName} ({businessRole.role})</Text>}
-
-                        {character.currentClubs && character.currentClubs.length > 0 && (
-                            <View style={characterDetailModalStyles.section}>
-                                <Text style={characterDetailModalStyles.sectionTitle}>{t('clubs_label', lang)}:</Text>
-                                <View style={characterDetailModalStyles.sectionContent}>
-                                    {character.currentClubs.map(clubId => {
-                                        const club = CLUBS.find(c => c.id === clubId);
-                                        return club ? <Text key={clubId} style={characterDetailModalStyles.sectionItem}>{t(club.nameKey, lang)}</Text> : null;
-                                    }) }
-                                </View>
-                            </View>
-                        )}
-
-                        {character.completedOneTimeEvents && character.completedOneTimeEvents.length > 0 && (
-                            <View style={characterDetailModalStyles.section}>
-                                <Text style={characterDetailModalStyles.sectionTitle}>{t('life_events_label', lang)}:</Text>
-                                <View style={characterDetailModalStyles.sectionContent}>
-                                    {character.completedOneTimeEvents.map((eventId, index) => {
-                                        const event = getAllEvents().find(e => e.id === eventId);
-                                        return event ? <Text key={`${eventId}-${index}`} style={characterDetailModalStyles.sectionItem}>{t(event.titleKey, lang)}</Text> : null;
-                                    }) }
-                                </View>
-                            </View>
-                        )}
-
-                        {character.isAlive && (
-                            <View style={characterDetailModalStyles.statsSection}>
-                                <StatBar Icon={IqIcon} value={character.stats.iq} max={200} label="IQ" color="#60a5fa" /> {/* blue-400 */}
-                                <StatBar Icon={HappinessIcon} value={character.stats.happiness} max={100} label={t('stat_happiness', lang)} color="#facc15" /> {/* yellow-400 */}
-                                <StatBar Icon={EqIcon} value={character.stats.eq} max={100} label={t('stat_eq', lang)} color="#a78bfa" /> {/* purple-400 */}
-                                <StatBar Icon={HealthIcon} value={character.stats.health} max={100} label={t('stat_health', lang)} color="#f87171" /> {/* red-400 */}
-                                {character.age >= 18 && <StatBar Icon={SkillIcon} value={character.stats.skill} max={100} label={t('stat_skill', lang)} color="#4ade80" />} {/* green-400 */}
-                            </View>
-                        )}
-                        {!character.staticAvatarUrl && (
-                            <View style={characterDetailModalStyles.customizeButtonContainer}>
-                                <TouchableOpacity onPress={() => onCustomize(character.id)} style={characterDetailModalStyles.customizeButton}>
-                                    <Text style={characterDetailModalStyles.customizeButtonText}>
-                                        Customize
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    </ScrollView>
-                )}
-
-                {activeDetailTab === 'events' && (
-                    <View style={characterDetailModalStyles.eventsContent}>
-                        <GameLog
-                            log={gameState.gameLog.filter(entry => entry.characterId === character.id)}
-                            lang={lang}
-                            familyMembers={gameState.familyMembers}
-                        />
-                    </View>
-                )}
-            </View>
+  // ---- RENDER FUNCTIONS CHO TỪNG TAB ----
+  const renderDetailTab = () => (
+    <>
+      {/* Phần thông tin cơ bản */}
+      <View style={styles.infoSection}>
+        <View style={styles.avatarContainer}>
+          <AgeAwareAvatarPreview character={character} size={{ width: responsiveSize(128), height: responsiveSize(128) }} manifest={manifest} images={images} />
         </View>
-    );
+        <View style={styles.basicInfo}>
+          <Text style={styles.infoText}>{`Giai đoạn: ${character.phase} | Trạng thái: ${character.status}`}</Text>
+          <Text style={styles.infoText}>{character.isAlive ? `Tuổi: ${character.age}` : `Mất lúc: ${character.age} tuổi`}</Text>
+          <Text style={styles.infoText}>{`Quan hệ: ${character.relationshipStatus}`}</Text>
+        </View>
+      </View>
+
+      {/* Các thông tin chi tiết */}
+      <View style={styles.detailList}>
+        <Text style={styles.detailText}><Text style={styles.bold}>Học vấn:</Text> {character.education}</Text>
+        <Text style={styles.detailText}><Text style={styles.bold}>Sự nghiệp:</Text> {character.careerTrack ? t(character.careerTrack, lang) : 'N/A'}</Text>
+      </View>
+
+      {/* Danh sách Câu lạc bộ */}
+      <Text style={styles.sectionTitle}>Câu Lạc Bộ</Text>
+      <FlatList
+        data={character.currentClubs}
+        keyExtractor={(item) => item} // item is the club ID string
+        renderItem={({ item: clubId }) => {
+          const club = clubs.find(c => c.id === clubId);
+          return club ? <Text style={styles.listItem}>• {t(club.nameKey, lang)}</Text> : null;
+        }}
+        ListEmptyComponent={<Text style={styles.emptyListText}>Chưa tham gia câu lạc bộ nào.</Text>}
+      />
+
+      {/* Các thanh chỉ số */}
+      {character.isAlive && (
+        <View style={styles.statsContainer}>
+          <StatBar Icon={IqIcon} label="IQ" value={character.stats.iq} max={200} color="#3b82f6" />
+          <StatBar Icon={HappinessIcon} label="Hạnh phúc" value={character.stats.happiness} max={100} color="#f59e0b" />
+          <StatBar Icon={EqIcon} label="EQ" value={character.stats.eq} max={100} color="#8b5cf6" />
+          <StatBar Icon={HealthIcon} label="Sức khỏe" value={character.stats.health} max={100} color="#ef4444" />
+          {character.age >= 18 && (
+            <StatBar Icon={SkillIcon} label="Kỹ năng" value={character.stats.skill} max={100} color="#22c55e" />
+          )}
+        </View>
+      )}
+
+      {/* Nút Tùy chỉnh */}
+      {!character.staticAvatarUrl && (
+        <TouchableOpacity style={styles.customizeButton} onPress={() => onCustomize(character.id)}>
+          <Text style={styles.customizeButtonText}>Tùy Chỉnh</Text>
+        </TouchableOpacity>
+      )}
+    </>
+  );
+
+  const renderEventsTab = () => (
+    <GameLog 
+        log={gameState.gameLog.filter(entry => entry.characterId === character.id)}
+        familyMembers={gameState.familyMembers}
+        lang={gameState.lang}
+    />
+  );
+  
+  // ---- RENDER CHÍNH CỦA MODAL ----
+  return (
+    <ComicPanelModal visible={!!character} onClose={onClose} rotate="3deg">
+      <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <Text style={styles.characterName}>{character.name} (G{character.generation})</Text>
+            <Pressable onPress={onClose} style={styles.closeButton}>
+              <CloseIcon width={32} height={32} color="#94a3b8" />
+            </Pressable>
+          </View>
+
+          <View style={styles.tabContainer}>
+            <Pressable 
+              style={[styles.tab, activeTab === 'details' && styles.activeTab]}
+              onPress={() => setActiveTab('details')}
+            >
+              <Text style={[styles.tabText, activeTab === 'details' && styles.activeTabText]}>Chi Tiết</Text>
+            </Pressable>
+            <Pressable 
+              style={[styles.tab, activeTab === 'events' && styles.activeTab]}
+              onPress={() => setActiveTab('events')}
+            >
+              <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Sự Kiện</Text>
+            </Pressable>
+          </View>
+          
+          {activeTab === 'details' ? renderDetailTab() : renderEventsTab()}
+      </ScrollView>
+    </ComicPanelModal>
+  );
 };
 
-const characterDetailModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-        zIndex: 50,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        borderRadius: 8,
-        width: '90%',
-        maxWidth: 600,
-        maxHeight: '90%',
-        overflow: 'hidden',
-        transform: [{ rotate: '3deg' }],
-    },
-    header: {
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e2e8f0', // slate-200
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-    },
-    closeButton: {
-        position: 'absolute',
-        top: 16,
-        right: 16,
-    },
-    closeButtonText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#94a3b8', // slate-400
-    },
-    tabContainer: {
-        flexDirection: 'row',
-        marginTop: 16,
-    },
-    tabButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        marginRight: 8,
-        borderRadius: 4,
-    },
-    tabButtonActive: {
-        backgroundColor: '#eff6ff', // blue-50
-    },
-    tabButtonText: {
-        fontSize: 16,
-        color: '#475569', // slate-600
-    },
-    tabButtonTextActive: {
-        fontWeight: 'bold',
-        color: '#2563eb', // blue-700
-    },
-    detailsContent: {
-        padding: 16,
-    },
-    eventsContent: {
-        flex: 1,
-        padding: 16,
-    },
-    detailsSection: {
-        flexDirection: 'row',
-        marginBottom: 16,
-    },
-    avatarSection: {
-        marginRight: 16,
-    },
-    infoSection: {
-        flex: 1,
-    },
-    infoText: {
-        fontSize: 14,
-        marginBottom: 4,
-        color: '#333',
-    },
-    section: {
-        marginBottom: 12,
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 4,
-        color: '#333',
-    },
-    sectionContent: {
-        marginLeft: 8,
-    },
-    sectionItem: {
-        fontSize: 14,
-        color: '#555',
-    },
-    statsSection: {
-        marginTop: 16,
-        borderTopWidth: 1,
-        borderTopColor: '#e2e8f0', // slate-200
-        paddingTop: 16,
-    },
-    customizeButtonContainer: {
-        marginTop: 16,
-        alignItems: 'center',
-    },
-    customizeButton: {
-        backgroundColor: '#60a5fa', // blue-400
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-    },
-    customizeButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+// ---- STYLESHEET ----
+const styles = StyleSheet.create({
+  // --- Header ---
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: responsiveSize(8),
+  },
+  characterName: {
+    fontSize: responsiveFontSize(28),
+    fontWeight: '900',
+    color: '#1e293b',
+    flex: 1,
+    marginRight: 8,
+  },
+  closeButton: {
+    padding: responsiveSize(4), // Tăng vùng có thể nhấn
+  },
+  
+  // --- Tabs ---
+  tabContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  tab: {
+    paddingVertical: responsiveSize(12),
+    paddingHorizontal: responsiveSize(4),
+    marginRight: responsiveSize(20),
+  },
+  activeTab: {
+    borderBottomWidth: 3,
+    borderBottomColor: '#4f46e5',
+  },
+  tabText: {
+    fontSize: responsiveFontSize(16),
+    fontWeight: 'bold',
+    color: '#64748b',
+  },
+  activeTabText: {
+    color: '#4f46e5',
+  },
+  
+  // --- Content ---
+  infoSection: {
+    flexDirection: 'row',
+    gap: responsiveSize(16),
+    alignItems: 'center',
+    marginBottom: responsiveSize(16),
+  },
+  avatarContainer: {
+    width: responsiveSize(128),
+    height: responsiveSize(128),
+    borderRadius: 16,
+    borderWidth: 4,
+    borderColor: '#f59e0b',
+    overflow: 'hidden',
+    backgroundColor: '#f1f5f9',
+  },
+  basicInfo: {
+    flex: 1,
+    gap: responsiveSize(6),
+  },
+  infoText: {
+    fontSize: responsiveFontSize(14),
+    color: '#475569',
+  },
+  detailList: {
+    gap: responsiveSize(8),
+    marginBottom: responsiveSize(16),
+  },
+  detailText: {
+    fontSize: responsiveFontSize(14),
+    color: '#334155',
+  },
+  sectionTitle: {
+    fontSize: responsiveFontSize(18),
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginTop: responsiveSize(12),
+    marginBottom: responsiveSize(8),
+  },
+  listItem: {
+    fontSize: responsiveFontSize(14),
+    color: '#334155',
+    marginLeft: responsiveSize(8),
+    marginBottom: responsiveSize(4),
+  },
+  emptyListText: {
+    fontSize: responsiveFontSize(14),
+    color: '#64748b',
+    fontStyle: 'italic',
+    marginLeft: responsiveSize(8),
+  },
+  statsContainer: {
+    marginTop: responsiveSize(16),
+    padding: responsiveSize(16),
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+
+  // --- Button ---
+  customizeButton: {
+    marginTop: responsiveSize(24),
+    marginBottom: responsiveSize(16),
+    backgroundColor: '#fda4af',
+    borderRadius: 12,
+    paddingVertical: responsiveSize(14),
+    alignItems: 'center',
+    borderBottomWidth: 5,
+    borderBottomColor: '#f472b6',
+  },
+  customizeButtonText: {
+    fontWeight: '800',
+    color: '#334155',
+    fontSize: responsiveFontSize(16),
+  },
 });

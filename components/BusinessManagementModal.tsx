@@ -1,14 +1,23 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType, Pressable, Dimensions } from 'react-native';
+
+
 import { Picker } from '@react-native-picker/picker';
 import type { Business, GameState, Manifest, Language, Character } from '../core/types';
 import { BUSINESS_DEFINITIONS, ROBOT_HIRE_COST } from '../core/constants';
 import { t } from '../core/localization';
 import { getCharacterDisplayName, calculateEmployeeSalary } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
-import { UpgradeIcon, RobotAvatarIcon } from './icons';
+import { UpgradeIcon, RobotAvatarIcon, CloseIcon } from './icons';
 import { LifePhase, CharacterStatus } from '../core/types';
+import { ComicPanelModal } from './ComicPanelModal';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface BusinessManagementModalProps {
     lang: Language;
@@ -63,121 +72,82 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     };
 
     return (
-        <View style={businessManagementModalStyles.overlay}>
-            <BlurView
-                style={businessManagementModalStyles.absolute}
-                blurType="dark"
-                blurAmount={10}
-            />
-            <View style={businessManagementModalStyles.comicPanelWrapper}>
-                <View style={businessManagementModalStyles.comicPanel}>
-                    <View style={businessManagementModalStyles.header}>
-                        <View>
-                            <Text style={businessManagementModalStyles.title}>{t(businessDef.nameKey, lang)}</Text>
-                            <Text style={businessManagementModalStyles.levelText}>{t('level_label', lang)}: {business.level}</Text>
-                        </View>
-                        <TouchableOpacity onPress={onClose} style={businessManagementModalStyles.closeButton}><Text style={businessManagementModalStyles.closeButtonText}>&times;</Text></TouchableOpacity>
-                    </View>
-
-                    <ScrollView style={businessManagementModalStyles.slotsContainer}>
-                        <Text style={businessManagementModalStyles.sectionTitle}>{t('family_members_label', lang)}</Text>
-                        {business.slots.map((slot, index) => {
-                             const assignedCharacter = slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? gameState.familyMembers[slot.assignedCharacterId] : null;
-                             const isRobot = slot.assignedCharacterId === 'robot';
-                             const salary = assignedCharacter ? calculateEmployeeSalary(assignedCharacter) : 0;
-
-                             return (
-                                <View key={index} style={businessManagementModalStyles.slotItem}>
-                                    <View style={businessManagementModalStyles.avatarPlaceholder}>
-                                        {assignedCharacter ? (
-                                            <AgeAwareAvatarPreview manifest={manifest} character={assignedCharacter} images={images} size={{width: 64, height: 64}} />
-                                        ) : isRobot ? (
-                                            <RobotAvatarIcon style={businessManagementModalStyles.robotIcon} />
-                                        ) : (
-                                            <View style={businessManagementModalStyles.emptyAvatar} />
-                                        )}
-                                    </View>
-                                    <View style={businessManagementModalStyles.slotDetails}>
-                                        <Text style={businessManagementModalStyles.slotRole}>{t(slot.role, lang)}</Text>
-                                        <Text style={businessManagementModalStyles.slotRequirement}>{t('req_major_label', lang)}: {slot.requiredMajor === 'Unskilled' ? t('unskilled_major', lang) : t(slot.requiredMajor, lang)}</Text>
-                                        {assignedCharacter && (
-                                            <Text style={businessManagementModalStyles.slotSalary}>
-                                                {t('salary_label', lang)}: ${salary.toLocaleString()}/mo
-                                            </Text>
-                                        )}
-                                    </View>
-                                    <Picker
-                                        selectedValue={slot.assignedCharacterId || 'unassigned'}
-                                        onValueChange={(itemValue) => handleAssignmentChange(index, itemValue as string)}
-                                        style={businessManagementModalStyles.picker}
-                                        itemStyle={businessManagementModalStyles.pickerItem}
-                                    >
-                                        <Picker.Item label={t('unassigned_option', lang)} value="unassigned" />
-                                        <Picker.Item label={`${t('hire_robot_option', lang)} (-$${ROBOT_HIRE_COST}/mo)`} value="robot" />
-                                        {/* Optgroup is not directly supported in React Native Picker, so we'll just list items */}
-                                        {availableMembers.map(char => {
-                                            const isMajorMatch = slot.requiredMajor !== 'Unskilled' && char.major === slot.requiredMajor;
-                                            return (
-                                                <Picker.Item key={char.id} label={`${isMajorMatch ? '⭐ ' : ''}${getCharacterDisplayName(char, lang)} (Skill: ${Math.round(char.stats.skill)})`} value={char.id} />
-                                            )
-                                        })}
-                                    </Picker>
-                                </View>
-                             )
-                        })}
-                    </ScrollView>
-
-                    <View style={businessManagementModalStyles.footer}>
-                         {business.level < 2 && businessDef.upgradeSlots.length > 0 && (
-                            <TouchableOpacity
-                                onPress={() => onUpgradeBusiness(business.id)}
-                                disabled={!canUpgrade}
-                                style={[businessManagementModalStyles.upgradeButton, !canUpgrade && businessManagementModalStyles.upgradeButtonDisabled]}
-                            >
-                                <UpgradeIcon style={businessManagementModalStyles.upgradeIcon} />
-                                <Text style={businessManagementModalStyles.upgradeButtonText}>
-                                    {t('upgrade_button', lang)} (-${upgradeCost.toLocaleString()})
-                                </Text>
-                            </TouchableOpacity>
-                         )}
-                    </View>
+        <ComicPanelModal visible={true} onClose={onClose} rotate="-2deg">
+            <View style={businessManagementModalStyles.header}>
+                <View>
+                    <Text style={businessManagementModalStyles.title}>{t(businessDef.nameKey, lang)}</Text>
+                    <Text style={businessManagementModalStyles.levelText}>{t('level_label', lang)}: {business.level}</Text>
                 </View>
+                <Pressable onPress={onClose} style={businessManagementModalStyles.closeButton}><CloseIcon width={32} height={32} color="#94a3b8" /></Pressable>
             </View>
-        </View>
+
+            <ScrollView style={businessManagementModalStyles.slotsContainer}>
+                <Text style={businessManagementModalStyles.sectionTitle}>{t('family_members_label', lang)}</Text>
+                {business.slots.map((slot, index) => {
+                        const assignedCharacter = slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? gameState.familyMembers[slot.assignedCharacterId] : null;
+                        const isRobot = slot.assignedCharacterId === 'robot';
+                        const salary = assignedCharacter ? calculateEmployeeSalary(assignedCharacter) : 0;
+
+                        return (
+                            <View key={index} style={businessManagementModalStyles.slotItem}>
+                                <View style={businessManagementModalStyles.avatarPlaceholder}>
+                                    {assignedCharacter ? (
+                                        <AgeAwareAvatarPreview manifest={manifest} character={assignedCharacter} images={images} size={{width: 64, height: 64}} />
+                                    ) : isRobot ? (
+                                        <RobotAvatarIcon style={businessManagementModalStyles.robotIcon} />
+                                    ) : (
+                                        <View style={businessManagementModalStyles.emptyAvatar} />
+                                    )}
+                                </View>
+                                <View style={businessManagementModalStyles.slotDetails}>
+                                    <Text style={businessManagementModalStyles.slotRole}>{t(slot.role, lang)}</Text>
+                                    <Text style={businessManagementModalStyles.slotRequirement}>{t('req_major_label', lang)}: {slot.requiredMajor === 'Unskilled' ? t('unskilled_major', lang) : t(slot.requiredMajor, lang)}</Text>
+                                    {assignedCharacter && (
+                                        <Text style={businessManagementModalStyles.slotSalary}>
+                                            {t('salary_label', lang)}: ${salary.toLocaleString()}/mo
+                                        </Text>
+                                    )}
+                                </View>
+                                <Picker
+                                    selectedValue={slot.assignedCharacterId || 'unassigned'}
+                                    onValueChange={(itemValue) => handleAssignmentChange(index, itemValue as string)}
+                                    style={businessManagementModalStyles.picker}
+                                    itemStyle={businessManagementModalStyles.pickerItem}
+                                >
+                                    <Picker.Item label={t('unassigned_option', lang)} value="unassigned" />
+                                    <Picker.Item label={`${t('hire_robot_option', lang)} (-${ROBOT_HIRE_COST}/mo)`} value="robot" />
+                                    {/* Optgroup is not directly supported in React Native Picker, so we'll just list items */}
+                                    {availableMembers.map(char => {
+                                        const isMajorMatch = slot.requiredMajor !== 'Unskilled' && char.major === slot.requiredMajor;
+                                        return (
+                                            <Picker.Item key={char.id} label={`${isMajorMatch ? '⭐ ' : ''}${getCharacterDisplayName(char, lang)} (Skill: ${Math.round(char.stats.skill)})`} value={char.id} />
+                                        )
+                                    })}
+                                </Picker>
+                            </View>
+                        )
+                })}
+            </ScrollView>
+
+            <View style={businessManagementModalStyles.footer}>
+                    {business.level < 2 && businessDef.upgradeSlots.length > 0 && (
+                        <TouchableOpacity
+                            onPress={() => onUpgradeBusiness(business.id)}
+                            disabled={!canUpgrade}
+                            style={[businessManagementModalStyles.upgradeButton, !canUpgrade && businessManagementModalStyles.upgradeButtonDisabled]}
+                        >
+                            <UpgradeIcon style={businessManagementModalStyles.upgradeIcon} />
+                            <Text style={businessManagementModalStyles.upgradeButtonText}>
+                                {t('upgrade_button', lang)} (-${upgradeCost.toLocaleString()})
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+            </View>
+        </ComicPanelModal>
     );
 };
 
 const businessManagementModalStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 50,
-        padding: 16,
-    },
-    absolute: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0
-    },
-    comicPanelWrapper: {
-        transform: [{ rotate: '-2deg' }],
-    },
-    comicPanel: {
-        backgroundColor: 'white',
-        padding: 24,
-        maxWidth: 640, // max-w-2xl
-        width: '100%',
-        maxHeight: '90%',
-        borderRadius: 8,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -195,11 +165,6 @@ const businessManagementModalStyles = StyleSheet.create({
     },
     closeButton: {
         // No direct equivalent for absolute positioning within a flex item without more structure
-    },
-    closeButtonText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#94a3b8', // slate-400
     },
     slotsContainer: {
         // maxHeight: 400, // Example max height

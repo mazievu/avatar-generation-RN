@@ -1,11 +1,20 @@
 import * as React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, Dimensions } from 'react-native';
+
+
 import type { Character, Language } from '../core/types';
-import { ModalBase } from './ModalBase';
-import { ChoiceButton } from './ChoiceButton';
+import { ComicPanelModal } from './ComicPanelModal';
+import { ChoiceButton }20from './ChoiceButton';
 import { CAREER_LADDER } from '../core/constants';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface LocalizedProps {
     lang: Language;
@@ -21,13 +30,13 @@ export const UnderqualifiedChoiceModal: React.FC<UnderqualifiedChoiceModalProps>
     if (!track) return null;
     
     return (
-        <ModalBase 
-            titleKey="modal_underqualified_title" 
-            characterName={getCharacterDisplayName(character, lang)} 
-            descriptionKey="modal_underqualified_desc"
-            descriptionReplacements={{ careerName: t(track.nameKey, lang) }}
-            lang={lang}
+        <ComicPanelModal 
+            visible={true}
+            onClose={() => {}} // No explicit close button, so provide a dummy
+            rotate="0deg"
         >
+            <Text style={underqualifiedChoiceModalStyles.title}>{t('modal_underqualified_title', lang)}</Text>
+            <Text style={underqualifiedChoiceModalStyles.description}>{t('modal_underqualified_desc', lang, { careerName: t(track.nameKey, lang) })}</Text>
             <ChoiceButton onClick={() => onSelect(true)}>
                 <Text style={underqualifiedChoiceModalStyles.choiceTitle}>{t('underqualified_choice_trainee', lang)}</Text>
                 <Text style={underqualifiedChoiceModalStyles.choiceDescription}>{t('underqualified_choice_trainee_desc', lang)}</Text>
@@ -36,11 +45,24 @@ export const UnderqualifiedChoiceModal: React.FC<UnderqualifiedChoiceModalProps>
                 <Text style={underqualifiedChoiceModalStyles.choiceTitle}>{t('underqualified_choice_penalized', lang)}</Text>
                 <Text style={underqualifiedChoiceModalStyles.choiceDescription}>{t('underqualified_choice_penalized_desc', lang)}</Text>
             </ChoiceButton>
-        </ModalBase>
+        </ComicPanelModal>
     );
 }
 
 const underqualifiedChoiceModalStyles = StyleSheet.create({
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    description: {
+        fontSize: 16,
+        color: '#475569', // slate-600
+        marginBottom: 24,
+        textAlign: 'center',
+    },
     choiceTitle: {
         fontWeight: 'bold',
         fontSize: 16,

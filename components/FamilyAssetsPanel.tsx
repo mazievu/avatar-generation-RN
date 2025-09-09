@@ -1,11 +1,20 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Dimensions } from 'react-native';
+
+
 import type { PurchasedAsset, AssetDefinition, Stats, Language } from '../core/types';
 import { t } from '../core/localization';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
 import { ModalBase } from './ModalBase';
 import { imageAssets } from './ImageAssets';
+
+const { width: screenWidth } = Dimensions.get('window');
+const baseWidth = 375; // A common base width for scaling
+const scale = screenWidth / baseWidth;
+
+const responsiveFontSize = (size: number) => Math.round(size * scale);
+const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface AssetSlotProps {
     asset: AssetDefinition;
