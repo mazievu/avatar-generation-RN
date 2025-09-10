@@ -21,6 +21,7 @@ interface LocalizedProps {
 interface GameLogProps extends LocalizedProps {
   log: GameLogEntry[];
   familyMembers: Record<string, Character>;
+  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
 }
 
 const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ entry, lang }) => {
@@ -76,7 +77,7 @@ const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ ent
     );
 };
 
-const LogEntry: React.FC<{ entry: GameLogEntry; lang: Language; familyMembers: Record<string, Character> }> = ({ entry, lang, familyMembers }) => {
+export const LogEntry: React.FC<{ entry: GameLogEntry; lang: Language; familyMembers: Record<string, Character> }> = ({ entry, lang, familyMembers }) => {
     // New detailed format
     if (entry.eventTitleKey && entry.characterId) {
         const character = familyMembers[entry.characterId];
@@ -110,13 +111,13 @@ const LogEntry: React.FC<{ entry: GameLogEntry; lang: Language; familyMembers: R
     );
 };
 
-const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers }) => {
+const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers, ListHeaderComponent }) => {
   return (
     <FlatList
         data={log}
         renderItem={({ item }) => <LogEntry entry={item} lang={lang} familyMembers={familyMembers} />}
         keyExtractor={(item, index) => item.id || `${item.year}-${index}`} // Assuming log entries have a unique 'id'
-        ListHeaderComponent={<Text style={gameLogStyles.title}>{t('family_log_title', lang)}</Text>}
+        ListHeaderComponent={ListHeaderComponent !== undefined ? ListHeaderComponent : <Text style={gameLogStyles.title}>{t('family_log_title', lang)}</Text>}
         style={gameLogStyles.scrollView}
     />
   );

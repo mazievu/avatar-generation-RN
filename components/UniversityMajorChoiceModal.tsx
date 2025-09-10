@@ -8,6 +8,7 @@ import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
+import { ModalBase } from './ModalBase';
 
 const { width: screenWidth } = Dimensions.get('window');
 const baseWidth = 375; // A common base width for scaling

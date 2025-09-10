@@ -1,98 +1,115 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Pressable, Animated, ImageSourcePropType, Dimensions } from 'react-native';
-
-
-import type { Character, Manifest, Language } from '../core/types'; // Giả sử các types này đã được định nghĩa
+import { View, Text, StyleSheet, Pressable, Animated, ImageSourcePropType, Dimensions } from 'react-native';
+import type { Character, Manifest, Language } from '../core/types';
 import { getCharacterDisplayName } from '../core/utils';
-import { MaleIcon, FemaleIcon } from './icons';
-import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview'; // Component này cũng cần được viết cho RN
+import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
+// --- BƯỚC 1: TÍNH TOÁN KÍCH THƯỚC LINH HOẠT ---
+const screenWidth = Dimensions.get('window').width;
+// Giả sử có một khoảng padding/margin tổng là 32px trên màn hình (16px mỗi bên)
+const contentWidth = screenWidth - 32;
+// Chúng ta muốn hiển thị khoảng 3 node trên một hàng, với khoảng cách giữa chúng
+const NODE_COUNT_PER_ROW = 3;
+const NODE_MARGIN = 8;
+const nodeContainerWidth = (contentWidth / NODE_COUNT_PER_ROW) - (NODE_MARGIN * 2);
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+// Kích thước avatar sẽ dựa trên kích thước của container
+const avatarSize = nodeContainerWidth * 0.85;
 
-// Props cho component
 interface CharacterNodeProps {
   character: Character;
   onClick: () => void;
-  lang: Language; // Added lang prop based on usage in getCharacterDisplayName
+  lang: Language;
   manifest: Manifest;
   images: Record<string, ImageSourcePropType>;
-  // images và manifest có thể cần cách tiếp cận khác trong RN, 
-  // ví dụ như truyền URI hoặc dùng require()
 }
 
 export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick, lang, manifest, images }) => {
-  const { isPlayerCharacter, isAlive, gender, age, monthlyNetIncome } = character;
+  const { isPlayerCharacter, isAlive, age, monthlyNetIncome } = character;
   const displayName = getCharacterDisplayName(character, lang);
 
   // --- Animation Setup ---
   const [showMoney, setShowMoney] = useState(false);
-  const moneyFlyAnim = useRef(new Animated.Value(0)).current; // 1 giá trị điều khiển cả opacity và vị trí
+  const moneyFlyAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (!isAlive) return;
+    if (!isAlive || monthlyNetIncome === 0) return;
+    
     const intervalId = setInterval(() => {
       setShowMoney(true);
-      // Reset và bắt đầu animation
       moneyFlyAnim.setValue(0);
       Animated.timing(moneyFlyAnim, {
         toValue: 1,
         duration: 1200,
-        useNativeDriver: true, // Quan trọng để có hiệu năng tốt
+        useNativeDriver: true,
       }).start(() => {
         setShowMoney(false);
       });
-    }, 2000);
+    }, 2500); // Increased interval slightly
 
     return () => clearInterval(intervalId);
-  }, [isAlive, moneyFlyAnim]);
+  }, [isAlive, moneyFlyAnim, monthlyNetIncome]);
 
   // Nội suy giá trị animation
-  const moneyTranslateY = moneyFlyAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -48], // Di chuyển lên trên 48px
+  const moneyTranslateY = moneyFlyAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -40] });
+  const moneyOpacity = moneyFlyAnim.interpolate({ inputRange: [0, 0.8, 1], outputRange: [1, 0.4, 0] });
+
+  // --- BƯỚC 2: ÁP DỤNG KÍCH THƯỚC LINH HOẠT VÀO STYLE ---
+  // We create this inside the component so it can access props like `isPlayerCharacter`
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      width: nodeContainerWidth,
+      alignItems: 'center',
+      gap: 4,
+      marginHorizontal: NODE_MARGIN, // Khoảng cách giữa các node
+      marginBottom: 16, // Add some vertical spacing
+    },
+    avatarWrapper: {
+      width: avatarSize,
+      height: avatarSize,
+      position: 'relative',
+    },
+    avatarBase: {
+      width: '100%',
+      height: '100%',
+      borderRadius: avatarSize / 2, // Luôn là hình tròn
+      borderWidth: 3,
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      borderColor: isPlayerCharacter ? '#facc15' : '#cbd5e1',
+      backgroundColor: '#e2e8f0', // Always have a background color for consistency
+    },
+    ageBadge: {
+      position: 'absolute',
+      top: -2,
+      right: -2,
+      minWidth: 26, // Dùng minWidth để số tuổi lớn vẫn hiển thị được
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: '#1e293b',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 2,
+      borderColor: 'white',
+      paddingHorizontal: 4,
+    },
   });
 
-  const moneyOpacity = moneyFlyAnim.interpolate({
-    inputRange: [0, 0.8, 1],
-    outputRange: [1, 0.4, 0], // Mờ dần ở cuối
-  });
-  
-  // --- Dynamic Styles ---
-  const avatarContainerStyle = [
-    styles.avatarBase,
-    { 
-      borderColor: isPlayerCharacter ? '#facc15' : '#cbd5e1',
-      backgroundColor: !isAlive ? '#e2e8f0' : 'transparent',
-    },
-    !isAlive && styles.deceased, // Áp dụng opacity
-  ];
-  
   const netIncomeColor = monthlyNetIncome >= 0 ? '#16a34a' : '#ef4444';
-  const netIncomeSign = monthlyNetIncome > 0 ? '+' : '';
-  const formattedIncome = `${netIncomeSign}${Math.round(monthlyNetIncome).toLocaleString()}`;
-  
+  const formattedIncome = `${monthlyNetIncome > 0 ? '+' : ''}${Math.round(monthlyNetIncome).toLocaleString()}`;
+
   return (
-    <Pressable style={styles.container} onPress={onClick}>
+    <Pressable style={dynamicStyles.container} onPress={onClick}>
       {({ pressed }) => (
         <>
-          <View style={[styles.avatarWrapper, pressed && styles.avatarPressed]}>
-            <View style={avatarContainerStyle}>
-              {character.staticAvatarUrl ? (
-                <AgeAwareAvatarPreview character={character} size={{ width: 96, height: 96 }} manifest={manifest} images={images} />
-              ) : (
-                gender === 'Male' 
-                    ? <MaleIcon width={48} height={48} color="#0284c7" /> 
-                    : <FemaleIcon width={48} height={48} color="#db2777" />
-              )}
+          <View style={[dynamicStyles.avatarWrapper, pressed && { transform: [{ scale: 1.1 }] }]}>
+            <View style={[dynamicStyles.avatarBase, !isAlive && styles.deceased]}>
+              {/* Simplified: Always use AgeAwareAvatarPreview. It handles static URLs internally. */}
+              <AgeAwareAvatarPreview character={character} size={{ width: avatarSize, height: avatarSize }} manifest={manifest} images={images} />
             </View>
-
             {isAlive && (
-              <View style={styles.ageBadge}>
+              <View style={dynamicStyles.ageBadge}>
                 <Text style={styles.ageText}>{age}</Text>
               </View>
             )}
@@ -102,7 +119,7 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
             {displayName}
           </Text>
 
-          {isAlive && (
+          {isAlive && monthlyNetIncome !== 0 && (
             <View style={styles.incomeContainer}>
               <Text style={[styles.incomeText, { color: netIncomeColor }]}>
                 {formattedIncome}/mo
@@ -110,9 +127,9 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
               {showMoney && (
                 <Animated.View style={[
                   styles.moneyFlyEffect,
-                  { 
+                  {
                     opacity: moneyOpacity,
-                    transform: [{ translateY: moneyTranslateY }] 
+                    transform: [{ translateY: moneyTranslateY }]
                   }
                 ]}>
                   <Text style={[styles.moneyFlyText, { color: netIncomeColor }]}>
@@ -128,53 +145,10 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
   );
 };
 
+// --- BƯỚC 3: GIỮ LẠI CÁC STYLE KHÔNG PHỤ THUỘC KÍCH THƯỚC ---
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    width: 112, // Tương đương w-28
-    gap: 4,
-  },
-  avatarWrapper: {
-    width: 96, // Tương đương w-24
-    height: 96, // Tương đương h-24
-    position: 'relative',
-    // transitionProperty: 'transform', // Hiệu ứng scale khi nhấn - Not directly supported in RN StyleSheet
-    // transitionDuration: '0.2s', // Not directly supported in RN StyleSheet
-  },
-  avatarPressed: {
-    transform: [{ scale: 1.1 }], // Hiệu ứng khi nhấn
-  },
-  avatarBase: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 48, // Một nửa chiều rộng/cao để tạo hình tròn
-    borderWidth: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    // Shadow cho iOS
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    // Shadow cho Android
-    elevation: 5,
-  },
   deceased: {
-    opacity: 0.6, // Thay cho grayscale
-  },
-  ageBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#1e293b',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'white',
+    opacity: 0.6,
   },
   ageText: {
     color: 'white',
@@ -195,10 +169,11 @@ const styles = StyleSheet.create({
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
+    height: 20, // Give it a fixed height to prevent layout shifts
   },
   incomeText: {
     fontSize: 12,
-    fontFamily: 'monospace', // Tương đương font-mono
+    fontFamily: 'monospace',
     fontWeight: 'bold',
   },
   moneyFlyEffect: {

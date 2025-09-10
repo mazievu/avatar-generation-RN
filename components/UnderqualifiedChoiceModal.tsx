@@ -4,7 +4,7 @@ import { Text, StyleSheet, Dimensions } from 'react-native';
 
 import type { Character, Language } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
-import { ChoiceButton }20from './ChoiceButton';
+import { ChoiceButton } from './ChoiceButton';
 import { CAREER_LADDER } from '../core/constants';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';

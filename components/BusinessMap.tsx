@@ -1,3 +1,4 @@
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType, Dimensions } from 'react-native';
 
 

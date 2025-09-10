@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { generateId } = require('./utils/idFactory');
+const { CLUB_EVENT_DRAFTS } = require('../core/clubsAndEventsData');
 
 const ROOT_DIR = process.cwd();
 const EVENTS_DIR = path.join(ROOT_DIR, 'core', 'events');
@@ -49,12 +50,12 @@ async function syncEvents() {
             continue;
         }
 
-        const eventBlockRegex = /{\s*id:\s*['"]([^'"]+)['"],(?:[\s\S](?!id:\s*['"]))*}?/g;
+        const eventBlockRegex = /{\s*id:\s*['"]([^'"]+)['"],\s*titleKey:[\s\S]*?choices:\s*\[([\s\S]*?)\][\s\S]*?}/g;
         let eventMatch;
 
         while ((eventMatch = eventBlockRegex.exec(content)) !== null) {
             const eventId = eventMatch[1];
-            const eventContent = eventMatch[0];
+            const choicesContent = eventMatch[2];
 
             // Validate: Duplicate event ID
             if (allEventDraftIds.has(eventId)) {
@@ -65,27 +66,48 @@ async function syncEvents() {
             const eventLockKey = eventId;
             newLockFile[eventLockKey] = existingLockFile[eventLockKey] || generateId('ev');
 
-            const choicesBlockRegex = /choices:\s*\[([\s\S]*?)\]/;
-            const choicesMatch = eventContent.match(choicesBlockRegex);
+            const choiceTextKeyRegex = /textKey:\s*['"]([^'"]+)['"]/g;
+            let choiceMatch;
 
-            if (choicesMatch && choicesMatch[1]) {
-                const choicesContent = choicesMatch[1];
-                const choiceTextKeyRegex = /textKey:\s*['"]([^'"]+)['"]/g;
-                let choiceMatch;
+            while ((choiceMatch = choiceTextKeyRegex.exec(choicesContent)) !== null) {
+                const choiceTextKey = choiceMatch[1];
+                const choiceLockKey = `${eventId}|${choiceTextKey}`;
 
-                while ((choiceMatch = choiceTextKeyRegex.exec(choicesContent)) !== null) {
-                    const choiceTextKey = choiceMatch[1];
-                    const choiceLockKey = `${eventId}|${choiceTextKey}`;
-
-                    // Validate: Duplicate choice lock key within the same event
-                    if (allChoiceLockKeys.has(choiceLockKey)) {
-                        errors.push(`Duplicate choice lock key found: '${choiceLockKey}' for event '${eventId}' in file ${filePath}`);
-                    }
-                    allChoiceLockKeys.add(choiceLockKey);
-
-                    newLockFile[choiceLockKey] = existingLockFile[choiceLockKey] || generateId('ch');
+                // Validate: Duplicate choice lock key within the same event
+                if (allChoiceLockKeys.has(choiceLockKey)) {
+                    errors.push(`Duplicate choice lock key found: '${choiceLockKey}' for event '${eventId}' in file ${filePath}`);
                 }
+                allChoiceLockKeys.add(choiceLockKey);
+
+                newLockFile[choiceLockKey] = existingLockFile[choiceLockKey] || generateId('ch');
             }
+        }
+    }
+
+    // Process CLUB_EVENT_DRAFTS
+    for (const clubEvent of CLUB_EVENT_DRAFTS) {
+        const eventId = clubEvent.id;
+
+        // Validate: Duplicate event ID (across all sources)
+        if (allEventDraftIds.has(eventId)) {
+            errors.push(`Duplicate event ID found: '${eventId}' in CLUB_EVENT_DRAFTS`);
+        }
+        allEventDraftIds.add(eventId);
+
+        const eventLockKey = eventId;
+        newLockFile[eventLockKey] = existingLockFile[eventLockKey] || generateId('ev');
+
+        for (const choice of clubEvent.choices) {
+            const choiceTextKey = choice.textKey;
+            const choiceLockKey = `${eventId}|${choiceTextKey}`;
+
+            // Validate: Duplicate choice lock key within the same event (across all sources)
+            if (allChoiceLockKeys.has(choiceLockKey)) {
+                errors.push(`Duplicate choice lock key found: '${choiceLockKey}' for event '${eventId}' in CLUB_EVENT_DRAFTS`);
+            }
+            allChoiceLockKeys.add(choiceLockKey);
+
+            newLockFile[choiceLockKey] = existingLockFile[choiceLockKey] || generateId('ch');
         }
     }
 

@@ -124,6 +124,11 @@ const careerChoiceModalStyles = StyleSheet.create({
     costUnaffordable: {
         color: '#ef4444', // red-500
     },
+    choiceDescription: {
+        fontSize: 14,
+        color: '#475569', // slate-600
+        marginTop: 4,
+    },
     choiceEffects: {
         fontSize: 12,
         color: '#475569', // slate-600

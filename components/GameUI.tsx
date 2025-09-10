@@ -21,7 +21,7 @@ import { UnderqualifiedChoiceModal } from './UnderqualifiedChoiceModal';
 import { EventModal } from './EventModal';
 import { BusinessManagementModal } from './BusinessManagementModal';
 import { CharacterDetailModal } from './CharacterDetailModal';
-import { ClubChoiceModal } from './ClubChoiceModal';
+import { ClubChoiceModal } from './ClubChoiceModal'; 
 import { t } from '../core/localization';
 import { exampleManifest } from '../core/types';
 import { BusinessMap } from './BusinessMap';
@@ -29,6 +29,7 @@ import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { Picker } from '@react-native-picker/picker';
 
 const { width: screenWidth } = Dimensions.get('window');
+import { CLUBS } from '../core/clubsAndEventsData';
 const baseWidth = 375; // A common base width for scaling
 const scale = screenWidth / baseWidth;
 
@@ -288,6 +289,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                     onCustomize={onOpenAvatarBuilder}
                     images={avatarImages}
                     manifest={exampleManifest}
+                    clubs={CLUBS}
                 />
             )}
              {gameState.pendingLoanChoice && (

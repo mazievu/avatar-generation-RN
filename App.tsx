@@ -150,6 +150,7 @@ const App: React.FC = () => {
         return () => stopGameLoop();
     }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState]);
     const handleSetSelectedCharacter = useCallback((character: Character | null) => {
+        console.log("Selected character:", character);
         setSelectedCharacter(character);
     }, []);
 
