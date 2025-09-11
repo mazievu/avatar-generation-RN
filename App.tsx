@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -176,44 +177,46 @@ const App: React.FC = () => {
         );
     }
         return (
-        <GameUI
-            view={view}
-            mainView={mainView}
-            gameState={gameState}
-            isPaused={isPaused}
-            gameSpeed={gameSpeed}
-            showInstructions={showInstructions}
-            selectedCharacter={selectedCharacter}
-            lang={language}
-            avatarImages={avatarImages}
-            onSetLang={setLanguage}
-            onStartGame={handleStartGame}
-            onShowInstructions={() => setShowInstructions(true)}
-            onCloseInstructions={() => setShowInstructions(false)}
-            onQuitGame={handleStartNewGame}
-            onSetIsPaused={setIsPaused}
-            onSetGameSpeed={(speed) => setGameSpeed(Number(speed))}
-            onSetSelectedCharacter={handleSetSelectedCharacter}
-            onOpenAvatarBuilder={setCustomizingCharacterId}
-            onEventChoice={handleEventChoice}
-            onEventModalClose={handleCloseEventModal}
-            onSchoolChoice={handleSchoolChoice}
-            onClubChoice={handleClubChoice}
-            onUniversityChoice={handleUniversityChoice}
-            onMajorChoice={handleMajorChoice}
-            onAbandonUniversity={handleAbandonUniversity}
-            onCareerChoice={handleCareerChoice}
-            onUnderqualifiedChoice={handleUnderqualifiedChoice}
-            onLoanChoice={handleLoanChoice}
-            onPromotionAccept={handlePromotionAccept}
-            onAssignToBusiness={handleAssignToBusiness}
-            onUpgradeBusiness={handleUpgradeBusiness}
-            onBuyBusiness={handleBuyBusiness}
-            onContinueGame={handleContinueGame}
-            onStartNewGame={handleStartNewGame}
-            onPurchaseAsset={handlePurchaseAsset}
-            onSetMainView={setMainView}
-        />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <GameUI
+                view={view}
+                mainView={mainView}
+                gameState={gameState}
+                isPaused={isPaused}
+                gameSpeed={gameSpeed}
+                showInstructions={showInstructions}
+                selectedCharacter={selectedCharacter}
+                lang={language}
+                avatarImages={avatarImages}
+                onSetLang={setLanguage}
+                onStartGame={handleStartGame}
+                onShowInstructions={() => setShowInstructions(true)}
+                onCloseInstructions={() => setShowInstructions(false)}
+                onQuitGame={handleStartNewGame}
+                onSetIsPaused={setIsPaused}
+                onSetGameSpeed={(speed) => setGameSpeed(Number(speed))}
+                onSetSelectedCharacter={handleSetSelectedCharacter}
+                onOpenAvatarBuilder={setCustomizingCharacterId}
+                onEventChoice={handleEventChoice}
+                onEventModalClose={handleCloseEventModal}
+                onSchoolChoice={handleSchoolChoice}
+                onClubChoice={handleClubChoice}
+                onUniversityChoice={handleUniversityChoice}
+                onMajorChoice={handleMajorChoice}
+                onAbandonUniversity={handleAbandonUniversity}
+                onCareerChoice={handleCareerChoice}
+                onUnderqualifiedChoice={handleUnderqualifiedChoice}
+                onLoanChoice={handleLoanChoice}
+                onPromotionAccept={handlePromotionAccept}
+                onAssignToBusiness={handleAssignToBusiness}
+                onUpgradeBusiness={handleUpgradeBusiness}
+                onBuyBusiness={handleBuyBusiness}
+                onContinueGame={handleContinueGame}
+                onStartNewGame={handleStartNewGame}
+                onPurchaseAsset={handlePurchaseAsset}
+                onSetMainView={setMainView}
+            />
+        </GestureHandlerRootView>
     );
 };
 

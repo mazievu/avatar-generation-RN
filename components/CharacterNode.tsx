@@ -60,9 +60,9 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
     container: {
       width: nodeContainerWidth,
       alignItems: 'center',
-      gap: 4,
-      marginHorizontal: NODE_MARGIN, // Khoảng cách giữa các node
-      marginBottom: 16, // Add some vertical spacing
+            gap: 4, // Let the parent control margins
+      // marginHorizontal: NODE_MARGIN, 
+      // marginBottom: 16,
     },
     avatarWrapper: {
       width: avatarSize,

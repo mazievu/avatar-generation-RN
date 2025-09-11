@@ -44,7 +44,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         id: randomUUID(),
         name: generateName(gender, lang),
         gender,
-        generation: 1,
+        generation: 0,
         birthDate: { day: 1, year: initialYear - age },
         age: age,
         isAlive: true,
@@ -115,7 +115,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     const mioId = randomUUID();
 
     const mila: Character = {
-        id: milaId, name: 'Mila', gender: Gender.Female, generation: 1,
+        id: milaId, name: 'Mila', gender: Gender.Female, generation: 0,
         birthDate: { day: 1, year: initialYear - 23 }, age: 23, isAlive: true, deathDate: null,
         stats: { iq: 95, happiness: 85, eq: 90, health: 80, skill: 70 },
         phase: LifePhase.PostGraduation,
@@ -135,7 +135,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         monthsInCurrentJobLevel: 0,
     };
     const max: Character = {
-        id: maxId, name: 'Max', gender: Gender.Male, generation: 1,
+        id: maxId, name: 'Max', gender: Gender.Male, generation: 0,
         birthDate: { day: 1, year: initialYear - 23 }, age: 23, isAlive: true, deathDate: null,
         stats: { iq: 85, happiness: 95, eq: 85, health: 95, skill: 80 },
         phase: LifePhase.PostGraduation,
@@ -155,7 +155,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         monthsInCurrentJobLevel: 0,
     };
     const alice: Character = {
-        id: aliceId, name: 'Alice', gender: Gender.Female, generation: 2,
+        id: aliceId, name: 'Alice', gender: Gender.Female, generation: 1,
         birthDate: { day: 1, year: initialYear - 7 }, age: 7, isAlive: true, deathDate: null,
         stats: { iq: 120, happiness: 80, eq: 75, health: 70, skill: 65 },
         phase: LifePhase.Elementary,
@@ -175,7 +175,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         monthsInCurrentJobLevel: 0,
     };
     const lucas: Character = {
-        id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 2,
+        id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 1,
         birthDate: { day: 1, year: initialYear - 7 }, age: 7, isAlive: true, deathDate: null,
         stats: { iq: 130, happiness: 75, eq: 80, health: 85, skill: 95 },
         phase: LifePhase.Elementary,
@@ -195,7 +195,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         monthsInCurrentJobLevel: 0,
     };
     const daisy: Character = {
-        id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 2,
+        id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 1,
         birthDate: { day: 1, year: initialYear - 1 }, age: 1, isAlive: true, deathDate: null,
         stats: { iq: 100, happiness: 85, eq: 90, health: 80, skill: 85 },
         phase: LifePhase.Newborn,

@@ -160,7 +160,7 @@ export const createInitialCharacter = (year: number, lang: Language, manifest: M
         id: randomUUID(),
         name: generateName(gender, lang),
         gender,
-        generation: 1,
+        generation: 0,
         birthDate: { day: 1, year },
         age: age,
         isAlive: true,

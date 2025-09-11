@@ -172,8 +172,6 @@ export const GameUI: React.FC<GameUIProps> = ({
         return <View style={[gameUIStyles.flexCenter, gameUIStyles.fullScreen]}><Text>Loading...</Text></View>;
     }
 
-    const rootCharacter = Object.values(gameState.familyMembers).find(c => c.generation === 1 && c.isPlayerCharacter);
-
     const renderScene = () => {
         switch (activeScene) {
             case 'tree':
@@ -181,7 +179,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                     <>
                         <Text style={gameUIStyles.familyTreeTitle}>{t('family_tree_title', lang)}</Text>
                         <View style={gameUIStyles.familyTreeContainer}>
-                            {rootCharacter ? <FamilyTree characterId={rootCharacter.id} allMembers={gameState.familyMembers} onAvatarClick={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} /> : <Text style={gameUIStyles.noFamilyText}>Your family story begins...</Text>}
+                            <FamilyTree gameState={gameState} onSelectCharacter={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} />
                         </View>
                     </>
                 );
