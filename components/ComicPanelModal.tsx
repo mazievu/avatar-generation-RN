@@ -10,13 +10,15 @@ interface ComicPanelModalProps {
   onClose: () => void;
   children: React.ReactNode;
   rotate?: string;
+  flexContent?: boolean; 
 }
 
 export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
   visible,
   onClose,
   children,
-  rotate = '-1.5deg'
+  rotate = '-1.5deg',
+  flexContent = false,
 }) => {
   return (
     <Modal
@@ -27,7 +29,11 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
     >
       <Pressable style={styles.modalOverlay} onPress={onClose}>
         <Pressable 
-            style={[styles.panelContainer, { transform: [{ rotate }] }]} 
+             style={[
+                styles.panelContainer, 
+                flexContent && styles.flexContainer, // Áp dụng flex: 1 nếu prop là true
+                { transform: [{ rotate }] }
+            ]} 
             onPress={() => { /* Ngăn click xuyên qua */ }}
         >
           {children}
@@ -46,7 +52,7 @@ const styles = StyleSheet.create({
     padding: responsiveSize(24),
   },
   panelContainer: {
-    flex: 1, // Quan trọng: Cung cấp không gian cho con
+     // Quan trọng: Cung cấp không gian cho con
     width: '100%',
     maxWidth: 500,
     backgroundColor: 'white',
@@ -54,5 +60,8 @@ const styles = StyleSheet.create({
     borderWidth: 6,
     borderColor: '#facc15',
     padding: responsiveSize(24),
+  },
+   flexContainer: {
+    flex: 1,
   },
 });
