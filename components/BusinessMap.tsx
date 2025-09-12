@@ -1,8 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType, Dimensions } from 'react-native';
-
-
-import Slider from '@react-native-community/slider'; // Import Slider
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType, Dimensions, ViewStyle } from 'react-native';
+import {
+    PanGestureHandler,
+    PinchGestureHandler,
+    PanGestureHandlerGestureEvent,
+    PinchGestureHandlerGestureEvent,
+    State,
+} from 'react-native-gesture-handler';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    useAnimatedGestureHandler,
+} from 'react-native-reanimated';
 
 import type { GameState, BusinessDefinition, Business, Character, Manifest, Language } from '../core/types';
 import { t } from '../core/localization';
@@ -231,8 +240,41 @@ export const BusinessMap: React.FC<{
 }> = ({ gameState, onBuyBusiness, onManageBusiness, lang, images, manifest, mainView, onBackToTree }) => {
     const [selectedLocationKey, setSelectedLocationKey] = useState<string | null>(null);
     const [showManageModalForType, setShowManageModalForType] = useState<string | null>(null);
-    const [zoom, setZoom] = useState(1);
-    // Removed mapContainerRef and dragging related refs/state
+
+    const scale = useSharedValue(1);
+    const translateX = useSharedValue(0);
+    const translateY = useSharedValue(0);
+
+    type AnimatedContext = { startX: number; startY: number; startScale: number; };
+
+    const panHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, AnimatedContext>({
+        onStart: (event, ctx) => {
+            ctx.startX = translateX.value;
+            ctx.startY = translateY.value;
+        },
+        onActive: (event, ctx) => {
+            translateX.value = ctx.startX + event.translationX;
+            translateY.value = ctx.startY + event.translationY;
+        },
+    });
+
+    const pinchHandler = useAnimatedGestureHandler<PinchGestureHandlerGestureEvent, AnimatedContext>({
+        onStart: (event, ctx) => {
+            ctx.startScale = scale.value;
+        },
+        onActive: (event, ctx) => {
+            const newScale = ctx.startScale * event.scale;
+            scale.value = Math.max(0.5, Math.min(newScale, 3)); // Clamp scale
+        },
+    });
+
+    const animatedMapStyle = useAnimatedStyle(() => ({
+        transform: [
+            { translateX: translateX.value },
+            { translateY: translateY.value },
+            { scale: scale.value },
+        ] as NonNullable<ViewStyle['transform']>,
+    }));
 
     const ownedBusinessesByType = useMemo(() => {
         const map = new Map<string, Business[]>();
@@ -260,116 +302,105 @@ export const BusinessMap: React.FC<{
                     <Text style={businessMapStyles.buttonText}>{t('back_button', lang)}</Text>
                 </TouchableOpacity>
             </View>
-            <View style={businessMapStyles.mapWrapper}>
-                <View
-                    style={[
-                        businessMapStyles.mapContainer,
-                        mainView === 'business' ? businessMapStyles.mapContainerFull : businessMapStyles.mapContainerPartial
-                    ]}
-                >
-                    <View
-                        style={[
-                            businessMapStyles.mapContent,
-                            { transform: [{ scale: zoom }] }
-                        ]}
-                    >
-                        <BusinessMapSVG />
+            <PanGestureHandler onGestureEvent={panHandler}>
+                <Animated.View style={businessMapStyles.mapWrapper}>
+                    <PinchGestureHandler onGestureEvent={pinchHandler}>
+                        <Animated.View
+                            style={[
+                                businessMapStyles.mapContainer,
+                                mainView === 'business' ? businessMapStyles.mapContainerFull : businessMapStyles.mapContainerPartial
+                            ]}
+                        >
+                            <Animated.View
+                                style={[
+                                    businessMapStyles.mapContent,
+                                    animatedMapStyle
+                                ]}
+                            >
+                                <BusinessMapSVG />
 
-                        {Object.entries(BUSINESS_MAP_LOCATIONS).map(([businessDefKey, loc]) => {
-                            const businessDef = BUSINESS_DEFINITIONS[businessDefKey];
-                            if (!businessDef) return null;
+                                {Object.entries(BUSINESS_MAP_LOCATIONS).map(([businessDefKey, loc]) => {
+                                    const businessDef = BUSINESS_DEFINITIONS[businessDefKey];
+                                    if (!businessDef) return null;
 
-                            const ownedOfType = ownedBusinessesByType.get(businessDefKey);
-                            const isOwned = ownedOfType && ownedOfType.length > 0;
-                            const businessToManage = isOwned ? ownedOfType[0] : null;
+                                    const ownedOfType = ownedBusinessesByType.get(businessDefKey);
+                                    const isOwned = ownedOfType && ownedOfType.length > 0;
+                                    const businessToManage = isOwned ? ownedOfType[0] : null;
 
-                            const bubbleWidth = 180;
-                            const bubbleHeight = businessToManage ? 120 : 90;
+                                    const bubbleWidth = 180;
+                                    const bubbleHeight = businessToManage ? 120 : 90;
 
-                            const topPosition = loc.y - bubbleHeight - 15 - 20 - 10;
-                            const leftPosition = loc.x + (loc.width / 2) - (bubbleWidth / 2);
+                                    const topPosition = loc.y - bubbleHeight - 15 - 20 - 10;
+                                    const leftPosition = loc.x + (loc.width / 2) - (bubbleWidth / 2);
 
-                            return (
-                                <TouchableOpacity
-                                    key={businessDefKey}
-                                    style={[
-                                        businessMapStyles.businessHotspot,
-                                        isOwned ? businessMapStyles.businessHotspotOwned : businessMapStyles.businessHotspotAvailable,
-                                        {
-                                            left: leftPosition,
-                                            top: topPosition,
-                                            width: bubbleWidth,
-                                            height: bubbleHeight,
-                                        }
-                                    ]}
-                                    onPress={() => {
-                                        if (isOwned) {
-                                            if (ownedOfType && ownedOfType.length === 1) {
-                                                onManageBusiness(ownedOfType[0]);
-                                            } else {
-                                                setShowManageModalForType(businessDefKey);
+                                    return (
+                                        <TouchableOpacity
+                                            key={businessDefKey}
+                                            style={[
+                                                businessMapStyles.businessHotspot,
+                                                isOwned ? businessMapStyles.businessHotspotOwned : businessMapStyles.businessHotspotAvailable,
+                                                {
+                                                    left: leftPosition,
+                                                    top: topPosition,
+                                                    width: bubbleWidth,
+                                                    height: bubbleHeight,
+                                                }
+                                            ]}
+                                            onPress={() => {
+                                                if (isOwned) {
+                                                    if (ownedOfType && ownedOfType.length === 1) {
+                                                        onManageBusiness(ownedOfType[0]);
+                                                    } else {
+                                                        setShowManageModalForType(businessDefKey);
+                                                    }
+                                                } else {
+                                                    setSelectedLocationKey(businessDefKey);
+                                                }
+                                            }}
+                                            accessibilityLabel={t(businessDef.nameKey, lang)}
+                                        >
+                                            <Text style={businessMapStyles.hotspotName}>{t(businessDef.nameKey, lang)}</Text>
+                                             {businessToManage ?
+                                                (
+                                                    <View style={businessMapStyles.ownedBusinessDetails}>
+                                                        <Text style={[businessMapStyles.ownedBusinessNetIncome, calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? businessMapStyles.netIncomePositive : businessMapStyles.netIncomeNegative]}>
+                                                            {calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? '+' : ''}${Math.round(calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers)).toLocaleString()}/mo
+                                                        </Text>
+                                                        <View style={businessMapStyles.assignedWorkers}>
+                                                             {businessToManage.slots.map((slot, i) => {
+                                                                 if (!slot.assignedCharacterId) return null;
+
+                                                                 if (slot.assignedCharacterId === 'robot') {
+                                                                    return (
+                                                                        <View key={i} style={businessMapStyles.workerAvatar}>
+                                                                            <RobotAvatarIcon style={businessMapStyles.robotAvatarIcon} />
+                                                                        </View>
+                                                                    );
+                                                                 }
+
+                                                                 const char = gameState.familyMembers[slot.assignedCharacterId];
+                                                                 if (!char) return null;
+
+                                                                 return (
+                                                                    <View key={i} style={businessMapStyles.workerAvatar}>
+                                                                        <AgeAwareAvatarPreview manifest={manifest} character={char} images={images} size={{width: 32, height: 32}} />
+                                                                    </View>
+                                                                 );
+                                                             })}
+                                                        </View>
+                                                        <Text style={businessMapStyles.manageButtonText}>{t('manage_button', lang)}</Text>
+                                                    </View>
+                                                )
+                                                : <Text style={businessMapStyles.costText}>${businessDef.cost.toLocaleString()}</Text>
                                             }
-                                        } else {
-                                            setSelectedLocationKey(businessDefKey);
-                                        }
-                                    }}
-                                    accessibilityLabel={t(businessDef.nameKey, lang)}
-                                >
-                                    <Text style={businessMapStyles.hotspotName}>{t(businessDef.nameKey, lang)}</Text>
-                                     {businessToManage ?
-                                        (
-                                            <View style={businessMapStyles.ownedBusinessDetails}>
-                                                <Text style={[businessMapStyles.ownedBusinessNetIncome, calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? businessMapStyles.netIncomePositive : businessMapStyles.netIncomeNegative]}>
-                                                    {calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? '+' : ''}${Math.round(calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers)).toLocaleString()}/mo
-                                                </Text>
-                                                <View style={businessMapStyles.assignedWorkers}>
-                                                     {businessToManage.slots.map((slot, i) => {
-                                                         if (!slot.assignedCharacterId) return null;
-
-                                                         if (slot.assignedCharacterId === 'robot') {
-                                                            return (
-                                                                <View key={i} style={businessMapStyles.workerAvatar}>
-                                                                    <RobotAvatarIcon style={businessMapStyles.robotAvatarIcon} />
-                                                                </View>
-                                                            );
-                                                         }
-
-                                                         const char = gameState.familyMembers[slot.assignedCharacterId];
-                                                         if (!char) return null;
-
-                                                         return (
-                                                            <View key={i} style={businessMapStyles.workerAvatar}>
-                                                                <AgeAwareAvatarPreview manifest={manifest} character={char} images={images} size={{width: 32, height: 32}} />
-                                                            </View>
-                                                         );
-                                                     })}
-                                                </View>
-                                                <Text style={businessMapStyles.manageButtonText}>{t('manage_button', lang)}</Text>
-                                            </View>
-                                        )
-                                        : <Text style={businessMapStyles.costText}>${businessDef.cost.toLocaleString()}</Text>
-                                    }
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </View>
-                </View>
-                 <View style={businessMapStyles.zoomControl}>
-                    <Text style={businessMapStyles.zoomIcon}>-</Text>
-                    <Slider
-                        style={businessMapStyles.slider}
-                        minimumValue={0.5}
-                        maximumValue={2}
-                        step={0.1}
-                        value={zoom}
-                        onValueChange={setZoom}
-                        minimumTrackTintColor="#60a5fa" // blue-400
-                        maximumTrackTintColor="#cbd5e1" // slate-300
-                        thumbTintColor="#2563eb" // blue-700
-                    />
-                    <Text style={businessMapStyles.zoomIcon}>+</Text>
-                </View>
-            </View>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </Animated.View>
+                        </Animated.View>
+                    </PinchGestureHandler>
+                </Animated.View>
+            </PanGestureHandler>
 
             {selectedLocationKey && businessDefForModal && (
                 <BusinessPurchaseModal 

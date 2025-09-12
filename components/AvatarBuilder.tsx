@@ -131,21 +131,30 @@ export default function AvatarBuilder({
       next[layer.key] = finalPick ?? null;
     }
     const hairColor = pickRandom(rng, AVATAR_COLOR_PALETTE)?.name || 'Natural Gray';
+    const eyeColor = pickRandom(rng, AVATAR_COLOR_PALETTE)?.name || 'Black'; // Default eye color
+    const mouthColor = pickRandom(rng, AVATAR_COLOR_PALETTE)?.name || 'Red'; // Default mouth color
+
     if(next.backHair) next.backHairColor = hairColor;
     if(next.frontHair) next.frontHairColor = hairColor;
     if(next.eyebrows) next.eyebrowsColor = hairColor;
     if(next.beard) next.beardColor = hairColor;
     else next.beardColor = undefined;
+
+    if(next.eyes) next.eyesColor = eyeColor;
+    if(next.mouth) next.mouthColor = mouthColor;
+
     setState(next);
   }
 
   const renderLayerOptions = (layer: (typeof manifest)[0]) => {
     const options = getAgeAppropriateOptions(layer, characterAgeCategory);
-    const isColorable = ['frontHair', 'eyebrows', 'beard'].includes(layer.key);
+    const isColorable = ['frontHair', 'backHair', 'eyebrows', 'beard', 'eyes', 'mouth'].includes(layer.key);
     let activeColorName: string | undefined;
     if (layer.key === 'frontHair') activeColorName = state.frontHairColor;
     if (layer.key === 'eyebrows') activeColorName = state.eyebrowsColor;
     if (layer.key === 'beard') activeColorName = state.beardColor;
+    if (layer.key === 'eyes') activeColorName = state.eyesColor;
+    if (layer.key === 'mouth') activeColorName = state.mouthColor;
 
     return (
       <View style={avatarBuilderStyles.layerOptionContainer}>

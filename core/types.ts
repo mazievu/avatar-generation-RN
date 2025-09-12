@@ -111,6 +111,8 @@ export type AvatarState = Partial<Record<LayerKey, string | null>> & {
   frontHairColor?: string;
   eyebrowsColor?: string;
   beardColor?: string;
+  eyesColor?: string;
+  mouthColor?: string;
 };
 
 export interface ColorDefinition {

@@ -132,6 +132,7 @@ export const GameUI: React.FC<GameUIProps> = ({
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null); // NEW STATE
+    const [wasPausedBeforeBusinessMap, setWasPausedBeforeBusinessMap] = useState(false); // NEW STATE
 
     const onCharacterCenteredOnEvent = useCallback(() => { // NEW CALLBACK
         setCharacterIdToCenterOnEvent(null);
@@ -153,6 +154,14 @@ export const GameUI: React.FC<GameUIProps> = ({
 
     const handleSceneChange = (scene: SceneName) => {
         setActiveScene(scene);
+        if (scene === 'business') {
+            setWasPausedBeforeBusinessMap(isPaused);
+            onSetIsPaused(true);
+            onSetMainView('business');
+        } else {
+            onSetIsPaused(wasPausedBeforeBusinessMap);
+            onSetMainView('tree'); // Assuming 'tree' is the default view for other scenes
+        }
     };
     
     if (view === 'welcome_back') {
@@ -213,6 +222,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                             onBackToTree={() => {
                                 onSetMainView('tree');
                                 setActiveScene('tree');
+                                onSetIsPaused(wasPausedBeforeBusinessMap);
                             }}
                         />;
             default:
