@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase, RelationshipStatus } from '../types';
-
+import { EventIdByKey } from '../../src/generated/eventIds';
 export const RELATIONSHIP_EVENTS: EventDraft[] = [
     // 10 MAIN EVENTS
     {
@@ -11,7 +11,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_relationship_first_date_1', effect: { statChanges: { happiness: 2, eq: 2 }, logKey: 'log_relationship_first_date_1' } },
             { textKey: 'choice_relationship_first_date_2', effect: { statChanges: { happiness: 4 }, fundChange: -150, logKey: 'log_relationship_first_date_2' } },
-            { textKey: 'choice_relationship_first_date_3', effect: { statChanges: { happiness: 2, health: 1 }, logKey: 'log_relationship_first_date_3', triggers: [{ eventId: 'relationship_forgot_socks', chance: 0.4 }] } },
+            { textKey: 'choice_relationship_first_date_3', effect: { statChanges: { happiness: 2, health: 1 }, logKey: 'log_relationship_first_date_3', triggers: [{ eventId: EventIdByKey.relationship_forgot_socks, chance: 0.4 }] } },
         ]
     },
     {
@@ -23,7 +23,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_relationship_prom_night_1', effect: { statChanges: { happiness: 3, eq: 2 }, fundChange: -250, logKey: 'log_relationship_prom_night_1' } },
             { textKey: 'choice_relationship_prom_night_2', effect: { statChanges: { happiness: 3, eq: 3 }, logKey: 'log_relationship_prom_night_2' } },
-            { textKey: 'choice_relationship_prom_night_3', effect: { statChanges: { happiness: 2 }, fundChange: -50, logKey: 'log_relationship_prom_night_3', triggers: [{ eventId: 'relationship_pancake_accident', chance: 0.5 }] } },
+            { textKey: 'choice_relationship_prom_night_3', effect: { statChanges: { happiness: 2 }, fundChange: -50, logKey: 'log_relationship_prom_night_3', triggers: [{ eventId: EventIdByKey.relationship_pancake_accident, chance: 0.5 }] } },
         ]
     },
     {
@@ -34,7 +34,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_relationship_sending_text_1', effect: { statChanges: { eq: 2, happiness: 1 }, logKey: 'log_relationship_sending_text_1' } },
             { textKey: 'choice_relationship_sending_text_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_relationship_sending_text_2' } },
-            { textKey: 'choice_relationship_sending_text_3', effect: { statChanges: { eq: -1 }, logKey: 'log_relationship_sending_text_3', triggers: [{ eventId: 'relationship_misunderstood_silence', chance: 0.6 }] } },
+            { textKey: 'choice_relationship_sending_text_3', effect: { statChanges: { eq: -1 }, logKey: 'log_relationship_sending_text_3', triggers: [{ eventId: EventIdByKey.relationship_misunderstood_silence, chance: 0.6 }] } },
         ]
     },
     {
@@ -46,7 +46,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_relationship_anniversary_1', effect: { statChanges: { happiness: 2 }, fundChange: -50, logKey: 'log_relationship_anniversary_1' } },
             { textKey: 'choice_relationship_anniversary_2', effect: { statChanges: { happiness: 4 }, fundChange: -40, logKey: 'log_relationship_anniversary_2' } },
-            { textKey: 'choice_relationship_anniversary_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_relationship_anniversary_3', triggers: [{ eventId: 'relationship_silent_treatment', chance: 0.7 }] } },
+            { textKey: 'choice_relationship_anniversary_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_relationship_anniversary_3', triggers: [{ eventId: EventIdByKey.relationship_silent_treatment, chance: 0.7 }] } },
         ]
     },
     {
@@ -57,7 +57,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_relationship_meeting_friends_1', effect: { statChanges: { eq: 2, happiness: 2 }, logKey: 'log_relationship_meeting_friends_1' } },
             { textKey: 'choice_relationship_meeting_friends_2', effect: { statChanges: { eq: -1 }, logKey: 'log_relationship_meeting_friends_2' } },
-            { textKey: 'choice_relationship_meeting_friends_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_meeting_friends_3', triggers: [{ eventId: 'relationship_endless_teasing', chance: 0.5 }] } },
+            { textKey: 'choice_relationship_meeting_friends_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_meeting_friends_3', triggers: [{ eventId: EventIdByKey.relationship_endless_teasing, chance: 0.5 }] } },
         ]
     },
     {
@@ -67,7 +67,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_relationship_amusement_park_1', effect: { statChanges: { happiness: 2 }, fundChange: -60, logKey: 'log_relationship_amusement_park_1' } },
-            { textKey: 'choice_relationship_amusement_park_2', effect: { statChanges: { happiness: 3, health: -1 }, fundChange: -60, logKey: 'log_relationship_amusement_park_2', triggers: [{ eventId: 'relationship_unexpected_scream', chance: 0.6 }] } },
+            { textKey: 'choice_relationship_amusement_park_2', effect: { statChanges: { happiness: 3, health: -1 }, fundChange: -60, logKey: 'log_relationship_amusement_park_2', triggers: [{ eventId: EventIdByKey.relationship_unexpected_scream, chance: 0.6 }] } },
             { textKey: 'choice_relationship_amusement_park_3', effect: { statChanges: { happiness: 2 }, fundChange: -20, logKey: 'log_relationship_amusement_park_3' } },
         ]
     },
@@ -79,7 +79,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         allowedRelationshipStatuses: [RelationshipStatus.Married],
         choices: [
             { textKey: 'choice_relationship_first_argument_1', effect: { statChanges: { happiness: 1, eq: 1 }, logKey: 'log_relationship_first_argument_1' } },
-            { textKey: 'choice_relationship_first_argument_2', effect: { statChanges: { happiness: -4 }, logKey: 'log_relationship_first_argument_2', triggers: [{ eventId: 'relationship_cold_war', chance: 0.7 }] } },
+            { textKey: 'choice_relationship_first_argument_2', effect: { statChanges: { happiness: -4 }, logKey: 'log_relationship_first_argument_2', triggers: [{ eventId: EventIdByKey.relationship_cold_war, chance: 0.7 }] } },
             { textKey: 'choice_relationship_first_argument_3', effect: { 
                 statChanges: { happiness: -2, eq: -2 }, 
                 logKey: 'log_relationship_first_argument_3',
@@ -107,7 +107,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         phases: [LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_relationship_fancy_dinner_1', effect: { statChanges: { eq: 1, happiness: 2 }, logKey: 'log_relationship_fancy_dinner_1' } },
-            { textKey: 'choice_relationship_fancy_dinner_2', effect: { statChanges: { eq: -2 }, fundChange: -20, logKey: 'log_relationship_fancy_dinner_2', triggers: [{ eventId: 'relationship_everyone_staring', chance: 0.5 }] } },
+            { textKey: 'choice_relationship_fancy_dinner_2', effect: { statChanges: { eq: -2 }, fundChange: -20, logKey: 'log_relationship_fancy_dinner_2', triggers: [{ eventId: EventIdByKey.relationship_everyone_staring, chance: 0.5 }] } },
             { textKey: 'choice_relationship_fancy_dinner_3', effect: { statChanges: { happiness: 3 }, fundChange: -250, logKey: 'log_relationship_fancy_dinner_3' } },
         ]
     },
@@ -118,7 +118,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         phases: [LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_relationship_road_trip_1', effect: { statChanges: { happiness: 4, iq: 1 }, fundChange: -200, logKey: 'log_relationship_road_trip_1' } },
-            { textKey: 'choice_relationship_road_trip_2', effect: { statChanges: { happiness: 2 }, fundChange: -300, logKey: 'log_relationship_road_trip_2', triggers: [{ eventId: 'relationship_getting_lost', chance: 0.6 }] } },
+            { textKey: 'choice_relationship_road_trip_2', effect: { statChanges: { happiness: 2 }, fundChange: -300, logKey: 'log_relationship_road_trip_2', triggers: [{ eventId: EventIdByKey.relationship_getting_lost, chance: 0.6 }] } },
             { textKey: 'choice_relationship_road_trip_3', effect: { statChanges: { happiness: 2, health: -1 }, fundChange: -150, logKey: 'log_relationship_road_trip_3' } },
         ]
     },
@@ -130,7 +130,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_relationship_talk_future_1', effect: { statChanges: { eq: 2, happiness: 2 }, logKey: 'log_relationship_talk_future_1' } },
             { textKey: 'choice_relationship_talk_future_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_relationship_talk_future_2' } },
-            { textKey: 'choice_relationship_talk_future_3', effect: { statChanges: { eq: -1, happiness: -2 }, logKey: 'log_relationship_talk_future_3', triggers: [{ eventId: 'relationship_doubt_arises', chance: 0.5 }] } },
+            { textKey: 'choice_relationship_talk_future_3', effect: { statChanges: { eq: -1, happiness: -2 }, logKey: 'log_relationship_talk_future_3', triggers: [{ eventId: EventIdByKey.relationship_doubt_arises, chance: 0.5 }] } },
         ]
     },
 

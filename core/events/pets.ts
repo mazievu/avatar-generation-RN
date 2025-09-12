@@ -1,7 +1,7 @@
 import { EventDraft, LifePhase, Pet, PetType, Stats, Character } from '../types';
 import { PET_DATA } from '../constants';
 import { randomUUID } from 'expo-crypto';
-
+import { EventIdByKey } from '../../src/generated/eventIds';
 // Helper for pet name generation
 const PET_NAMES: Record<PetType, string[]> = {
     [PetType.Dog]: ['Buddy', 'Lucy', 'Max', 'Bella', 'Charlie', 'Daisy'],
@@ -121,7 +121,7 @@ export const PET_EVENTS: EventDraft[] = [
         condition: (state, char: Character) => !!char.petId,
         choices: [
             { textKey: 'choice_pet_sick_1', effect: { fundChange: -100, logKey: 'log_pet_sick_1' } },
-            { textKey: 'choice_pet_sick_2', effect: { logKey: 'log_pet_sick_2', triggers: [{ eventId: 'pet_sickness_worsens', chance: 0.5 }] } },
+            { textKey: 'choice_pet_sick_2', effect: { logKey: 'log_pet_sick_2', triggers: [{ eventId: EventIdByKey.pet_sickness_worsens, chance: 0.5 }] } },
         ]
     },
     {
@@ -142,8 +142,8 @@ export const PET_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         condition: (state, char: Character) => !!char.petId,
         choices: [
-            { textKey: 'choice_pet_lost_1', effect: { fundChange: -50, logKey: 'log_pet_lost_1', triggers: [{ eventId: 'pet_found', chance: 0.7 }, { eventId: 'pet_lost_forever', chance: 0.3 }] } },
-            { textKey: 'choice_pet_lost_2', effect: { logKey: 'log_pet_lost_2', triggers: [{ eventId: 'pet_lost_forever', chance: 0.8 }] } },
+            { textKey: 'choice_pet_lost_1', effect: { fundChange: -50, logKey: 'log_pet_lost_1', triggers: [{ eventId: EventIdByKey.pet_found, chance: 0.7 }, { eventId: 'pet_lost_forever', chance: 0.3 }] } },
+            { textKey: 'choice_pet_lost_2', effect: { logKey: 'log_pet_lost_2', triggers: [{ eventId: EventIdByKey.pet_lost_forever, chance: 0.8 }] } },
         ]
     },
     {
@@ -153,7 +153,7 @@ export const PET_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         condition: (state, char: Character) => !!char.petId,
         choices: [
-            { textKey: 'choice_pet_contest_1', effect: { fundChange: -20, logKey: 'log_pet_contest_1', triggers: [{ eventId: 'pet_contest_win', chance: 0.4 }, { eventId: 'pet_contest_lose', chance: 0.6 }] } },
+            { textKey: 'choice_pet_contest_1', effect: { fundChange: -20, logKey: 'log_pet_contest_1', triggers: [{ eventId: EventIdByKey.pet_contest_win, chance: 0.4 }, { eventId: 'pet_contest_lose', chance: 0.6 }] } },
             { textKey: 'choice_pet_contest_2', effect: { logKey: 'log_pet_contest_2' } },
         ]
     },
@@ -185,7 +185,7 @@ export const PET_EVENTS: EventDraft[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_pet_sickness_worsens_1', effect: { fundChange: -500, logKey: 'log_pet_sickness_worsens_1' } },
-            { textKey: 'choice_pet_sickness_worsens_2', effect: { logKey: 'log_pet_sickness_worsens_2', triggers: [{ eventId: 'pet_dies', chance: 0.8 }] } },
+            { textKey: 'choice_pet_sickness_worsens_2', effect: { logKey: 'log_pet_sickness_worsens_2', triggers: [{ eventId: EventIdByKey.pet_dies, chance: 0.8 }] } },
         ]
     },
     {

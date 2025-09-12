@@ -1,4 +1,5 @@
 import { EventDraft, LifePhase, Business, GameState, CharacterStatus } from '../types';
+import { EventIdByKey } from '../../src/generated/eventIds';
 import { BUSINESS_DEFINITIONS } from '../constants';
 
 export const LIFE_EVENTS: EventDraft[] = [
@@ -9,8 +10,8 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.Newborn, LifePhase.Elementary, LifePhase.MiddleSchool, LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_flu_1', effect: { statChanges: { health: 3 }, fundChange: -50, logKey: 'log_flu_1' } },
-            { textKey: 'choice_flu_2', effect: { statChanges: { health: 2 }, logKey: 'log_flu_2', triggers: [{ eventId: 'sickness_worsens', chance: 0.3 }] } },
-            { textKey: 'choice_flu_3', effect: { statChanges: { happiness: -2, health: -2 }, logKey: 'log_flu_3', triggers: [{ eventId: 'sickness_worsens', chance: 0.5 }] } },
+            { textKey: 'choice_flu_2', effect: { statChanges: { health: 2 }, logKey: 'log_flu_2', triggers: [{ eventId: EventIdByKey.sickness_worsens, chance: 0.3 }] } },
+            { textKey: 'choice_flu_3', effect: { statChanges: { happiness: -2, health: -2 }, logKey: 'log_flu_3', triggers: [{ eventId: EventIdByKey.sickness_worsens, chance: 0.5 }] } },
         ]
     },
     {
@@ -21,7 +22,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_sickness_worsens_1', effect: { fundChange: -500, statChanges: { health: 3 }, logKey: 'log_sickness_worsens_1' } },
-            { textKey: 'choice_sickness_worsens_2', effect: { statChanges: { health: -3 }, logKey: 'log_sickness_worsens_2', triggers: [{ eventId: 'chronic_illness', chance: 0.3 }] } },
+            { textKey: 'choice_sickness_worsens_2', effect: { statChanges: { health: -3 }, logKey: 'log_sickness_worsens_2', triggers: [{ eventId: EventIdByKey.chronic_illness, chance: 0.3 }] } },
             { textKey: 'choice_sickness_worsens_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_sickness_worsens_3' } },
         ]
     },
@@ -44,7 +45,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_traffic_accident_1', effect: { statChanges: { health: -3 }, fundChange: -2000, logKey: 'log_traffic_accident_1' } },
-            { textKey: 'choice_traffic_accident_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_traffic_accident_2', triggers: [{ eventId: 'sued', chance: 0.7 }] } },
+            { textKey: 'choice_traffic_accident_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_traffic_accident_2', triggers: [{ eventId: EventIdByKey.sued, chance: 0.7 }] } },
             { textKey: 'choice_traffic_accident_3', effect: { statChanges: { iq: 2 }, logKey: 'log_traffic_accident_3' } },
         ]
     },
@@ -67,7 +68,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_lottery_win_1', effect: { fundChange: 100000, statChanges: { happiness: 3 }, logKey: 'log_lottery_win_1' } },
-            { textKey: 'choice_lottery_win_2', effect: { fundChange: 100000, statChanges: { happiness: 3 }, logKey: 'log_lottery_win_2', triggers: [{ eventId: 'friends_exploit', chance: 0.6 }] } },
+            { textKey: 'choice_lottery_win_2', effect: { fundChange: 100000, statChanges: { happiness: 3 }, logKey: 'log_lottery_win_2', triggers: [{ eventId: EventIdByKey.friends_exploit, chance: 0.6 }] } },
             { textKey: 'choice_lottery_win_3', effect: { fundChange: 100000, logKey: 'log_lottery_win_3' } },
         ]
     },
@@ -79,7 +80,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_friends_exploit_1', effect: { fundChange: -5000, logKey: 'log_friends_exploit_1' } },
-            { textKey: 'choice_friends_exploit_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_friends_exploit_2', triggers: [{ eventId: 'lose_friend', chance: 0.4 }] } },
+            { textKey: 'choice_friends_exploit_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_friends_exploit_2', triggers: [{ eventId: EventIdByKey.lose_friend, chance: 0.4 }] } },
             { textKey: 'choice_friends_exploit_3', effect: { fundChange: -15000, statChanges: { happiness: -3 }, logKey: 'log_friends_exploit_3' } },
         ]
     },
@@ -181,8 +182,8 @@ export const LIFE_EVENTS: EventDraft[] = [
                 statChanges: { health: -3, happiness: -3, eq: -3 }, 
                 fundChange: -500,
                 logKey: 'log_street_assault_2', 
-                triggers: [{ eventId: 'sickness_worsens', chance: 0.5 }]
-            }},
+                                triggers: [{ eventId: EventIdByKey.sickness_worsens, chance: 0.5 }]
+            }},,
             { textKey: 'choice_street_assault_3', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_street_assault_3' } },
         ]
     },
@@ -193,7 +194,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool, LifePhase.University, LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_getting_lost_1', effect: { statChanges: { eq: -2, happiness: -2 }, logKey: 'log_getting_lost_1' } },
-            { textKey: 'choice_getting_lost_2', effect: { logKey: 'log_getting_lost_2', triggers: [{ eventId: 'street_assault', chance: 0.3 }] } },
+            { textKey: 'choice_getting_lost_2', effect: { logKey: 'log_getting_lost_2', triggers: [{ eventId: EventIdByKey.street_assault, chance: 0.3 }] } },
             { textKey: 'choice_getting_lost_3', effect: { statChanges: { iq: 3 }, logKey: 'log_getting_lost_3' } },
         ]
     },
@@ -204,7 +205,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_unpaid_debt_1', effect: { statChanges: { happiness: -3 }, fundChange: -500, logKey: 'log_unpaid_debt_1' } },
-            { textKey: 'choice_unpaid_debt_2', effect: { logKey: 'log_unpaid_debt_2', triggers: [{ eventId: 'sued', chance: 1.0 }] } },
+            { textKey: 'choice_unpaid_debt_2', effect: { logKey: 'log_unpaid_debt_2', triggers: [{ eventId: EventIdByKey.sued, chance: 1.0 }] } },
             { textKey: 'choice_unpaid_debt_3', effect: { fundChange: -250, statChanges: { eq: 2 }, logKey: 'log_unpaid_debt_3' } },
         ]
     },
@@ -215,7 +216,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_tax_evasion_discovered_1', effect: { fundChange: -15000, statChanges: { happiness: -3 }, logKey: 'log_tax_evasion_discovered_1' } },
-            { textKey: 'choice_tax_evasion_discovered_2', effect: { statChanges: { eq: 3 }, logKey: 'log_tax_evasion_discovered_2', triggers: [{ eventId: 'sued', chance: 1.0 }] } },
+            { textKey: 'choice_tax_evasion_discovered_2', effect: { statChanges: { eq: 3 }, logKey: 'log_tax_evasion_discovered_2', triggers: [{ eventId: EventIdByKey.sued, chance: 1.0 }] } },
             { textKey: 'choice_tax_evasion_discovered_3', effect: { fundChange: -7500, statChanges: { iq: 3 }, logKey: 'log_tax_evasion_discovered_3' } },
         ]
     },
@@ -226,8 +227,8 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         condition: (state) => state.familyFund >= 5000,
         choices: [
-            { textKey: 'choice_investment_opportunity_1', effect: { fundChange: -20000, logKey: 'log_investment_opportunity_1', triggers: [{ eventId: 'investment_success_large', chance: 0.5 }, { eventId: 'investment_failure', chance: 0.5 }] } },
-            { textKey: 'choice_investment_opportunity_2', effect: { fundChange: -5000, logKey: 'log_investment_opportunity_2', triggers: [{ eventId: 'investment_success_small', chance: 0.5 }, { eventId: 'investment_failure', chance: 0.5 }] } },
+            { textKey: 'choice_investment_opportunity_1', effect: { fundChange: -20000, logKey: 'log_investment_opportunity_1', triggers: [{ eventId: EventIdByKey.investment_success_large, chance: 0.5 }, { eventId: EventIdByKey.investment_failure, chance: 0.5 }] } },
+            { textKey: 'choice_investment_opportunity_2', effect: { fundChange: -5000, logKey: 'log_investment_opportunity_2', triggers: [{ eventId: EventIdByKey.investment_success_small, chance: 0.5 }, { eventId: EventIdByKey.investment_failure, chance: 0.5 }] } },
             { textKey: 'choice_investment_opportunity_3', effect: { logKey: 'log_investment_opportunity_3' } },
         ]
     },
@@ -261,7 +262,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_get_a_pet_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_get_a_pet_1' } },
-            { textKey: 'choice_get_a_pet_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_get_a_pet_2', triggers: [{ eventId: 'pet_dies', chance: 0.8 }] } },
+            { textKey: 'choice_get_a_pet_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_get_a_pet_2', triggers: [{ eventId: EventIdByKey.pet_dies, chance: 0.8 }] } },
             { textKey: 'choice_get_a_pet_3', effect: { statChanges: { health: 3 }, logKey: 'log_get_a_pet_3' } },
         ]
     },
@@ -272,7 +273,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_loan_shark_1', effect: { fundChange: -1000, statChanges: { eq: 2 }, logKey: 'log_loan_shark_1' } },
-            { textKey: 'choice_loan_shark_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_loan_shark_2', triggers: [{ eventId: 'loan_shark_enforcers', chance: 1.0 }] } },
+            { textKey: 'choice_loan_shark_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_loan_shark_2', triggers: [{ eventId: EventIdByKey.loan_shark_enforcers, chance: 1.0 }] } },
             { textKey: 'choice_loan_shark_3', effect: { statChanges: { iq: 3 }, logKey: 'log_loan_shark_3' } },
         ]
     },
@@ -284,7 +285,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         isTriggerOnly: true,
         choices: [
             { textKey: 'choice_loan_shark_enforcers_1', effect: { fundChange: -5000, logKey: 'log_loan_shark_enforcers_1' } },
-            { textKey: 'choice_loan_shark_enforcers_2', effect: { statChanges: { health: -3 }, logKey: 'log_loan_shark_enforcers_2', triggers: [{ eventId: 'sickness_worsens', chance: 0.6 }] } },
+            { textKey: 'choice_loan_shark_enforcers_2', effect: { statChanges: { health: -3 }, logKey: 'log_loan_shark_enforcers_2', triggers: [{ eventId: EventIdByKey.sickness_worsens, chance: 0.6 }] } },
             { textKey: 'choice_loan_shark_enforcers_3', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_loan_shark_enforcers_3' } },
         ]
     },
@@ -295,7 +296,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_relative_is_sick_1', effect: { fundChange: -3000, statChanges: { happiness: -3 }, logKey: 'log_relative_is_sick_1' } },
-            { textKey: 'choice_relative_is_sick_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_relative_is_sick_2', triggers: [{ eventId: 'lose_friend', chance: 0.8 }] } },
+            { textKey: 'choice_relative_is_sick_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_relative_is_sick_2', triggers: [{ eventId: EventIdByKey.lose_friend, chance: 0.8 }] } },
             { textKey: 'choice_relative_is_sick_3', effect: { statChanges: { happiness: 3 }, logKey: 'log_relative_is_sick_3' } },
         ]
     },
@@ -327,9 +328,9 @@ export const LIFE_EVENTS: EventDraft[] = [
         descriptionKey: 'event_pyramid_scheme_desc',
         phases: [LifePhase.PostGraduation],
         choices: [
-            { textKey: 'choice_pyramid_scheme_1', effect: { logKey: 'log_pyramid_scheme_1', triggers: [{ eventId: 'investment_failure', chance: 1.0 }] } },
+            { textKey: 'choice_pyramid_scheme_1', effect: { logKey: 'log_pyramid_scheme_1', triggers: [{ eventId: EventIdByKey.investment_failure, chance: 1.0 }] } },
             { textKey: 'choice_pyramid_scheme_2', effect: { logKey: 'log_pyramid_scheme_2' } },
-            { textKey: 'choice_pyramid_scheme_3', effect: { fundChange: 5000, logKey: 'log_pyramid_scheme_3', triggers: [{ eventId: 'investment_success_small', chance: 0.2 }] } },
+            { textKey: 'choice_pyramid_scheme_3', effect: { fundChange: 5000, logKey: 'log_pyramid_scheme_3', triggers: [{ eventId: EventIdByKey.investment_success_small, chance: 0.2 }] } },
         ]
     },
     {
@@ -339,7 +340,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
             { textKey: 'choice_relative_death_1', effect: { fundChange: -3000, statChanges: { happiness: -3 }, logKey: 'log_relative_death_1' } },
-            { textKey: 'choice_relative_death_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_relative_death_2', triggers: [{ eventId: 'lose_friend', chance: 0.9 }] } },
+            { textKey: 'choice_relative_death_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_relative_death_2', triggers: [{ eventId: EventIdByKey.lose_friend, chance: 0.9 }] } },
             { textKey: 'choice_relative_death_3', effect: { statChanges: { eq: 3 }, logKey: 'log_relative_death_3' } },
         ]
     },
@@ -360,7 +361,7 @@ export const LIFE_EVENTS: EventDraft[] = [
         descriptionKey: 'event_stranger_asks_for_help_desc',
         phases: [LifePhase.PostGraduation, LifePhase.Retired],
         choices: [
-            { textKey: 'choice_stranger_asks_for_help_1', effect: { statChanges: { eq: 3, happiness: 3 }, logKey: 'log_stranger_asks_for_help_1', triggers: [{ eventId: 'unpaid_debt', chance: 0.3 }] } },
+            { textKey: 'choice_stranger_asks_for_help_1', effect: { statChanges: { eq: 3, happiness: 3 }, logKey: 'log_stranger_asks_for_help_1', triggers: [{ eventId: EventIdByKey.unpaid_debt, chance: 0.3 }] } },
             { textKey: 'choice_stranger_asks_for_help_2', effect: { logKey: 'log_stranger_asks_for_help_2' } },
             { textKey: 'choice_stranger_asks_for_help_3', effect: { statChanges: { iq: 2 }, logKey: 'log_stranger_asks_for_help_3' } },
         ]

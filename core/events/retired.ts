@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase } from '../types';
-
+import { EventIdByKey } from '../../src/generated/eventIds';
 export const RETIRED_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
@@ -11,7 +11,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_official_retirement_day_1', effect: { statChanges: { happiness: 3 }, fundChange: -200, logKey: 'log_retired_official_retirement_day_1' } },
             { textKey: 'choice_retired_official_retirement_day_2', effect: { statChanges: { happiness: 2 }, fundChange: -500, logKey: 'log_retired_official_retirement_day_2' } },
-            { textKey: 'choice_retired_official_retirement_day_3', effect: { statChanges: { health: -2, happiness: -1 }, logKey: 'log_retired_official_retirement_day_3', triggers: [{ eventId: 'retired_feeling_empty', chance: 0.6 }] } },
+            { textKey: 'choice_retired_official_retirement_day_3', effect: { statChanges: { health: -2, happiness: -1 }, logKey: 'log_retired_official_retirement_day_3', triggers: [{ eventId: EventIdByKey.retired_feeling_empty, chance: 0.6 }] } },
         ]
     },
     {
@@ -23,7 +23,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_first_pension_1', effect: { statChanges: { eq: 2 }, logKey: 'log_retired_first_pension_1' } },
             { textKey: 'choice_retired_first_pension_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_first_pension_2' } },
-            { textKey: 'choice_retired_first_pension_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_first_pension_3', triggers: [{ eventId: 'retired_insufficient_funds', chance: 0.5 }] } },
+            { textKey: 'choice_retired_first_pension_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_first_pension_3', triggers: [{ eventId: EventIdByKey.retired_insufficient_funds, chance: 0.5 }] } },
         ]
     },
     {
@@ -34,7 +34,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_health_checkup_1', effect: { statChanges: { health: 2 }, fundChange: -500, logKey: 'log_retired_health_checkup_1' } },
             { textKey: 'choice_retired_health_checkup_2', effect: { statChanges: { health: -1 }, fundChange: -200, logKey: 'log_retired_health_checkup_2' } },
-            { textKey: 'choice_retired_health_checkup_3', effect: { statChanges: { health: -3 }, logKey: 'log_retired_health_checkup_3', triggers: [{ eventId: 'retired_illness_discovered', chance: 0.4 }] } },
+            { textKey: 'choice_retired_health_checkup_3', effect: { statChanges: { health: -3 }, logKey: 'log_retired_health_checkup_3', triggers: [{ eventId: EventIdByKey.retired_illness_discovered, chance: 0.4 }] } },
         ]
     },
     {
@@ -45,7 +45,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_volunteering_1', effect: { statChanges: { happiness: 2, iq: 1 }, logKey: 'log_retired_volunteering_1' } },
             { textKey: 'choice_retired_volunteering_2', effect: { statChanges: { happiness: 3, eq: 1 }, logKey: 'log_retired_volunteering_2' } },
-            { textKey: 'choice_retired_volunteering_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_volunteering_3', triggers: [{ eventId: 'retired_cant_keep_up_volunteer', chance: 0.3 }] } },
+            { textKey: 'choice_retired_volunteering_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_volunteering_3', triggers: [{ eventId: EventIdByKey.retired_cant_keep_up_volunteer, chance: 0.3 }] } },
         ]
     },
     {
@@ -57,7 +57,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_long_trip_1', effect: { statChanges: { happiness: 3 }, fundChange: -3000, logKey: 'log_retired_long_trip_1' } },
             { textKey: 'choice_retired_long_trip_2', effect: { statChanges: { happiness: 3 }, fundChange: -5000, logKey: 'log_retired_long_trip_2' } },
-            { textKey: 'choice_retired_long_trip_3', effect: { statChanges: { happiness: 3 }, fundChange: -8000, logKey: 'log_retired_long_trip_3', triggers: [{ eventId: 'retired_travel_fatigue', chance: 0.5 }] } },
+            { textKey: 'choice_retired_long_trip_3', effect: { statChanges: { happiness: 3 }, fundChange: -8000, logKey: 'log_retired_long_trip_3', triggers: [{ eventId: EventIdByKey.retired_travel_fatigue, chance: 0.5 }] } },
         ]
     },
     {
@@ -69,7 +69,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_amusement_park_1', effect: { statChanges: { happiness: 4, health: -3 }, logKey: 'log_retired_amusement_park_1' } },
             { textKey: 'choice_retired_amusement_park_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_retired_amusement_park_2' } },
-            { textKey: 'choice_retired_amusement_park_3', effect: { statChanges: { happiness: 1, health: -2 }, logKey: 'log_retired_amusement_park_3', triggers: [{ eventId: 'retired_heatstroke', chance: 0.4 }] } },
+            { textKey: 'choice_retired_amusement_park_3', effect: { statChanges: { happiness: 1, health: -2 }, logKey: 'log_retired_amusement_park_3', triggers: [{ eventId: EventIdByKey.retired_heatstroke, chance: 0.4 }] } },
         ]
     },
     {
@@ -80,7 +80,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_seniors_club_1', effect: { statChanges: { happiness: 3, health: 1 }, logKey: 'log_retired_seniors_club_1' } },
             { textKey: 'choice_retired_seniors_club_2', effect: { statChanges: { happiness: 2, iq: 1 }, logKey: 'log_retired_seniors_club_2' } },
-            { textKey: 'choice_retired_seniors_club_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_retired_seniors_club_3', triggers: [{ eventId: 'retired_difficulty_integrating', chance: 0.5 }] } },
+            { textKey: 'choice_retired_seniors_club_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_retired_seniors_club_3', triggers: [{ eventId: EventIdByKey.retired_difficulty_integrating, chance: 0.5 }] } },
         ]
     },
     {
@@ -91,7 +91,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_supermarket_sale_1', effect: { statChanges: { happiness: 2 }, fundChange: -100, logKey: 'log_retired_supermarket_sale_1' } },
             { textKey: 'choice_retired_supermarket_sale_2', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_supermarket_sale_2' } },
-            { textKey: 'choice_retired_supermarket_sale_3', effect: { statChanges: { health: -1 }, logKey: 'log_retired_supermarket_sale_3', triggers: [{ eventId: 'retired_missed_promotions', chance: 0.6 }] } },
+            { textKey: 'choice_retired_supermarket_sale_3', effect: { statChanges: { health: -1 }, logKey: 'log_retired_supermarket_sale_3', triggers: [{ eventId: EventIdByKey.retired_missed_promotions, chance: 0.6 }] } },
         ]
     },
     {
@@ -102,7 +102,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_class_reunion_1', effect: { statChanges: { happiness: 4 }, logKey: 'log_retired_class_reunion_1' } },
             { textKey: 'choice_retired_class_reunion_2', effect: { statChanges: { happiness: 3 }, logKey: 'log_retired_class_reunion_2' } },
-            { textKey: 'choice_retired_class_reunion_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_retired_class_reunion_3', triggers: [{ eventId: 'retired_loneliness_after_reunion', chance: 0.5 }] } },
+            { textKey: 'choice_retired_class_reunion_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_retired_class_reunion_3', triggers: [{ eventId: EventIdByKey.retired_loneliness_after_reunion, chance: 0.5 }] } },
         ]
     },
     {
@@ -113,7 +113,7 @@ export const RETIRED_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_retired_family_dinner_1', effect: { statChanges: { happiness: 2, skill: 1 }, logKey: 'log_retired_family_dinner_1' } },
             { textKey: 'choice_retired_family_dinner_2', effect: { statChanges: { happiness: 3 }, logKey: 'log_retired_family_dinner_2' } },
-            { textKey: 'choice_retired_family_dinner_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_family_dinner_3', triggers: [{ eventId: 'retired_lose_central_role', chance: 0.4 }] } },
+            { textKey: 'choice_retired_family_dinner_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_retired_family_dinner_3', triggers: [{ eventId: EventIdByKey.retired_lose_central_role, chance: 0.4 }] } },
         ]
     },
 

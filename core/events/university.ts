@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase } from '../types';
-
+import { EventIdByKey } from '../../src/generated/eventIds';
 export const UNIVERSITY_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
@@ -10,7 +10,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         condition: (state, char) => char.age === 19,
         choices: [
             { textKey: 'choice_university_first_day_1', effect: { statChanges: { iq: 2, eq: 2 }, logKey: 'log_university_first_day_1' } },
-            { textKey: 'choice_university_first_day_2', effect: { statChanges: { happiness: -2, eq: -1 }, logKey: 'log_university_first_day_2', triggers: [{ eventId: 'university_missed_info', chance: 0.8 }] } },
+            { textKey: 'choice_university_first_day_2', effect: { statChanges: { happiness: -2, eq: -1 }, logKey: 'log_university_first_day_2', triggers: [{ eventId: EventIdByKey.university_missed_info, chance: 0.8 }] } },
             { textKey: 'choice_university_first_day_3', effect: { statChanges: { eq: -1 }, logKey: 'log_university_first_day_3' } },
         ]
     },
@@ -21,7 +21,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_forgot_registration_1', effect: { statChanges: { iq: 1 }, logKey: 'log_university_forgot_registration_1' } },
-            { textKey: 'choice_university_forgot_registration_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_forgot_registration_2', triggers: [{ eventId: 'university_class_full', chance: 0.7 }] } },
+            { textKey: 'choice_university_forgot_registration_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_forgot_registration_2', triggers: [{ eventId: EventIdByKey.university_class_full, chance: 0.7 }] } },
             { textKey: 'choice_university_forgot_registration_3', effect: { logKey: 'log_university_forgot_registration_3' } },
         ]
     },
@@ -32,7 +32,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_noisy_roommate_1', effect: { statChanges: { eq: 1 }, logKey: 'log_university_noisy_roommate_1' } },
-            { textKey: 'choice_university_noisy_roommate_2', effect: { logKey: 'log_university_noisy_roommate_2', triggers: [{ eventId: 'university_roommate_angry', chance: 0.6 }] } },
+            { textKey: 'choice_university_noisy_roommate_2', effect: { logKey: 'log_university_noisy_roommate_2', triggers: [{ eventId: EventIdByKey.university_roommate_angry, chance: 0.6 }] } },
             { textKey: 'choice_university_noisy_roommate_3', effect: { statChanges: { health: -1, happiness: -1 }, logKey: 'log_university_noisy_roommate_3' } },
         ]
     },
@@ -43,7 +43,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_group_presentation_1', effect: { statChanges: { iq: 2, eq: 2 }, logKey: 'log_university_group_presentation_1' } },
-            { textKey: 'choice_university_group_presentation_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_university_group_presentation_2', triggers: [{ eventId: 'university_group_dislikes_you', chance: 0.8 }] } },
+            { textKey: 'choice_university_group_presentation_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_university_group_presentation_2', triggers: [{ eventId: EventIdByKey.university_group_dislikes_you, chance: 0.8 }] } },
             { textKey: 'choice_university_group_presentation_3', effect: { statChanges: { iq: -2, eq: -2 }, logKey: 'log_university_group_presentation_3' } },
         ]
     },
@@ -54,7 +54,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_midterm_exam_1', effect: { statChanges: { iq: 3 }, logKey: 'log_university_midterm_exam_1' } },
-            { textKey: 'choice_university_midterm_exam_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_midterm_exam_2', triggers: [{ eventId: 'university_exam_off_topic', chance: 0.6 }] } },
+            { textKey: 'choice_university_midterm_exam_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_midterm_exam_2', triggers: [{ eventId: EventIdByKey.university_exam_off_topic, chance: 0.6 }] } },
             { textKey: 'choice_university_midterm_exam_3', effect: { statChanges: { iq: -3, eq: -3 }, logKey: 'log_university_midterm_exam_3' } },
         ]
     },
@@ -65,7 +65,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_football_game_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_university_football_game_1' } },
-            { textKey: 'choice_university_football_game_2', effect: { statChanges: { happiness: 3, iq: -2 }, logKey: 'log_university_football_game_2', triggers: [{ eventId: 'university_marked_absent', chance: 0.7 }] } },
+            { textKey: 'choice_university_football_game_2', effect: { statChanges: { happiness: 3, iq: -2 }, logKey: 'log_university_football_game_2', triggers: [{ eventId: EventIdByKey.university_marked_absent, chance: 0.7 }] } },
             { textKey: 'choice_university_football_game_3', effect: { statChanges: { happiness: 1 }, logKey: 'log_university_football_game_3' } },
         ]
     },
@@ -76,7 +76,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_dorm_party_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_university_dorm_party_1' } },
-            { textKey: 'choice_university_dorm_party_2', effect: { statChanges: { happiness: 4, health: -2 }, logKey: 'log_university_dorm_party_2', triggers: [{ eventId: 'university_caught_by_ra', chance: 0.5 }] } },
+            { textKey: 'choice_university_dorm_party_2', effect: { statChanges: { happiness: 4, health: -2 }, logKey: 'log_university_dorm_party_2', triggers: [{ eventId: EventIdByKey.university_caught_by_ra, chance: 0.5 }] } },
             { textKey: 'choice_university_dorm_party_3', effect: { statChanges: { eq: -1 }, logKey: 'log_university_dorm_party_3' } },
         ]
     },
@@ -87,7 +87,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_internship_interview_1', effect: { statChanges: { eq: 3, skill: 2 }, logKey: 'log_university_internship_interview_1' } },
-            { textKey: 'choice_university_internship_interview_2', effect: { statChanges: { eq: -3 }, logKey: 'log_university_internship_interview_2', triggers: [{ eventId: 'university_rejected_immediately', chance: 0.9 }] } },
+            { textKey: 'choice_university_internship_interview_2', effect: { statChanges: { eq: -3 }, logKey: 'log_university_internship_interview_2', triggers: [{ eventId: EventIdByKey.university_rejected_immediately, chance: 0.9 }] } },
             { textKey: 'choice_university_internship_interview_3', effect: { statChanges: { eq: -1 }, logKey: 'log_university_internship_interview_3' } },
         ]
     },
@@ -98,7 +98,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_night_class_1', effect: { statChanges: { iq: 2 }, logKey: 'log_university_night_class_1' } },
-            { textKey: 'choice_university_night_class_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_night_class_2', triggers: [{ eventId: 'university_reprimanded_by_teacher', chance: 0.4 }] } },
+            { textKey: 'choice_university_night_class_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_night_class_2', triggers: [{ eventId: EventIdByKey.university_reprimanded_by_teacher, chance: 0.4 }] } },
             { textKey: 'choice_university_night_class_3', effect: { statChanges: { iq: 1, happiness: 1 }, logKey: 'log_university_night_class_3' } },
         ]
     },
@@ -109,7 +109,7 @@ export const UNIVERSITY_EVENTS: EventDraft[] = [
         phases: [LifePhase.University],
         choices: [
             { textKey: 'choice_university_submit_essay_1', effect: { statChanges: { iq: 1 }, logKey: 'log_university_submit_essay_1' } },
-            { textKey: 'choice_university_submit_essay_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_submit_essay_2', triggers: [{ eventId: 'university_points_deducted', chance: 0.9 }] } },
+            { textKey: 'choice_university_submit_essay_2', effect: { statChanges: { iq: -1 }, logKey: 'log_university_submit_essay_2', triggers: [{ eventId: EventIdByKey.university_points_deducted, chance: 0.9 }] } },
             { textKey: 'choice_university_submit_essay_3', effect: { statChanges: { iq: -3, eq: -2 }, logKey: 'log_university_submit_essay_3' } },
         ]
     },

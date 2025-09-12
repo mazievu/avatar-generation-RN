@@ -792,6 +792,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     statChanges: { ...effect.statChanges, ...dynamicResult.statChanges }
                 };
             }
+            console.log(`[DEBUG] handleEventChoice called for event: ${event.id}, action present: ${!!finalEffect.action}`);
     
             // 1. Apply direct stat/fund changes
             if (event.applyEffectToAll) {
@@ -850,10 +851,10 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             if (finalEffect.action) {
                 const updates = finalEffect.action(nextState, characterId, exampleManifest);
                 Object.assign(nextState, updates);
+                console.log(`[DEBUG] After action, familyMembers count: ${Object.keys(nextState.familyMembers).length}`);
             }
     
             // 4. Determine the next event (trigger or null)
-            let eventTriggered = false;
             if (finalEffect.triggers) {
                 for (const trigger of finalEffect.triggers) {
                     if (Math.random() < trigger.chance) {
@@ -866,10 +867,14 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                                 const parents = originalChar.parentsIds.map((id: string) => nextState.familyMembers[id]).filter((p: Character) => p && p.isAlive);
                                 if (parents.length > 0) newCharacterId = parents[0].id;
                             }
-                            nextState.activeEvent = { characterId: newCharacterId, event: triggeredEvent };
-                            console.log(`[DEBUG] Active event set: ${triggeredEvent.id}`); // This line was already there from a previous change
-                            eventTriggered = true;
-                            break;
+                            const allAvailableEvents = getAllEvents();
+                            console.log(`[DEBUG] All available events count: ${allAvailableEvents.length}`);
+                            const foundTriggeredEvent = allAvailableEvents.find(e => e.id === trigger.eventId);
+                            if (foundTriggeredEvent) {
+                                console.log(`[DEBUG] Found triggered event: ${foundTriggeredEvent.id}`);
+                                nextState.eventQueue.push({ characterId: newCharacterId, event: foundTriggeredEvent });
+                                break; // We only process one trigger
+                            }
                         }
                     }
                 }

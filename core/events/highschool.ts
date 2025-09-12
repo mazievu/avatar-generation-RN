@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase } from '../types';
-
+import { EventIdByKey } from '../../src/generated/eventIds';
 export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
@@ -9,7 +9,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_late_for_school_1', effect: { statChanges: { eq: -2 }, logKey: 'log_highschool_late_for_school_1' } },
-            { textKey: 'choice_highschool_late_for_school_2', effect: { statChanges: { iq: -2 }, logKey: 'log_highschool_late_for_school_2', triggers: [{ eventId: 'highschool_late_slip', chance: 0.5 }] } },
+            { textKey: 'choice_highschool_late_for_school_2', effect: { statChanges: { iq: -2 }, logKey: 'log_highschool_late_for_school_2', triggers: [{ eventId: EventIdByKey.highschool_late_slip, chance: 0.5 }] } },
             { textKey: 'choice_highschool_late_for_school_3', effect: { statChanges: { eq: 2 }, logKey: 'log_highschool_late_for_school_3' } },
         ]
     },
@@ -21,7 +21,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_highschool_forgot_presentation_book_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_highschool_forgot_presentation_book_1' } },
             { textKey: 'choice_highschool_forgot_presentation_book_2', effect: { statChanges: { eq: -3 }, logKey: 'log_highschool_forgot_presentation_book_2' } },
-            { textKey: 'choice_highschool_forgot_presentation_book_3', effect: { statChanges: { eq: -2 }, logKey: 'log_highschool_forgot_presentation_book_3', triggers: [{ eventId: 'highschool_teacher_discovers_hiding', chance: 0.6 }] } },
+            { textKey: 'choice_highschool_forgot_presentation_book_3', effect: { statChanges: { eq: -2 }, logKey: 'log_highschool_forgot_presentation_book_3', triggers: [{ eventId: EventIdByKey.highschool_teacher_discovers_hiding, chance: 0.6 }] } },
         ]
     },
     {
@@ -31,7 +31,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_football_practice_1', effect: { statChanges: { health: 3, eq: 2 }, logKey: 'log_highschool_football_practice_1' } },
-            { textKey: 'choice_highschool_football_practice_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_highschool_football_practice_2', triggers: [{ eventId: 'highschool_coach_punishment', chance: 0.7 }] } },
+            { textKey: 'choice_highschool_football_practice_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_highschool_football_practice_2', triggers: [{ eventId: EventIdByKey.highschool_coach_punishment, chance: 0.7 }] } },
             { textKey: 'choice_highschool_football_practice_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_highschool_football_practice_3' } },
         ]
     },
@@ -42,7 +42,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_college_prep_workshop_1', effect: { statChanges: { iq: 3 }, logKey: 'log_highschool_college_prep_workshop_1' } },
-            { textKey: 'choice_highschool_college_prep_workshop_2', effect: { statChanges: { iq: -4 }, logKey: 'log_highschool_college_prep_workshop_2', triggers: [{ eventId: 'highschool_counselor_reprimand', chance: 0.5 }] } },
+            { textKey: 'choice_highschool_college_prep_workshop_2', effect: { statChanges: { iq: -4 }, logKey: 'log_highschool_college_prep_workshop_2', triggers: [{ eventId: EventIdByKey.highschool_counselor_reprimand, chance: 0.5 }] } },
             { textKey: 'choice_highschool_college_prep_workshop_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_highschool_college_prep_workshop_3' } },
         ]
     },
@@ -53,7 +53,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_sat_act_test_1', effect: { statChanges: { iq: 3 }, logKey: 'log_highschool_sat_act_test_1' } },
-            { textKey: 'choice_highschool_sat_act_test_2', effect: { statChanges: { eq: -2 }, logKey: 'log_highschool_sat_act_test_2', triggers: [{ eventId: 'highschool_invigilator_warning_test', chance: 0.4 }] } },
+            { textKey: 'choice_highschool_sat_act_test_2', effect: { statChanges: { eq: -2 }, logKey: 'log_highschool_sat_act_test_2', triggers: [{ eventId: EventIdByKey.highschool_invigilator_warning_test, chance: 0.4 }] } },
             { textKey: 'choice_highschool_sat_act_test_3', effect: { statChanges: { iq: -3 }, logKey: 'log_highschool_sat_act_test_3' } },
         ]
     },
@@ -64,7 +64,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_promposal_1', effect: { statChanges: { eq: 3, happiness: 3 }, logKey: 'log_highschool_promposal_1' } },
-            { textKey: 'choice_highschool_promposal_2', effect: { statChanges: { eq: -3 }, logKey: 'log_highschool_promposal_2', triggers: [{ eventId: 'highschool_crush_rejects_promposal', chance: 0.5 }] } },
+            { textKey: 'choice_highschool_promposal_2', effect: { statChanges: { eq: -3 }, logKey: 'log_highschool_promposal_2', triggers: [{ eventId: EventIdByKey.highschool_crush_rejects_promposal, chance: 0.5 }] } },
             { textKey: 'choice_highschool_promposal_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_highschool_promposal_3' } },
         ]
     },
@@ -75,7 +75,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_prom_cafeteria_1', effect: { statChanges: { happiness: 4 }, logKey: 'log_highschool_prom_cafeteria_1' } },
-            { textKey: 'choice_highschool_prom_cafeteria_2', effect: { statChanges: { happiness: 3, eq: 2 }, logKey: 'log_highschool_prom_cafeteria_2', triggers: [{ eventId: 'highschool_teased_by_friends_crush', chance: 0.6 }] } },
+            { textKey: 'choice_highschool_prom_cafeteria_2', effect: { statChanges: { happiness: 3, eq: 2 }, logKey: 'log_highschool_prom_cafeteria_2', triggers: [{ eventId: EventIdByKey.highschool_teased_by_friends_crush, chance: 0.6 }] } },
             { textKey: 'choice_highschool_prom_cafeteria_3', effect: { statChanges: { eq: -2 }, logKey: 'log_highschool_prom_cafeteria_3' } },
         ]
     },
@@ -86,7 +86,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_homecoming_game_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_highschool_homecoming_game_1' } },
-            { textKey: 'choice_highschool_homecoming_game_2', effect: { statChanges: { happiness: 2, eq: -4 }, logKey: 'log_highschool_homecoming_game_2', triggers: [{ eventId: 'highschool_caught_skipping', chance: 0.7 }] } },
+            { textKey: 'choice_highschool_homecoming_game_2', effect: { statChanges: { happiness: 2, eq: -4 }, logKey: 'log_highschool_homecoming_game_2', triggers: [{ eventId: EventIdByKey.highschool_caught_skipping, chance: 0.7 }] } },
             { textKey: 'choice_highschool_homecoming_game_3', effect: { statChanges: { happiness: 4 }, logKey: 'log_highschool_homecoming_game_3' } },
         ]
     },
@@ -97,7 +97,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.HighSchool],
         choices: [
             { textKey: 'choice_highschool_class_test_1', effect: { statChanges: { iq: 3 }, logKey: 'log_highschool_class_test_1' } },
-            { textKey: 'choice_highschool_class_test_2', effect: { statChanges: { iq: -2, eq: -2 }, logKey: 'log_highschool_class_test_2', triggers: [{ eventId: 'highschool_teacher_reprimand_cheating', chance: 0.5 }] } },
+            { textKey: 'choice_highschool_class_test_2', effect: { statChanges: { iq: -2, eq: -2 }, logKey: 'log_highschool_class_test_2', triggers: [{ eventId: EventIdByKey.highschool_teacher_reprimand_cheating, chance: 0.5 }] } },
             { textKey: 'choice_highschool_class_test_3', effect: { statChanges: { iq: -2 }, logKey: 'log_highschool_class_test_3' } },
         ]
     },
@@ -109,7 +109,7 @@ export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_highschool_literature_discussion_1', effect: { statChanges: { iq: 2, eq: 2 }, logKey: 'log_highschool_literature_discussion_1' } },
             { textKey: 'choice_highschool_literature_discussion_2', effect: { statChanges: { iq: 4 }, logKey: 'log_highschool_literature_discussion_2' } },
-            { textKey: 'choice_highschool_literature_discussion_3', effect: { statChanges: { eq: 2, happiness: -2 }, logKey: 'log_highschool_literature_discussion_3', triggers: [{ eventId: 'highschool_argument_with_friend', chance: 0.6 }] } },
+            { textKey: 'choice_highschool_literature_discussion_3', effect: { statChanges: { eq: 2, happiness: -2 }, logKey: 'log_highschool_literature_discussion_3', triggers: [{ eventId: EventIdByKey.highschool_argument_with_friend, chance: 0.6 }] } },
         ]
     },
 

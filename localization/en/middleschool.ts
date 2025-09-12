@@ -9,7 +9,7 @@ export default {
     choice_middleschool_late_for_school_3: 'Explain the reason to her.',
     log_middleschool_late_for_school_3: 'The teacher understood my situation.',
 
-    event_middleschool_locker_trouble_title: 'Forgot to Open Locker',
+    event_middleschool_locker_trouble_title: 'Locker Trouble',
     event_middleschool_locker_trouble_desc: 'You forgot to open your locker on time.',
     choice_middleschool_locker_trouble_1: 'Ask a friend for help.',
     log_middleschool_locker_trouble_1: 'My friend helped me get my books.',
@@ -362,7 +362,27 @@ export default {
     choice_middleschool_sharing_lunch_3: 'Keep your portion.',
     log_middleschool_sharing_lunch_3: 'I was really hungry today.',
 
-        // New Clubs
+    // New Clubs
+    club_science_name: 'Science Club',
+    club_science_description: 'Explore the world of science and conduct fun experiments. For future scientists.',
+    club_art_name: 'Art Club',
+    club_art_description: 'Develop your creativity and express yourself through various art forms. For future artists.',
+    club_sports_name: 'Sports Club',
+    club_sports_description: 'Improve physical fitness and teamwork through sports. For future athletes.',
+    club_debate_name: 'Debate Club',
+    club_debate_description: 'Enhance critical thinking and public speaking skills. For future leaders and lawyers.',
+    club_robotics_name: 'Robotics Club',
+    club_robotics_description: 'Design, build, and program robots. For future engineers and innovators.',
+    club_music_name: 'Music Club',
+    club_music_description: 'Explore the world of music, learn an instrument, and perform. For future musicians.',
+    club_cooking_name: 'Cooking Club',
+    club_cooking_description: 'Learn culinary skills and explore the world of food. For future chefs.',
+    club_coding_name: 'Coding Club',
+    club_coding_description: 'Learn how to code and develop software. For future programmers.',
+    club_photography_name: 'Photography Club',
+    club_photography_description: 'Capture moments and tell stories through the lens. For future photographers.',
+    club_writing_name: 'Writing Club',
+    club_writing_description: 'Develop your writing skills and express your ideas through text. For future writers and journalists.',
     club_entrepreneurship_name: 'Entrepreneurship Club',
     club_entrepreneurship_description: 'Learn the basics of business, finance, and leadership. For future CEOs.',
     club_model_un_name: 'Model UN Club',
@@ -385,7 +405,6 @@ export default {
     club_architecture_engineering_description: 'Design and build amazing structures. For future architects and engineers.',
 
     // New Events
-
     event_business_pitch_title: 'Business Pitch Competition',
     event_business_pitch_description: 'The Entrepreneurship Club is hosting a business pitch competition. This is your chance to shine!',
     event_business_pitch_choice1: 'Present your innovative idea.',

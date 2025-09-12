@@ -1,4 +1,5 @@
 import { EventDraft, LifePhase } from '../types';
+import { EventIdByKey } from '../../src/generated/eventIds';
 
 export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
@@ -10,7 +11,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         condition: (state, char) => char.age === 6,
         choices: [
             { textKey: 'choice_elementary_first_day_1', effect: { statChanges: { iq: 2, eq: 4, happiness: -3 }, logKey: 'log_elementary_first_day_1' } },
-            { textKey: 'choice_elementary_first_day_2', effect: { statChanges: { happiness: 3, eq: -4 }, logKey: 'log_elementary_first_day_2', triggers: [{ eventId: 'elementary_teacher_reprimand_opening', chance: 0.4 }] } },
+            { textKey: 'choice_elementary_first_day_2', effect: { statChanges: { happiness: 3, eq: -4 }, logKey: 'log_elementary_first_day_2', triggers: [{ eventId: EventIdByKey.elementary_teacher_reprimand_opening, chance: 0.4 }] } },
             { textKey: 'choice_elementary_first_day_3', effect: { statChanges: { iq: 4, happiness: 2 }, logKey: 'log_elementary_first_day_3' } },
         ]
     },
@@ -22,7 +23,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_elementary_forgot_notebook_1', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_forgot_notebook_1' } },
             { textKey: 'choice_elementary_forgot_notebook_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_forgot_notebook_2' } },
-            { textKey: 'choice_elementary_forgot_notebook_3', effect: { statChanges: { iq: -2 }, logKey: 'log_elementary_forgot_notebook_3', triggers: [{ eventId: 'elementary_teacher_punishment_notebook', chance: 0.5 }] } },
+            { textKey: 'choice_elementary_forgot_notebook_3', effect: { statChanges: { iq: -2 }, logKey: 'log_elementary_forgot_notebook_3', triggers: [{ eventId: EventIdByKey.elementary_teacher_punishment_notebook, chance: 0.5 }] } },
         ]
     },
     {
@@ -32,7 +33,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_math_test_1', effect: { statChanges: { iq: 3 }, logKey: 'log_elementary_math_test_1' } },
-            { textKey: 'choice_elementary_math_test_2', effect: { statChanges: { iq: -3, eq: -2 }, logKey: 'log_elementary_math_test_2', triggers: [{ eventId: 'elementary_invigilator_warning', chance: 0.6 }] } },
+            { textKey: 'choice_elementary_math_test_2', effect: { statChanges: { iq: -3, eq: -2 }, logKey: 'log_elementary_math_test_2', triggers: [{ eventId: EventIdByKey.elementary_invigilator_warning, chance: 0.6 }] } },
             { textKey: 'choice_elementary_math_test_3', effect: { statChanges: { happiness: 2, eq: -2 }, logKey: 'log_elementary_math_test_3' } },
         ]
     },
@@ -43,7 +44,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_fire_alarm_1', effect: { statChanges: { health: 2, eq: 2 }, logKey: 'log_elementary_fire_alarm_1' } },
-            { textKey: 'choice_elementary_fire_alarm_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_fire_alarm_2', triggers: [{ eventId: 'elementary_lost_from_class', chance: 0.5 }] } },
+            { textKey: 'choice_elementary_fire_alarm_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_fire_alarm_2', triggers: [{ eventId: EventIdByKey.elementary_lost_from_class, chance: 0.5 }] } },
             { textKey: 'choice_elementary_fire_alarm_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_fire_alarm_3' } },
         ]
     },
@@ -54,7 +55,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_oral_exam_1', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_elementary_oral_exam_1' } },
-            { textKey: 'choice_elementary_oral_exam_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_oral_exam_2', triggers: [{ eventId: 'elementary_punishment_writing', chance: 0.4 }] } },
+            { textKey: 'choice_elementary_oral_exam_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_oral_exam_2', triggers: [{ eventId: EventIdByKey.elementary_punishment_writing, chance: 0.4 }] } },
             { textKey: 'choice_elementary_oral_exam_3', effect: { statChanges: { iq: -2, eq: -2 }, logKey: 'log_elementary_oral_exam_3' } },
         ]
     },
@@ -65,7 +66,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_pe_class_1', effect: { statChanges: { health: 3 }, logKey: 'log_elementary_pe_class_1' } },
-            { textKey: 'choice_elementary_pe_class_2', effect: { statChanges: { health: -4, happiness: -2 }, logKey: 'log_elementary_pe_class_2', triggers: [{ eventId: 'elementary_teased_by_friends', chance: 0.5 }] } },
+            { textKey: 'choice_elementary_pe_class_2', effect: { statChanges: { health: -4, happiness: -2 }, logKey: 'log_elementary_pe_class_2', triggers: [{ eventId: EventIdByKey.elementary_teased_by_friends, chance: 0.5 }] } },
             { textKey: 'choice_elementary_pe_class_3', effect: { statChanges: { health: 2, happiness: 2 }, logKey: 'log_elementary_pe_class_3' } },
         ]
     },
@@ -76,7 +77,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_recess_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_elementary_recess_1' } },
-            { textKey: 'choice_elementary_recess_2', effect: { statChanges: { happiness: -3, eq: -2 }, logKey: 'log_elementary_recess_2', triggers: [{ eventId: 'elementary_called_to_office', chance: 0.6 }] } },
+            { textKey: 'choice_elementary_recess_2', effect: { statChanges: { happiness: -3, eq: -2 }, logKey: 'log_elementary_recess_2', triggers: [{ eventId: EventIdByKey.elementary_called_to_office, chance: 0.6 }] } },
             { textKey: 'choice_elementary_recess_3', effect: { statChanges: { iq: 4, happiness: 4 }, logKey: 'log_elementary_recess_3' } },
         ]
     },
@@ -87,7 +88,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_lunchtime_1', effect: { statChanges: { health: 2 }, logKey: 'log_elementary_lunchtime_1' } },
-            { textKey: 'choice_elementary_lunchtime_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_lunchtime_2', triggers: [{ eventId: 'elementary_clean_up_mess', chance: 0.7 }] } },
+            { textKey: 'choice_elementary_lunchtime_2', effect: { statChanges: { eq: -2 }, logKey: 'log_elementary_lunchtime_2', triggers: [{ eventId: EventIdByKey.elementary_clean_up_mess, chance: 0.7 }] } },
             { textKey: 'choice_elementary_lunchtime_3', effect: { statChanges: { happiness: 2 }, logKey: 'log_elementary_lunchtime_3' } },
         ]
     },
@@ -98,7 +99,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_performance_prep_1', effect: { statChanges: { iq: 2, happiness: 2, eq: 2 }, logKey: 'log_elementary_performance_prep_1' } },
-            { textKey: 'choice_elementary_performance_prep_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_performance_prep_2', triggers: [{ eventId: 'elementary_role_replaced', chance: 0.5 }] } },
+            { textKey: 'choice_elementary_performance_prep_2', effect: { statChanges: { eq: -3 }, logKey: 'log_elementary_performance_prep_2', triggers: [{ eventId: EventIdByKey.elementary_role_replaced, chance: 0.5 }] } },
             { textKey: 'choice_elementary_performance_prep_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_elementary_performance_prep_3' } },
         ]
     },
@@ -109,7 +110,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         phases: [LifePhase.Elementary],
         choices: [
             { textKey: 'choice_elementary_homework_1', effect: { statChanges: { iq: 2 }, logKey: 'log_elementary_homework_1' } },
-            { textKey: 'choice_elementary_homework_2', effect: { statChanges: { iq: -2, happiness: -2 }, logKey: 'log_elementary_homework_2', triggers: [{ eventId: 'elementary_teacher_reprimand_homework', chance: 0.6 }] } },
+            { textKey: 'choice_elementary_homework_2', effect: { statChanges: { iq: -2, happiness: -2 }, logKey: 'log_elementary_homework_2', triggers: [{ eventId: EventIdByKey.elementary_teacher_reprimand_homework, chance: 0.6 }] } },
             { textKey: 'choice_elementary_homework_3', effect: { statChanges: { iq: -4 }, logKey: 'log_elementary_homework_3' } },
         ]
     },

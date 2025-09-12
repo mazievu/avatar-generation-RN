@@ -32,7 +32,7 @@ export default {
     // Stats
     stat_iq: 'IQ',
     stat_happiness: 'Happiness',
-    stat_eq: 'eq',
+    stat_eq: 'EQ',
     stat_health: 'Health',
     stat_skill: 'Skill',
     // Character Details
@@ -88,7 +88,7 @@ export default {
     summary_ending_year: 'Ending Year',
     // Modals
     modal_school_title: 'Choose a School',
-    modal_school_desc: "It's time for {name} to go to school! Choose an educational path.",
+    modal_school_desc: "It\'s time for {name} to go to school! Choose an educational path.",
     modal_university_title: 'Higher Education',
     modal_university_desc: 'Should {name} go to University? It will be costly but may open up better career opportunities.',
     university_choice_yes: 'Yes, invest in the future',
@@ -99,7 +99,7 @@ export default {
     modal_career_title: 'Choose a Career Path',
     modal_career_desc: '{name} has finished their education. What career path should they pursue?',
     modal_loan_title: "Financial Assistance",
-    modal_loan_desc: "Your family's funds have fallen into the negative! To avoid immediate bankruptcy, you must take out a loan. Please select an amount and a repayment term.",
+    modal_loan_desc: "Your family\'s funds have fallen into the negative! To avoid immediate bankruptcy, you must take out a loan. Please select an amount and a repayment term.",
     loan_amount_label: "Loan Amount",
     loan_term_label: "Repayment Term (Years)",
     accept_loan_button: "Accept Loan",
@@ -114,7 +114,7 @@ export default {
     underqualified_choice_penalized_desc: 'Start at the lowest salary. Your skill gain and promotion speed will be penalized based on how much your stats are lacking.',
     underqualified_tooltip: 'Missing Requirements:',
     underqualified_tooltip_iq: 'IQ ({shortfall} points)',
-    underqualified_tooltip_conf: 'eq ({shortfall} points)',
+    underqualified_tooltip_conf: 'EQ ({shortfall} points)',
     modal_club_choice_title: 'Choose a Club',
     modal_club_choice_desc: 'It\'s time for {name} to join an after-school club! This can help shape their future career.',
     join_club: 'Join',

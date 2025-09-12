@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase } from '../types';
-
+import { EventIdByKey } from '../../src/generated/eventIds';
 export const NEWBORN_EVENTS: EventDraft[] = [
     // 10 Main Events
     {
@@ -11,7 +11,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_first_night_crying_1', effect: { statChanges: { happiness: 3, health: 2 }, logKey: 'log_newborn_first_night_crying_1' } },
             { textKey: 'choice_newborn_first_night_crying_2', effect: { statChanges: { happiness: 2, health: -2 }, logKey: 'log_newborn_first_night_crying_2' } },
-            { textKey: 'choice_newborn_first_night_crying_3', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_first_night_crying_3', triggers: [{ eventId: 'newborn_parents_sleepless', chance: 0.5, reTarget: 'parents' }] } },
+            { textKey: 'choice_newborn_first_night_crying_3', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_first_night_crying_3', triggers: [{ eventId: EventIdByKey.newborn_parents_sleepless, chance: 0.5, reTarget: 'parents' }] } },
         ]
     },
     {
@@ -22,7 +22,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         condition: (state, char) => char.age === 0 && !char.completedOneTimeEvents.includes('newborn_first_bath'),
         choices: [
             { textKey: 'choice_newborn_first_bath_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_newborn_first_bath_1' } },
-            { textKey: 'choice_newborn_first_bath_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_newborn_first_bath_2', triggers: [{ eventId: 'newborn_fear_of_bathing', chance: 0.4 }] } },
+            { textKey: 'choice_newborn_first_bath_2', effect: { statChanges: { happiness: -3 }, logKey: 'log_newborn_first_bath_2', triggers: [{ eventId: EventIdByKey.newborn_fear_of_bathing, chance: 0.4 }] } },
             { textKey: 'choice_newborn_first_bath_3', effect: { statChanges: { happiness: 2, iq: 4 }, logKey: 'log_newborn_first_bath_3' } },
         ]
     },
@@ -34,7 +34,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_vaccination_1', effect: { statChanges: { happiness: 2, health: -4 }, logKey: 'log_newborn_vaccination_1' } },
             { textKey: 'choice_newborn_vaccination_2', effect: { statChanges: { eq: 2, health: -2 }, logKey: 'log_newborn_vaccination_2' } },
-            { textKey: 'choice_newborn_vaccination_3', effect: { statChanges: { eq: -2, health: -2 }, logKey: 'log_newborn_vaccination_3', triggers: [{ eventId: 'newborn_fever_after_shot', chance: 0.6 }] } },
+            { textKey: 'choice_newborn_vaccination_3', effect: { statChanges: { eq: -2, health: -2 }, logKey: 'log_newborn_vaccination_3', triggers: [{ eventId: EventIdByKey.newborn_fever_after_shot, chance: 0.6 }] } },
         ]
     },
     {
@@ -46,7 +46,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_learning_to_roll_over_1', effect: { statChanges: { health: 2, happiness: 2 }, logKey: 'log_newborn_learning_to_roll_over_1' } },
             { textKey: 'choice_newborn_learning_to_roll_over_2', effect: { statChanges: { health: 2, iq: 2 }, logKey: 'log_newborn_learning_to_roll_over_2' } },
-            { textKey: 'choice_newborn_learning_to_roll_over_3', effect: { statChanges: { health: 4 }, logKey: 'log_newborn_learning_to_roll_over_3', triggers: [{ eventId: 'newborn_minor_scratch', chance: 0.3 }] } },
+            { textKey: 'choice_newborn_learning_to_roll_over_3', effect: { statChanges: { health: 4 }, logKey: 'log_newborn_learning_to_roll_over_3', triggers: [{ eventId: EventIdByKey.newborn_minor_scratch, chance: 0.3 }] } },
         ]
     },
     {
@@ -58,7 +58,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_learning_to_crawl_1', effect: { statChanges: { health: 2, iq: 2 }, logKey: 'log_newborn_learning_to_crawl_1' } },
             { textKey: 'choice_newborn_learning_to_crawl_2', effect: { statChanges: { health: 2, happiness: 2 }, logKey: 'log_newborn_learning_to_crawl_2' } },
-            { textKey: 'choice_newborn_learning_to_crawl_3', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_learning_to_crawl_3', triggers: [{ eventId: 'newborn_parents_baby_proofing', chance: 0.5 }] } },
+            { textKey: 'choice_newborn_learning_to_crawl_3', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_learning_to_crawl_3', triggers: [{ eventId: EventIdByKey.newborn_parents_baby_proofing, chance: 0.5 }] } },
         ]
     },
     {
@@ -70,7 +70,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_first_steps_1', effect: { statChanges: { health: 3, eq: 2 }, logKey: 'log_newborn_first_steps_1' } },
             { textKey: 'choice_newborn_first_steps_2', effect: { statChanges: { health: 2, eq: 3 }, logKey: 'log_newborn_first_steps_2' } },
-            { textKey: 'choice_newborn_first_steps_3', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_first_steps_3', triggers: [{ eventId: 'newborn_scraped_knee', chance: 0.4 }] } },
+            { textKey: 'choice_newborn_first_steps_3', effect: { statChanges: { health: 2 }, logKey: 'log_newborn_first_steps_3', triggers: [{ eventId: EventIdByKey.newborn_scraped_knee, chance: 0.4 }] } },
         ]
     },
     {
@@ -82,7 +82,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_first_day_daycare_1', effect: { statChanges: { eq: -3, happiness: -2 }, logKey: 'log_newborn_first_day_daycare_1' } },
             { textKey: 'choice_newborn_first_day_daycare_2', effect: { statChanges: { eq: 2 }, logKey: 'log_newborn_first_day_daycare_2' } },
-            { textKey: 'choice_newborn_first_day_daycare_3', effect: { statChanges: { eq: -4 }, logKey: 'log_newborn_first_day_daycare_3', triggers: [{ eventId: 'newborn_teacher_comforts', chance: 0.6 }] } },
+            { textKey: 'choice_newborn_first_day_daycare_3', effect: { statChanges: { eq: -4 }, logKey: 'log_newborn_first_day_daycare_3', triggers: [{ eventId: EventIdByKey.newborn_teacher_comforts, chance: 0.6 }] } },
         ]
     },
     {
@@ -93,7 +93,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         condition: (state, char) => char.age >= 1 && !char.completedOneTimeEvents.includes('newborn_first_self_feeding'),
         choices: [
             { textKey: 'choice_newborn_first_self_feeding_1', effect: { statChanges: { iq: 2 }, logKey: 'log_newborn_first_self_feeding_1' } },
-            { textKey: 'choice_newborn_first_self_feeding_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_newborn_first_self_feeding_2', triggers: [{ eventId: 'newborn_food_mess', chance: 0.7 }] } },
+            { textKey: 'choice_newborn_first_self_feeding_2', effect: { statChanges: { happiness: 2 }, logKey: 'log_newborn_first_self_feeding_2', triggers: [{ eventId: EventIdByKey.newborn_food_mess, chance: 0.7 }] } },
             { textKey: 'choice_newborn_first_self_feeding_3', effect: { statChanges: { eq: 2, iq: 2 }, logKey: 'log_newborn_first_self_feeding_3' } },
         ]
     },
@@ -106,7 +106,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_snatching_toys_1', effect: { statChanges: { iq: 2, eq: 2 }, logKey: 'log_newborn_snatching_toys_1' } },
             { textKey: 'choice_newborn_snatching_toys_2', effect: { statChanges: { eq: -2 }, logKey: 'log_newborn_snatching_toys_2' } },
-            { textKey: 'choice_newborn_snatching_toys_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_newborn_snatching_toys_3', triggers: [{ eventId: 'newborn_parental_intervention', chance: 0.5 }] } },
+            { textKey: 'choice_newborn_snatching_toys_3', effect: { statChanges: { happiness: -2 }, logKey: 'log_newborn_snatching_toys_3', triggers: [{ eventId: EventIdByKey.newborn_parental_intervention, chance: 0.5 }] } },
         ]
     },
     {
@@ -118,7 +118,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_lost_in_store_1', effect: { statChanges: { eq: 2, iq: 2 }, logKey: 'log_newborn_lost_in_store_1' } },
             { textKey: 'choice_newborn_lost_in_store_2', effect: { statChanges: { eq: -3 }, logKey: 'log_newborn_lost_in_store_2' } },
-            { textKey: 'choice_newborn_lost_in_store_3', effect: { statChanges: { eq: 3 }, logKey: 'log_newborn_lost_in_store_3', triggers: [{ eventId: 'newborn_staff_assistance', chance: 0.8 }] } },
+            { textKey: 'choice_newborn_lost_in_store_3', effect: { statChanges: { eq: 3 }, logKey: 'log_newborn_lost_in_store_3', triggers: [{ eventId: EventIdByKey.newborn_staff_assistance, chance: 0.8 }] } },
         ]
     },
 

@@ -8,7 +8,15 @@ export default {
     log_milestone_marriage_no: 'I decided it wasn\'t the right time to settle down.',
     // Children
     milestone_children_title: 'Thinking About Children',
-    milestone_child_conceived_desc: 'You are expecting a child! They will be born sometime this year.',
+    milestone_children_desc: 'You and your partner have discussed the possibility of having children.',
+    milestone_children_yes: 'Try for a baby.',
+    log_milestone_children_decision: 'We decided to try for a baby.',
+    log_milestone_children_try_success: 'We decided to try for a baby, and it was successful!',
+    log_milestone_children_try_fail: 'We decided to try for a baby, but it wasn\'t successful this time.',
+    milestone_children_no: 'Not right now.',
+    log_milestone_children_no: 'We decided we weren\'t ready for children yet.',
+    milestone_child_conceived_title: 'Good News!',
+    milestone_child_conceived_desc: 'You are expecting a child! The baby will be born sometime this year.',
     milestone_child_conceived_ok: 'Wonderful!',
     log_milestone_child_conceived_ok: 'A beautiful baby was born!',
     // Death

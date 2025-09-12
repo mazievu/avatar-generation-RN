@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase, CharacterStatus } from '../types';
-
+import { EventIdByKey } from '../../src/generated/eventIds';
 export const WORKING_LIFE_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {
@@ -10,7 +10,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         condition: (state, char) => char.careerLevel === 0 && !char.completedOneTimeEvents.includes('workinglife_first_day'),
         choices: [
             { textKey: 'choice_workinglife_first_day_1', effect: { statChanges: { eq: 2, skill: 1 }, logKey: 'log_workinglife_first_day_1' } },
-            { textKey: 'choice_workinglife_first_day_2', effect: { statChanges: { eq: -2 }, logKey: 'log_workinglife_first_day_2', triggers: [{ eventId: 'workinglife_boss_notices', chance: 0.6 }] } },
+            { textKey: 'choice_workinglife_first_day_2', effect: { statChanges: { eq: -2 }, logKey: 'log_workinglife_first_day_2', triggers: [{ eventId: EventIdByKey.workinglife_boss_notices, chance: 0.6 }] } },
             { textKey: 'choice_workinglife_first_day_3', effect: { statChanges: { eq: -1, happiness: -1 }, logKey: 'log_workinglife_first_day_3' } },
         ]
     },
@@ -21,7 +21,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_team_meeting_1', effect: { statChanges: { iq: 1, eq: 1 }, logKey: 'log_workinglife_team_meeting_1' } },
-            { textKey: 'choice_workinglife_team_meeting_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_team_meeting_2', triggers: [{ eventId: 'workinglife_boss_reprimand', chance: 0.5 }] } },
+            { textKey: 'choice_workinglife_team_meeting_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_team_meeting_2', triggers: [{ eventId: EventIdByKey.workinglife_boss_reprimand, chance: 0.5 }] } },
             { textKey: 'choice_workinglife_team_meeting_3', effect: { statChanges: { skill: 1 }, logKey: 'log_workinglife_team_meeting_3' } },
         ]
     },
@@ -32,7 +32,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_forgot_laptop_1', effect: { statChanges: { happiness: 1 }, logKey: 'log_workinglife_forgot_laptop_1' } },
-            { textKey: 'choice_workinglife_forgot_laptop_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_forgot_laptop_2', triggers: [{ eventId: 'workinglife_missed_deadline', chance: 0.7 }] } },
+            { textKey: 'choice_workinglife_forgot_laptop_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_forgot_laptop_2', triggers: [{ eventId: EventIdByKey.workinglife_missed_deadline, chance: 0.7 }] } },
             { textKey: 'choice_workinglife_forgot_laptop_3', effect: { statChanges: { skill: -1, iq: -1 }, logKey: 'log_workinglife_forgot_laptop_3' } },
         ]
     },
@@ -43,7 +43,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_urgent_deadline_1', effect: { statChanges: { skill: 2, health: -2 }, logKey: 'log_workinglife_urgent_deadline_1' } },
-            { textKey: 'choice_workinglife_urgent_deadline_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_urgent_deadline_2', triggers: [{ eventId: 'workinglife_client_complaint', chance: 0.6 }] } },
+            { textKey: 'choice_workinglife_urgent_deadline_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_urgent_deadline_2', triggers: [{ eventId: EventIdByKey.workinglife_client_complaint, chance: 0.6 }] } },
             { textKey: 'choice_workinglife_urgent_deadline_3', effect: { statChanges: { skill: -2, eq: -2 }, logKey: 'log_workinglife_urgent_deadline_3' } },
         ]
     },
@@ -54,7 +54,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_difficult_task_1', effect: { statChanges: { skill: 3, eq: 2 }, logKey: 'log_workinglife_difficult_task_1' } },
-            { textKey: 'choice_workinglife_difficult_task_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_difficult_task_2', triggers: [{ eventId: 'workinglife_boss_disappointed', chance: 0.7 }] } },
+            { textKey: 'choice_workinglife_difficult_task_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_difficult_task_2', triggers: [{ eventId: EventIdByKey.workinglife_boss_disappointed, chance: 0.7 }] } },
             { textKey: 'choice_workinglife_difficult_task_3', effect: { statChanges: { skill: 1, happiness: 1 }, logKey: 'log_workinglife_difficult_task_3' } },
         ]
     },
@@ -65,7 +65,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_late_after_lunch_1', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_late_after_lunch_1' } },
-            { textKey: 'choice_workinglife_late_after_lunch_2', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_late_after_lunch_2', triggers: [{ eventId: 'workinglife_colleagues_laugh', chance: 0.5 }] } },
+            { textKey: 'choice_workinglife_late_after_lunch_2', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_late_after_lunch_2', triggers: [{ eventId: EventIdByKey.workinglife_colleagues_laugh, chance: 0.5 }] } },
             { textKey: 'choice_workinglife_late_after_lunch_3', effect: { statChanges: { iq: -1 }, logKey: 'log_workinglife_late_after_lunch_3' } },
         ]
     },
@@ -76,7 +76,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_company_presentation_1', effect: { statChanges: { eq: 3, skill: 2 }, logKey: 'log_workinglife_company_presentation_1' } },
-            { textKey: 'choice_workinglife_company_presentation_2', effect: { statChanges: { eq: -3 }, logKey: 'log_workinglife_company_presentation_2', triggers: [{ eventId: 'workinglife_lose_points_with_boss', chance: 0.8 }] } },
+            { textKey: 'choice_workinglife_company_presentation_2', effect: { statChanges: { eq: -3 }, logKey: 'log_workinglife_company_presentation_2', triggers: [{ eventId: EventIdByKey.workinglife_lose_points_with_boss, chance: 0.8 }] } },
             { textKey: 'choice_workinglife_company_presentation_3', effect: { statChanges: { eq: -2, skill: -1 }, logKey: 'log_workinglife_company_presentation_3' } },
         ]
     },
@@ -87,7 +87,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_team_building_1', effect: { statChanges: { happiness: 3 }, logKey: 'log_workinglife_team_building_1' } },
-            { textKey: 'choice_workinglife_team_building_2', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_team_building_2', triggers: [{ eventId: 'workinglife_feel_isolated', chance: 0.7 }] } },
+            { textKey: 'choice_workinglife_team_building_2', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_team_building_2', triggers: [{ eventId: EventIdByKey.workinglife_feel_isolated, chance: 0.7 }] } },
             { textKey: 'choice_workinglife_team_building_3', effect: { statChanges: { happiness: 1, eq: -1 }, logKey: 'log_workinglife_team_building_3' } },
         ]
     },
@@ -98,7 +98,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_delayed_salary_1', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_delayed_salary_1' } },
-            { textKey: 'choice_workinglife_delayed_salary_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_delayed_salary_2', triggers: [{ eventId: 'workinglife_financial_trouble', chance: 0.6 }] } },
+            { textKey: 'choice_workinglife_delayed_salary_2', effect: { statChanges: { happiness: -2 }, logKey: 'log_workinglife_delayed_salary_2', triggers: [{ eventId: EventIdByKey.workinglife_financial_trouble, chance: 0.6 }] } },
             { textKey: 'choice_workinglife_delayed_salary_3', effect: { statChanges: { happiness: -1 }, logKey: 'log_workinglife_delayed_salary_3' } },
         ]
     },
@@ -109,7 +109,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         choices: [
             { textKey: 'choice_workinglife_difficult_client_1', effect: { statChanges: { skill: 2, eq: 1 }, logKey: 'log_workinglife_difficult_client_1' } },
-            { textKey: 'choice_workinglife_difficult_client_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_difficult_client_2', triggers: [{ eventId: 'workinglife_client_unhappy', chance: 0.7 }] } },
+            { textKey: 'choice_workinglife_difficult_client_2', effect: { statChanges: { eq: -1 }, logKey: 'log_workinglife_difficult_client_2', triggers: [{ eventId: EventIdByKey.workinglife_client_unhappy, chance: 0.7 }] } },
             { textKey: 'choice_workinglife_difficult_client_3', effect: { statChanges: { eq: 1 }, logKey: 'log_workinglife_difficult_client_3' } },
         ]
     },

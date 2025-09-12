@@ -312,7 +312,7 @@ const gameUIStyles = StyleSheet.create({
     chunkyButtonSlate: { backgroundColor: '#64748b', borderRadius: 8, padding: 12 },
     chunkyButtonBlue: { backgroundColor: '#3b82f6', borderRadius: 8, padding: 12 },
     chunkyButtonText: { color: 'white', fontWeight: 'bold' },
-    speedPicker: { height: 44, width: 150 },
+    speedPicker: { height: 44, width: responsiveSize(120) },
     speedPickerItem: { height: 44 },
     mainContentGrid: { flex: 1 },
     familyTreeTitle: { color: '#6366f1', fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
