@@ -27,10 +27,10 @@ interface EventModalProps {
   onClose: () => void;
   images: Record<string, ImageSourcePropType>;
   manifest: Manifest;
-  onAvatarClick: (character: Character) => void;
+  onEventHandled: (characterId: string) => void; // NEW PROP
 }
 
-export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest, onAvatarClick }) => {
+export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest, onEventHandled }) => {
   const [initialCharacterState, setInitialCharacterState] = React.useState(character);
   const [displayEventData, setDisplayEventData] = React.useState(eventData);
   const [outcome, setOutcome] = React.useState<EventEffect | null>(null);
@@ -103,14 +103,14 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
         
       
         <View style={eventModalStyles.header}>
-            <TouchableOpacity onPress={() => onAvatarClick(character)} style={eventModalStyles.avatarButton}>
+            <View style={eventModalStyles.avatarButton}> {/* Changed from TouchableOpacity to View */}
                 <AgeAwareAvatarPreview
                     manifest={manifest}
                     character={character}
                     images={images}
                     size={{ width: responsiveSize(80), height: responsiveSize(80) }}
                 />
-            </TouchableOpacity>
+            </View>
             <View style={eventModalStyles.headerTextContainer}>
                 <Text style={eventModalStyles.title}>{t(displayEventData.event.titleKey, lang)}</Text>
                 <Text style={eventModalStyles.subtitle}>{t('event_for', lang)}: <Text style={eventModalStyles.characterName}>{characterDisplayName}</Text></Text>
@@ -135,7 +135,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                             <Text style={eventModalStyles.choiceTriggerText}>
                               {`(${choice.effect.triggers.map((trigger, idx) => {
                                 const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
-                                if (!triggeredEvent) return null;
+                                if (!triggeredEvent) return '';
                                 const triggerText = t(triggeredEvent.titleKey, lang);
                                 return `${Math.round(trigger.chance * 100)}% ${triggerText}${idx < choice.effect.triggers!.length - 1 ? ', ' : ''}`;
                               }).filter(Boolean).join(', ')})`}
@@ -188,6 +188,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                     setInitialCharacterState(character);
                                     setOutcome(null);
                                 } else {
+                                    onEventHandled(character.id); // NEW: Call the new prop
                                     onClose();
                                 }
                             }}

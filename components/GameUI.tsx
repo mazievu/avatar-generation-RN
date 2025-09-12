@@ -131,6 +131,16 @@ export const GameUI: React.FC<GameUIProps> = ({
 }) => {
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
+    const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null); // NEW STATE
+
+    const onCharacterCenteredOnEvent = useCallback(() => { // NEW CALLBACK
+        setCharacterIdToCenterOnEvent(null);
+    }, []);
+
+    const handleEventHandled = useCallback(() => {
+        // Logic to handle event being handled, e.g., clear current event, update game state
+        console.log("Event handled!");
+    }, []);
     
     useEffect(() => {
         if (editingBusiness && gameState?.familyBusinesses) {
@@ -169,7 +179,16 @@ export const GameUI: React.FC<GameUIProps> = ({
                     <>
                         <Text style={gameUIStyles.familyTreeTitle}>{t('family_tree_title', lang)}</Text>
                         <View style={gameUIStyles.familyTreeContainer}>
-                            <FamilyTree gameState={gameState} onSelectCharacter={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} selectedCharacter={selectedCharacter} />
+                            <FamilyTree
+                                gameState={gameState}
+                                onSelectCharacter={onSetSelectedCharacter}
+                                lang={lang}
+                                images={avatarImages}
+                                manifest={exampleManifest}
+                                selectedCharacter={selectedCharacter}
+                                characterIdToCenterOnEvent={characterIdToCenterOnEvent} // NEW
+                                onCharacterCenteredOnEvent={onCharacterCenteredOnEvent} // NEW
+                            />
                         </View>
                     </>
                 );
@@ -212,6 +231,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                 avatarImages={avatarImages}
                 onEventChoice={onEventChoice}
                 onEventModalClose={onEventModalClose}
+                onEventHandled={handleEventHandled} // NEW
                 onSetSelectedCharacter={onSetSelectedCharacter}
                 onSchoolChoice={onSchoolChoice}
                 onClubChoice={onClubChoice}

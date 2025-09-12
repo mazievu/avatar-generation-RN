@@ -39,6 +39,8 @@ interface FamilyTreeProps {
   images: Record<string, ImageSourcePropType>;
   onSelectCharacter: (character: Character) => void;
   selectedCharacter: Character | null;
+  characterIdToCenterOnEvent: string | null; // NEW PROP: ID of character to center due to an event
+  onCharacterCenteredOnEvent: () => void; // NEW PROP: Callback when event character centering is done
 }
 
 // --- 2. HELPER CONSTANTS ---
@@ -116,7 +118,7 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
 
 type AnimatedContext = { startX: number; startY: number; startScale: number; };
 
-export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter }) => {
+export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
   
 
   // Shared values for animation on UI Thread (as before)
@@ -131,10 +133,18 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
 
   const layouts = useMemo(() => calculateTreeLayout(gameState.familyMembers), [gameState.familyMembers]);
 
-  // Center on selected character
+  // Center on selected character or event character
   useEffect(() => {
+    let characterToCenter: Character | null = null;
+
     if (selectedCharacter && layouts[selectedCharacter.id]) {
-      const layout = layouts[selectedCharacter.id];
+      characterToCenter = selectedCharacter;
+    } else if (characterIdToCenterOnEvent && gameState.familyMembers[characterIdToCenterOnEvent] && layouts[characterIdToCenterOnEvent]) {
+      characterToCenter = gameState.familyMembers[characterIdToCenterOnEvent];
+    }
+
+    if (characterToCenter && layouts[characterToCenter.id]) {
+      const layout = layouts[characterToCenter.id];
       const targetScale = 1.2;
       const centerX = screenWidth / 2;
       const centerY = screenHeight / 2; // Center of the screen
@@ -150,10 +160,14 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
           runOnJS(setRenderScale)(targetScale);
           runOnJS(setRenderTranslateX)(newTranslateX);
           runOnJS(setRenderTranslateY)(newTranslateY);
+          // NEW: Notify parent that centering is done for event character
+          if (characterIdToCenterOnEvent && onCharacterCenteredOnEvent) {
+            runOnJS(onCharacterCenteredOnEvent)();
+          }
         }
       });
     }
-  }, [selectedCharacter]);
+  }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.familyMembers, onCharacterCenteredOnEvent]);
 
   
 

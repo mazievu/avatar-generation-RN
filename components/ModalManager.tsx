@@ -28,6 +28,7 @@ interface ModalManagerProps {
     // Callbacks
     onEventChoice: (choice: EventChoice) => void;
     onEventModalClose: () => void;
+    onEventHandled: (characterId: string) => void; // NEW PROP
     onSetSelectedCharacter: (character: Character | null) => void;
     onSchoolChoice: (option: SchoolOption) => void;
     onClubChoice: (clubId: string | null) => void;
@@ -51,6 +52,7 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     avatarImages,
     onEventChoice,
     onEventModalClose,
+    onEventHandled, // NEW
     onSetSelectedCharacter,
     onSchoolChoice,
     onClubChoice,
@@ -71,15 +73,15 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     return (
         <>
             {gameState.activeEvent && (
-                <EventModal 
+                <EventModal
                     eventData={gameState.activeEvent}
                     character={familyMembers[gameState.activeEvent.characterId]}
-                    onChoice={onEventChoice} 
+                    onChoice={onEventChoice}
                     onClose={onEventModalClose}
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
-                    onAvatarClick={onSetSelectedCharacter}
+                    onEventHandled={onEventHandled} // NEW
                 />
             )}
             {gameState.pendingSchoolChoice && gameState.pendingSchoolChoice.length > 0 && (
@@ -152,7 +154,7 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
             {gameState.pendingPromotion && (
                 <PromotionModal 
                     characterName={getCharacterDisplayName(familyMembers[gameState.pendingPromotion.characterId], lang)}
-                    newTitle={(gameState.pendingPromotion.newTitleKey, lang)}
+                    newTitle={t(gameState.pendingPromotion.newTitleKey, lang)}
                     onAccept={onPromotionAccept}
                     lang={lang}
                 />
