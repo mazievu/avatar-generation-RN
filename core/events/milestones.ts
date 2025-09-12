@@ -3,6 +3,7 @@ import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, addDa
 import { randomUUID } from 'expo-crypto';
 
 import { t } from '../localization';
+import { EventIdByKey } from '../../src/generated/eventIds';
 
 export const MILESTONE_EVENTS: EventDraft[] = [
     // Relationships & Family
@@ -124,7 +125,7 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                         return {
                             statChanges: { happiness: 20 },
                             logKey: 'log_milestone_children_try_success',
-                            triggers: [{ eventId: 'milestone_child_conceived', chance: 1.0 }]
+                            triggers: [{ eventId: EventIdByKey.milestone_child_conceived, chance: 1.0 }]
                         }
                     } else {
                         return {
