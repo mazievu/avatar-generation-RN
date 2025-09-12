@@ -56,23 +56,35 @@ export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clu
 };
 
 const clubChoiceModalStyles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: '#1e293b',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 16,
-    color: '#475569',
-    marginBottom: 24,
-  },
-    gridContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        marginVertical: 16, // my-4
-        gap: 16, // gap-4
+  button: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 8, // mt-2
+        width: '100%',
+    },
+  buttonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderBottomWidth: 4,
+        borderColor: '#16a34a', // green-600
+    },
+    buttonSlate: {
+        backgroundColor: '#64748b', // slate-500
+        borderBottomWidth: 4,
+        borderColor: '#475569', // slate-600
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    clubDescription: {
+        fontSize: 14, // text-sm
+        color: '#cbd5e1', // text-slate-300
+        fontStyle: 'italic',
+        marginVertical: 4, // my-1
     },
     clubItem: {
         borderWidth: 1,
@@ -88,34 +100,22 @@ const clubChoiceModalStyles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#fcd34d', // text-yellow-300
     },
-    clubDescription: {
-        fontSize: 14, // text-sm
-        color: '#cbd5e1', // text-slate-300
-        fontStyle: 'italic',
-        marginVertical: 4, // my-1
+    description: {
+    color: '#475569',
+    fontSize: 16,
+    marginBottom: 24,
+  },
+    gridContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginVertical: 16, // my-4
+        gap: 16, // gap-4
     },
-    button: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 8, // mt-2
-        width: '100%',
-    },
-    buttonGreen: {
-        backgroundColor: '#22c55e', // green-500
-        borderBottomWidth: 4,
-        borderColor: '#16a34a', // green-600
-    },
-    buttonSlate: {
-        backgroundColor: '#64748b', // slate-500
-        borderBottomWidth: 4,
-        borderColor: '#475569', // slate-600
-    },
-    buttonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
+    title: {
+    color: '#1e293b',
+    fontSize: 24,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
 });

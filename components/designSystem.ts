@@ -71,17 +71,17 @@ export const typography = {
   h1: {
     color: colors.textPrimary,
     fontSize: 32,
-    fontWeight: '900' as '900',
+    fontWeight: '900' as const,
   },
   h2: {
     color: colors.textPrimary,
     fontSize: 24,
-    fontWeight: '700' as '700',
+    fontWeight: '700' as const,
   },
   h3: {
     color: colors.textPrimary,
     fontSize: 20,
-    fontWeight: '700' as '700',
+    fontWeight: '700' as const,
   },
   // Body Text
   body: {
@@ -91,7 +91,7 @@ export const typography = {
   bodyBold: {
     color: colors.textPrimary,
     fontSize: 16,
-    fontWeight: '700' as '700',
+    fontWeight: '700' as const,
   },
   caption: {
     color: colors.textSecondary,

@@ -42,14 +42,8 @@ export const InstructionsModal: React.FC<InstructionsModalProps> = ({ onClose, l
 const instructionsModalStyles = StyleSheet.create({
     closeButton: {
         position: 'absolute',
-        top: 16,
         right: 16,
-    },
-    instructionsTitle: {
-        fontSize: 28, // text-3xl
-        fontWeight: 'bold',
-        color: '#60a5fa', // blue-400
-        marginBottom: 16,
+        top: 16,
     },
     instructionsContent: {
         // space-y-3
@@ -61,5 +55,11 @@ const instructionsModalStyles = StyleSheet.create({
     },
     instructionsStrong: {
         fontWeight: 'bold',
+    },
+    instructionsTitle: {
+        fontSize: 28, // text-3xl
+        fontWeight: 'bold',
+        color: '#60a5fa', // blue-400
+        marginBottom: 16,
     },
 });

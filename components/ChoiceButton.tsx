@@ -59,7 +59,7 @@ const choiceButtonStyles = StyleSheet.create({
         justifyContent: 'center',
     },
     buttonDisabled: {
-        opacity: 0.5,
         backgroundColor: colors.neutral200,
+        opacity: 0.5,
     },
 });

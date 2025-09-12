@@ -73,49 +73,28 @@ const summaryScreenStyles = StyleSheet.create({
         backgroundColor: '#f8fafc', // slate-50
         padding: 16,
     },
-    contentWrapper: {
-        // This was a comic-panel-wrapper, might need specific styling if it had visual effects
-        // For now, just a container
-    },
     content: {
+        alignItems: 'center',
         backgroundColor: 'white',
         borderRadius: 8,
-        padding: 24,
-        alignItems: 'center',
+        elevation: 3,
         maxWidth: 500,
-        width: '100%',
+        padding: 24,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 3,
+        width: '100%',
     },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#2563eb', // blue-700
-        marginBottom: 12,
-        textAlign: 'center',
+    contentWrapper: {
+        // This was a comic-panel-wrapper, might need specific styling if it had visual effects
+        // For now, just a container
     },
     description: {
         fontSize: 16,
         color: '#475569', // slate-600
         marginBottom: 20,
         textAlign: 'center',
-    },
-    statsContainer: {
-        width: '100%',
-        marginBottom: 24,
-        // space-y-2
-    },
-    statItem: {
-        fontSize: 16,
-        color: '#333',
-        marginBottom: 4,
-    },
-    statLabel: {
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
     },
     restartButton: {
         backgroundColor: '#60a5fa', // blue-400
@@ -128,5 +107,26 @@ const summaryScreenStyles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    statItem: {
+        color: '#333',
+        fontSize: 16,
+        marginBottom: 4,
+    },
+    statLabel: {
+        color: '#1e293b',
+        fontWeight: 'bold', // slate-800
+    },
+    statsContainer: {
+        marginBottom: 24,
+        width: '100%',
+        // space-y-2
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#2563eb', // blue-700
+        marginBottom: 12,
+        textAlign: 'center',
     },
 });

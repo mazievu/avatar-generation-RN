@@ -125,51 +125,60 @@ const GameLogInternal: React.FC<GameLogProps> = ({ log, lang, familyMembers, Lis
 export const GameLog = React.memo(GameLogInternal);
 
 const logStatChangesStyles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginTop: 4,
-        alignItems: 'center',
-    },
     changeItem: {
-        flexDirection: 'row',
         alignItems: 'center',
+        flexDirection: 'row',
         marginRight: 12,
-    },
-    icon: {
-        width: 14,
-        height: 14,
-        marginRight: 2,
     },
     changeText: {
         fontSize: 12,
     },
-    positiveChange: {
-        color: '#22c55e', // green-600
+    container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 4,
+    },
+    icon: {
+        height: 14,
+        marginRight: 2,
+        width: 14,
     },
     negativeChange: {
         color: '#ef4444', // red-600
     },
+    positiveChange: {
+        color: '#22c55e', // green-600
+    },
 });
 
 const gameLogStyles = StyleSheet.create({
-    scrollView: {
-        flex: 1,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 12,
-        color: '#1e293b', // slate-800
-    },
     logContainer: {
         // space-y-4
     },
     logEntry: {
-        marginBottom: 16,
-        paddingBottom: 8,
+        borderBottomColor: '#e2e8f0',
         borderBottomWidth: 1,
-        borderBottomColor: '#e2e8f0', // slate-200
+        marginBottom: 16,
+        paddingBottom: 8, // slate-200
+    },
+    logEntryCharacterName: {
+        fontWeight: 'bold',
+    },
+    logEntryContent: {
+        marginLeft: 8,
+    },
+    logEntryEventName: {
+        fontStyle: 'italic',
+    },
+    logEntryMessage: {
+        color: '#555',
+        fontSize: 14,
+        marginTop: 4,
+    },
+    logEntryText: {
+        color: '#333',
+        fontSize: 16,
     },
     logEntryYear: {
         fontSize: 14,
@@ -177,22 +186,13 @@ const gameLogStyles = StyleSheet.create({
         color: '#64748b', // slate-500
         marginBottom: 4,
     },
-    logEntryContent: {
-        marginLeft: 8,
+    scrollView: {
+        flex: 1,
     },
-    logEntryText: {
-        fontSize: 16,
-        color: '#333',
-    },
-    logEntryCharacterName: {
+    title: {
+        color: '#1e293b',
+        fontSize: 20,
         fontWeight: 'bold',
-    },
-    logEntryEventName: {
-        fontStyle: 'italic',
-    },
-    logEntryMessage: {
-        fontSize: 14,
-        color: '#555',
-        marginTop: 4,
+        marginBottom: 12, // slate-800
     },
 });

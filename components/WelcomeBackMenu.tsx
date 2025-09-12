@@ -47,36 +47,6 @@ export const WelcomeBackMenu: React.FC<WelcomeBackMenuProps> = ({ onContinue, on
 );
 
 const welcomeBackMenuStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center', // Not directly applicable to View, but for Text children
-        padding: 16,
-    },
-    title: {
-        fontSize: 64, // text-8xl, adjusted for RN
-        fontWeight: '900', // font-black
-        color: '#60a5fa', // blue-400
-        marginBottom: 8,
-        textShadowColor: '#fde047', // yellow-200
-        textShadowOffset: { width: 4, height: 4 },
-        textShadowRadius: 0,
-        // Second shadow for rgba(0,0,0,0.1) might need a separate Text component or a custom solution
-    },
-    subtitle: {
-        fontSize: 24, // text-2xl
-        color: '#475569', // slate-600
-        marginBottom: 48, // mb-12
-        fontWeight: 'bold',
-    },
-    buttonGroup: {
-        flexDirection: 'row',
-        // sm:flex-row gap-6
-        // For small screens, it might stack vertically, but for now, row.
-        // Gap can be simulated with margin.
-        gap: 24, // gap-6
-    },
     button: {
         paddingVertical: 16, // py-4
         paddingHorizontal: 48, // px-12
@@ -88,6 +58,13 @@ const welcomeBackMenuStyles = StyleSheet.create({
         borderBottomWidth: 4,
         borderColor: '#16a34a', // green-600
     },
+    buttonGroup: {
+        flexDirection: 'row',
+        // sm:flex-row gap-6
+        // For small screens, it might stack vertically, but for now, row.
+        // Gap can be simulated with margin.
+        gap: 24, // gap-6
+    },
     buttonSlate: {
         backgroundColor: '#64748b', // slate-500
         borderBottomWidth: 4,
@@ -97,5 +74,28 @@ const welcomeBackMenuStyles = StyleSheet.create({
         color: 'white',
         fontSize: 24, // text-2xl
         fontWeight: 'bold',
+    },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center', // Not directly applicable to View, but for Text children
+        padding: 16,
+    },
+    subtitle: {
+        fontSize: 24, // text-2xl
+        color: '#475569', // slate-600
+        marginBottom: 48, // mb-12
+        fontWeight: 'bold',
+    },
+    title: {
+        fontSize: 64, // text-8xl, adjusted for RN
+        fontWeight: '900', // font-black
+        color: '#60a5fa', // blue-400
+        marginBottom: 8,
+        textShadowColor: '#fde047', // yellow-200
+        textShadowOffset: { width: 4, height: 4 },
+        textShadowRadius: 0,
+        // Second shadow for rgba(0,0,0,0.1) might need a separate Text component or a custom solution
     },
 });

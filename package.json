@@ -10,6 +10,8 @@
     "build:scripts": "tsc --project tsconfig.scripts.json",
     "sync-choices": "ts-node scripts/syncContent.ts",
     "sync-content": "node dist-scripts/syncContent.js",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -32,7 +34,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@types/react": "~18.2.79",
+    "@types/react": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-native": "^5.0.0",
     "husky": "^9.1.7",
     "ts-morph": "^20.0.0",
     "ts-node": "^10.9.2",

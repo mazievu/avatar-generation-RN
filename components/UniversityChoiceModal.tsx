@@ -36,26 +36,13 @@ export const UniversityChoiceModal: React.FC<UniversityChoiceModalProps> = ({ ch
 );
 
 const universityChoiceModalStyles = StyleSheet.create({
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    description: {
-        fontSize: 16,
-        color: '#475569', // slate-600
-        marginBottom: 24,
-        textAlign: 'center',
-    },
     button: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 8,
         alignItems: 'center',
-        marginBottom: 12,
         borderBottomWidth: 4,
+        borderRadius: 8,
+        marginBottom: 12,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
     },
     buttonBlue: {
         backgroundColor: '#60a5fa', // blue-400
@@ -67,7 +54,20 @@ const universityChoiceModalStyles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontWeight: 'bold',
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    description: {
+        fontSize: 16,
+        color: '#475569', // slate-600
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+        marginBottom: 8,
+        textAlign: 'center',
     },
 });

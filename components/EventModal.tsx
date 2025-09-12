@@ -205,37 +205,11 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
 };
 
 const eventModalStyles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
     avatarButton: {
         marginRight: 12,
     },
-    headerTextContainer: {
-        flex: 1,
-    },
-    title: {
-        fontSize: responsiveFontSize(22),
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-    },
-    subtitle: {
-        fontSize: responsiveFontSize(14),
-        color: '#475569', // slate-600
-    },
     characterName: {
         fontWeight: 'bold',
-    },
-    description: {
-        fontSize: responsiveFontSize(16),
-        color: '#333',
-        marginBottom: 20,
-        flexWrap: 'wrap',
-    },
-    choicesContainer: {
-        // space-y-3
     },
     choiceButton: {
         backgroundColor: '#f1f5f9', // slate-100
@@ -252,47 +226,52 @@ const eventModalStyles = StyleSheet.create({
         flex: 1,
     },
     choiceButtonText: {
-        fontSize: responsiveFontSize(16),
-        fontWeight: 'bold',
         color: '#333',
         flexWrap: 'wrap',
+        fontSize: responsiveFontSize(16),
+        fontWeight: 'bold',
     },
     choiceTriggerText: {
-        fontSize: responsiveFontSize(12),
-        color: '#64748b', // slate-500
+        color: '#64748b',
+        fontSize: responsiveFontSize(12), // slate-500
+    },
+    choicesContainer: {
+        // space-y-3
+    },
+    description: {
+        color: '#333',
+        flexWrap: 'wrap',
+        fontSize: responsiveFontSize(16),
+        marginBottom: 20,
+    },
+    fundChangeDetail: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 8,
+    },
+    fundChangeDetailText: {
+        fontSize: responsiveFontSize(14),
+        fontWeight: 'bold',
+        marginLeft: 8,
+    },
+    fundChangeNegative: {
+        color: '#ef4444', // red-500
+    },
+    fundChangePositive: {
+        color: '#22c55e', // green-600
     },
     fundChangeText: {
         fontSize: responsiveFontSize(14),
         fontWeight: 'bold',
         marginLeft: 8,
     },
-    fundChangePositive: {
-        color: '#22c55e', // green-600
-    },
-    fundChangeNegative: {
-        color: '#ef4444', // red-500
-    },
-    outcomeContainer: {
-        // space-y-4
-    },
-    outcomeMessage: {
-        fontSize: responsiveFontSize(16),
-        fontStyle: 'italic',
-        color: '#475569', // slate-600
+    header: {
+        alignItems: 'center',
+        flexDirection: 'row',
         marginBottom: 16,
     },
-    outcomeDetails: {
-        marginBottom: 20,
-    },
-    fundChangeDetail: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    fundChangeDetailText: {
-        marginLeft: 8,
-        fontSize: responsiveFontSize(14),
-        fontWeight: 'bold',
+    headerTextContainer: {
+        flex: 1,
     },
     okButton: {
         backgroundColor: '#60a5fa', // blue-400
@@ -307,5 +286,26 @@ const eventModalStyles = StyleSheet.create({
         color: 'white',
         fontSize: responsiveFontSize(16),
         fontWeight: 'bold',
+    },
+    outcomeContainer: {
+        // space-y-4
+    },
+    outcomeDetails: {
+        marginBottom: 20,
+    },
+    outcomeMessage: {
+        fontSize: responsiveFontSize(16),
+        fontStyle: 'italic',
+        color: '#475569', // slate-600
+        marginBottom: 16,
+    },
+    subtitle: {
+        color: '#475569',
+        fontSize: responsiveFontSize(14), // slate-600
+    },
+    title: {
+        color: '#1e293b',
+        fontSize: responsiveFontSize(22),
+        fontWeight: 'bold', // slate-800
     },
 });

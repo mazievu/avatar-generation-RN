@@ -16,12 +16,12 @@ export default BusinessMapSVG;
 
 const businessMapSVGStyles = StyleSheet.create({
   image: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
     height: '100%',
-    resizeMode: 'cover', // object-cover
+    left: 0,
+    position: 'absolute',
+    resizeMode: 'cover',
+    top: 0,
+    width: '100%', // object-cover
     // pointer-events-none is not directly applicable, but Image is not interactive by default
   },
 });

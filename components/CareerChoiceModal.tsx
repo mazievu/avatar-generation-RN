@@ -40,7 +40,7 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
                 if(isUnderqualified) {
                     const iqShortfall = Math.max(0, track.iqRequired - character.stats.iq);
                     const confShortfall = Math.max(0, track.eqRequired - character.stats.eq);
-                    let missing: string[] = [];
+                    const missing: string[] = [];
                     if(iqShortfall > 0) missing.push(t('underqualified_tooltip_iq', lang, {shortfall: iqShortfall}));
                     if(confShortfall > 0) missing.push(t('underqualified_tooltip_conf', lang, {shortfall: confShortfall}));
                     tooltipText = `${t('underqualified_tooltip', lang)} ${missing.join(', ')}`;
@@ -83,46 +83,13 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
 );
 
 const careerChoiceModalStyles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: '#1e293b',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 16,
-    color: '#475569',
-    marginBottom: 24,
-  },
-    choiceContent: {
+  choiceContent: {
+        alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
     },
-    choiceNameContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    choiceNameText: {
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    majorMatchIcon: {
-        marginLeft: 8,
-        fontSize: 16,
-    },
-    underqualifiedIcon: {
-        marginLeft: 8,
-        fontSize: 16,
-    },
-    choiceCost: {
+  choiceCost: {
         fontSize: 14,
-    },
-    costAffordable: {
-        color: '#64748b', // slate-500
-    },
-    costUnaffordable: {
-        color: '#ef4444', // red-500
     },
     choiceDescription: {
         fontSize: 14,
@@ -133,5 +100,38 @@ const careerChoiceModalStyles = StyleSheet.create({
         fontSize: 12,
         color: '#475569', // slate-600
         marginTop: 4,
+    },
+    choiceNameContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    choiceNameText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    costAffordable: {
+        color: '#64748b', // slate-500
+    },
+    costUnaffordable: {
+        color: '#ef4444', // red-500
+    },
+    description: {
+    color: '#475569',
+    fontSize: 16,
+    marginBottom: 24,
+  },
+    majorMatchIcon: {
+        fontSize: 16,
+        marginLeft: 8,
+    },
+    title: {
+    color: '#1e293b',
+    fontSize: 24,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+    underqualifiedIcon: {
+        fontSize: 16,
+        marginLeft: 8,
     },
 });

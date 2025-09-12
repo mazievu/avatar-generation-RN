@@ -62,65 +62,13 @@ export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProp
 };
 
 const universityMajorChoiceModalStyles = StyleSheet.create({
-    title: {
-        ...typography.h2,
-        marginBottom: spacing.sm,
-        textAlign: 'center',
-    },
-    characterNameLabel: {
-        ...typography.body,
-        fontSize: 14, // Giữ kích thước nhỏ hơn
-        marginBottom: spacing.xs,
-        textAlign: 'center',
-    },
-    characterName: {
-        fontWeight: 'bold',
-    },
-    description: {
-        ...typography.body,
-        marginBottom: spacing.lg,
-        textAlign: 'center',
-    },
-    choiceContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-    },
-    choiceName: {
-        ...typography.bodyBold,
-    },
-    choiceCost: {
-        ...typography.body,
-        fontSize: 14,
-    },
-    costAffordable: {
-        color: colors.neutral600,
-    },
-    costUnaffordable: {
-        color: colors.error,
-    },
-    choiceDescription: {
-        ...typography.caption,
-        marginTop: spacing.xs,
-    },
-    unaffordableSection: {
-        marginTop: spacing.lg,
-        paddingTop: spacing.lg,
-        borderTopWidth: 1,
-        borderColor: colors.neutral200,
-        alignItems: 'center',
-    },
-    unaffordableText: {
-        color: colors.error,
-        marginBottom: spacing.sm,
-    },
     button: {
-        paddingVertical: spacing.md,
-        paddingHorizontal: spacing.xl,
-        borderRadius: spacing.sm,
         alignItems: 'center',
-        marginBottom: spacing.md,
         borderBottomWidth: 4,
+        borderRadius: spacing.sm,
+        marginBottom: spacing.md,
+        paddingHorizontal: spacing.xl,
+        paddingVertical: spacing.md,
     },
     buttonSlate: {
         backgroundColor: colors.neutral600,
@@ -129,5 +77,57 @@ const universityMajorChoiceModalStyles = StyleSheet.create({
     buttonText: {
         ...typography.bodyBold,
         color: colors.white,
+    },
+    characterName: {
+        fontWeight: 'bold',
+    },
+    characterNameLabel: {
+        ...typography.body,
+        fontSize: 14, // Giữ kích thước nhỏ hơn
+        marginBottom: spacing.xs,
+        textAlign: 'center',
+    },
+    choiceContent: {
+        alignItems: 'baseline',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    choiceCost: {
+        ...typography.body,
+        fontSize: 14,
+    },
+    choiceDescription: {
+        ...typography.caption,
+        marginTop: spacing.xs,
+    },
+    choiceName: {
+        ...typography.bodyBold,
+    },
+    costAffordable: {
+        color: colors.neutral600,
+    },
+    costUnaffordable: {
+        color: colors.error,
+    },
+    description: {
+        ...typography.body,
+        marginBottom: spacing.lg,
+        textAlign: 'center',
+    },
+    title: {
+        ...typography.h2,
+        marginBottom: spacing.sm,
+        textAlign: 'center',
+    },
+    unaffordableSection: {
+        alignItems: 'center',
+        borderColor: colors.neutral200,
+        borderTopWidth: 1,
+        marginTop: spacing.lg,
+        paddingTop: spacing.lg,
+    },
+    unaffordableText: {
+        color: colors.error,
+        marginBottom: spacing.sm,
     },
 });

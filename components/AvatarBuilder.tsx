@@ -291,37 +291,173 @@ export default function AvatarBuilder({
 }
 
 const avatarBuilderStyles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        zIndex: 50,
+    chunkyButton: {
+        alignItems: 'center',
+        borderBottomWidth: 4,
+        borderRadius: 8,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    chunkyButtonGreen: {
+        backgroundColor: '#22c55e',
+        borderColor: '#16a34a',
+    },
+    chunkyButtonPink: {
+        backgroundColor: '#ec4899',
+        borderColor: '#db2777',
+    },
+    chunkyButtonSlate: {
+        backgroundColor: '#64748b',
+        borderColor: '#475569',
+    },
+    chunkyButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    colorPalette: {
+        flexDirection: 'row',
+        gap: 8,
+        paddingVertical: 4,
+    },
+    colorPickerContainer: {
+        marginTop: 12,
+    },
+    colorSwatch: {
+        borderColor: 'transparent',
+        borderRadius: 16,
+        borderWidth: 2,
+        height: 32,
+        width: 32,
+    },
+    colorSwatchSelected: {
+        borderColor: '#3b82f6', // blue-500
+        transform: [{ scale: 1.1 }],
+    },
+    comicPanel: {
+        backgroundColor: '#f8fafc',
+        flex: 1,
+        paddingBottom: 16,
+        paddingHorizontal: 16,
+        width: '100%',
     },
     comicPanelWrapper: {
         flex: 1,
         width: '100%',
     },
-    comicPanel: {
-        flex: 1,
-        backgroundColor: '#f8fafc',
-        paddingHorizontal: 16,
-        paddingBottom: 16,
+    controlsContainer: {
+        alignItems: 'center',
+        backgroundColor: '#f1f5f9',
+        borderRadius: 12,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        justifyContent: 'center',
+        padding: 8,
         width: '100%',
     },
-    mainTitle: {
-        fontSize: 28,
+    footerButtonsContainer: {
+        borderColor: '#e2e8f0',
+        borderTopWidth: 1,
+        flexDirection: 'row',
+        gap: 16,
+        justifyContent: 'center',
+        marginTop: 16,
+        paddingTop: 16,
+    },
+    layerOptionContainer: {
+        backgroundColor: 'white',
+        borderColor: '#e2e8f0',
+        borderRadius: 12,
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 12,
+    },
+    layerOptionHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    layerOptionTitle: {
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#60a5fa',
-        marginVertical: 16,
-        textAlign: 'center',
+    },
+    layerSelectButton: {
+        alignItems: 'center',
+        backgroundColor: '#60a5fa',
+        borderRadius: 8,
+        marginBottom: 10,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        width: '100%',
+    },
+    layerSelectButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
     mainContentGrid: {
         flexDirection: 'row',
         flex: 1,
         gap: 16,
+    },
+    mainTitle: {
+        color: '#60a5fa',
+        fontSize: 28,
+        fontWeight: 'bold',
+        marginVertical: 16,
+        textAlign: 'center',
+    },
+    noneButtonText: {
+        color: '#64748b',
+        fontSize: 14,
+        textDecorationLine: 'underline',
+    },
+    optionButton: {
+        backgroundColor: '#f1f5f9',
+        borderRadius: 12,
+        borderWidth: 2,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    optionButtonNormal: {
+        borderColor: 'transparent',
+    },
+    optionButtonSelected: {
+        borderColor: '#3b82f6',
+    },
+    optionImage: {
+        height: '100%',
+        resizeMode: 'contain',
+        width: '100%',
+    },
+    optionsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    overlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        zIndex: 50,
+    },
+    placeholderContainer: {
+        alignItems: 'center',
+        backgroundColor: '#e2e8f0',
+        height: '100%',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    placeholderText: {
+        color: '#64748b',
+        fontSize: 10,
+        textAlign: 'center',
     },
     previewColumn: {
         flex: 1,
@@ -332,161 +468,25 @@ const avatarBuilderStyles = StyleSheet.create({
         // ===================================
         gap: 16,
     },
-    controlsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 8,
-        padding: 8,
-        backgroundColor: '#f1f5f9',
+    rightColumnContainer: {
+        flex: 1,
+    },
+    seedInput: {
+        backgroundColor: 'white',
+        borderColor: '#e2e8f0',
         borderRadius: 12,
-        width: '100%',
-    },
-    chunkyButton: {
+        borderWidth: 1,
+        paddingHorizontal: 12,
         paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderBottomWidth: 4,
-    },
-    chunkyButtonPink: {
-        backgroundColor: '#ec4899',
-        borderColor: '#db2777',
-    },
-    chunkyButtonSlate: {
-        backgroundColor: '#64748b',
-        borderColor: '#475569',
-    },
-    chunkyButtonGreen: {
-        backgroundColor: '#22c55e',
-        borderColor: '#16a34a',
-    },
-    chunkyButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
+        width: 80,
     },
     seedInputContainer: {
-        flexDirection: 'row',
         alignItems: 'center',
+        flexDirection: 'row',
         gap: 4,
     },
     seedLabel: {
         fontSize: 14,
         fontWeight: 'bold',
-    },
-    seedInput: {
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        width: 80,
-        backgroundColor: 'white',
-    },
-    rightColumnContainer: {
-        flex: 1,
-    },
-    layerOptionContainer: {
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        backgroundColor: 'white',
-        padding: 12,
-        marginBottom: 16,
-    },
-    layerOptionHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    layerOptionTitle: {
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    noneButtonText: {
-        fontSize: 14,
-        textDecorationLine: 'underline',
-        color: '#64748b',
-    },
-    optionsGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-    },
-    optionButton: {
-        position: 'relative',
-        borderRadius: 12,
-        borderWidth: 2,
-        overflow: 'hidden',
-        backgroundColor: '#f1f5f9',
-    },
-    optionButtonSelected: {
-        borderColor: '#3b82f6',
-    },
-    optionButtonNormal: {
-        borderColor: 'transparent',
-    },
-    optionImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'contain',
-    },
-    placeholderContainer: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#e2e8f0',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    placeholderText: {
-        fontSize: 10,
-        textAlign: 'center',
-        color: '#64748b',
-    },
-    colorPickerContainer: {
-        marginTop: 12,
-    },
-    colorPalette: {
-        flexDirection: 'row',
-        gap: 8,
-        paddingVertical: 4,
-    },
-    colorSwatch: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        borderWidth: 2,
-        borderColor: 'transparent',
-    },
-    colorSwatchSelected: {
-        borderColor: '#3b82f6', // blue-500
-        transform: [{ scale: 1.1 }],
-    },
-    footerButtonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 16,
-        borderTopWidth: 1,
-        borderColor: '#e2e8f0',
-        paddingTop: 16,
-        marginTop: 16,
-    },
-    layerSelectButton: {
-        backgroundColor: '#60a5fa',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        marginBottom: 10,
-        alignItems: 'center',
-        width: '100%',
-    },
-    layerSelectButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 18,
     },
 });

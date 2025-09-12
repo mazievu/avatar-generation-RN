@@ -82,27 +82,28 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
 };
 
 const loanModalStyles = StyleSheet.create({
-    title: {
-        fontSize: 24,
+    chunkyButton: {
+        alignItems: 'center',
+        borderBottomWidth: 4,
+        borderRadius: 8,
+        justifyContent: 'center',
+        paddingVertical: 12,
+        width: '100%',
+    },
+    chunkyButtonGreen: {
+        backgroundColor: '#22c55e', // green-500
+        borderColor: '#16a34a', // green-600
+    },
+    chunkyButtonText: {
+        color: 'white',
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-        marginBottom: 8,
-        textAlign: 'center',
     },
     description: {
         fontSize: 16,
         color: '#475569', // slate-600
         marginBottom: 24,
         textAlign: 'center',
-    },
-    optionsContainer: {
-        marginBottom: 24,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#334155', // slate-700
-        marginBottom: 8,
     },
     grid: {
         flexDirection: 'row',
@@ -119,33 +120,32 @@ const loanModalStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    gridButtonSelected: {
-        backgroundColor: '#dbeafe', // blue-100
-        borderColor: '#60a5fa', // blue-400
-    },
     gridButtonNormal: {
         backgroundColor: '#f1f5f9', // slate-100
         borderColor: '#e2e8f0', // slate-200
     },
+    gridButtonSelected: {
+        backgroundColor: '#dbeafe', // blue-100
+        borderColor: '#60a5fa', // blue-400
+    },
     gridButtonText: {
+        color: '#1e293b',
+        fontWeight: 'bold', // slate-800
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#334155', // slate-700
+        marginBottom: 8,
+    },
+    optionsContainer: {
+        marginBottom: 24,
+    },
+    title: {
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#1e293b', // slate-800
-    },
-    chunkyButton: {
-        width: '100%',
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderBottomWidth: 4,
-    },
-    chunkyButtonGreen: {
-        backgroundColor: '#22c55e', // green-500
-        borderColor: '#16a34a', // green-600
-    },
-    chunkyButtonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
+        marginBottom: 8,
+        textAlign: 'center',
     },
 });

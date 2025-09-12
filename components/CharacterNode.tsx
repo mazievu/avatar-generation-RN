@@ -31,29 +31,6 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
   // --- BƯỚC 2: ÁP DỤNG KÍCH THƯỚC LINH HOẠT VÀO STYLE ---
   // We create this inside the component so it can access props like `isPlayerCharacter`
   const dynamicStyles = StyleSheet.create({
-    container: {
-      width: nodeContainerWidth,
-      alignItems: 'center',
-      gap: 4,
-     // marginHorizontal: NODE_MARGIN, // Khoảng cách giữa các node
-     // marginBottom: 16, // Add some vertical spacing
-    },
-    avatarWrapper: {
-      width: avatarSize,
-      height: avatarSize,
-      position: 'relative',
-    },
-    avatarBase: {
-      width: '100%',
-      height: '100%',
-      borderRadius: avatarSize / 2, // Luôn là hình tròn
-      borderWidth: 3,
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden',
-      borderColor: isPlayerCharacter ? '#facc15' : '#cbd5e1',
-      backgroundColor: '#e2e8f0', // Always have a background color for consistency
-    },
     ageBadge: {
       position: 'absolute',
       top: -2,
@@ -67,6 +44,29 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
       borderWidth: 2,
       borderColor: 'white',
       paddingHorizontal: 4,
+    },
+    avatarBase: {
+      width: '100%',
+      height: '100%',
+      borderRadius: avatarSize / 2, // Luôn là hình tròn
+      borderWidth: 3,
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      borderColor: isPlayerCharacter ? '#facc15' : '#cbd5e1',
+      backgroundColor: '#e2e8f0', // Always have a background color for consistency
+    },
+    avatarWrapper: {
+      height: avatarSize,
+      position: 'relative',
+      width: avatarSize,
+    },
+    container: {
+      alignItems: 'center',
+      gap: 4,
+      width: nodeContainerWidth,
+     // marginHorizontal: NODE_MARGIN, // Khoảng cách giữa các node
+     // marginBottom: 16, // Add some vertical spacing
     },
   });
 
@@ -108,33 +108,33 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
 
 // --- BƯỚC 3: GIỮ LẠI CÁC STYLE KHÔNG PHỤ THUỘC KÍCH THƯỚC ---
 const styles = StyleSheet.create({
+  ageText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   deceased: {
     opacity: 0.6,
   },
-  ageText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-  nameText: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'center',
-    color: '#1e293b',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 6,
-    paddingHorizontal: 4,
-    width: '100%',
-  },
   incomeContainer: {
-    position: 'relative',
     alignItems: 'center',
+    height: 20,
     justifyContent: 'center',
-    height: 20, // Give it a fixed height to prevent layout shifts
+    position: 'relative', // Give it a fixed height to prevent layout shifts
   },
   incomeText: {
-    fontSize: 12,
     fontFamily: 'monospace',
+    fontSize: 12,
     fontWeight: 'bold',
+  },
+  nameText: {
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 6,
+    color: '#1e293b',
+    fontSize: 14,
+    fontWeight: 'bold',
+    paddingHorizontal: 4,
+    textAlign: 'center',
+    width: '100%',
   },
 });

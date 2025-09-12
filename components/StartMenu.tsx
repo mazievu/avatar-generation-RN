@@ -52,44 +52,16 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstruction
 );
 
 const startMenuStyles = StyleSheet.create({
-    startMenuContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
+    gameSubtitle: {
+        fontSize: 18,
+        color: '#4b5563', // slate-600
+        marginBottom: 32,
     },
     gameTitle: {
         fontSize: 32,
         fontWeight: 'bold',
         color: '#2563eb', // blue-700
         marginBottom: 8,
-    },
-    gameSubtitle: {
-        fontSize: 18,
-        color: '#4b5563', // slate-600
-        marginBottom: 32,
-    },
-    scenarioList: {
-        width: '100%',
-        marginBottom: 24,
-    },
-    scenarioButton: {
-        backgroundColor: '#f1f5f9', // slate-100
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
-        borderBottomWidth: 4,
-        borderColor: '#e2e8f0', // slate-200
-    },
-    scenarioName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-    },
-    scenarioDescription: {
-        fontSize: 14,
-        color: '#64748b', // slate-500
-        marginTop: 4,
     },
     howToPlayButton: {
         backgroundColor: '#60a5fa', // blue-400
@@ -101,5 +73,33 @@ const startMenuStyles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    scenarioButton: {
+        backgroundColor: '#f1f5f9', // slate-100
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 12,
+        borderBottomWidth: 4,
+        borderColor: '#e2e8f0', // slate-200
+    },
+    scenarioDescription: {
+        fontSize: 14,
+        color: '#64748b', // slate-500
+        marginTop: 4,
+    },
+    scenarioList: {
+        marginBottom: 24,
+        width: '100%',
+    },
+    scenarioName: {
+        color: '#1e293b',
+        fontSize: 18,
+        fontWeight: 'bold', // slate-800
+    },
+    startMenuContainer: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+        padding: 16,
     },
 });

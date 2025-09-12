@@ -156,9 +156,7 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
                 key={`${layer.key}-${optionId}`}
                 source={finalSrc}
                 // alt={layer.label} is not a prop in RN Image
-                style={[
-                    ageAwareAvatarPreviewStyles.layerImage,
-                ]}
+                style={ageAwareAvatarPreviewStyles.layerImage}
                 // draggable={false} is not a prop in RN Image
               />
             );
@@ -179,22 +177,22 @@ const ageAwareAvatarPreviewStyles = StyleSheet.create({
         elevation: 3, // shadow-md
         backgroundColor: '#e2e8f0', // bg-slate-200
     },
-    staticImage: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
+    layerImage: {
         height: '100%',
-        resizeMode: 'contain', // object-contain
+        left: 0,
+        position: 'absolute',
+        resizeMode: 'contain',
+        top: 0,
+        width: '100%', // object-contain
         // select-none pointer-events-none are not direct RN styles
     },
-    layerImage: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
+    staticImage: {
         height: '100%',
-        resizeMode: 'contain', // object-contain
+        left: 0,
+        position: 'absolute',
+        resizeMode: 'contain',
+        top: 0,
+        width: '100%', // object-contain
         // select-none pointer-events-none are not direct RN styles
     },
 });

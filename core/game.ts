@@ -216,7 +216,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 return prevState;
             }
 
-            let newState = { ...prevState };
+            const newState = { ...prevState };
             let nextFamilyMembers = { ...prevState.familyMembers };
             let nextGameLog = [...prevState.gameLog];
 
@@ -247,9 +247,9 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 }
 
                 let totalBusinessNetChange = 0;
-                let memberUpdates: Record<string, Partial<Character>> = {};
+                const memberUpdates: Record<string, Partial<Character>> = {};
                 
-                let businessSalaries: Record<string, number> = {}; 
+                const businessSalaries: Record<string, number> = {}; 
                 for (const business of Object.values(prevState.familyBusinesses)) {
                     for (const slot of business.slots) {
                         if (slot.assignedCharacterId && slot.assignedCharacterId !== 'robot') {
@@ -303,7 +303,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     totalBusinessNetChange += businessNet;
                 }
 
-                let petExpenses: Record<string, number> = {};
+                const petExpenses: Record<string, number> = {};
                  for (const pet of Object.values(prevState.familyPets)) {
                     const petData = PET_DATA[pet.type];
                     if (petData && pet.ownerId && prevState.familyMembers[pet.ownerId]?.isAlive) {
@@ -321,7 +321,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     // FIX: Changed COST_OF_LIVING[char.phase] to a function call getCostOfLiving(char.phase)
                     const personalExpenses = (getCostOfLiving(char.phase) / 12) + (petExpenses[char.id] || 0);
                     totalPersonalExpenses += personalExpenses;
-                    let charUpdate: Partial<Character> = {};
+                    const charUpdate: Partial<Character> = {};
                     let statsUpdate: Partial<Stats> = {};
                     
                     if (businessSalaries[char.id]) {
@@ -481,15 +481,15 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 }
             }
             
-            let memberUpdates: Record<string, Partial<Character>> = {};
+            const memberUpdates: Record<string, Partial<Character>> = {};
             let hasMemberUpdates = false;
 
             const livingMemberIds = Object.values(nextFamilyMembers).filter(c => c.isAlive).map(c => c.id);
             for (const id of livingMemberIds) {
                 const character = nextFamilyMembers[id];
                 const displayName = getCharacterDisplayName(character, language);
-                let charUpdate: Partial<Character> = {};
-                let statsUpdate: Partial<typeof character.stats> = {};
+                const charUpdate: Partial<Character> = {};
+                const statsUpdate: Partial<typeof character.stats> = {};
 
                 if (newState.currentDate.day === character.birthDate.day) {
                     charUpdate.age = character.age + 1;
@@ -561,7 +561,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     for (const id of livingMemberIds) {
                         let char = nextFamilyMembers[id];
                         const displayName = getCharacterDisplayName(char, language);
-                        let charUpdate: Partial<Character> = {};
+                        const charUpdate: Partial<Character> = {};
 
                         // Update low stats counters
                         if (char.stats.happiness < 10) {
@@ -778,7 +778,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         setGameState(prevState => {
             if (!prevState || !prevState.activeEvent) return prevState;
     
-            let nextState: GameState = JSON.parse(JSON.stringify(prevState));
+            const nextState: GameState = JSON.parse(JSON.stringify(prevState));
     
             const { characterId, event, replacements } = prevState.activeEvent;
             const { effect } = choice;
@@ -859,6 +859,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     if (Math.random() < trigger.chance) {
                         const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
                         if (triggeredEvent) {
+                            console.log(`[DEBUG] Found triggered event: ${triggeredEvent.id}`);
                             let newCharacterId = characterId;
                             if (trigger.reTarget === 'parents') {
                                 const originalChar = nextState.familyMembers[characterId];
@@ -866,6 +867,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                                 if (parents.length > 0) newCharacterId = parents[0].id;
                             }
                             nextState.activeEvent = { characterId: newCharacterId, event: triggeredEvent };
+                            console.log(`[DEBUG] Active event set: ${triggeredEvent.id}`); // This line was already there from a previous change
                             eventTriggered = true;
                             break;
                         }
@@ -918,7 +920,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const currentChoice = prevState.pendingSchoolChoice[0];
             const { characterId } = currentChoice;
             const character = prevState.familyMembers[characterId];
-            let newStats = { ...character.stats };
+            const newStats = { ...character.stats };
 
             for (const [stat, change] of Object.entries(option.effects)) {
                 const key = stat as keyof Stats;
@@ -1003,7 +1005,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             if (clubId) {
                 const club = CLUBS.find(c => c.id === clubId);
                 if (club) {
-                    let newStats = { ...character.stats };
+                    const newStats = { ...character.stats };
                     if (club.effects) {
                         for (const [stat, change] of Object.entries(club.effects)) {
                             const key = stat as keyof Stats;
@@ -1097,7 +1099,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             if(!prevState || !prevState.pendingMajorChoice) return prevState;
             const { characterId } = prevState.pendingMajorChoice;
             const character = prevState.familyMembers[characterId];
-            let newStats = { ...character.stats };
+            const newStats = { ...character.stats };
             for (const [stat, change] of Object.entries(major.effects)) {
                 const key = stat as keyof Stats;
                 if (key === 'skill') {
@@ -1181,7 +1183,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const { characterId } = prevState.pendingCareerChoice;
             const character = prevState.familyMembers[characterId];
             const displayName = getCharacterDisplayName(character, language);
-            let nextState = JSON.parse(JSON.stringify(prevState));
+            const nextState = JSON.parse(JSON.stringify(prevState));
             
             if (choiceKey === 'job') {
                 const careerOptions = generateCareerChoices(character);
@@ -1424,7 +1426,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const business = prevState.familyBusinesses[businessId];
             if (!business) return prevState;
     
-            let nextState: GameState = JSON.parse(JSON.stringify(prevState));
+            const nextState: GameState = JSON.parse(JSON.stringify(prevState));
             const businessToUpdate = nextState.familyBusinesses[businessId];
             const oldCharacterId = businessToUpdate.slots[slotIndex].assignedCharacterId;
     

@@ -148,32 +148,55 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
 };
 
 const businessManagementModalStyles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-    },
-    levelText: {
-        fontSize: 14,
-        color: '#64748b', // slate-500
+    avatarPlaceholder: {
+        height: 64,
+        marginRight: 12,
+        width: 64,
     },
     closeButton: {
         // No direct equivalent for absolute positioning within a flex item without more structure
     },
-    slotsContainer: {
-        // maxHeight: 400, // Example max height
+    emptyAvatar: {
+        width: 64,
+        height: 64,
+        backgroundColor: '#e2e8f0', // slate-200
+        borderRadius: 32,
+    },
+    footer: {
+        borderColor: '#e2e8f0',
+        borderTopWidth: 1,
+        marginTop: 16,
+        paddingTop: 16, // slate-200
+    },
+    header: {
+        alignItems: 'flex-start',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+    },
+    levelText: {
+        color: '#64748b',
+        fontSize: 14, // slate-500
+    },
+    picker: {
+        width: 200,
+        // RN Picker styling is limited. This is a basic width.
+    },
+    pickerItem: {
+        // itemStyle is iOS only.
+    },
+    robotIcon: {
+        height: '100%',
+        width: '100%',
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#334155', // slate-700
         marginBottom: 8,
+    },
+    slotDetails: {
+        flex: 1,
     },
     slotItem: {
         flexDirection: 'row',
@@ -183,48 +206,25 @@ const businessManagementModalStyles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 8,
     },
-    avatarPlaceholder: {
-        width: 64,
-        height: 64,
-        marginRight: 12,
-    },
-    robotIcon: {
-        width: '100%',
-        height: '100%',
-    },
-    emptyAvatar: {
-        width: 64,
-        height: 64,
-        backgroundColor: '#e2e8f0', // slate-200
-        borderRadius: 32,
-    },
-    slotDetails: {
-        flex: 1,
+    slotRequirement: {
+        color: '#64748b',
+        fontSize: 12, // slate-500
     },
     slotRole: {
-        fontWeight: 'bold',
         fontSize: 16,
-    },
-    slotRequirement: {
-        fontSize: 12,
-        color: '#64748b', // slate-500
+        fontWeight: 'bold',
     },
     slotSalary: {
-        fontSize: 12,
-        color: '#16a34a', // green-600
+        color: '#16a34a',
+        fontSize: 12, // green-600
     },
-    picker: {
-        width: 200,
-        // RN Picker styling is limited. This is a basic width.
+    slotsContainer: {
+        // maxHeight: 400, // Example max height
     },
-    pickerItem: {
-        // itemStyle is iOS only.
-    },
-    footer: {
-        marginTop: 16,
-        paddingTop: 16,
-        borderTopWidth: 1,
-        borderColor: '#e2e8f0', // slate-200
+    title: {
+        color: '#1e293b',
+        fontSize: 24,
+        fontWeight: 'bold', // slate-800
     },
     upgradeButton: {
         flexDirection: 'row',
@@ -237,14 +237,14 @@ const businessManagementModalStyles = StyleSheet.create({
     upgradeButtonDisabled: {
         opacity: 0.5,
     },
-    upgradeIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 8,
-        color: 'white',
-    },
     upgradeButtonText: {
         color: 'white',
         fontWeight: 'bold',
+    },
+    upgradeIcon: {
+        color: 'white',
+        height: 20,
+        marginRight: 8,
+        width: 20,
     },
 });

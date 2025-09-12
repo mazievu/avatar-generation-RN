@@ -48,6 +48,7 @@ const NODE_HEIGHT = NODE_WIDTH * 1.2; // Approximate height
 const HORIZONTAL_SPACING = 20;
 const VERTICAL_SPACING = 60;
 
+
 // --- 3. LAYOUT CALCULATION LOGIC ---
 
 function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap {
@@ -116,13 +117,17 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
 type AnimatedContext = { startX: number; startY: number; startScale: number; };
 
 export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter }) => {
-  // State to trigger re-render for virtualization
-  const [renderTrigger, setRenderTrigger] = useState(0);
+  
 
-  // Reanimated values for gestures
+  // Shared values for animation on UI Thread (as before)
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+
+  // NEW State for rendering on JS Thread
+  const [renderScale, setRenderScale] = useState(1);
+  const [renderTranslateX, setRenderTranslateX] = useState(0);
+  const [renderTranslateY, setRenderTranslateY] = useState(0);
 
   const layouts = useMemo(() => calculateTreeLayout(gameState.familyMembers), [gameState.familyMembers]);
 
@@ -130,27 +135,27 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
   useEffect(() => {
     if (selectedCharacter && layouts[selectedCharacter.id]) {
       const layout = layouts[selectedCharacter.id];
-      const targetScale = 1.2; // Zoom in a bit
-      
-      // Center of the screen
+      const targetScale = 1.2;
       const centerX = screenWidth / 2;
-      const centerY = screenHeight / 3; // A bit higher than center
+      const centerY = screenHeight / 2; // Center of the screen
 
-      // Calculate translation needed to bring the node to the center
       const newTranslateX = centerX - (layout.x + NODE_WIDTH / 2) * targetScale;
       const newTranslateY = centerY - (layout.y + NODE_HEIGHT / 2) * targetScale;
 
       scale.value = withTiming(targetScale, { duration: 500 });
       translateX.value = withTiming(newTranslateX, { duration: 500 });
-      translateY.value = withTiming(newTranslateY, { duration: 500 }, () => {
-        runOnJS(setRenderTrigger)(c => c + 1);
+      translateY.value = withTiming(newTranslateY, { duration: 500 }, (finished) => {
+        if (finished) {
+          // UPDATE STATE WHEN ANIMATION FINISHES
+          runOnJS(setRenderScale)(targetScale);
+          runOnJS(setRenderTranslateX)(newTranslateX);
+          runOnJS(setRenderTranslateY)(newTranslateY);
+        }
       });
     }
-  }, [selectedCharacter, layouts, scale, translateX, translateY]);
+  }, [selectedCharacter]);
 
-  const triggerRender = () => {
-    setRenderTrigger(c => c + 1);
-  };
+  
 
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, AnimatedContext>({
     onStart: (event, ctx) => {
@@ -162,7 +167,9 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
         translateY.value = ctx.startY + event.translationY;
     },
     onEnd: () => {
-      runOnJS(triggerRender)();
+      // UPDATE STATE WHEN FINISHED
+      runOnJS(setRenderTranslateX)(translateX.value);
+      runOnJS(setRenderTranslateY)(translateY.value);
     }
   });
 
@@ -175,7 +182,8 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
         scale.value = Math.max(0.5, Math.min(newScale, 3)); // Clamp scale
     },
     onEnd: () => {
-      runOnJS(triggerRender)();
+      // UPDATE STATE WHEN FINISHED
+      runOnJS(setRenderScale)(scale.value);
     }
   });
 
@@ -246,9 +254,10 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
 
   const getVisibleNodes = () => {
     const visibleNodes = [];
-    const currentScale = scale.value;
-    const currentX = translateX.value;
-    const currentY = translateY.value;
+    // USE STATE, NOT .value
+    const currentScale = renderScale;
+    const currentX = renderTranslateX;
+    const currentY = renderTranslateY;
 
     // Calculate visible area in the coordinate system of the tree
     const viewPortX = -currentX / currentScale;
@@ -277,7 +286,8 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     return visibleNodes;
   };
 
-  const visibleNodes = getVisibleNodes();
+  // visibleNodes will only be recalculated when render state changes
+  const visibleNodes = useMemo(getVisibleNodes, [layouts, renderScale, renderTranslateX, renderTranslateY]);
 
   if (Object.keys(layouts).length === 0) {
     return <View style={styles.container}><Text>No family members to display.</Text></View>;
@@ -331,8 +341,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   treeContainer: {
-    width: 1, // The container itself is just a reference point
-    height: 1,
+    ...StyleSheet.absoluteFillObject,
   },
 });
                   

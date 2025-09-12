@@ -44,14 +44,17 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
+  flexContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
+  },
+  modalOverlay: {
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    flex: 1,
+    justifyContent: 'center',
     padding: responsiveSize(24),
   },
-  panelContainer: {
+   panelContainer: {
      // Quan trọng: Cung cấp không gian cho con
     width: '100%',
     maxWidth: 500,
@@ -60,8 +63,5 @@ const styles = StyleSheet.create({
     borderWidth: 6,
     borderColor: '#facc15',
     padding: responsiveSize(24),
-  },
-   flexContainer: {
-    flex: 1,
   },
 });

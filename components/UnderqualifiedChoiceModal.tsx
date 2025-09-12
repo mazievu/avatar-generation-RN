@@ -50,12 +50,14 @@ export const UnderqualifiedChoiceModal: React.FC<UnderqualifiedChoiceModalProps>
 }
 
 const underqualifiedChoiceModalStyles = StyleSheet.create({
-    title: {
-        fontSize: 24,
+    choiceDescription: {
+        fontSize: 12,
+        color: '#475569', // slate-600
+        marginTop: 4,
+    },
+    choiceTitle: {
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-        marginBottom: 8,
-        textAlign: 'center',
     },
     description: {
         fontSize: 16,
@@ -63,13 +65,11 @@ const underqualifiedChoiceModalStyles = StyleSheet.create({
         marginBottom: 24,
         textAlign: 'center',
     },
-    choiceTitle: {
+    title: {
+        fontSize: 24,
         fontWeight: 'bold',
-        fontSize: 16,
-    },
-    choiceDescription: {
-        fontSize: 12,
-        color: '#475569', // slate-600
-        marginTop: 4,
+        color: '#1e293b', // slate-800
+        marginBottom: 8,
+        textAlign: 'center',
     },
 });

@@ -76,31 +76,31 @@ export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color
 };
 
 const styles = StyleSheet.create({
-  statRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  statLabel: {
-    flex: 0.3,
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#334155',
-    marginLeft: 8,
-  },
   barContainer: {
     flex: 0.6, // Quan trọng: Chiếm toàn bộ không gian còn lại
     marginHorizontal: 8,
   },
   statBarBackground: {
-    height: 14,
     backgroundColor: '#e2e8f0',
     borderRadius: 7,
+    height: 14,
     overflow: 'hidden', // Đảm bảo fill không tràn ra ngoài
   },
   statBarFill: {
-    height: '100%',
     borderRadius: 7,
+    height: '100%',
+  },
+  statLabel: {
+    color: '#334155',
+    flex: 0.3,
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  statRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 10,
   },
   statValue: {
     minWidth: 35, // Đảm bảo đủ không gian

@@ -44,41 +44,41 @@ export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ character,
 );
 
 const schoolChoiceModalStyles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: '#1e293b',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 16,
-    color: '#475569',
-    marginBottom: 24,
-  },
-  choicesContainer: {
-    gap: 12,
-  },
-    choiceContent: {
+  choiceContent: {
+        alignItems: 'baseline',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'baseline',
     },
-    choiceName: {
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    choiceCost: {
+  choiceCost: {
         fontSize: 14,
     },
+  choiceEffects: {
+        fontSize: 12,
+        color: '#475569', // slate-600
+        marginTop: 4,
+    },
+    choiceName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    choicesContainer: {
+    gap: 12,
+  },
     costAffordable: {
         color: '#64748b', // slate-500
     },
     costUnaffordable: {
         color: '#ef4444', // red-500
     },
-    choiceEffects: {
-        fontSize: 12,
-        color: '#475569', // slate-600
-        marginTop: 4,
-    },
+    description: {
+    color: '#475569',
+    fontSize: 16,
+    marginBottom: 24,
+  },
+    title: {
+    color: '#1e293b',
+    fontSize: 24,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
 });

@@ -39,25 +39,12 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({ characterName, n
 );
 
 const promotionModalStyles = StyleSheet.create({
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1e293b', // slate-800
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    description: {
-        fontSize: 16,
-        color: '#475569', // slate-600
-        marginBottom: 24,
-        textAlign: 'center',
-    },
     button: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 8,
         alignItems: 'center',
         borderBottomWidth: 4,
+        borderRadius: 8,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
     },
     buttonGreen: {
         backgroundColor: '#22c55e', // green-500
@@ -65,7 +52,20 @@ const promotionModalStyles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontWeight: 'bold',
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    description: {
+        fontSize: 16,
+        color: '#475569', // slate-600
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1e293b', // slate-800
+        marginBottom: 8,
+        textAlign: 'center',
     },
 });

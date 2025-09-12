@@ -1,19 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, Language } from './core/types';
-import { LifePhase, CharacterStatus, RelationshipStatus, Gender, exampleManifest } from './core/types';
-// FIX: Changed import from COST_OF_LIVING to getCostOfLiving to match the exported member from constants.
-import { GAME_SPEED_MS, DAYS_IN_YEAR, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY } from './core/constants';
-import { CLUBS } from './core/clubsAndEventsData';
+import type { GameState, Character, Language } from './core/types';
+import { exampleManifest } from './core/types';
+import { GAME_SPEED_MS, ASSET_DEFINITIONS } from './core/constants';
 import { GameUI } from './components/GameUI';
 import AvatarBuilder from './components/AvatarBuilder';
-import { SCENARIOS } from './core/scenarios';
-import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './core/utils';
-import { t } from './core/localization';
 import { initGodMode } from './core/godmod';
 import { createGameLogicHandlers } from './core/game';
 
@@ -57,11 +51,9 @@ const App: React.FC = () => {
 
     const {
         saveGame,
-        initializeGame,
         handleContinueGame,
         handleStartNewGame,
         handleStartGame,
-        generateCareerChoices,
         gameLoop,
         handleEventChoice,
         handleCloseEventModal,
@@ -81,7 +73,6 @@ const App: React.FC = () => {
         handleAvatarSave,
         stopGameLoop,
         SAVE_KEY,
-        ONE_TIME_EVENT_IDS,
     } = useMemo(() => createGameLogicHandlers(setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest), [setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest]);
 
     useEffect(() => {
@@ -224,14 +215,14 @@ export { App };
 
 const appStyles = StyleSheet.create({
     loadingContainer: {
-        flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f8fafc', // slate-50
+        backgroundColor: '#f8fafc',
+        flex: 1,
+        justifyContent: 'center', // slate-50
     },
     loadingText: {
+        color: '#333',
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#333',
     },
 });

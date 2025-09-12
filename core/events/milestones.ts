@@ -117,7 +117,9 @@ export const MILESTONE_EVENTS: EventDraft[] = [
             { textKey: 'milestone_children_yes', effect: { 
                 logKey: 'log_milestone_children_decision', // Placeholder for outcome modal
                 getDynamicEffect: () => {
-                    const success = Math.random() < 0.7;
+                    const randomValue = Math.random(); // Capture random value
+                    const success = randomValue < 0.7;
+                    console.log(`[DEBUG] Children attempt: Random value = ${randomValue}, Success = ${success}`); // Add this line
                     if (success) {
                         return {
                             statChanges: { happiness: 20 },
