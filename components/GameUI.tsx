@@ -4,29 +4,19 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType
 
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club, Language } from '../core/types';
 import { formatDate, getCharacterDisplayName } from '../core/utils';
-import { CAREER_LADDER, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, ASSET_DEFINITIONS } from '../core/constants';
+import { ASSET_DEFINITIONS } from '../core/constants';
 import { FamilyTree } from './FamilyTree';
 import { GameLog } from './GameLog';
 import { SummaryScreen } from './SummaryScreen';
 import { StartMenu } from './StartMenu';
 import { InstructionsModal } from './InstructionsModal';    
-import { SchoolChoiceModal } from './SchoolChoiceModal';
-import { UniversityChoiceModal } from './UniversityChoiceModal';
-import { UniversityMajorChoiceModal } from './UniversityMajorChoiceModal';
-import { CareerChoiceModal } from './CareerChoiceModal';
-import { PromotionModal } from './PromotionModal';
-import { LoanModal } from './LoanModal';
 import { WelcomeBackMenu } from './WelcomeBackMenu';
-import { UnderqualifiedChoiceModal } from './UnderqualifiedChoiceModal'; 
-import { EventModal } from './EventModal';
-import { BusinessManagementModal } from './BusinessManagementModal';
-import { CharacterDetailModal } from './CharacterDetailModal';
-import { ClubChoiceModal } from './ClubChoiceModal'; 
 import { t } from '../core/localization';
 import { exampleManifest } from '../core/types';
 import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { Picker } from '@react-native-picker/picker';
+import { ModalManager } from './ModalManager';
 
 const { width: screenWidth } = Dimensions.get('window');
 import { CLUBS } from '../core/clubsAndEventsData';
@@ -179,7 +169,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                     <>
                         <Text style={gameUIStyles.familyTreeTitle}>{t('family_tree_title', lang)}</Text>
                         <View style={gameUIStyles.familyTreeContainer}>
-                            <FamilyTree gameState={gameState} onSelectCharacter={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} />
+                            <FamilyTree gameState={gameState} onSelectCharacter={onSetSelectedCharacter} lang={lang} images={avatarImages} manifest={exampleManifest} selectedCharacter={selectedCharacter} />
                         </View>
                     </>
                 );
@@ -214,105 +204,29 @@ export const GameUI: React.FC<GameUIProps> = ({
     return (
         <View style={gameUIStyles.mainContainer}>
             {view === 'gameover' && gameState.gameOverReason && <SummaryScreen gameState={gameState} onRestart={onStartNewGame} lang={lang}/>}
-            {gameState.activeEvent && (
-                <EventModal 
-                    eventData={gameState.activeEvent}
-                    character={gameState.familyMembers[gameState.activeEvent.characterId]}
-                    onChoice={onEventChoice} 
-                    onClose={onEventModalClose}
-                    lang={lang}
-                    manifest={exampleManifest}
-                    images={avatarImages}
-                    onAvatarClick={onSetSelectedCharacter}
-                />
-            )}
-            {gameState.pendingSchoolChoice && gameState.pendingSchoolChoice.length > 0 && (
-                <SchoolChoiceModal
-                    character={gameState.familyMembers[gameState.pendingSchoolChoice[0].characterId]}
-                    schoolOptions={SCHOOL_OPTIONS[gameState.pendingSchoolChoice[0].newPhase]}
-                    onSelect={onSchoolChoice}
-                    currentFunds={gameState.familyFund}
-                    lang={lang}
-                />
-            )}
-            {gameState.pendingClubChoice && (
-                <ClubChoiceModal
-                    character={gameState.familyMembers[gameState.pendingClubChoice.characterId]}
-                    clubs={gameState.pendingClubChoice.options}
-                    onSelect={onClubChoice}
-                    onSkip={() => onClubChoice(null)}
-                    lang={lang}
-                />
-            )}
-             {gameState.pendingUniversityChoice && gameState.pendingUniversityChoice.length > 0 && (
-                <UniversityChoiceModal
-                    character={gameState.familyMembers[gameState.pendingUniversityChoice[0].characterId]}
-                    onSelect={onUniversityChoice}
-                    lang={lang}
-                />
-            )}
-            {gameState.pendingMajorChoice && (
-                <UniversityMajorChoiceModal
-                    character={gameState.familyMembers[gameState.pendingMajorChoice.characterId]}
-                    majors={gameState.pendingMajorChoice.options}
-                    onSelect={onMajorChoice}
-                    currentFunds={gameState.familyFund}
-                    lang={lang}
-                    onAbandon={onAbandonUniversity}
-                />
-            )}
-            {gameState.pendingCareerChoice && (
-                 <CareerChoiceModal
-                    character={gameState.familyMembers[gameState.pendingCareerChoice.characterId]}
-                    options={gameState.pendingCareerChoice.options}
-                    onSelect={onCareerChoice}
-                    currentFunds={gameState.familyFund}
-                    lang={lang}
-                />
-            )}
-            {gameState.pendingUnderqualifiedChoice && (
-                <UnderqualifiedChoiceModal
-                    character={gameState.familyMembers[gameState.pendingUnderqualifiedChoice.characterId]}
-                    careerTrackKey={gameState.pendingUnderqualifiedChoice.careerTrackKey}
-                    onSelect={onUnderqualifiedChoice}
-                    lang={lang}
-                />
-            )}
-            {selectedCharacter && (
-                <CharacterDetailModal 
-                    character={selectedCharacter}
-                    gameState={gameState}
-                    onClose={() => onSetSelectedCharacter(null)}
-                    lang={lang}
-                    onCustomize={onOpenAvatarBuilder}
-                    images={avatarImages}
-                    manifest={exampleManifest}
-                    clubs={CLUBS}
-                />
-            )}
-             {gameState.pendingLoanChoice && (
-                <LoanModal onLoanChoice={onLoanChoice} lang={lang} />
-            )}
-            {gameState.pendingPromotion && (
-                <PromotionModal 
-                    characterName={getCharacterDisplayName(gameState.familyMembers[gameState.pendingPromotion.characterId], lang)}
-                    newTitle={t(gameState.pendingPromotion.newTitleKey, lang)}
-                    onAccept={onPromotionAccept}
-                    lang={lang}
-                />
-            )}
-            {editingBusiness && (
-                <BusinessManagementModal
-                    business={editingBusiness}
-                    gameState={gameState}
-                    onAssignToBusiness={onAssignToBusiness}
-                    onUpgradeBusiness={onUpgradeBusiness}
-                    onClose={() => setEditingBusiness(null)}
-                    lang={lang}
-                    images={avatarImages}
-                    manifest={exampleManifest}
-                />
-            )}
+            
+            <ModalManager
+                gameState={gameState}
+                selectedCharacter={selectedCharacter}
+                editingBusiness={editingBusiness}
+                avatarImages={avatarImages}
+                onEventChoice={onEventChoice}
+                onEventModalClose={onEventModalClose}
+                onSetSelectedCharacter={onSetSelectedCharacter}
+                onSchoolChoice={onSchoolChoice}
+                onClubChoice={onClubChoice}
+                onUniversityChoice={onUniversityChoice}
+                onMajorChoice={onMajorChoice}
+                onAbandonUniversity={onAbandonUniversity}
+                onCareerChoice={onCareerChoice}
+                onUnderqualifiedChoice={onUnderqualifiedChoice}
+                onOpenAvatarBuilder={onOpenAvatarBuilder}
+                onLoanChoice={onLoanChoice}
+                onPromotionAccept={onPromotionAccept}
+                onAssignToBusiness={onAssignToBusiness}
+                onUpgradeBusiness={onUpgradeBusiness}
+                setEditingBusiness={setEditingBusiness}
+            />
             
             <View style={gameUIStyles.maxWidthContainer}>
                 <View style={gameUIStyles.headerContainer}>

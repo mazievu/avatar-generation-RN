@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, SafeAreaView } from 'react-native';
 
-import { LayerKey, Manifest, AvatarState, Character, Gender, LayerDefinition } from "../core/types";
+import { LayerKey, Manifest, AvatarState, Character, Gender, LayerDefinition, ColorDefinition } from "../core/types";
 import { AVATAR_COLOR_PALETTE } from "../core/constants";
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
@@ -184,7 +184,22 @@ export default function AvatarBuilder({
         </View>
         {isColorable && state[layer.key] && (
             <View style={avatarBuilderStyles.colorPickerContainer}>
-              {/* ... Color Picker JSX ... */}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={avatarBuilderStyles.colorPalette}>
+                  {AVATAR_COLOR_PALETTE.map((color: ColorDefinition) => {
+                      const isActive = activeColorName === color.name;
+                      return (
+                          <TouchableOpacity
+                              key={color.name}
+                              style={[
+                                  avatarBuilderStyles.colorSwatch,
+                                  { backgroundColor: color.previewBackground },
+                                  isActive && avatarBuilderStyles.colorSwatchSelected,
+                              ]}
+                              onPress={() => setColorForLayer(layer.key, color.name)}
+                          />
+                      );
+                  })}
+              </ScrollView>
             </View>
         )}
       </View>
@@ -433,16 +448,23 @@ const avatarBuilderStyles = StyleSheet.create({
         color: '#64748b',
     },
     colorPickerContainer: {
-      // ...
+        marginTop: 12,
     },
     colorPalette: {
-      // ...
+        flexDirection: 'row',
+        gap: 8,
+        paddingVertical: 4,
     },
     colorSwatch: {
-      // ...
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        borderWidth: 2,
+        borderColor: 'transparent',
     },
     colorSwatchSelected: {
-      // ...
+        borderColor: '#3b82f6', // blue-500
+        transform: [{ scale: 1.1 }],
     },
     footerButtonsContainer: {
         flexDirection: 'row',

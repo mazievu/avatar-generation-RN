@@ -113,6 +113,12 @@ export type AvatarState = Partial<Record<LayerKey, string | null>> & {
   beardColor?: string;
 };
 
+export interface ColorDefinition {
+  name: string;
+  filter: string;
+  previewBackground: string;
+}
+
 
 export interface Character {
   id: string;

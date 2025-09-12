@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, ImageSourcePropType, Dimensions } from 'react-native';
 import type { Character, Manifest, Language } from '../core/types';
 import { getCharacterDisplayName } from '../core/utils';
@@ -28,41 +28,15 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
   const { isPlayerCharacter, isAlive, age, monthlyNetIncome } = character;
   const displayName = getCharacterDisplayName(character, lang);
 
-  // --- Animation Setup ---
-  const [showMoney, setShowMoney] = useState(false);
-  const moneyFlyAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (!isAlive || monthlyNetIncome === 0) return;
-    
-    const intervalId = setInterval(() => {
-      setShowMoney(true);
-      moneyFlyAnim.setValue(0);
-      Animated.timing(moneyFlyAnim, {
-        toValue: 1,
-        duration: 1200,
-        useNativeDriver: true,
-      }).start(() => {
-        setShowMoney(false);
-      });
-    }, 2500); // Increased interval slightly
-
-    return () => clearInterval(intervalId);
-  }, [isAlive, moneyFlyAnim, monthlyNetIncome]);
-
-  // Nội suy giá trị animation
-  const moneyTranslateY = moneyFlyAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -40] });
-  const moneyOpacity = moneyFlyAnim.interpolate({ inputRange: [0, 0.8, 1], outputRange: [1, 0.4, 0] });
-
   // --- BƯỚC 2: ÁP DỤNG KÍCH THƯỚC LINH HOẠT VÀO STYLE ---
   // We create this inside the component so it can access props like `isPlayerCharacter`
   const dynamicStyles = StyleSheet.create({
     container: {
       width: nodeContainerWidth,
       alignItems: 'center',
-            gap: 4, // Let the parent control margins
-      // marginHorizontal: NODE_MARGIN, 
-      // marginBottom: 16,
+      gap: 4,
+     // marginHorizontal: NODE_MARGIN, // Khoảng cách giữa các node
+     // marginBottom: 16, // Add some vertical spacing
     },
     avatarWrapper: {
       width: avatarSize,
@@ -124,19 +98,6 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
               <Text style={[styles.incomeText, { color: netIncomeColor }]}>
                 {formattedIncome}/mo
               </Text>
-              {showMoney && (
-                <Animated.View style={[
-                  styles.moneyFlyEffect,
-                  {
-                    opacity: moneyOpacity,
-                    transform: [{ translateY: moneyTranslateY }]
-                  }
-                ]}>
-                  <Text style={[styles.moneyFlyText, { color: netIncomeColor }]}>
-                    {formattedIncome}$
-                  </Text>
-                </Animated.View>
-              )}
             </View>
           )}
         </>
@@ -175,17 +136,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'monospace',
     fontWeight: 'bold',
-  },
-  moneyFlyEffect: {
-    position: 'absolute',
-    top: 0,
-    alignSelf: 'center',
-  },
-  moneyFlyText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(255, 255, 255, 0.8)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
   },
 });

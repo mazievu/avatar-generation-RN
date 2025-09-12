@@ -1,14 +1,9 @@
 // src/components/StatBar.tsx
 
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
-
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
-
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedProps } from 'react-native-reanimated';
+import { TextInput } from 'react-native-gesture-handler';
 
 // Import các icon SVG của bạn tại đây
 // import IqIcon from './icons/IqIcon';
@@ -22,37 +17,60 @@ interface StatBarProps {
   color?: string;
 }
 
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
 export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color = '#60a5fa' }) => {
-  const animValue = useRef(new Animated.Value(0)).current;
+  const progress = useSharedValue(0);
+  const scale = useSharedValue(1);
 
   useEffect(() => {
-    // Animate khi giá trị prop thay đổi
-    Animated.timing(animValue, {
-      toValue: value,
-      duration: 500,
-      useNativeDriver: false, // `width` không được hỗ trợ bởi native driver
-    }).start();
-  }, [value]);
+    progress.value = withTiming(value, { duration: 500 });
+    // Hiệu ứng nảy
+    scale.value = withSpring(1.2, { damping: 2, stiffness: 200 }, () => {
+      scale.value = withSpring(1);
+    });
+  }, [value, progress, scale]);
 
-  // Nội suy giá trị animation thành chuỗi phần trăm
-  const barWidth = animValue.interpolate({
-    inputRange: [0, max],
-    outputRange: ['0%', '100%'],
-    extrapolate: 'clamp', // Đảm bảo giá trị không vượt ra ngoài [0%, 100%]
+  const animatedFillStyle = useAnimatedStyle(() => {
+    const percentage = (progress.value / max) * 100;
+    return {
+      width: `${percentage}%`,
+      backgroundColor: color,
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      text: `${Math.round(progress.value)}`,
+    } as any;
   });
 
   return (
     <View style={styles.statRow}>
       {Icon && <Icon width={24} height={24} color="#334155" />}
       <Text style={styles.statLabel}>{label}</Text>
-      
+
       <View style={styles.barContainer}>
         <View style={styles.statBarBackground}>
-          <Animated.View style={[styles.statBarFill, { width: barWidth, backgroundColor: color }]} />
+          <Animated.View style={[styles.statBarFill, animatedFillStyle]} />
         </View>
       </View>
-      
-      <Text style={styles.statValue}>{Math.round(value)}</Text>
+
+      <Animated.View style={animatedTextStyle}>
+        <AnimatedTextInput
+          underlineColorAndroid="transparent"
+          editable={false}
+          value={`${Math.round(value)}`}
+          style={styles.statValue}
+          animatedProps={animatedProps}
+        />
+      </Animated.View>
     </View>
   );
 };
@@ -85,10 +103,11 @@ const styles = StyleSheet.create({
     borderRadius: 7,
   },
   statValue: {
-    flex: 0.1,
+    minWidth: 35, // Đảm bảo đủ không gian
     textAlign: 'right',
     fontWeight: 'bold',
     fontSize: 14,
     color: '#334155',
+    padding: 0, // Xóa padding mặc định của TextInput
   },
 });

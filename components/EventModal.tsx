@@ -81,15 +81,6 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
     setOutcome(choice.effect);
     onChoice(choice);
   };
-  
-  React.useEffect(() => {
-    if (outcome) {
-      timerRef.current = setTimeout(() => {
-        onClose();
-      }, 10000);
-      return () => clearTimeout(timerRef.current!);
-    }
-  }, [outcome, onClose]);
 
   const statIcons: Record<string, React.ElementType> = {
     iq: IqIcon,
