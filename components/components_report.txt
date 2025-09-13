@@ -1,353 +1,704 @@
-# Báo cáo chức năng các tệp trong thư mục `components`
-
-## AgeAwareAvatarPreview.tsx
-Thành phần này chịu trách nhiệm hiển thị một hình đại diện thay đổi diện mạo dựa trên tuổi của nhân vật.
-- Nó nhận các props `manifest` (cấu hình hình đại diện), `images` (tài sản hình ảnh), `character` (dữ liệu nhân vật bao gồm tuổi và trạng thái hình đại diện), và `size`.
-- Nó xác định `AgeStage` (em bé, trẻ em, thiếu niên, người lớn, người già) từ tuổi của nhân vật.
-- Nó tự động chọn các biến thể hình ảnh phù hợp cho từng lớp hình đại diện dựa trên `AgeStage`.
-- Nó hỗ trợ hình đại diện tĩnh cho các nhân vật cụ thể.
-- Nó bao gồm logic tạo chỗ giữ chỗ cho các phần hình đại diện bị thiếu, tạo chỗ giữ chỗ SVG với màu sắc và nhãn duy nhất.
-- Nó sử dụng các thành phần `React Native` `View` và `Image` để hiển thị.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho bố cục đáp ứng và các hiệu ứng hình ảnh cơ bản (bóng, góc bo tròn).
-
-## AvatarBuilder.tsx
-Thành phần này cung cấp giao diện người dùng để người dùng tùy chỉnh hình đại diện của họ.
-- Nó nhận các props `manifest` (cấu hình hình đại diện), `character` (dữ liệu nhân vật ban đầu), `images` (tài sản hình ảnh), `onSave` (callback để lưu thay đổi) và `onClose` (callback để đóng trình tạo).
-- Nó quản lý trạng thái của hình đại diện (các lớp và màu sắc đã chọn) bằng cách sử dụng `useState`.
-- Nó tự động điều chỉnh kích thước của các nút tùy chọn hình đại diện dựa trên chiều rộng của vùng chứa.
-- Nó bao gồm logic để vô hiệu hóa một số tùy chọn hình đại diện nhất định (ví dụ: râu cho nhân vật nữ hoặc trẻ em).
-- **Chức năng ngẫu nhiên hóa:** Cho phép người dùng ngẫu nhiên hóa diện mạo của hình đại diện dựa trên một hạt giống, đảm bảo phù hợp với tuổi và giới tính.
-- **Lựa chọn lớp:** Người dùng có thể chọn các lớp hình đại diện khác nhau (ví dụ: tóc, mắt, quần áo) và chọn các tùy chọn trong mỗi lớp.
-- **Lựa chọn màu sắc:** (Đã triển khai một phần/đã nhận xét) Nó có các điều khoản để chọn màu cho một số lớp nhất định như tóc và lông mày.
-- Nó sử dụng lại `AgeAwareAvatarPreview` để hiển thị tùy chỉnh hình đại diện hiện tại.
-- Nó cung cấp các nút "Lưu" và "Hủy" để quản lý quá trình tùy chỉnh.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho một bố cục có cấu trúc và đáp ứng.
-
-## BusinessManagementModal.tsx
-Thành phần này hiển thị một modal để quản lý một doanh nghiệp cụ thể thuộc sở hữu của gia đình người chơi.
-- Nó nhận các props `business` (đối tượng doanh nghiệp), `gameState` (trạng thái trò chơi hiện tại), `onAssignToBusiness` (callback để gán nhân vật vào các vị trí), `onUpgradeBusiness` (callback để nâng cấp doanh nghiệp), `onClose` (callback để đóng modal), `lang` (ngôn ngữ hiện tại để bản địa hóa), `images` và `manifest`.
-- Nó hiển thị tên và cấp độ của doanh nghiệp.
-- Nó liệt kê các "vị trí" có sẵn trong doanh nghiệp, hiển thị ai hiện đang được gán (thành viên gia đình hoặc robot) hoặc nếu vị trí chưa được gán.
-- Đối với mỗi vị trí, nó cho phép gán các thành viên gia đình có sẵn (những người trưởng thành, chưa nghỉ hưu và không làm việc ở doanh nghiệp khác) hoặc thuê một robot.
-- Nó hiển thị hình đại diện của nhân vật (sử dụng `AgeAwareAvatarPreview`), vai trò, chuyên ngành yêu cầu và mức lương được tính toán cho các thành viên gia đình được gán.
-- Nó cung cấp nút "Nâng cấp" nếu doanh nghiệp chưa đạt cấp độ tối đa và người chơi có đủ tiền.
-- Nó sử dụng `ComicPanelModal` làm cơ sở, gợi ý một cách trình bày theo phong cách truyện tranh.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để có bố cục rõ ràng và có tổ chức.
-
-## BusinessManagementPanel.tsx
-Tệp này hiện đang trống.
-
-## BusinessMap.tsx
-Thành phần này hiển thị một bản đồ tương tác nơi người dùng có thể xem, mua và quản lý các doanh nghiệp.
-- Nó nhận các props `gameState`, `onBuyBusiness`, `onManageBusiness`, `lang`, `images`, `manifest`, `mainView` và `onBackToTree`.
-- Nó hiển thị một `BusinessMapSVG` (có lẽ là bản đồ trực quan).
-- **Điểm nóng kinh doanh:** Phủ các "điểm nóng" tương tác trên bản đồ đại diện cho các loại hình kinh doanh khác nhau.
-    - Đối với các doanh nghiệp chưa sở hữu, nó hiển thị chi phí mua và cho phép người dùng bắt đầu mua.
-    - Đối với các doanh nghiệp đã sở hữu, nó hiển thị thu nhập ròng của doanh nghiệp và hiển thị hình đại diện của các thành viên gia đình/robot được giao. Nó cũng cho phép người dùng quản lý doanh nghiệp.
-- **Modal mua doanh nghiệp:** Một thành phần con (`BusinessPurchaseModal`) được sử dụng để xác nhận việc mua một doanh nghiệp mới, hiển thị chi phí và doanh thu cơ bản của nó.
-- **Modal lựa chọn quản lý doanh nghiệp:** Một thành phần con khác (`BusinessManageSelectionModal`) được sử dụng khi người dùng sở hữu nhiều doanh nghiệp cùng loại, cho phép họ chọn doanh nghiệp nào để quản lý.
-- **Điều khiển thu phóng:** Bao gồm một thanh trượt để điều khiển mức thu phóng của bản đồ.
-- Nó sử dụng `AgeAwareAvatarPreview` và `RobotAvatarIcon` để hiển thị các nhân viên được giao.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho một giao diện bản đồ trực quan và tương tác.
-
-## BusinessMapSVG.tsx
-Thành phần này là một thành phần trình bày đơn giản hiển thị hình ảnh nền cho bản đồ kinh doanh.
-- Nó sử dụng thành phần `Image` của `React Native` để hiển thị tài sản `business-map.webp`.
-- Nó được thiết kế để bao phủ vùng chứa cha của nó, cung cấp cơ sở trực quan cho bản đồ kinh doanh tương tác.
-- Kiểu dáng tối thiểu, tập trung vào định vị và kích thước hình ảnh.
-
-## CareerChoiceModal.tsx
-Thành phần này trình bày một modal cho phép nhân vật chọn con đường sự nghiệp.
-- Nó nhận các props `character` (nhân vật đưa ra lựa chọn), `options` (một mảng các khóa tùy chọn nghề nghiệp), `onSelect` (callback khi lựa chọn được thực hiện), `currentFunds` (cho chi phí đào tạo nghề) và `lang`.
-- Nó hiển thị tiêu đề và mô tả cho lựa chọn nghề nghiệp.
-- Nó lặp qua các `options` được cung cấp và hiển thị một `ChoiceButton` cho mỗi tùy chọn.
-- Đối với các tùy chọn `CAREER_LADDER`, nó hiển thị:
-    - Tên và mô tả của con đường sự nghiệp.
-    - Biểu tượng "⭐" nếu chuyên ngành của nhân vật khớp với chuyên ngành yêu cầu.
-    - Biểu tượng "⚠️" với chú giải công cụ nếu nhân vật không đủ tiêu chuẩn (thiếu IQ hoặc EQ).
-- Đối với các tùy chọn chung như 'job', 'internship' hoặc 'vocational', nó hiển thị tên và mô tả của chúng.
-- Đối với đào tạo 'vocational', nó hiển thị chi phí và cho biết liệu nhân vật có đủ khả năng chi trả hay không.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày rõ ràng và dễ đọc các lựa chọn.
-
-## CharacterDetailModal.tsx
-Thành phần này hiển thị một modal với thông tin chi tiết về một nhân vật cụ thể.
-- Nó nhận các props `character` (nhân vật cần hiển thị), `gameState`, `onClose`, `onCustomize` (callback để tùy chỉnh hình đại diện), `lang`, `manifest`, `images` và `clubs`.
-- Nó trình bày thông tin nhân vật trong hai tab: "Chi tiết" và "Sự kiện cuộc đời".
-- **Tab Chi tiết:**
-    - Hiển thị thông tin cơ bản như giai đoạn, trạng thái, tuổi, tình trạng mối quan hệ, học vấn và sự nghiệp.
-    - Hiển thị hình đại diện của nhân vật bằng cách sử dụng `AgeAwareAvatarPreview`.
-    - Hiển thị các sự kiện cuộc đời gần đây (3 sự kiện cuối cùng).
-    - Trực quan hóa các chỉ số nhân vật (IQ, Hạnh phúc, EQ, Sức khỏe, Kỹ năng) bằng các thanh tiến trình.
-    - Cung cấp nút "Tùy chỉnh" để mở trình tạo hình đại diện cho nhân vật (nếu không phải là hình đại diện tĩnh).
-- **Tab Sự kiện cuộc đời:**
-    - Liệt kê tất cả các sự kiện cuộc đời liên quan đến nhân vật bằng cách sử dụng thành phần `LogEntry`.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho một bố cục đáp ứng và có tổ chức.
-
-## CharacterNode.tsx
-Thành phần này đại diện cho một nhân vật duy nhất trong cây gia đình hoặc màn hình tương tự, hiển thị hình đại diện và thông tin cơ bản của họ.
-- Nó nhận các props `character` (dữ liệu nhân vật), `onClick` (callback khi nút được nhấn), `lang`, `manifest` và `images`.
-- Nó tự động tính toán kích thước của nó dựa trên chiều rộng màn hình để phù hợp với nhiều nút trên mỗi hàng.
-- Nó hiển thị hình đại diện của nhân vật bằng cách sử dụng `AgeAwareAvatarPreview`.
-- Nó hiển thị tên và tuổi của nhân vật (nếu còn sống).
-- **Hoạt ảnh thu nhập:** Nếu nhân vật có `monthlyNetIncome` khác 0 và còn sống, nó sẽ hiển thị thu nhập của họ và phát hoạt ảnh "tiền bay" một cách định kỳ.
-- Nó phân biệt nhân vật người chơi bằng màu viền khác.
-- Nó áp dụng kiểu đã chết (độ mờ) nếu nhân vật không còn sống.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để hiển thị đáp ứng và trực quan.
-
-## ChoiceButton.tsx
-Thành phần này cung cấp một nút có thể tùy chỉnh với hoạt ảnh nhấn, thường được sử dụng để đưa ra lựa chọn trong các modal hoặc menu.
-- Nó nhận các props `onClick` (callback khi nút được nhấn), `disabled` (boolean để vô hiệu hóa nút) và `children` (nội dung hiển thị bên trong nút).
-- Nó sử dụng `react-native-reanimated` để tạo hoạt ảnh nhấn tinh tế, trong đó nút di chuyển xuống và chiều rộng đường viền dưới của nó thay đổi khi được nhấn.
-- Nó xử lý các sự kiện `onPressIn` và `onPressOut` để kiểm soát trạng thái hoạt ảnh.
-- Nó hiển thị trạng thái bị vô hiệu hóa bằng cách giảm độ mờ và thay đổi màu nền.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để có giao diện nhất quán.
-
-## ClubChoiceModal.tsx
-Thành phần này trình bày một modal cho phép nhân vật chọn một câu lạc bộ để tham gia.
-- Nó nhận các props `character` (nhân vật đưa ra lựa chọn), `clubs` (một mảng các câu lạc bộ có sẵn), `onSelect` (callback khi một câu lạc bộ được chọn), `onSkip` (callback để bỏ qua lựa chọn câu lạc bộ) và `lang`.
-- Nó hiển thị tiêu đề và mô tả cho lựa chọn câu lạc bộ.
-- Nó lặp qua các `clubs` được cung cấp và hiển thị tên và mô tả của từng câu lạc bộ.
-- Mỗi câu lạc bộ có một nút "Tham gia câu lạc bộ".
-- Nó cũng cung cấp một nút "Bỏ qua" để bỏ qua lựa chọn câu lạc bộ.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho bố cục dạng lưới của các tùy chọn câu lạc bộ.
-
-## ComicPanelModal.tsx
-Thành phần này đóng vai trò là một trình bao bọc modal chung, được thiết kế để mang lại tính thẩm mỹ "bảng truyện tranh".
-- Nó nhận các props `visible` (boolean để kiểm soát khả năng hiển thị), `onClose` (callback khi modal được yêu cầu đóng), `children` (nội dung hiển thị bên trong modal), `rotate` (xoay CSS cho bảng) và `flexContent` (boolean để làm cho nội dung linh hoạt).
-- Nó sử dụng thành phần `Modal` của `React Native` để phủ nội dung.
-- Nó áp dụng một lớp phủ màu đen bán trong suốt cho nền.
-- Bảng modal chính có đường viền kiểu truyện tranh riêng biệt và một chút xoay.
-- Nó ngăn các nhấp chuột "xuyên qua" bảng modal đến nội dung bên dưới.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho giao diện bảng truyện tranh.
-
-## EventModal.tsx
-Thành phần này hiển thị một modal cho một sự kiện trò chơi, trình bày các lựa chọn và hiển thị kết quả.
-- Nó nhận các props `eventData` (chi tiết sự kiện), `character` (nhân vật liên quan), `onChoice` (callback khi lựa chọn được thực hiện), `onClose` (callback để đóng modal), `lang`, `images`, `manifest` và `onAvatarClick`.
-- Nó hiển thị tiêu đề sự kiện, nhân vật liên quan và mô tả sự kiện.
-- **Giai đoạn lựa chọn:**
-    - Trình bày danh sách các lựa chọn cho sự kiện.
-    - Mỗi nút lựa chọn hiển thị văn bản và các thay đổi quỹ tiềm năng.
-    - Nó cũng chỉ ra các sự kiện được kích hoạt tiềm năng và cơ hội của chúng.
-- **Giai đoạn kết quả:**
-    - Sau khi lựa chọn được thực hiện, nó chuyển sang hiển thị kết quả.
-    - Hiển thị thông báo mô tả kết quả.
-    - Trực quan hóa các thay đổi đối với quỹ gia đình và chỉ số nhân vật bằng cách sử dụng các thành phần `StatBar`.
-    - Nút "OK" (với hoạt ảnh nhấn tinh tế) đóng modal sau một khoảng thời gian trễ hoặc ngay lập tức nếu được nhấp.
-- Nó sử dụng `AgeAwareAvatarPreview` để hiển thị hình đại diện của nhân vật, có thể nhấp để xem chi tiết nhân vật.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày sự kiện rõ ràng và tương tác.
-
-## FamilyAssetsPanel.tsx
-Thành phần này hiển thị một bảng điều khiển để quản lý và mua tài sản gia đình (ví dụ: nhà ở, phương tiện, nghệ thuật).
-- Nó nhận các props `purchasedAssets` (một bản ghi các tài sản sở hữu), `familyFund` (tiền gia đình hiện tại), `onPurchaseAsset` (callback để mua tài sản) và `lang`.
-- Nó hiển thị tổng giá trị của tất cả các tài sản gia đình sở hữu.
-- Nó phân loại tài sản theo loại (ví dụ: "Nhà ở", "Phương tiện") và hiển thị chúng trong một lưới.
-- **Thành phần AssetSlot:** Một thành phần con đại diện cho một tài sản duy nhất.
-    - Hiển thị hình ảnh, tên và cấp độ của tài sản.
-    - Hiển thị trực quan nếu tài sản được sở hữu hoặc nếu nó có thể được mua.
-    - Khi nhấp vào, nó sẽ mở một `AssetDetailModal`.
-- **Thành phần AssetDetailModal:** Một thành phần con hiển thị thông tin chi tiết về một tài sản đã chọn.
-    - Hiển thị hình ảnh, tên, mô tả, chi phí, cấp độ và tác động của tài sản đối với các chỉ số nhân vật.
-    - Cung cấp nút "Mua" nếu tài sản không được sở hữu và có thể mua được, hoặc nhãn "Đã sở hữu" nếu đã mua.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để hiển thị tài sản có cấu trúc và trực quan.
-
-## FamilyTree.tsx
-Thành phần này trực quan hóa cây gia đình của các nhân vật, cho phép tương tác kéo và phóng to.
-- Nó nhận các props `gameState` (chứa các thành viên gia đình), `lang`, `manifest`, `images`, `onSelectCharacter` (callback khi một nút nhân vật được chọn) và `selectedCharacter`.
-- **Thuật toán bố cục cây:** Nó bao gồm một thuật toán phức tạp (`calculateSubtreeLayout`) để tự động tính toán `x`, `y` và `width` cho mỗi nút nhân vật để tạo thành một cấu trúc cây phân cấp. Thuật toán này xử lý các đối tác và con cái, đảm bảo khoảng cách và căn chỉnh phù hợp.
-- **Xử lý cử chỉ:** Sử dụng `react-native-gesture-handler` (`PanGestureHandler` và `PinchGestureHandler`) để enable panning and zooming of the family tree.
-- **Tương tác hoạt hình:** Tận dụng `react-native-reanimated` để tạo hoạt hình mượt mà trong quá trình kéo và phóng to.
-- **Nút nhân vật:** Hiển thị mỗi nhân vật dưới dạng thành phần `CharacterNode`, hiển thị hình đại diện và tên của họ.
-- **Kết nối:** Vẽ các đường (sử dụng các phần tử `Path` của `react-native-svg`) để kết nối các thành viên gia đình, đại diện cho quan hệ đối tác và quan hệ cha-con.
-- **Căn giữa:** Khi `selectedCharacter` thay đổi, nó sẽ tạo hoạt hình cây để căn giữa nhân vật đó.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho vùng chứa tổng thể và các phần tử cây.
-
-## GameLog.tsx
-Thành phần này hiển thị nhật ký thời gian của các sự kiện trò chơi và tác động của chúng.
-- Nó nhận các props `log` (một mảng các đối tượng `GameLogEntry`), `familyMembers` (để biết chi tiết nhân vật), `lang` và một `ListHeaderComponent` tùy chọn.
-- Nó sử dụng `FlatList` để hiển thị hiệu quả các mục nhật ký.
-- **Thành phần LogEntry:** Một thành phần con hiển thị một mục nhật ký trò chơi duy nhất.
-    - Hiển thị năm của sự kiện.
-    - Hiển thị nhân vật liên quan (nếu có), tiêu đề sự kiện và thông báo chi tiết.
-    - **Thành phần LogStatChanges:** Một thành phần con trong `LogEntry` trực quan hóa các thay đổi đối với quỹ gia đình và chỉ số nhân vật (IQ, Hạnh phúc, EQ, Sức khỏe, Kỹ năng) bằng cách sử dụng các biểu tượng và giá trị số (ví dụ: "+10", "-$500"). Các thay đổi tích cực có màu xanh lá cây, tiêu cực có màu đỏ.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để có định dạng nhật ký rõ ràng và dễ đọc.
-
-## GameUI.tsx
-Đây là thành phần UI chính của trò chơi, chịu trách nhiệm hiển thị giao diện trò chơi tổng thể, quản lý các chế độ xem/cảnh trò chơi khác nhau và điều phối các tương tác với các modal và logic trò chơi khác nhau.
-- Nó nhận nhiều props liên quan đến trạng thái trò chơi, tương tác người dùng và các callback cho các hành động trong trò chơi (ví dụ: `onStartGame`, `onEventChoice`, `onPurchaseAsset`).
-- **Quản lý chế độ xem:** Nó xử lý các chế độ xem trò chơi cấp cao nhất khác nhau:
-    - `menu`: Hiển thị `StartMenu` và `InstructionsModal`.
-    - `welcome_back`: Hiển thị `WelcomeBackMenu`.
-    - `gameover`: Hiển thị `SummaryScreen`.
-    - `playing`: Đây là chế độ xem trò chơi chính, quản lý thêm `activeScene`.
-- **Quản lý cảnh (`activeScene`):** Nó sử dụng một thành phần `BottomNav` để chuyển đổi giữa các cảnh chính:
-    - `tree`: Hiển thị thành phần `FamilyTree`.
-    - `log`: Hiển thị thành phần `GameLog`.
-    - `assets`: Hiển thị thành phần `FamilyAssetsPanel`.
-    - `business`: Hiển thị thành phần `BusinessMap`.
-- **Modals và tương tác:** Nó hiển thị có điều kiện các modal khác nhau dựa trên các hành động đang chờ xử lý của `gameState`:
-    - `EventModal`: Dành cho các sự kiện trong trò chơi.
-    - `SchoolChoiceModal`: Để chọn trường học.
-    - `ClubChoiceModal`: Để chọn câu lạc bộ.
-    - `UniversityChoiceModal`: Để quyết định đi học đại học.
-    - `UniversityMajorChoiceModal`: Để chọn chuyên ngành đại học.
-    - `CareerChoiceModal`: Để chọn nghề nghiệp.
-    - `UnderqualifiedChoiceModal`: Để xử lý các lựa chọn nghề nghiệp không đủ tiêu chuẩn.
-    - `LoanModal`: Để vay tiền.
-    - `PromotionModal`: Dành cho thăng chức.
-    - `BusinessManagementModal`: Để quản lý các doanh nghiệp riêng lẻ.
-    - `CharacterDetailModal`: Để hiển thị thông tin chi tiết về nhân vật.
-- **UI tiêu đề:** Hiển thị thông tin trò chơi cốt lõi ở trên cùng:
-    - Tiêu đề trò chơi và ngày hiện tại.
-    - Quỹ gia đình và thay đổi ròng hàng tháng.
-    - Lựa chọn ngôn ngữ (tiếng Anh/tiếng Việt).
-    - Các nút Thoát, Tạm dừng/Tiếp tục.
-    - Điều khiển tốc độ trò chơi (chậm, bình thường, nhanh, rất nhanh).
-- Nó truyền các props và callback liên quan cho các thành phần con của nó.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho bố cục tổng thể và các phần tử UI riêng lẻ.
-
-## ImageAssets.ts
-Tệp này đóng vai trò là kho lưu trữ trung tâm để nhập và ánh xạ các tài sản hình ảnh khác nhau được sử dụng trong toàn bộ ứng dụng.
-- Nó xuất hai đối tượng chính:
-    - `imageAssets`: Một `Record` (từ điển) ánh xạ các đường dẫn chuỗi (tương đối với thư mục `public/asset`) đến các lệnh gọi `require()` tương ứng của chúng. Điều này cho phép các thành phần khác dễ dàng tham chiếu hình ảnh bằng đường dẫn của chúng mà không cần sử dụng `require()` trực tiếp. Điều này bao gồm các phần hình đại diện (nền, tóc, mắt, lông mày, miệng, râu, đặc điểm) và các hình ảnh tài sản khác nhau (nhà ở, phương tiện, điện tử, nghệ thuật, đồ trang sức, đồ nội thất, thư viện, phòng tập thể dục, âm nhạc, kỳ nghỉ).
-    - `staticAvatars`: Một `Record` ánh xạ các ID số đến các lệnh gọi `require()` cho các hình ảnh hình đại diện tĩnh cụ thể (ví dụ: Mila, Max, Alice). Những hình ảnh này có thể được sử dụng cho các nhân vật được xác định trước không sử dụng trình tạo hình đại diện động.
-- Việc sử dụng `require()` cho thấy rằng các hình ảnh này được đóng gói cùng với ứng dụng, phổ biến trong React Native đối với các tài sản cục bộ.
-
-## InstructionsModal.tsx
-Thành phần này hiển thị một modal chứa hướng dẫn và quy tắc trò chơi.
-- Nó nhận các props `onClose` (callback để đóng modal) và `lang`.
-- Nó trình bày các phần hướng dẫn khác nhau, bao gồm:
-    - Mục tiêu
-    - Cách chơi
-    - Sự kiện
-    - Chỉ số
-    - Giai đoạn
-    - Tài chính
-- Mỗi phần có tiêu đề in đậm và đoạn mô tả, tất cả đều được bản địa hóa bằng hàm `t`.
-- Nó bao gồm một nút đóng (sử dụng `CloseIcon`) để đóng modal.
-- Nó sử dụng `ComicPanelModal` làm cơ sở, mang lại cho nó giao diện kiểu truyện tranh.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày hướng dẫn rõ ràng và dễ đọc.
-
-## LoanModal.tsx
-Thành phần này hiển thị một modal cho phép người chơi vay tiền.
-- Nó nhận các props `onLoanChoice` (callback khi số tiền và kỳ hạn vay được chọn) và `lang`.
-- Nó trình bày tiêu đề và mô tả cho các tùy chọn vay.
-- Nó cho phép người dùng chọn số tiền vay từ một danh sách được xác định trước (ví dụ: 1.000 đô la, 10.000 đô la) và kỳ hạn vay (ví dụ: 2, 5, 7, 10 năm).
-- Số tiền và kỳ hạn đã chọn được làm nổi bật trực quan.
-- Nút "Chấp nhận khoản vay" kích hoạt callback `onLoanChoice` với số tiền và kỳ hạn đã chọn.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho lưới lựa chọn rõ ràng và tương tác.
-
-## ModalBase.tsx
-Thành phần này cung cấp cấu trúc modal cơ bản với tiêu đề, mô tả và khu vực nội dung, thường được sử dụng làm cơ sở cho các modal cụ thể khác.
-- Nó nhận các props `titleKey` (để bản địa hóa), `characterName` (tùy chọn, để hiển thị tên nhân vật), `descriptionKey` (để bản địa hóa), `descriptionReplacements` (tùy chọn, cho văn bản động trong mô tả), `children` (nội dung chính của modal) và `lang`.
-- Nó tạo một lớp phủ toàn màn hình với nền bán trong suốt và hiệu ứng làm mờ (sử dụng `@react-native-community/blur`).
-- Bảng modal tự nó có nền trắng, đệm và chiều rộng tối đa.
-- Nó hiển thị tiêu đề được bản địa hóa, tên nhân vật tùy chọn và mô tả được bản địa hóa.
-- Prop `children` cho phép nội dung linh hoạt được hiển thị trong khu vực chính của modal.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho lớp phủ, bảng điều khiển và các phần tử văn bản.
-
-## PromotionModal.tsx
-Thành phần này hiển thị một modal thông báo cho người chơi về việc thăng chức của nhân vật.
-- Nó nhận các props `characterName` (tên nhân vật được thăng chức), `newTitle` (chức danh mới), `onAccept` (callback khi thăng chức được chấp nhận) và `lang`.
-- Nó hiển thị tiêu đề và thông báo mô tả về việc thăng chức, bao gồm tên nhân vật và chức danh mới.
-- Nút "Chấp nhận thăng chức" kích hoạt callback `onAccept`.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày rõ ràng và súc tích.
-
-## SchoolChoiceModal.tsx
-Thành phần này hiển thị một modal cho phép nhân vật chọn một trường học để theo học.
-- Nó nhận các props `character` (nhân vật đưa ra lựa chọn), `schoolOptions` (một mảng các tùy chọn trường học có sẵn), `onSelect` (callback khi một trường học được chọn), `currentFunds` (cho chi phí trường học) và `lang`.
-- Nó hiển thị tiêu đề và mô tả cho lựa chọn trường học.
-- Nó lặp qua các `schoolOptions` được cung cấp và hiển thị một `ChoiceButton` cho mỗi tùy chọn.
-- Mỗi `ChoiceButton` hiển thị:
-    - Tên trường học.
-    - Chi phí của nó, cho biết liệu nhân vật có đủ khả năng chi trả hay không.
-    - Các tác động đến chỉ số nhân vật (ví dụ: "+IQ", "+Hạnh phúc").
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày rõ ràng và dễ đọc các lựa chọn.
-
-## StartMenu.tsx
-Thành phần này hiển thị menu bắt đầu chính của trò chơi, cho phép người dùng chọn một kịch bản để bắt đầu chơi hoặc xem hướng dẫn.
-- Nó nhận các props `onStart` (callback để bắt đầu trò chơi với một kịch bản đã chọn), `onShowInstructions` (callback để hiển thị hướng dẫn) và `lang`.
-- Nó hiển thị tiêu đề và phụ đề trò chơi.
-- Nó liệt kê các kịch bản trò chơi có sẵn (từ `SCENARIOS`), mỗi kịch bản có tên và mô tả.
-- Mỗi kịch bản là một `TouchableOpacity` kích hoạt callback `onStart` khi được nhấn.
-- Nó bao gồm một nút "Cách chơi" kích hoạt callback `onShowInstructions`.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho một menu rõ ràng và hấp dẫn.
-
-## StatBar.tsx
-Thành phần này hiển thị thanh tiến trình trực quan cho một chỉ số của nhân vật, thường đi kèm với biểu tượng và giá trị số.
-- Nó nhận các props `label` (tên chỉ số), `value` (giá trị chỉ số hiện tại), `max` (giá trị chỉ số tối đa có thể), `Icon` (thành phần React tùy chọn cho biểu tượng của chỉ số) và `color` (màu tùy chọn cho thanh).
-- Nó sử dụng `Animated` từ `react-native` để làm mượt hoạt ảnh chiều rộng của thanh khi prop `value` thay đổi.
-- Nó hiển thị nhãn của chỉ số, biểu tượng tùy chọn, thanh tiến trình hoạt hình và giá trị số được làm tròn của chỉ số.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày rõ ràng và đầy đủ thông tin.
-
-## SummaryScreen.tsx
-Thành phần này hiển thị tóm tắt kết quả trò chơi (thắng hoặc thua) và các số liệu thống kê chính.
-- Nó nhận các props `gameState` (trạng thái trò chơi cuối cùng) và `onRestart` (callback để khởi động lại trò chơi) và `lang`.
-- Nó xác định xem trò chơi kết thúc bằng chiến thắng hay thua cuộc (bao gồm các lý do cụ thể như nợ nần).
-- Nó hiển thị tiêu đề được bản địa hóa và thông báo mô tả dựa trên kết quả trò chơi.
-- Nó trình bày một danh sách các số liệu thống kê trò chơi chính:
-    - Tổng số thế hệ
-    - Tổng số thành viên gia đình
-    - Thành viên còn sống
-    - Thành viên đã qua đời
-    - Trình độ học vấn cao nhất đạt được
-    - Nghề nghiệp cao nhất đạt được
-    - Quỹ gia đình cuối cùng
-    - Tổng giá trị tài sản
-    - Năm kết thúc
-- Nút "Play Again" kích hoạt callback `onRestart`.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để có một bản tóm tắt rõ ràng và đầy đủ thông tin.
-
-## UnderqualifiedChoiceModal.tsx
-Thành phần này hiển thị một modal xuất hiện khi một nhân vật cố gắng theo đuổi một nghề nghiệp mà họ không đủ tiêu chuẩn. Nó cung cấp hai lựa chọn cho người chơi.
-- Nó nhận các props `character` (nhân vật đang cố gắng theo đuổi nghề nghiệp), `careerTrackKey` (nghề nghiệp họ đang cố gắng tham gia), `onSelect` (callback khi lựa chọn được thực hiện) và `lang`.
-- Nó hiển thị tiêu đề và mô tả giải thích rằng nhân vật không đủ tiêu chuẩn cho nghề nghiệp đã chọn.
-- Nó trình bày hai tùy chọn `ChoiceButton`:
-    - **Tùy chọn thực tập sinh:** Cho phép nhân vật tham gia nghề nghiệp với tư cách là thực tập sinh, với mô tả về các hàm ý.
-    - **Tùy chọn bị phạt:** Cho phép nhân vật tham gia nghề nghiệp nhưng bị phạt, cũng với mô tả về các hàm ý.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày rõ ràng và súc tích các lựa chọn.
-
-## UniversityChoiceModal.tsx
-Thành phần này hiển thị một modal hỏi người chơi liệu một nhân vật có nên đi học đại học hay không.
-- Nó nhận các props `character` (nhân vật đưa ra quyết định), `onSelect` (callback khi lựa chọn được thực hiện) và `lang`.
-- Nó hiển thị tiêu đề và thông báo mô tả về lựa chọn đại học.
-- Nó trình bày hai nút: "Có" (để đi học đại học) và "Không" (để không đi).
-- Mỗi nút kích hoạt callback `onSelect` với một boolean cho biết lựa chọn.
-- Nó sử dụng `ComicPanelModal` làm cơ sở.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày rõ ràng và đơn giản.
-
-## UniversityMajorChoiceModal.tsx
-Thành phần này hiển thị một modal cho phép nhân vật chọn một chuyên ngành đại học.
-- Nó nhận các props `character` (nhân vật chọn chuyên ngành), `majors` (một mảng các chuyên ngành có sẵn), `onSelect` (callback khi một chuyên ngành được chọn), `currentFunds` (cho chi phí chuyên ngành), `lang`, và `onAbandon` (callback để từ bỏ đại học nếu không đủ tiền học phí) làm props.
-- Nó sử dụng `ModalBase` làm cơ sở, cung cấp tiêu đề và mô tả.
-- Nó lặp qua các `majors` được cung cấp và hiển thị một `ChoiceButton` cho mỗi chuyên ngành.
-- Mỗi `ChoiceButton` hiển thị:
-    - Tên chuyên ngành.
-    - Chi phí của nó, cho biết liệu nhân vật có đủ khả năng chi trả hay không.
-    - Mô tả chuyên ngành.
-- Nếu tất cả các chuyên ngành đều không đủ khả năng chi trả, nó sẽ hiển thị một thông báo và nút "Từ bỏ đại học".
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` để trình bày rõ ràng và dễ đọc các lựa chọn.
-
-## WelcomeBackMenu.tsx
-Thành phần này hiển thị một menu xuất hiện khi người dùng quay lại trò chơi, cung cấp các tùy chọn để tiếp tục trò chơi đã lưu hoặc bắt đầu trò chơi mới.
-- Nó nhận các props `onContinue` (callback để tiếp tục trò chơi) và `onStartNew` (callback để bắt đầu trò chơi mới) và `lang`.
-- Nó hiển thị tiêu đề "Welcome Back!" và một phụ đề.
-- Nó trình bày hai nút nổi bật:
-    - "Continue Game" (nút màu xanh lá cây)
-    - "Start New Game" (nút màu xám)
-- Mỗi nút kích hoạt callback tương ứng khi được nhấn.
-- Kiểu dáng được xử lý thông qua `StyleSheet.create` cho một menu rõ ràng và hấp dẫn.
-
-## icons.tsx
-Tệp này định nghĩa một bộ sưu tập các biểu tượng SVG có thể tái sử dụng cho các mục đích khác nhau trong giao diện người dùng trò chơi.
-- Nó sử dụng `react-native-svg` để hiển thị các đường dẫn SVG dưới dạng các thành phần React.
-- Mỗi thành phần biểu tượng (`IqIcon`, `HappinessIcon`, `EqIcon`, `HealthIcon`, `SkillIcon`, `MoneyIcon`, `MaleIcon`, `FemaleIcon`, `DogIcon`, `CatIcon`, `ParrotIcon`, `HorseIcon`, `FishIcon`, `RobotIcon`, `RobotAvatarIcon`, `UpgradeIcon`, `LockClosedIcon`, `CloseIcon`) là một thành phần chức năng chấp nhận các props `style`, `color`, `width`, và `height` để tùy chỉnh.
-- Nó cũng xuất một hàm `getPetIcon` trả về thành phần biểu tượng thú cưng thích hợp dựa trên một `PetType` enum.
-- Các biểu tượng được sử dụng chủ yếu để trực quan hóa các chỉ số nhân vật, giới tính, thú cưng, tiền tệ và các hành động UI (ví dụ: đóng, nâng cấp, khóa).
+1. File: AgeAwareAvatarPreview.tsx
+Overall Purpose (UI/UX):
+Component này chịu trách nhiệm hiển thị bản xem trước avatar động, theo lớp. Chức năng UI/UX cốt lõi của nó là cung cấp phản hồi hình ảnh theo thời gian thực về diện mạo của avatar, thích ứng với độ tuổi của nhân vật và các tùy chọn tùy chỉnh đã chọn. Nó cũng xử lý các avatar tĩnh cho các nhân vật cụ thể.
+Key UI/UX Elements and their Functions/Actions:
+AgeAwareAvatarPreview Component: Nhận manifest, images, character (bao gồm tuổi và avatarState), và size để hiển thị.
+Responsive Sizing: Sử dụng Dimensions để tính toán kích thước linh hoạt, đảm bảo avatar hiển thị cân đối trên các kích thước màn hình khác nhau.
+Age Staging (ageStageFromAge): Phân loại tuổi nhân vật thành các giai đoạn (baby, child, teen, adult, elder) để chọn tài sản hình ảnh phù hợp.
+Variant Source Handling (getVariantSrc): Tự động chọn phiên bản hình ảnh avatar phù hợp với độ tuổi (ví dụ: tóc của trẻ em, người lớn), với cơ chế dự phòng nếu không tìm thấy phiên bản cụ thể.
+Placeholder Generation (makePlaceholderSVG): Tạo hình ảnh SVG giữ chỗ với màu sắc và nhãn nếu tài sản hình ảnh bị thiếu, ngăn chặn giao diện bị lỗi và cung cấp thông tin hữu ích.
+Static Avatar Handling: Nếu nhân vật có staticAvatarUrl, hiển thị hình ảnh đó thay vì xây dựng avatar theo lớp, cho phép các nhân vật đặc biệt.
+Layered Rendering: Sắp xếp và hiển thị các lớp avatar theo zIndex để đảm bảo các phần tử chồng lên nhau đúng cách (ví dụ: tóc trên đầu).
+Styling: Sử dụng StyleSheet để định nghĩa các kiểu dáng như borderRadius, shadow, backgroundColor cho container và position: 'absolute' cho các lớp hình ảnh để chồng lên nhau.
+Summary of UI/UX Strengths:
+Phản hồi hình ảnh động: Xem trước avatar theo lớp, thời gian thực là điểm mạnh cốt lõi.
+Hình ảnh thích ứng với độ tuổi: Khả năng hiển thị các biến thể hình ảnh khác nhau dựa trên độ tuổi của nhân vật giúp tăng tính chân thực và nhập vai.
+Mạnh mẽ với Placeholder: Xử lý tốt các tài sản hình ảnh bị thiếu bằng cách hiển thị placeholder có thông tin.
+Bố cục theo lớp: Đảm bảo các lớp hình ảnh được xếp chồng đúng cách, tạo ra một avatar trực quan mạch lạc.
+Linh hoạt cho các trường hợp đặc biệt: Hỗ trợ avatar tĩnh cho các nhân vật độc đáo.
+Thẩm mỹ hiện đại: Kiểu dáng với góc bo tròn, đổ bóng và màu nền tạo nên vẻ ngoài bóng bẩy.
+Potential UI/UX Improvements/Considerations:
+Trạng thái tải: Hiển thị chỉ báo tải tinh tế cho hình ảnh tải chậm.
+Khả năng tiếp cận: Đảm bảo thuộc tính alt hoặc accessibilityLabel phù hợp cho người dùng khiếm thị.
+Tối ưu hóa hiệu suất: Xem xét tối ưu hóa tải hình ảnh hoặc bộ nhớ đệm cho các avatar phức tạp.
+2. File: AvatarBuilder.tsx
+Overall Purpose (UI/UX):
+Component này là trung tâm để tùy chỉnh avatar. Mục tiêu UI/UX chính của nó là cung cấp một giao diện trực quan và hấp dẫn, nơi người dùng có thể cá nhân hóa diện mạo nhân vật của mình thông qua các lớp, màu sắc và tính năng ngẫu nhiên hóa, với phản hồi hình ảnh tức thì.
+Key UI/UX Elements and their Functions/Actions:
+AvatarBuilder Component: Nhận manifest, character, images, onSave, onClose.
+Helper Functions: mulberry32, pickRandom cho tính năng ngẫu nhiên hóa; ageCategoryFromAge, getAgeAppropriateOptions để lọc tùy chọn theo tuổi/giới tính; makePlaceholderComponent cho hình ảnh giữ chỗ.
+State Management: seed (cho ngẫu nhiên hóa), state (trạng thái avatar hiện tại), optionsContainerWidth, optionSize (cho bố cục đáp ứng), selectedLayerKey (cho điều hướng lớp). useEffect tự động điều chỉnh avatar khi giới tính/tuổi thay đổi.
+Core Interaction Functions: setLayer, setColorForLayer để cập nhật lựa chọn; randomize để tạo avatar ngẫu nhiên.
+Rendering Layer Options (renderLayerOptions): Hiển thị các tùy chọn cho một lớp avatar đã chọn, bao gồm tiêu đề, nút "None", lưới tùy chọn (với phản hồi trực quan cho lựa chọn) và bộ chọn màu.
+Rendering Right Column Content (renderContentForRightColumn): Điều khiển nội dung của bảng bên phải, chuyển đổi giữa danh sách các lớp avatar và các tùy chọn chi tiết cho lớp đã chọn.
+Main Layout: Sử dụng overlay để tập trung sự chú ý, comicPanel làm container chính, mainTitle rõ ràng, mainContentGrid chia thành hai cột (xem trước và tùy chọn), và footerButtonsContainer cho các nút "Cancel" và "Save".
+Styling: Sử dụng StyleSheet với các kiểu dáng nhất quán (chunkyButton, optionButton, colorSwatch) và mã màu để hướng dẫn người dùng.
+Summary of UI/UX Strengths:
+Phản hồi hình ảnh thời gian thực: AgeAwareAvatarPreview cập nhật tức thì, tạo trải nghiệm tùy chỉnh tương tác cao.
+Điều hướng trực quan: Phân cấp hai cấp rõ ràng cho việc chọn lớp và tùy chọn, với nút "Back" rõ ràng.
+Logic tùy chỉnh thông minh: Lọc tùy chọn theo tuổi và giới tính, cùng với các điều chỉnh tự động, đảm bảo avatar nhất quán và hợp lý.
+Ngẫu nhiên hóa hấp dẫn: Tính năng "Randomize" cho phép khám phá nhanh, trong khi "Seed" cung cấp khả năng kiểm soát.
+Bố cục đáp ứng: Tính toán optionSize động giúp bố cục thích ứng tốt với các kích thước màn hình khác nhau.
+Mạnh mẽ: Các thành phần giữ chỗ ngăn chặn lỗi hiển thị khi thiếu tài sản.
+Kêu gọi hành động rõ ràng: Các nút "Save", "Cancel", "Randomize" được tạo kiểu rõ ràng.
+Potential UI/UX Improvements/Considerations:
+Hiệu suất cho nhiều tùy chọn: Xem xét ảo hóa cho ScrollView nếu có quá nhiều tùy chọn.
+Tìm kiếm/Lọc: Thêm chức năng tìm kiếm hoặc lọc nếu có nhiều tùy chọn trong một lớp.
+Hoàn tác/Làm lại: Cung cấp chức năng hoàn tác/làm lại cho các tùy chỉnh phức tạp.
+3. File: BusinessManagementModal.tsx
+Overall Purpose (UI/UX):
+Component này cung cấp giao diện modal để quản lý một doanh nghiệp duy nhất trong trò chơi. Mục tiêu UI/UX chính của nó là cho phép người chơi chỉ định thành viên gia đình (hoặc robot) vào các vị trí kinh doanh khác nhau, xem chi tiết doanh nghiệp và nâng cấp doanh nghiệp, tất cả trong một cửa sổ bật lên rõ ràng và tương tác.
+Key UI/UX Elements and their Functions/Actions:
+BusinessManagementModal Component: Nhận lang, business, gameState, onAssignToBusiness, onUpgradeBusiness, onClose, images, manifest.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal với chủ đề bảng truyện tranh nhất quán.
+Header Section: Hiển thị tên và cấp độ doanh nghiệp, cùng với nút đóng rõ ràng.
+Slots Management Section:
+ScrollView: Đảm bảo tất cả các vị trí kinh doanh đều có thể cuộn được.
+slotItem: Hiển thị chi tiết từng vị trí:
+AgeAwareAvatarPreview / RobotAvatarIcon / emptyAvatar: Hiển thị hình ảnh đại diện cho người/robot được chỉ định hoặc vị trí trống.
+slotDetails: Hiển thị vai trò, yêu cầu và lương.
+Picker: Cho phép người chơi chọn nhân vật/robot để chỉ định. Các tùy chọn bao gồm "unassigned", "robot" (với chi phí), và các thành viên gia đình có sẵn (với biểu tượng ⭐ nếu phù hợp chuyên ngành).
+Footer Section: Chứa nút "Upgrade" (nâng cấp) với chi phí và trạng thái bị vô hiệu hóa nếu không đủ điều kiện.
+Styling: Sử dụng StyleSheet với các kiểu dáng nhất quán, mã màu cho thông tin tài chính (lương, chi phí nâng cấp) và trạng thái (vô hiệu hóa).
+Summary of UI/UX Strengths:
+Phân cấp thông tin rõ ràng: Tên, cấp độ, vị trí và tùy chọn nâng cấp được nhóm logic.
+Nhận dạng nhân vật trực quan: Avatar và biểu tượng robot giúp nhận diện nhanh chóng.
+Hướng dẫn ra quyết định: Biểu tượng ⭐ và hiển thị kỹ năng giúp người chơi đưa ra lựa chọn chỉ định tối ưu.
+Minh bạch tài chính: Lương và chi phí nâng cấp được hiển thị rõ ràng.
+Tương tác trực quan: Picker và nút nâng cấp rõ ràng giúp tương tác dễ dàng.
+Thiết kế đáp ứng: ScrollView đảm bảo nội dung có thể truy cập.
+Potential UI/UX Improvements/Considerations:
+Kiểu dáng Picker: Nếu cần kiểu dáng tùy chỉnh hơn, có thể cần một thành phần Picker của bên thứ ba.
+Kéo và thả: Giao diện kéo và thả để chỉ định nhân vật có thể tăng tính tương tác.
+Hiệu suất nhân viên: Hiển thị chỉ số hiệu suất trực tiếp hơn cho nhân viên.
+4. File: BusinessMap.tsx
+Overall Purpose (UI/UX):
+Component BusinessMap đóng vai trò là giao diện trực quan để người chơi tương tác với các doanh nghiệp trong thế giới trò chơi. Mục tiêu UI/UX chính của nó là cho phép người chơi khám phá bản đồ, xác định các vị trí kinh doanh tiềm năng, mua doanh nghiệp mới và quản lý các doanh nghiệp hiện có, tất cả trong một môi trường tương tác và hấp dẫn về mặt hình ảnh. Nó tích hợp các chức năng kéo và thu phóng để điều hướng bản đồ.
+Key UI/UX Elements and their Functions/Actions:
+BusinessMap Component: Nhận gameState, onBuyBusiness, onManageBusiness, lang, images, manifest, mainView, onBackToTree.
+Map Interaction (Pan and Pinch Gestures): Sử dụng react-native-gesture-handler và react-native-reanimated để tạo hiệu ứng kéo và thu phóng bản đồ mượt mà, với các giá trị scale, translateX, translateY được chia sẻ.
+BusinessMapSVG (Sub-component): Hiển thị hình ảnh nền tĩnh của bản đồ kinh doanh.
+Business Hotspots: Các khu vực tương tác trên bản đồ đại diện cho các vị trí kinh doanh.
+businessHotspotAvailable / businessHotspotOwned: Phân biệt trực quan giữa các doanh nghiệp có sẵn (viền hổ phách) và đã sở hữu (viền xanh lá cây).
+Nội dung Hotspot: Hiển thị tên doanh nghiệp, chi phí (nếu có sẵn), thu nhập ròng (xanh lá cây cho dương, đỏ cho âm) và avatar của nhân viên được chỉ định (nếu đã sở hữu).
+Logic khi nhấn: Mở BusinessPurchaseModal (để mua) hoặc BusinessManagementModal / BusinessManageSelectionModal (để quản lý).
+Header Section: Hiển thị tiêu đề "Purchase Business" và nút "Back" để điều hướng.
+BusinessPurchaseModal (Sub-component): Xuất hiện khi nhấn vào một hotspot doanh nghiệp có sẵn, yêu cầu xác nhận mua. Hiển thị chi phí và doanh thu cơ bản, vô hiệu hóa nút mua nếu không đủ tiền.
+BusinessManageSelectionModal (Sub-component): Xuất hiện khi nhấn vào một hotspot doanh nghiệp đã sở hữu và có nhiều doanh nghiệp cùng loại, cho phép chọn doanh nghiệp cụ thể để quản lý.
+Styling: Sử dụng StyleSheet với mã màu nhất quán cho trạng thái doanh nghiệp và thu nhập, đổ bóng và góc bo tròn.
+Summary of UI/UX Strengths:
+Bản đồ tương tác cao: Cử chỉ kéo và thu phóng mang lại trải nghiệm khám phá hấp dẫn.
+Dấu hiệu trực quan rõ ràng: Màu sắc hotspot và nội dung truyền tải nhanh chóng trạng thái và chi tiết doanh nghiệp.
+Thông tin theo ngữ cảnh: Các chỉ số kinh doanh chính được hiển thị trực tiếp trên bản đồ.
+Luồng mua/quản lý hợp lý: Các modal hướng dẫn người dùng mua hoặc quản lý doanh nghiệp.
+Thiết kế đáp ứng: Các cử chỉ động và kích thước hotspot động góp phần tạo nên trải nghiệm mượt mà.
+Potential UI/UX Improvements/Considerations:
+Hiệu suất cho bản đồ phức tạp: Có thể cần tối ưu hóa kết xuất SVG hoặc phân mảnh hình ảnh cho bản đồ rất lớn.
+Bản đồ nhỏ/Tổng quan: Đối với bản đồ rất lớn, một bản đồ tổng quan nhỏ có thể cải thiện điều hướng.
+Lọc/Sắp xếp Hotspot: Thêm tùy chọn lọc hoặc sắp xếp nếu có nhiều loại hình kinh doanh.
+5. File: BusinessMapSVG.tsx
+Overall Purpose (UI/UX):
+Component BusinessMapSVG là một component đơn giản, có mục đích duy nhất: hiển thị hình ảnh nền tĩnh của bản đồ kinh doanh. Vai trò UI/UX của nó là nền tảng, cung cấp ngữ cảnh trực quan mà trên đó các yếu tố tương tác được phủ lên.
+Key UI/UX Elements and their Functions/Actions:
+BusinessMapSVG Component:
+Image component: Hiển thị hình ảnh bản đồ từ ../public/asset/business-map.webp.
+style: Đảm bảo hình ảnh bao phủ toàn bộ container của nó.
+accessibilityLabel: Cung cấp nhãn khả năng tiếp cận cho trình đọc màn hình.
+Summary of UI/UX Strengths:
+Đơn giản và hiệu quả: Một component đơn giản, dễ hiểu và bảo trì.
+Nền tảng trực quan: Cung cấp ngữ cảnh trực quan cần thiết cho bản đồ kinh doanh tương tác.
+Khả năng tiếp cận: Bao gồm accessibilityLabel là một thực hành tốt.
+Hiệu suất (Định dạng hình ảnh): Sử dụng .webp cho hình ảnh là một lựa chọn tốt để tối ưu hóa thời gian tải.
+Potential UI/UX Improvements/Considerations:
+Chỉ báo tải: Hiển thị chỉ báo tải tạm thời cho hình ảnh bản đồ lớn.
+Xử lý lỗi: Xử lý các trường hợp hình ảnh không tải được (ví dụ: hiển thị màu dự phòng).
+6. File: CareerChoiceModal.tsx
+Overall Purpose (UI/UX):
+Component CareerChoiceModal trình bày cho người chơi các tùy chọn nghề nghiệp khác nhau cho một nhân vật. Mục tiêu UI/UX chính của nó là hiển thị rõ ràng các con đường sự nghiệp có sẵn, làm nổi bật sự phù hợp của chúng với nhân vật, chỉ ra chi phí và cho phép người chơi đưa ra lựa chọn sáng suốt, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+CareerChoiceModal Component: Nhận character, options, onSelect, currentFunds, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán.
+Header Section: Tiêu đề và mô tả rõ ràng về lựa chọn nghề nghiệp.
+Career Options (Mapped ChoiceButton components):
+ChoiceButton: Nút có thể tái sử dụng cho các lựa chọn.
+Tùy chọn Career Ladder: Hiển thị tên nghề nghiệp, biểu tượng ⭐ nếu phù hợp chuyên ngành, biểu tượng ⚠️ nếu không đủ tiêu chuẩn (với accessibilityLabel chi tiết).
+Tùy chọn chung: Hiển thị tên tùy chọn (ví dụ: "Job", "Internship", "Vocational"), chi phí (nếu có) và trạng thái chi phí (có thể chi trả/không thể chi trả).
+Styling: Sử dụng StyleSheet với mã màu cho trạng thái chi phí và các biểu tượng.
+Summary of UI/UX Strengths:
+Trình bày lựa chọn rõ ràng: Mỗi tùy chọn nghề nghiệp được trình bày rõ ràng.
+Phản hồi theo ngữ cảnh: Các biểu tượng và văn bản cung cấp phản hồi tức thì về sự phù hợp và tác động tài chính.
+Khả năng tiếp cận: accessibilityLabel với tooltip chi tiết là một thực hành tốt.
+Hướng dẫn ra quyết định: Các dấu hiệu trực quan giúp người chơi xác định lựa chọn tối ưu và thách thức tiềm ẩn.
+Thiết kế nhất quán: Tích hợp với ComicPanelModal.
+UX phòng ngừa: Vô hiệu hóa các nút cho các tùy chọn không thể chi trả.
+Potential UI/UX Improvements/Considerations:
+Tooltip chi tiết hơn: Tooltip trực quan khi di chuột/nhấn giữ cho các biểu tượng cảnh báo/ngôi sao.
+Xem trước tác động: Hiển thị lợi ích tiềm năng hoặc thay đổi chỉ số nhân vật trước khi xác nhận.
+Sắp xếp/Lọc: Thêm tùy chọn sắp xếp hoặc lọc nếu danh sách nghề nghiệp quá dài.
+7. File: CharacterDetailModal.tsx
+Overall Purpose (UI/UX):
+Component CharacterDetailModal cung cấp một cái nhìn toàn diện về chi tiết nhân vật cụ thể trong trò chơi. Mục tiêu UI/UX chính của nó là trình bày thông tin chính về trạng thái, chỉ số, sự kiện cuộc đời của nhân vật và cho phép tùy chỉnh avatar, tất cả trong một giao diện modal có tổ chức và dễ điều hướng.
+Key UI/UX Elements and their Functions/Actions:
+CharacterDetailModal Component: Nhận character, gameState, onClose, onCustomize, lang, manifest, images, clubs.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán.
+Header Section: Hiển thị tên nhân vật và nút đóng.
+Tab Navigation: Cho phép chuyển đổi giữa các tab "Chi tiết" và "Sự kiện cuộc đời", với tab đang hoạt động được làm nổi bật.
+Content Container (ScrollView): Đảm bảo nội dung có thể cuộn được.
+Details Tab (renderDetailTab()):
+Avatar và thông tin cơ bản: Hiển thị avatar và trạng thái chính của nhân vật (giai đoạn, trạng thái, tuổi, tình trạng mối quan hệ).
+Học vấn và sự nghiệp: Hiển thị học vấn và con đường sự nghiệp.
+Sự kiện cuộc đời gần đây: Hiển thị 3 sự kiện gần đây nhất.
+Container chỉ số: Hiển thị các chỉ số (IQ, Hạnh phúc, EQ, Sức khỏe, Kỹ năng) với biểu tượng, nhãn, thanh tiến trình và giá trị số. Thanh tiến trình có màu sắc khác nhau cho từng chỉ số.
+Nút "Customize": Cho phép mở trình tạo avatar, chỉ hiển thị nếu nhân vật không có avatar tĩnh.
+Life Events Tab (renderEventsTab()): Hiển thị tất cả các mục nhật ký trò chơi liên quan đến nhân vật.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu nhất quán cho các chỉ số và trạng thái.
+Summary of UI/UX Strengths:
+Hiển thị thông tin toàn diện: Trình bày nhiều dữ liệu nhân vật một cách có tổ chức.
+Điều hướng theo tab: Quản lý hiệu quả mật độ thông tin bằng cách tách chi tiết và sự kiện thành các tab riêng biệt.
+Biểu diễn chỉ số trực quan: Thanh tiến trình và biểu tượng cung cấp cái nhìn trực quan về các thuộc tính của nhân vật.
+Kêu gọi hành động rõ ràng: Nút "Customize" cung cấp quyền truy cập trực tiếp vào cá nhân hóa avatar.
+Thiết kế đáp ứng: Sử dụng các tiện ích định kích thước đáp ứng.
+Potential UI/UX Improvements/Considerations:
+Chỉ số tương tác: Cho phép người chơi xem cách các hành động ảnh hưởng đến chỉ số.
+Chi tiết mối quan hệ: Thêm phần hoặc tab dành riêng cho mối quan hệ.
+Tư cách thành viên câu lạc bộ: Hiển thị tư cách thành viên câu lạc bộ.
+Lọc/Tìm kiếm sự kiện: Thêm bộ lọc hoặc chức năng tìm kiếm cho nhật ký sự kiện dài.
+8. File: CharacterNode.tsx
+Overall Purpose (UI/UX):
+Component CharacterNode đại diện cho một nhân vật duy nhất trong màn hình hiển thị trực quan, có thể là trong cây gia đình hoặc danh sách nhân vật. Mục tiêu UI/UX chính của nó là cung cấp một biểu diễn nhỏ gọn, trực quan khác biệt và tương tác của một nhân vật, hiển thị avatar, tên, tuổi và trạng thái tài chính của họ, đồng thời chỉ ra trạng thái do người chơi kiểm soát và sức sống của họ.
+Key UI/UX Elements and their Functions/Actions:
+CharacterNode Component: Nhận character, onClick, lang, manifest, images.
+Responsive Sizing: Tính toán động kích thước của nút nhân vật và avatar dựa trên chiều rộng màn hình.
+Interactive Container (Pressable): Toàn bộ nút nhân vật có thể nhấp được, với phản hồi trực quan (hiệu ứng thu phóng nhẹ) khi nhấn.
+Avatar Display: Hiển thị avatar của nhân vật (AgeAwareAvatarPreview).
+Viền avatar: Thay đổi màu sắc dựa trên việc nhân vật có phải là nhân vật của người chơi hay không.
+Trạng thái đã chết: Avatar bị làm mờ nếu nhân vật không còn sống.
+Age Badge: Hiển thị tuổi của nhân vật trong một huy hiệu nhỏ, tròn ở góc trên bên phải của avatar.
+Character Name: Hiển thị tên nhân vật, với nền bán trong suốt để dễ đọc.
+Monthly Net Income: Hiển thị thu nhập ròng hàng tháng của nhân vật, với màu sắc (xanh lá cây cho dương, đỏ cho âm) để phản hồi tài chính nhanh chóng.
+Styling: Sử dụng StyleSheet với các kiểu dáng động và tĩnh, mã màu cho các trạng thái khác nhau.
+Summary of UI/UX Strengths:
+Nhỏ gọn và nhiều thông tin: Hiển thị thông tin nhân vật cần thiết trong một không gian nhỏ.
+Dấu hiệu trực quan rõ ràng: Màu sắc viền, độ mờ, huy hiệu tuổi và màu sắc văn bản thu nhập cung cấp phản hồi tức thì về trạng thái và loại nhân vật.
+Phản hồi tương tác: Nhấn vào nút cung cấp hoạt ảnh trực quan tinh tế.
+Thiết kế đáp ứng: Kích thước động đảm bảo các nút hiển thị tốt trên các kích thước màn hình khác nhau.
+Potential UI/UX Improvements/Considerations:
+Tên dài: Tooltip khi di chuột/nhấn giữ để hiển thị tên đầy đủ.
+Chỉ báo trạng thái khác: Các biểu tượng nhỏ có thể chỉ ra các trạng thái khác (ví dụ: ốm, đã kết hôn).
+Menu ngữ cảnh: Nhấn giữ có thể mở menu ngữ cảnh với các hành động nhanh.
+9. File: ChoiceButton.tsx
+Overall Purpose (UI/UX):
+Component ChoiceButton là một nút tương tác, có thể tái sử dụng, được thiết kế đặc biệt để trình bày các lựa chọn cho người dùng. Mục tiêu UI/UX chính của nó là cung cấp một nút hấp dẫn về mặt hình ảnh và phản hồi, đưa ra phản hồi rõ ràng về tương tác (hoạt ảnh nhấn vào/nhấn ra, âm thanh) và chỉ ra trạng thái bị vô hiệu hóa của nó, làm cho nó phù hợp với các tình huống ra quyết định khác nhau trong trò chơi.
+Key UI/UX Elements and their Functions/Actions:
+ChoiceButton Component: Nhận onClick, disabled, children.
+Interactive Animations (react-native-reanimated):
+pressState: Theo dõi trạng thái nhấn của nút.
+animatedStyle: Áp dụng các phép biến đổi động (dịch chuyển Y, thu phóng, độ rộng viền dưới) để mô phỏng nút vật lý.
+Sound Feedback (soundManager.play('click')): Phát âm thanh "click" khi nhấn nút.
+Touch Handling (TouchableOpacity): Xử lý các sự kiện chạm, với activeOpacity={1} để cho phép hoạt ảnh tùy chỉnh kiểm soát phản hồi trực quan.
+Disabled State: Nút bị vô hiệu hóa về mặt trực quan (giảm độ mờ, thay đổi màu nền) và không kích hoạt onClick.
+Styling: Sử dụng StyleSheet với kiểu dáng "chunky" hoặc "raised" và minHeight: 44 để cải thiện khả năng tiếp cận (vùng chạm đủ lớn).
+Summary of UI/UX Strengths:
+Phản hồi tuyệt vời: Kết hợp phản hồi trực quan (hoạt ảnh, trạng thái vô hiệu hóa) và thính giác (âm thanh click).
+Khả năng tiếp cận: minHeight: 44 đảm bảo kích thước vùng chạm tốt.
+Trạng thái vô hiệu hóa rõ ràng: Truyền đạt rõ ràng khi một hành động không khả dụng.
+Linh hoạt: children prop cho phép nội dung đa dạng bên trong nút.
+Thiết kế nhất quán: Tích hợp với hệ thống thiết kế.
+Potential UI/UX Improvements/Considerations:
+Phản hồi xúc giác: Thêm phản hồi xúc giác tinh tế khi nhấn.
+Trạng thái tải: Chỉ báo tải bên trong nút cho các hành động mất thời gian.
+Tooltip cho trạng thái vô hiệu hóa: Tooltip giải thích lý do nút bị vô hiệu hóa.
+10. File: ClubChoiceModal.tsx
+Overall Purpose (UI/UX):
+Component ClubChoiceModal trình bày cho người chơi một lựa chọn các câu lạc bộ mà một nhân vật có thể tham gia. Mục tiêu UI/UX chính của nó là hiển thị rõ ràng các câu lạc bộ có sẵn, cung cấp mô tả của chúng và cho phép người chơi chọn một câu lạc bộ hoặc bỏ qua quyết định, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+ClubChoiceModal Component: Nhận character, clubs, onSelect, onSkip, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán. onClose={() => {}} buộc người dùng phải chọn hoặc bỏ qua.
+Header Section: Tiêu đề và mô tả rõ ràng về lựa chọn câu lạc bộ.
+Club Options Grid: Sắp xếp các mục câu lạc bộ trong bố cục lưới đáp ứng.
+clubItem: Hiển thị tên câu lạc bộ (màu vàng), mô tả (in nghiêng, màu nhạt hơn) và nút "Join" (màu xanh lá cây).
+Skip Button: Nút "Skip Clubs" (màu xám) cung cấp một con đường thay thế.
+Styling: Sử dụng StyleSheet với mã màu cho tên câu lạc bộ, mô tả và các nút.
+Summary of UI/UX Strengths:
+Trình bày rõ ràng: Các câu lạc bộ được trình bày trong một lưới có cấu trúc tốt.
+Hành động trực quan: Các nút "Join" và "Skip" rõ ràng với mã màu phù hợp.
+Bố cục đáp ứng: flexWrap và justifyContent đảm bảo các tùy chọn câu lạc bộ thích ứng tốt.
+Thiết kế nhất quán: Tích hợp với ComicPanelModal.
+Quyết định bắt buộc: onClose trống đảm bảo người dùng phải đưa ra lựa chọn.
+Potential UI/UX Improvements/Considerations:
+Lợi ích/Yêu cầu câu lạc bộ: Hiển thị thông tin về lợi ích, yêu cầu hoặc hoạt động của câu lạc bộ.
+Hình ảnh cho câu lạc bộ: Các biểu tượng hoặc hình ảnh nhỏ có thể làm cho các lựa chọn hấp dẫn hơn.
+"Tại sao tham gia?" / "Điều gì sẽ xảy ra tiếp theo?": Giải thích ngắn gọn về tác động của việc tham gia câu lạc bộ.
+11. File: ComicPanelModal.tsx
+Overall Purpose (UI/UX):
+Component ComicPanelModal đóng vai trò là một trình bao bọc modal chung, theo chủ đề cho các component khác trong trò chơi. Mục tiêu UI/UX chính của nó là cung cấp một container "bảng truyện tranh" nhất quán, trực quan khác biệt cho các yếu tố tương tác khác nhau (như modal lựa chọn, modal chi tiết, v.v.), đảm bảo tính thẩm mỹ và trải nghiệm người dùng thống nhất trên các giao diện bật lên khác nhau.
+Key UI/UX Elements and their Functions/Actions:
+ComicPanelModal Component: Nhận visible, onClose, children, rotate, flexContent.
+Modal (React Native): Cung cấp chức năng modal gốc, với transparent={true} và animationType="fade".
+Overlay (modalOverlay): Tạo lớp phủ tối bán trong suốt, tập trung sự chú ý và cho phép đóng modal khi nhấn bên ngoài.
+Comic Panel Container (panelContainer):
+Kiểu dáng: Nền trắng, góc bo tròn, viền vàng dày tạo nên vẻ ngoài "bảng truyện tranh" đặc trưng.
+transform: [{ rotate }]: Áp dụng xoay để tạo vẻ ngoài vui tươi, năng động.
+onPress={() => { /* Ngăn click xuyên qua */ }}: Ngăn chặn các sự kiện chạm truyền từ nội dung modal đến lớp phủ bên dưới.
+flexContent: Tùy chọn làm cho container nội dung bên trong flex: 1.
+Responsive Sizing: Sử dụng responsiveSize để đảm bảo kích thước phù hợp trên các thiết bị khác nhau.
+Summary of UI/UX Strengths:
+Chủ đề nhất quán: Cung cấp tính thẩm mỹ "bảng truyện tranh" thống nhất cho tất cả các modal.
+Tập trung rõ ràng: Lớp phủ tối thu hút sự chú ý của người dùng vào nội dung modal.
+Đóng trực quan: Nhấn bên ngoài modal sẽ đóng nó.
+Thiết kế đáp ứng: maxWidth và responsiveSize đảm bảo modal hiển thị tốt trên các kích thước màn hình khác nhau.
+Thiết kế tương tác tốt: Xử lý onPress trên panelContainer ngăn chặn việc đóng modal ngẫu nhiên.
+Linh hoạt: children prop làm cho nó có thể tái sử dụng cao.
+Potential UI/UX Improvements/Considerations:
+Nút đóng tùy chỉnh: Có thể thêm nút "X" rõ ràng bên trong modal.
+Khả năng tiếp cận cho xoay: Đảm bảo xoay không ảnh hưởng đến khả năng đọc.
+Khả năng tiếp cận bàn phím: Đảm bảo modal giữ tiêu điểm và cho phép điều hướng bằng bàn phím.
+12. File: designSystem.ts
+Overall Purpose (UI/UX):
+File designSystem.ts không phải là một component UI mà là một module nền tảng định nghĩa ngôn ngữ trực quan và tính nhất quán cho UI của toàn bộ ứng dụng. Mục tiêu UI/UX chính của nó là tập trung và chuẩn hóa các token thiết kế (màu sắc, khoảng cách, kiểu chữ) để đảm bảo giao diện người dùng mạch lạc, có thương hiệu và dễ bảo trì trên tất cả các component.
+Key UI/UX Elements and their Functions/Actions:
+colors Object: Định nghĩa bảng màu toàn diện, được phân loại thành Primary & Accent, Neutral (Grays/Slates), Semantic Colors và Text Colors. Đảm bảo tính nhất quán, nhận diện thương hiệu và dễ bảo trì.
+spacing Object: Định nghĩa các giá trị chuẩn cho margin, padding và gap theo một tỷ lệ nhất quán. Đảm bảo sự hài hòa trực quan và dễ đọc.
+typography Object: Định nghĩa các kiểu chữ chuẩn cho tiêu đề, văn bản và chú thích, bao gồm color, fontSize và fontWeight. Đảm bảo khả năng đọc, phân cấp trực quan và tính nhất quán.
+Summary of UI/UX Strengths:
+Tính nhất quán và mạch lạc: Tập trung các token thiết kế, đảm bảo giao diện thống nhất.
+Dễ bảo trì: Đơn giản hóa việc cập nhật và sửa đổi thiết kế trực quan.
+Cải thiện hợp tác: Cung cấp ngôn ngữ chung cho nhà thiết kế và nhà phát triển.
+Khả năng đọc và tiếp cận: Hệ thống thiết kế được cấu trúc tốt hỗ trợ khả năng đọc tốt hơn.
+Potential UI/UX Improvements/Considerations:
+Kiểu chữ đáp ứng: Tích hợp định kích thước phông chữ đáp ứng trực tiếp vào định nghĩa kiểu chữ.
+Chiều cao dòng và khoảng cách chữ: Thêm lineHeight và letterSpacing vào định nghĩa kiểu chữ.
+Đổ bóng/Độ cao: Thêm đối tượng shadows hoặc elevation để chuẩn hóa hiệu ứng đổ bóng.
+13. File: EventModal.tsx
+Overall Purpose (UI/UX):
+Component EventModal được thiết kế để trình bày các sự kiện trò chơi cho người chơi, cho phép họ đưa ra các lựa chọn ảnh hưởng đến chỉ số nhân vật và trạng thái trò chơi. Mục tiêu UI/UX chính của nó là truyền đạt rõ ràng sự kiện, trình bày các lựa chọn có sẵn, hiển thị kết quả tức thì của một lựa chọn và cung cấp phản hồi trực quan về các thay đổi chỉ số, tất cả trong một modal tương tác.
+Key UI/UX Elements and their Functions/Actions:
+EventModal Component: Nhận eventData, character, onChoice, onClose, lang, images, manifest, onEventHandled.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán.
+Header Section: Hiển thị avatar nhân vật, tiêu đề sự kiện và phụ đề.
+Description: Hiển thị mô tả sự kiện.
+Conditional Rendering (Choices vs. Outcome): Chuyển đổi động giữa hiển thị các lựa chọn và hiển thị kết quả.
+Choices Section:
+TouchableOpacity (nút lựa chọn): Hiển thị văn bản lựa chọn, thông tin về các sự kiện được kích hoạt và tác động tài chính (màu xanh lá cây cho dương, đỏ cho âm).
+Outcome Section:
+outcomeMessage: Hiển thị thông báo kết quả.
+outcomeDetails: Hiển thị thay đổi quỹ (với MoneyIcon) và thay đổi chỉ số (với StatBar hiển thị giá trị ban đầu và cuối cùng).
+Nút "OK": Nút xác nhận với hoạt ảnh nhấn tinh tế.
+Event Chaining Logic: Sử dụng useEffect và timerRef để quản lý hiển thị các sự kiện tuần tự với độ trễ.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho các thay đổi chỉ số/quỹ.
+Summary of UI/UX Strengths:
+Truyền đạt sự kiện rõ ràng: Tiêu đề, mô tả và avatar nhân vật cung cấp ngữ cảnh tức thì.
+Hướng dẫn ra quyết định: Các lựa chọn được trình bày rõ ràng, với thông tin tùy chọn về các sự kiện được kích hoạt và tác động tài chính.
+Phản hồi kết quả tức thì: Modal chuyển đổi mượt mà sang chế độ xem kết quả, hiển thị chi tiết thay đổi chỉ số và quỹ.
+Trực quan hóa chỉ số hấp dẫn: StatBar hiển thị hiệu quả giá trị chỉ số trước và sau.
+Tương tác đáp ứng: Các nút động và chuyển đổi theo thời gian nâng cao trải nghiệm người dùng.
+Potential UI/UX Improvements/Considerations:
+Khó khăn/Yêu cầu lựa chọn: Chỉ ra các điều kiện tiên quyết cho các lựa chọn.
+Mô tả kết quả chi tiết hơn: Kết quả tường thuật chi tiết hơn có thể tăng tính nhập vai.
+Hiệu ứng hình ảnh cho thay đổi chỉ số: Hoạt ảnh tinh tế trên StatBar khi chỉ số thay đổi.
+14. File: FamilyAssetsPanel.tsx
+Overall Purpose (UI/UX):
+Component FamilyAssetsPanel cung cấp giao diện để người chơi xem, mua và quản lý tài sản gia đình (ví dụ: vật phẩm, tài sản). Mục tiêu UI/UX chính của nó là trình bày các tài sản có sẵn một cách có tổ chức, chỉ ra rõ ràng quyền sở hữu và khả năng chi trả, và cho phép người chơi tương tác với chúng để nâng cao trải nghiệm chơi trò chơi của họ. Nó cũng bao gồm một chế độ xem chi tiết cho từng tài sản.
+Key UI/UX Elements and their Functions/Actions:
+FamilyAssetsPanel Component: Nhận purchasedAssets, familyFund, onPurchaseAsset, lang.
+AssetSlot (Sub-component): Đại diện cho một tài sản duy nhất trong chế độ xem lưới chính.
+Dấu hiệu trực quan cho trạng thái: Màu sắc (xanh lá cây cho đã sở hữu), hình ảnh, tên, cấp độ và nhãn "Owned".
+onViewDetails: Kích hoạt modal chi tiết tài sản.
+Main Panel Layout (ScrollView):
+Tiêu đề: "Family Assets" và tổng giá trị tài sản.
+Phần mua: "Assets to Purchase" và các tài sản được nhóm theo loại.
+assetGrid: Hiển thị AssetSlot trong bố cục lưới đáp ứng.
+AssetDetailModal (Conditional Rendering): Xuất hiện khi nhấn vào AssetSlot, hiển thị thông tin chi tiết về tài sản.
+Nội dung: Tiêu đề, hình ảnh lớn hơn, mô tả, chi phí, cấp độ và hiệu ứng lên chỉ số (với biểu tượng và phần trăm thay đổi).
+Nút hành động: "Owned" (nếu đã sở hữu) hoặc "Purchase" (nếu chưa sở hữu, với trạng thái vô hiệu hóa nếu không đủ tiền).
+Styling: Sử dụng StyleSheet với mã màu nhất quán cho trạng thái tài sản và các nút.
+Summary of UI/UX Strengths:
+Trình bày có tổ chức: Tài sản được nhóm theo loại và hiển thị trong lưới đáp ứng.
+Chỉ báo trạng thái rõ ràng: Các dấu hiệu trực quan (màu sắc, huy hiệu "Owned") thông báo ngay lập tức về quyền sở hữu và khả năng chi trả.
+Thông tin chi tiết theo yêu cầu: AssetDetailModal cung cấp thông tin toàn diện, bao gồm tác động lên chỉ số.
+Hướng dẫn quyết định mua hàng: Hiển thị rõ ràng chi phí, hiệu ứng và trạng thái khả năng chi trả.
+Potential UI/UX Improvements/Considerations:
+Sắp xếp/Lọc tài sản: Thêm tùy chọn sắp xếp hoặc lọc.
+Tính năng so sánh: Cho phép so sánh hai tài sản.
+Phản hồi trực quan khi mua: Hoạt ảnh hoặc hiệu ứng âm thanh khi mua thành công.
+15. File: FamilyTree.tsx
+Overall Purpose (UI/UX):
+Component FamilyTree trực quan hóa các mối quan hệ giữa các nhân vật trong trò chơi, trình bày chúng trong một cấu trúc cây phân cấp. Mục tiêu UI/UX chính của nó là cung cấp một cái nhìn tổng quan tương tác và nhiều thông tin về dòng dõi gia đình, cho phép người chơi khám phá các kết nối, xác định các nhân vật riêng lẻ và truy cập chi tiết của họ, với sự hỗ trợ cho các chức năng kéo, thu phóng và căn giữa tự động.
+Key UI/UX Elements and their Functions/Actions:
+FamilyTree Component: Nhận gameState, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent.
+Responsive Sizing: Tính toán động kích thước và khoảng cách của các nút nhân vật.
+Layout Calculation Logic (calculateTreeLayout): Xác định vị trí x, y cho từng nút nhân vật dựa trên thế hệ, quan hệ đối tác và con cái.
+Map Interaction (Pan and Pinch Gestures): Sử dụng react-native-gesture-handler và react-native-reanimated để tạo hiệu ứng kéo và thu phóng mượt mà.
+Automatic Centering: Tự động căn giữa chế độ xem vào một nhân vật cụ thể khi được chọn hoặc kích hoạt bởi sự kiện, với hoạt ảnh mượt mà.
+Connectors (Svg và Path): Vẽ các đường (path) giữa các thành viên gia đình để biểu thị mối quan hệ (vợ/chồng, cha mẹ-con cái).
+Character Nodes (CharacterNode): Hiển thị các nhân vật riêng lẻ tại vị trí đã tính toán, chỉ hiển thị các nút hiển thị để tối ưu hóa hiệu suất.
+Empty State: Hiển thị thông báo nếu không có thành viên gia đình nào.
+Styling: Sử dụng StyleSheet cho container và cây.
+Summary of UI/UX Strengths:
+Trực quan hóa tương tác cao: Cử chỉ kéo và thu phóng mang lại trải nghiệm khám phá cây gia đình hấp dẫn.
+Biểu diễn mối quan hệ rõ ràng: Các đường nối minh họa rõ ràng cấu trúc gia đình.
+Bố cục tự động: Các nhân vật được sắp xếp tự động theo cấu trúc phân cấp logic.
+Điều hướng thông minh: Tự động căn giữa vào các nhân vật được chọn hoặc kích hoạt sự kiện.
+Tối ưu hóa hiệu suất: Chỉ hiển thị các nút hiển thị để đảm bảo hiệu suất mượt mà.
+Potential UI/UX Improvements/Considerations:
+Làm nổi bật nhân vật được chọn: Thêm điểm nổi bật trực quan cho nhân vật được chọn.
+Chú giải: Chú giải nhỏ giải thích ý nghĩa của các loại đường nối hoặc điểm nổi bật của nút.
+Lọc/Tìm kiếm: Chức năng tìm kiếm hoặc lọc cho cây gia đình lớn.
+16. File: GameLog.tsx
+Overall Purpose (UI/UX):
+Component GameLog hiển thị một bản ghi theo thứ tự thời gian của các sự kiện quan trọng và kết quả của chúng trong trò chơi. Mục tiêu UI/UX chính của nó là cung cấp cho người chơi một lịch sử rõ ràng, dễ đọc về hành trình của gia đình họ, bao gồm các sự kiện cụ thể của nhân vật, thay đổi chỉ số và tác động tài chính, giúp họ theo dõi tiến trình và hiểu hậu quả của các lựa chọn của mình.
+Key UI/UX Elements and their Functions/Actions:
+GameLog Component: Nhận log, lang, familyMembers, ListHeaderComponent.
+FlatList: Hiển thị danh sách các mục nhật ký một cách hiệu quả.
+LogEntry (Sub-component): Hiển thị một mục nhật ký trò chơi duy nhất.
+Định dạng chi tiết mới: Hiển thị năm, tên nhân vật, tên sự kiện và thông báo chi tiết.
+LogStatChanges: Hiển thị bất kỳ thay đổi chỉ số hoặc quỹ nào liên quan.
+LogStatChanges (Sub-component): Hiển thị các thay đổi chỉ số và quỹ cụ thể.
+Biểu tượng: Sử dụng các biểu tượng liên quan cho từng chỉ số hoặc thay đổi quỹ.
+Mã màu: Xanh lá cây cho thay đổi dương, đỏ cho thay đổi âm.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu nhất quán và phân tách trực quan giữa các mục nhật ký.
+Summary of UI/UX Strengths:
+Lịch sử theo thứ tự thời gian rõ ràng: Trình bày các sự kiện trò chơi theo dòng thời gian dễ theo dõi.
+Thông tin chi tiết và theo ngữ cảnh: Mỗi mục nhật ký cung cấp chi tiết cụ thể về sự kiện, nhân vật và kết quả.
+Phản hồi trực quan cho các thay đổi: Biểu tượng và văn bản mã màu cho các thay đổi chỉ số và quỹ.
+Kết xuất danh sách hiệu quả: FlatList đảm bảo cuộn mượt mà ngay cả với nhiều mục nhật ký.
+Potential UI/UX Improvements/Considerations:
+Lọc/Tìm kiếm: Thêm bộ lọc hoặc chức năng tìm kiếm cho nhật ký trò chơi dài.
+Nhóm trực quan theo năm/tháng: Nhóm các mục nhật ký theo năm hoặc tháng.
+Biểu tượng sự kiện: Thêm biểu tượng nhỏ bên cạnh tên sự kiện.
+17. File: GameUI.tsx
+Overall Purpose (UI/UX):
+Component GameUI là container chính cho giao diện người dùng của trò chơi khi trò chơi đang chạy. Mục tiêu UI/UX chính của nó là cung cấp một bảng điều khiển toàn diện và tương tác cho người chơi, tích hợp các chế độ xem trò chơi khác nhau (cây gia đình, nhật ký, tài sản, bản đồ kinh doanh), hiển thị thông tin trò chơi quan trọng (ngày, quỹ, tốc độ) và quản lý trạng thái trò chơi (menu, đang chơi, kết thúc trò chơi, tạm dừng). Nó đóng vai trò là người điều phối cho nhiều component UI khác.
+Key UI/UX Elements and their Functions/Actions:
+GameUI Component: Nhận view, mainView, gameState, isPaused, gameSpeed, showInstructions, selectedCharacter, lang, avatarImages, và nhiều callback on....
+Top-Level View Management: Quản lý hiển thị các chế độ xem chính của trò chơi (welcome_back, menu, gameover, playing).
+Header: Bảng điều khiển thông tin và điều khiển liên tục.
+Phần bên trái: Tiêu đề trò chơi và ngày trong trò chơi.
+Phần giữa: Quỹ gia đình (với mã màu cho dương/âm) và thay đổi ròng hàng tháng.
+Phần bên phải: Nút ngôn ngữ, nút "Quit Game", nút "Pause/Resume" và Picker tốc độ trò chơi.
+Main Content Grid: Hiển thị động cảnh trò chơi đang hoạt động (FamilyTree, GameLog, FamilyAssetsPanel, BusinessMap).
+ModalManager (Sub-component): Quản lý hiển thị các modal trò chơi khác nhau.
+Bottom Navigation (BottomNav): Thanh điều hướng liên tục ở cuối màn hình để chuyển đổi giữa các cảnh chính.
+State Management: Quản lý activeScene, editingBusiness, characterIdToCenterOnEvent, wasPausedBeforeBusinessMap và các hàm xử lý liên quan.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu nhất quán và bố cục đáp ứng.
+Summary of UI/UX Strengths:
+Kiểm soát tập trung: Hoạt động như trung tâm chính cho tất cả UI trò chơi.
+Bảng điều khiển thông tin rõ ràng: Tiêu đề cung cấp thông tin trò chơi cần thiết.
+Điều hướng trực quan: Điều hướng dưới cùng và chuyển đổi cảnh giúp truy cập dễ dàng.
+Đáp ứng và thích ứng: Sử dụng kích thước đáp ứng và bố cục linh hoạt.
+Kiểm soát người chơi: Cung cấp quyền kiểm soát trực tiếp tốc độ trò chơi, tạm dừng/tiếp tục và cài đặt ngôn ngữ.
+Potential UI/UX Improvements/Considerations:
+Phản hồi trực quan cho tốc độ trò chơi: Chỉ báo trực quan nổi bật hơn cho tốc độ trò chơi.
+Thông báo/Cảnh báo: Khu vực dành riêng cho thông báo trong trò chơi.
+Menu cài đặt/tùy chọn: Menu cài đặt toàn diện hơn.
+Hướng dẫn/Onboarding: Hướng dẫn tương tác cho người chơi mới.
+18. File: icons.tsx
+Overall Purpose (UI/UX):
+File icons.tsx là một bộ sưu tập các component biểu tượng SVG có thể tái sử dụng. Mục tiêu UI/UX chính của nó là cung cấp một bộ biểu tượng trực quan nhất quán cho các khái niệm trò chơi khác nhau (chỉ số, hành động, thú cưng, giới tính, v.v.), nâng cao sự rõ ràng, khả năng quét và sức hấp dẫn thẩm mỹ của giao diện người dùng. Bằng cách sử dụng SVG, các biểu tượng này có thể mở rộng mà không làm giảm chất lượng.
+Key UI/UX Elements and their Functions/Actions:
+Individual Icon Components: Mỗi component hiển thị một đồ họa SVG cụ thể (ví dụ: IqIcon, HappinessIcon, MoneyIcon, RobotIcon, UpgradeIcon, CloseIcon, MaleIcon, FemaleIcon, DogIcon, CatIcon).
+IconProps: Cho phép tùy chỉnh kiểu dáng, màu sắc, chiều rộng và chiều cao.
+Svg, Path, Circle, Rect, Line: Các khối xây dựng cho đồ họa vector.
+RobotAvatarIcon: Một biểu tượng SVG phức tạp hơn được thiết kế để đại diện cho avatar robot.
+getPetIcon Function: Hàm trợ giúp trả về component biểu tượng thú cưng phù hợp dựa trên PetType.
+Summary of UI/UX Strengths:
+Ngôn ngữ trực quan rõ ràng: Các biểu tượng truyền tải ý nghĩa trò chơi ngay lập tức.
+Tính thẩm mỹ nhất quán: Tất cả các biểu tượng được thiết kế theo cùng một phong cách.
+Khả năng mở rộng và chất lượng: Định dạng SVG đảm bảo các biểu tượng sắc nét ở mọi kích thước.
+Khả năng tái sử dụng và tùy chỉnh: Các component có thể dễ dàng tái sử dụng và tạo kiểu.
+Potential UI/UX Improvements/Considerations:
+Quản lý thư viện biểu tượng: Sử dụng thư viện biểu tượng chuyên dụng hoặc quy trình nhập SVG tự động.
+Khả năng tiếp cận: Đảm bảo accessibilityLabel phù hợp khi sử dụng trong ngữ cảnh tương tác.
+Hoạt ảnh: Thêm hoạt ảnh tinh tế vào các biểu tượng.
+19. File: ImageAssets.ts
+Overall Purpose (UI/UX):
+File ImageAssets.ts đóng vai trò là một kho lưu trữ tập trung cho tất cả các tài sản hình ảnh tĩnh được sử dụng trong ứng dụng. Mục tiêu UI/UX chính của nó là cung cấp một điểm truy cập duy nhất, có tổ chức cho các tài nguyên hình ảnh, tạo điều kiện thuận lợi cho việc tải và sử dụng chúng trên các component UI khác nhau, đặc biệt là cho avatar và tài sản trò chơi.
+Key UI/UX Elements and their Functions/Actions:
+imageAssets Object: Một đối tượng JavaScript nơi các khóa là đường dẫn đến các file hình ảnh và các giá trị là các lệnh require() tải các hình ảnh này.
+require(): Đảm bảo hình ảnh được đóng gói tĩnh.
+Phân loại (ngầm định): Các hình ảnh được nhóm theo mục đích (avatar, tài sản chung, nhân vật cụ thể).
+Định dạng file: Chủ yếu là .png và .webp (tốt cho hiệu suất).
+/* eslint-disable */, /* tslint:disable */: Vô hiệu hóa kiểm tra linting và TypeScript.
+Summary of UI/UX Strengths:
+Tải tối ưu: Các lệnh require() tĩnh đảm bảo hình ảnh được tải hiệu quả.
+Quản lý tập trung: Một file duy nhất cho tất cả các tài sản hình ảnh đơn giản hóa việc quản lý.
+Hiệu suất (Định dạng hình ảnh): Sử dụng .webp cho một số tài sản giúp tối ưu hóa kích thước file.
+Tính nhất quán: Đảm bảo các tài sản trực quan chính xác luôn được sử dụng.
+Potential UI/UX Improvements/Considerations:
+Tải tài sản động: Đối với số lượng lớn tài sản, xem xét chiến lược tải động (lazy loading).
+Quy trình tối ưu hóa tài sản: Đảm bảo tất cả hình ảnh được tối ưu hóa đúng cách.
+Xử lý lỗi cho tài sản bị thiếu: Các component sử dụng imageAssets nên có cơ chế dự phòng.
+20. File: InstructionsModal.tsx
+Overall Purpose (UI/UX):
+Component InstructionsModal cung cấp cho người chơi thông tin cần thiết về cách chơi trò chơi, bao gồm mục tiêu, cơ chế chơi, hệ thống sự kiện, chỉ số, giai đoạn cuộc đời và tài chính. Mục tiêu UI/UX chính của nó là đóng vai trò là hướng dẫn hoặc hướng dẫn trong trò chơi có thể truy cập được, giúp người chơi mới hiểu các khái niệm và cơ chế cốt lõi của trò chơi.
+Key UI/UX Elements and their Functions/Actions:
+InstructionsModal Component: Nhận onClose, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán.
+Close Button: Nút "X" rõ ràng ở góc trên bên phải để đóng hướng dẫn.
+Title: Tiêu đề nổi bật "Instructions".
+Instructions Content: Các đoạn văn giải thích các khía cạnh khác nhau của trò chơi, với các tiêu đề in đậm để dễ quét.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt và mã màu cho khả năng đọc.
+Summary of UI/UX Strengths:
+Thông tin rõ ràng và súc tích: Hướng dẫn được chia thành các đoạn văn dễ hiểu.
+Cấu trúc để dễ đọc: Các tiêu đề in đậm và ngắt đoạn cải thiện khả năng quét.
+Có thể truy cập theo yêu cầu: Modal có thể được mở và đóng khi cần.
+Nội dung được bản địa hóa: Đảm bảo hướng dẫn dễ hiểu cho người chơi ở các khu vực khác nhau.
+Potential UI/UX Improvements/Considerations:
+Phân trang/Cuộn: Nếu hướng dẫn quá dài, thêm phân trang hoặc ScrollView.
+Hỗ trợ trực quan: Kết hợp các biểu tượng, sơ đồ hoặc ảnh chụp màn hình.
+Hướng dẫn tương tác: Hướng dẫn tương tác từng bước.
+21. File: LoanModal.tsx
+Overall Purpose (UI/UX):
+Component LoanModal cho phép người chơi vay tiền, chỉ định cả số tiền và thời hạn trả nợ. Mục tiêu UI/UX chính của nó là trình bày các tùy chọn rõ ràng về số tiền và thời hạn vay, cho phép lựa chọn dễ dàng và tạo điều kiện thuận lợi cho quyết định chấp nhận khoản vay, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+LoanModal Component: Nhận onLoanChoice, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán. onClose={() => {}} buộc người dùng phải đưa ra quyết định vay.
+Header Section: Tiêu đề và mô tả rõ ràng về khoản vay.
+Options Container:
+Lựa chọn số tiền vay: Hiển thị các số tiền vay dưới dạng lưới các nút TouchableOpacity, với lựa chọn hiện tại được làm nổi bật.
+Lựa chọn thời hạn vay: Tương tự, hiển thị các thời hạn vay.
+Accept Loan Button: Nút "Accept Loan" (màu xanh lá cây) để xác nhận khoản vay.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho các nút và trạng thái lựa chọn.
+Summary of UI/UX Strengths:
+Trình bày lựa chọn rõ ràng: Số tiền và thời hạn vay được trình bày dưới dạng lưới dễ hiểu.
+Lựa chọn tương tác: Các nút TouchableOpacity với phản hồi trực quan.
+Nội dung được bản địa hóa: Đảm bảo tất cả văn bản đều dễ hiểu.
+Thiết kế nhất quán: Tích hợp với ComicPanelModal.
+Quyết định bắt buộc: onClose trống đảm bảo người dùng phải đưa ra quyết định.
+Potential UI/UX Improvements/Considerations:
+Lãi suất/Lịch trả nợ: Hiển thị lãi suất và ước tính trả nợ hàng tháng.
+Kiểm tra khả năng chi trả: Chỉ ra nếu người chơi đủ điều kiện vay hoặc khả năng trả nợ.
+Nút "Cancel": Thêm nút "Cancel" hoặc "Decline" để người dùng có thể thoát.
+22. File: ModalManager.tsx
+Overall Purpose (UI/UX):
+Component ModalManager đóng vai trò là người điều phối trung tâm để hiển thị các modal liên quan đến trò chơi. Mục tiêu UI/UX chính của nó là quản lý khả năng hiển thị và luồng dữ liệu cho các loại modal khác nhau, đảm bảo rằng chỉ một modal hoạt động tại một thời điểm (ngầm định, bằng cách kết xuất có điều kiện) và mỗi modal nhận được gameState và các callback chính xác. Điều này tập trung logic modal, làm cho GameUI chính sạch hơn và tập trung hơn.
+Key UI/UX Elements and their Functions/Actions:
+ModalManager Component: Nhận gameState, selectedCharacter, editingBusiness, avatarImages, và nhiều callback on....
+Conditional Rendering: Kiểm tra các cờ trong gameState (và selectedCharacter, editingBusiness) để xác định modal nào sẽ được hiển thị.
+Modal Components Rendered: Hiển thị các modal khác nhau như EventModal, SchoolChoiceModal, ClubChoiceModal, UniversityChoiceModal, UniversityMajorChoiceModal, CareerChoiceModal, UnderqualifiedChoiceModal, CharacterDetailModal, LoanModal, PromotionModal, BusinessManagementModal.
+Data and Callback Flow: Trích xuất dữ liệu liên quan và chuyển nó cùng với các callback phù hợp đến component modal cụ thể.
+Summary of UI/UX Strengths:
+Quản lý modal tập trung: Đơn giản hóa cấu trúc UI tổng thể.
+Ngăn chặn lộn xộn UI: Đảm bảo chỉ một modal hoạt động tại một thời điểm.
+Trải nghiệm người dùng nhất quán: Giúp thực thi kiểu dáng và mẫu tương tác nhất quán.
+Tách biệt mối quan tâm rõ ràng: ModalManager chỉ tập trung vào việc hiển thị modal và truyền dữ liệu/callback.
+Potential UI/UX Improvements/Considerations:
+Xếp chồng/Hàng đợi modal: Cơ chế xếp chồng hoặc hàng đợi phức tạp hơn cho các trường hợp nhiều modal.
+Ngữ cảnh modal toàn cầu: Sử dụng Context API để quản lý modal.
+Khả năng tiếp cận cho modal: Đảm bảo modal hoàn toàn có thể truy cập được.
+23. File: PromotionModal.tsx
+Overall Purpose (UI/UX):
+Component PromotionModal là một modal thông báo đơn giản thông báo cho người chơi về việc thăng chức của nhân vật. Mục tiêu UI/UX chính của nó là truyền đạt rõ ràng sự kiện tích cực này và cung cấp một hành động khẳng định duy nhất để người chơi xác nhận, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+PromotionModal Component: Nhận characterName, newTitle, onAccept, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán. onClose={() => {}} buộc người dùng phải xác nhận.
+Content Section: Tiêu đề "Promotion!" và mô tả chi tiết về việc thăng chức.
+Accept Button: Nút "Accept Promotion" (màu xanh lá cây) để xác nhận.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho nút và văn bản.
+Summary of UI/UX Strengths:
+Truyền đạt rõ ràng: Truyền tải tin tức thăng chức hiệu quả.
+Tương tác tập trung: Nút "Accept" rõ ràng hướng dẫn người chơi xác nhận.
+Nội dung được bản địa hóa: Đảm bảo thông báo thăng chức dễ hiểu.
+Thiết kế nhất quán: Tích hợp với ComicPanelModal.
+Xác nhận bắt buộc: onClose trống đảm bảo người chơi phải tương tác với modal.
+Potential UI/UX Improvements/Considerations:
+Hiệu ứng hình ảnh ăn mừng: Hoạt ảnh hoặc hiệu ứng âm thanh tinh tế.
+Tác động lên chỉ số/thu nhập: Nêu rõ tác động tức thì lên thu nhập hoặc chỉ số.
+Avatar nhân vật: Bao gồm avatar của nhân vật được thăng chức.
+24. File: SchoolChoiceModal.tsx
+Overall Purpose (UI/UX):
+Component SchoolChoiceModal trình bày cho người chơi các tùy chọn học tập khác nhau cho một nhân vật. Mục tiêu UI/UX chính của nó là hiển thị rõ ràng các con đường giáo dục có sẵn, chi phí của chúng và các tác động tiềm năng của chúng lên chỉ số nhân vật, cho phép người chơi đưa ra quyết định sáng suốt về giáo dục của nhân vật, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+SchoolChoiceModal Component: Nhận character, schoolOptions, onSelect, currentFunds, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán. onClose={() => {}} buộc người dùng phải đưa ra quyết định.
+Header Section: Tiêu đề và mô tả rõ ràng về lựa chọn trường học.
+School Options (Mapped ChoiceButton components):
+ChoiceButton: Hiển thị tên trường, chi phí (với trạng thái có thể chi trả/không thể chi trả) và tác động lên chỉ số.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho trạng thái chi phí.
+Summary of UI/UX Strengths:
+Trình bày lựa chọn rõ ràng: Mỗi tùy chọn trường học được trình bày rõ ràng.
+Phản hồi theo ngữ cảnh: Chi phí và tác động lên chỉ số được hiển thị rõ ràng.
+Hướng dẫn ra quyết định: Các dấu hiệu trực quan giúp người chơi đưa ra lựa chọn sáng suốt.
+UX phòng ngừa: Vô hiệu hóa các nút cho các tùy chọn không thể chi trả.
+Thiết kế nhất quán: Tích hợp với ComicPanelModal.
+Potential UI/UX Improvements/Considerations:
+Biểu tượng trực quan cho hiệu ứng: Sử dụng các biểu tượng nhỏ thay vì chỉ văn bản cho hiệu ứng chỉ số.
+Mô tả chi tiết hơn: Mô tả ngắn gọn về từng loại trường học.
+Chỉ số hiện tại của nhân vật: Hiển thị chỉ số hiện tại của nhân vật bên cạnh các tác động tiềm năng.
+25. File: SmokeAnimation.tsx
+Overall Purpose (UI/UX):
+Component SmokeAnimation cung cấp hiệu ứng hình ảnh của hai "cụm khói" bốc lên và tan biến. Mục tiêu UI/UX chính của nó là thêm một điểm nhấn trực quan tinh tế, năng động để chỉ ra một sự kiện thoáng qua hoặc thay đổi trạng thái, thường được sử dụng cho phản hồi tiêu cực hoặc trung tính (ví dụ: giảm chỉ số, hành động thất bại).
+Key UI/UX Elements and their Functions/Actions:
+SmokeAnimation Component: Nhận shouldAnimate, color.
+Animated Values: opacity1, scale1, translateY1 cho cụm khói đầu tiên; opacity2, scale2, translateY2 cho cụm khói thứ hai.
+Animation Logic: Kích hoạt hoạt ảnh khi shouldAnimate là true. Hoạt ảnh bao gồm dịch chuyển Y (bốc lên), thu phóng (mở rộng) và độ mờ (tan biến), với độ trễ và hàm easing.
+Animated Styles: Áp dụng các phép biến đổi động và độ mờ cho các cụm khói.
+Smoke Puff Visual: Định nghĩa kích thước, hình dạng tròn và màu nền của cụm khói.
+Summary of UI/UX Strengths:
+Phản hồi trực quan động: Cung cấp dấu hiệu trực quan rõ ràng, có hoạt ảnh cho các sự kiện.
+Tinh tế và hấp dẫn: Hoạt ảnh không quá xâm phạm nhưng thu hút sự chú ý hiệu quả.
+Hiệu suất: Sử dụng react-native-reanimated cho hoạt ảnh mượt mà.
+Có thể tùy chỉnh: color prop cho phép thích ứng với các ngữ cảnh khác nhau.
+Potential UI/UX Improvements/Considerations:
+Nhiều cụm khói hơn: Thêm nhiều cụm khói hoặc thay đổi vị trí/kích thước ban đầu.
+Khói theo hướng: Cho phép các hướng khác nhau (trái, phải, xuống).
+Tích hợp hiệu ứng âm thanh: Kết hợp hoạt ảnh với hiệu ứng âm thanh tinh tế.
+26. File: StarAnimation.tsx
+Overall Purpose (UI/UX):
+Component StarAnimation cung cấp hiệu ứng hình ảnh của một ngôi sao duy nhất bốc lên và tan biến. Mục tiêu UI/UX chính của nó là thêm một điểm nhấn trực quan tinh tế, năng động để chỉ ra một sự kiện tích cực hoặc thay đổi trạng thái, thường được sử dụng cho phản hồi tích cực (ví dụ: tăng chỉ số, hành động thành công, thăng chức).
+Key UI/UX Elements and their Functions/Actions:
+StarAnimation Component: Nhận shouldAnimate, color.
+Animated Values: translateY, opacity, scale cho hoạt ảnh của ngôi sao.
+Animation Logic: Kích hoạt hoạt ảnh khi shouldAnimate là true. Hoạt ảnh bao gồm dịch chuyển Y (bốc lên), thu phóng (xuất hiện) và độ mờ (tan biến), với độ trễ và hàm easing.
+Animated Styles: Áp dụng các phép biến đổi động và độ mờ cho ngôi sao.
+Star Graphic: Hiển thị hình dạng ngôi sao năm cánh bằng SVG.
+Summary of UI/UX Strengths:
+Phản hồi trực quan động: Cung cấp dấu hiệu trực quan rõ ràng, có hoạt ảnh cho các sự kiện tích cực.
+Tinh tế và hấp dẫn: Hoạt ảnh không quá xâm phạm nhưng thu hút sự chú ý hiệu quả.
+Hiệu suất: Sử dụng react-native-reanimated cho hoạt ảnh mượt mà.
+Có thể tùy chỉnh: color prop cho phép thích ứng với các ngữ cảnh khác nhau.
+Potential UI/UX Improvements/Considerations:
+Nhiều ngôi sao: Hiệu ứng bùng nổ của nhiều ngôi sao nhỏ hơn.
+Tích hợp hiệu ứng âm thanh: Kết hợp hoạt ảnh với hiệu ứng âm thanh "ding" hoặc "chime".
+Kiểm soát thời lượng/cường độ: Các prop để kiểm soát thời lượng, độ trễ hoặc cường độ của hoạt ảnh.
+27. File: StartMenu.tsx
+Overall Purpose (UI/UX):
+Component StartMenu là màn hình ban đầu được trình bày cho người chơi khi họ khởi chạy trò chơi hoặc bắt đầu một trò chơi mới. Mục tiêu UI/UX chính của nó là chào đón người chơi, hiển thị tiêu đề trò chơi, cung cấp các kịch bản trò chơi khác nhau để lựa chọn và cung cấp quyền truy cập vào hướng dẫn trò chơi, tất cả trong một giao diện rõ ràng và hấp dẫn.
+Key UI/UX Elements and their Functions/Actions:
+StartMenu Component: Nhận onStart, onShowInstructions, lang.
+Main Container: Căn giữa tất cả nội dung trên màn hình.
+Game Title and Subtitle: Hiển thị tiêu đề và phụ đề trò chơi nổi bật.
+Scenario List: Trình bày các kịch bản trò chơi khác nhau dưới dạng các nút TouchableOpacity.
+scenarioName và scenarioDescription: Hiển thị tên và mô tả kịch bản.
+"How to Play" Button: Nút "How to Play" nổi bật để truy cập hướng dẫn.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho tiêu đề và nút.
+Summary of UI/UX Strengths:
+Điểm vào rõ ràng: Cung cấp giao diện đơn giản và chào đón.
+Lựa chọn kịch bản nhiều thông tin: Trình bày các kịch bản trò chơi với tên và mô tả.
+Dễ dàng truy cập hướng dẫn: Nút "How to Play" nổi bật.
+Hấp dẫn về mặt hình ảnh: Nội dung căn giữa, kiểu chữ rõ ràng và kiểu nút khác biệt.
+Potential UI/UX Improvements/Considerations:
+Hình ảnh cho kịch bản: Thêm biểu tượng hoặc hình ảnh nhỏ vào các nút kịch bản.
+Độ khó/Thẻ kịch bản: Thêm thẻ độ khó hoặc chủ đề.
+Tùy chọn "Continue Game": Nút "Continue Game" (được xử lý bởi WelcomeBackMenu).
+28. File: StatBar.tsx
+Overall Purpose (UI/UX):
+Component StatBar biểu thị trực quan chỉ số số học của nhân vật (ví dụ: IQ, Hạnh phúc, Sức khỏe) dưới dạng thanh tiến trình, kèm theo biểu tượng, nhãn và giá trị số. Mục tiêu UI/UX chính của nó là cung cấp phản hồi rõ ràng, có hoạt ảnh và hấp dẫn về mặt hình ảnh về các chỉ số nhân vật, đặc biệt khi chúng thay đổi, sử dụng các hoạt ảnh tinh tế và hiệu ứng hình ảnh.
+Key UI/UX Elements and their Functions/Actions:
+StatBar Component: Nhận label, value, max, Icon, color, initialValue.
+Animated Values: progress (cho thanh tiến trình), scale (cho giá trị số), changeTextOpacity, changeTextTranslateY (cho văn bản thay đổi), shouldAnimateStars, shouldAnimateSmoke (để kích hoạt hoạt ảnh).
+Animation Logic: Kích hoạt hoạt ảnh khi value thay đổi. Bao gồm hoạt ảnh thanh tiến trình, hoạt ảnh "pop" giá trị, hoạt ảnh văn bản thay đổi nổi và kích hoạt hoạt ảnh ngôi sao/khói.
+Animated Styles: Áp dụng các phép biến đổi động và độ mờ cho các phần tử.
+Layout: Hiển thị biểu tượng, nhãn, thanh tiến trình và giá trị số trong một hàng.
+StarAnimation và SmokeAnimation: Được kết xuất dưới dạng lớp phủ, được kích hoạt bởi các thay đổi chỉ số.
+Summary of UI/UX Strengths:
+Phản hồi trực quan phong phú: Kết hợp nhiều loại hoạt ảnh với hiệu ứng hình ảnh theo chủ đề.
+Thông tin rõ ràng: Biểu tượng, nhãn, giá trị số và thanh tiến trình truyền đạt rõ ràng chỉ số.
+Tác động tức thì: Văn bản thay đổi nổi và mã màu hiển thị ngay lập tức hướng và độ lớn của thay đổi.
+Hiệu suất: Sử dụng react-native-reanimated cho hoạt ảnh mượt mà.
+Potential UI/UX Improvements/Considerations:
+Kích hoạt hoạt ảnh có thể tùy chỉnh: Cho phép các component bên ngoài kích hoạt hoạt ảnh ngôi sao/khói.
+Phản hồi xúc giác: Thêm phản hồi xúc giác khi chỉ số thay đổi.
+Khả năng tiếp cận: Đảm bảo các thay đổi hoạt ảnh cũng được truyền đạt đến trình đọc màn hình.
+29. File: SummaryScreen.tsx
+Overall Purpose (UI/UX):
+Component SummaryScreen được hiển thị khi trò chơi kết thúc, dù thắng hay thua. Mục tiêu UI/UX chính của nó là cung cấp cho người chơi cái nhìn tổng quan rõ ràng và súc tích về hiệu suất trò chơi của họ, làm nổi bật các số liệu thống kê chính và cung cấp tùy chọn ngay lập tức để khởi động lại trò chơi, khuyến khích khả năng chơi lại.
+Key UI/UX Elements and their Functions/Actions:
+SummaryScreen Component: Nhận gameState, onRestart, lang.
+Main Container: Căn giữa nội dung tóm tắt trên màn hình.
+Content Wrapper: Hiển thị tóm tắt dưới dạng thẻ với nền trắng, góc bo tròn và đổ bóng.
+Title: Hiển thị "Victory!" hoặc "Game Over!" nổi bật.
+Description: Cung cấp mô tả theo ngữ cảnh về kết quả trò chơi.
+Statistics Container: Hiển thị các số liệu thống kê trò chơi chính (thế hệ, thành viên, quỹ, tài sản, v.v.) với nhãn in đậm và giá trị được định dạng.
+Restart Button: Nút "Play Again" nổi bật để khởi động lại trò chơi.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho tiêu đề và nút.
+Summary of UI/UX Strengths:
+Truyền đạt kết quả rõ ràng: Thông báo ngay lập tức về chiến thắng hoặc thất bại.
+Tổng quan hiệu suất toàn diện: Trình bày các số liệu thống kê trò chơi chính một cách có tổ chức.
+Khuyến khích khả năng chơi lại: Nút "Play Again" rõ ràng và hấp dẫn.
+Nội dung được bản địa hóa: Đảm bảo tất cả văn bản đều dễ hiểu.
+Potential UI/UX Improvements/Considerations:
+Bảng xếp hạng/Điểm cao: Hiển thị bảng xếp hạng.
+Tùy chọn chia sẻ: Cho phép người chơi chia sẻ kết quả tóm tắt.
+Phân tích chi tiết: Tùy chọn xem phân tích chi tiết hơn.
+30. File: UnderqualifiedChoiceModal.tsx
+Overall Purpose (UI/UX):
+Component UnderqualifiedChoiceModal được trình bày cho người chơi khi một nhân vật cố gắng tham gia một con đường sự nghiệp mà họ không đủ tiêu chuẩn. Mục tiêu UI/UX chính của nó là giải thích rõ ràng tình huống và cung cấp cho người chơi hai lựa chọn riêng biệt: chấp nhận vị trí thực tập sinh (với lợi ích/nhược điểm tiềm năng) hoặc tiếp tục với hình phạt, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+UnderqualifiedChoiceModal Component: Nhận character, careerTrackKey, onSelect, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán. onClose={() => {}} buộc người dùng phải đưa ra quyết định.
+Header Section: Tiêu đề "Underqualified!" và mô tả tình huống.
+Choice Buttons (Two ChoiceButton components):
+Tùy chọn thực tập sinh: Tiêu đề "Accept Trainee Position" và mô tả.
+Tùy chọn bị phạt: Tiêu đề "Proceed with Penalty" và mô tả.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho văn bản.
+Summary of UI/UX Strengths:
+Tuyên bố vấn đề rõ ràng: Thông báo ngay lập tức rằng nhân vật không đủ tiêu chuẩn.
+Lựa chọn được xác định rõ ràng: Hai tùy chọn riêng biệt được trình bày với tiêu đề và mô tả rõ ràng.
+Hướng dẫn ra quyết định: Người chơi có thể cân nhắc ưu và nhược điểm.
+Thiết kế nhất quán: Tích hợp với ComicPanelModal.
+Potential UI/UX Improvements/Considerations:
+Tác động số: Định lượng "lương khởi điểm thấp hơn" hoặc "khả năng thất bại cao hơn".
+Chỉ số hiện tại của nhân vật: Hiển thị chỉ số hiện tại của nhân vật và chỉ số yêu cầu.
+Dấu hiệu trực quan cho mức độ nghiêm trọng: Biểu tượng cảnh báo hoặc màu sắc khác cho modal.
+31. File: UniversityChoiceModal.tsx
+Overall Purpose (UI/UX):
+Component UniversityChoiceModal trình bày cho người chơi một lựa chọn nhị phân: liệu một nhân vật có nên học đại học hay không. Mục tiêu UI/UX chính của nó là hỏi rõ ràng câu hỏi này và cung cấp hai tùy chọn riêng biệt, khẳng định/phủ định để người chơi quyết định, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+UniversityChoiceModal Component: Nhận character, onSelect, lang.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán. onClose={() => {}} buộc người dùng phải đưa ra quyết định.
+Header Section: Tiêu đề "University Decision" và mô tả.
+Choice Buttons (Two TouchableOpacity components):
+Nút "Yes": "Yes, go to University" (màu xanh lam).
+Nút "No": "No, skip University" (màu xám).
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho các nút.
+Summary of UI/UX Strengths:
+Lựa chọn nhị phân rõ ràng: Trình bày quyết định có/không đơn giản.
+Hành động trực quan: Các nút được gắn nhãn rõ ràng với mã màu phù hợp.
+Nội dung được bản địa hóa: Đảm bảo tất cả văn bản đều dễ hiểu.
+Thiết kế nhất quán: Tích hợp với ComicPanelModal.
+Potential UI/UX Improvements/Considerations:
+Hậu quả/Lợi ích: Hiển thị lợi ích tiềm năng của việc học đại học và nhược điểm của việc không học.
+Chi phí đại học: Hiển thị rõ ràng chi phí đại học.
+Năng khiếu của nhân vật: Hiển thị chỉ số hiện tại của nhân vật.
+32. File: UniversityMajorChoiceModal.tsx
+Overall Purpose (UI/UX):
+Component UniversityMajorChoiceModal cho phép người chơi chọn một chuyên ngành cho nhân vật học đại học. Mục tiêu UI/UX chính của nó là trình bày các tùy chọn chuyên ngành khác nhau, hiển thị rõ ràng chi phí và mô tả của chúng, và hướng dẫn người chơi đưa ra quyết định sáng suốt, bao gồm xử lý các tình huống không thể chi trả chuyên ngành nào, tất cả trong một giao diện modal.
+Key UI/UX Elements and their Functions/Actions:
+UniversityMajorChoiceModal Component: Nhận character, majors, onSelect, currentFunds, lang, onAbandon, userFontScale.
+ComicPanelModal (Wrapper): Cung cấp cấu trúc modal nhất quán. onClose={onAbandon} cho phép thoát.
+Header Section: Tiêu đề "Choose Your Major", nhãn tên nhân vật và mô tả.
+Major Options (Mapped ChoiceButton components):
+ChoiceButton: Hiển thị tên chuyên ngành, chi phí (với trạng thái có thể chi trả/không thể chi trả) và mô tả.
+"Unaffordable" Section: Chỉ hiển thị nếu không thể chi trả bất kỳ chuyên ngành nào, cung cấp thông báo và nút "Abandon".
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, tích hợp designSystem.
+Summary of UI/UX Strengths:
+Trình bày lựa chọn rõ ràng: Mỗi tùy chọn chuyên ngành được trình bày rõ ràng.
+Phản hồi theo ngữ cảnh: Chi phí và khả năng chi trả được hiển thị rõ ràng.
+Hướng dẫn ra quyết định: Người chơi có thể so sánh các chuyên ngành.
+Xử lý mạnh mẽ khả năng chi trả: Xử lý rõ ràng khi không thể chi trả chuyên ngành nào.
+Khả năng tiếp cận: userFontScale cho phép điều chỉnh kích thước phông chữ.
+Potential UI/UX Improvements/Considerations:
+Hiệu ứng/Lợi ích chính: Liệt kê rõ ràng các lợi ích liên quan đến chuyên ngành.
+Năng khiếu của nhân vật đối với chuyên ngành: Hiển thị chỉ số hiện tại của nhân vật và mức độ phù hợp với yêu cầu của chuyên ngành.
+Biểu tượng trực quan cho chuyên ngành: Các biểu tượng nhỏ đại diện cho từng chuyên ngành.
+33. File: WelcomeBackMenu.tsx
+Overall Purpose (UI/UX):
+Component WelcomeBackMenu được hiển thị khi người chơi quay lại trò chơi sau khi đã lưu trò chơi. Mục tiêu UI/UX chính của nó là cung cấp giao diện rõ ràng và hấp dẫn để người chơi tiếp tục trò chơi trước đó hoặc bắt đầu một trò chơi hoàn toàn mới, đảm bảo việc quay lại trò chơi diễn ra suôn sẻ.
+Key UI/UX Elements and their Functions/Actions:
+WelcomeBackMenu Component: Nhận onContinue, onStartNew, lang.
+Main Container: Căn giữa tất cả nội dung trên màn hình.
+Title and Description: Tiêu đề "Welcome Back!" và mô tả.
+Action Buttons:
+Nút "Continue Game": (màu xanh lá cây) để tiếp tục trò chơi đã lưu.
+Nút "Start New Game": (màu xám) để bắt đầu trò chơi mới.
+Styling: Sử dụng StyleSheet với kích thước linh hoạt, mã màu cho các nút.
+Summary of UI/UX Strengths:
+Điểm vào rõ ràng: Cung cấp giao diện đơn giản cho người chơi quay lại.
+Lựa chọn trực quan: Các nút được gắn nhãn rõ ràng để tiếp tục hoặc bắt đầu trò chơi mới.
+Ưu tiên trực quan: Nút "Continue Game" màu xanh lá cây hướng dẫn người chơi.
+Nội dung được bản địa hóa: Đảm bảo tất cả văn bản đều dễ hiểu.
+Potential UI/UX Improvements/Considerations:
+Thông tin lần chơi cuối: Hiển thị tóm tắt trò chơi đã lưu cuối cùng.
+Hình ảnh: Hình ảnh hoặc hoạt ảnh nền tinh tế.
+Xác nhận cho trò chơi mới: Hộp thoại xác nhận trước khi bắt đầu trò chơi mới.

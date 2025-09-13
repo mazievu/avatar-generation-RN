@@ -1,0 +1,104 @@
+Giai Đoạn 1: Xây Dựng Nền Tảng Bố Cục và Điều Hướng (Bước 1-5)
+Mục tiêu của giai đoạn này là thiết lập bộ khung cấu trúc mới cho toàn bộ giao diện, tận dụng các component điều phối chính của bạn.
+Bước 1: Củng Cố FamilyTree làm Màn Hình Trung Tâm
+Hành động: Trong GameUI.tsx, xác nhận logic hiển thị activeScene mặc định là tree. Đây là màn hình chính, nơi người chơi sẽ dành phần lớn thời gian.
+Chi tiết: Tận dụng PanGestureHandler và PinchGestureHandler đã có trong FamilyTree.tsx để đảm bảo trải nghiệm kéo và thu phóng là cốt lõi của tương tác chính.
+Bước 2: Thiết Kế Lại Hoàn Toàn HUD trong GameUI.tsx
+Hành động: Sửa đổi phần Header của GameUI.tsx.
+Loại bỏ: Di chuyển Picker tốc độ game và nút "Quit Game" ra khỏi HUD chính.
+Bố cục mới (Trái qua Phải):
+Icon Menu (☰): Đặt ở góc trên cùng bên trái.
+Tên Gia Đình: Đặt ở giữa, nổi bật.
+Cụm Tài Nguyên (bên phải): Sắp xếp lại để hiển thị: Icon Trái tim, Icon Tiền (MoneyIcon từ icons.tsx) với gameState.familyFund, và tốc độ kiếm tiền.
+Ngày tháng & Điều khiển: Đặt ngày tháng và nút Play/Pause ngay bên dưới cụm tài nguyên.
+Lý do: Tạo ra một HUD sạch sẽ, tập trung vào các chỉ số cốt lõi, giống hệt game mẫu.
+Bước 3: Tạo Component SideMenu.tsx (Menu Phụ)
+Hành động: Tạo một component mới. Menu này sẽ được kích hoạt bởi icon Menu (☰) ở Bước 2.
+Nội dung: Chuyển các chức năng đã loại bỏ ở Bước 2 vào đây:
+Các nút điều khiển tốc độ game.
+Nút "Hướng Dẫn" (kích hoạt onShowInstructions để mở InstructionsModal).
+Các nút cài đặt và thoát game khác.
+Bước 4: Tái Cấu Trúc BottomNav
+Hành động: Sửa đổi component BottomNav được render trong GameUI.tsx.
+Loại bỏ các tab hiện tại: log, assets, business.
+Các tab mới:
+Tab Trái - Love: Icon trái tim ❤️ (có thể có icon khóa 🔒).
+Tab Giữa - Family: Icon cây gia phả 🌳. Đây là tab mặc định, được chọn sẵn.
+Tab Phải - Assets & Career: Icon đồng tiền 💰. Khi được nhấn, nó sẽ thay đổi activeScene thành một giá trị mới, ví dụ assets.
+Bước 5: Tinh Chỉnh Visual của CharacterNode.tsx
+Hành động: Sửa đổi CharacterNode.tsx. Báo cáo của bạn cho thấy nó đã rất mạnh mẽ (responsive, có huy hiệu tuổi, viền màu cho nhân vật chính). Giờ hãy tập trung vào phong cách.
+Thay đổi: Cập nhật StyleSheet để CharacterNode có dạng một vòng tròn lớn chứa avatar, với tên/tuổi ở dưới. Giữ lại phần hiển thị thu nhập ròng nhưng làm cho nó tinh tế hơn. Mục tiêu là làm cho cây gia phả trông giống Ảnh 7.
+Giai Đoạn 2: Đại Tu Hệ Thống Hình Ảnh (Bước 6-10)
+Đây là giai đoạn cốt lõi để thay đổi "cảm giác" của game, tập trung vào các component nền tảng nhất.
+Bước 6: Tạo LifeSimModal.tsx để Thay Thế Hoàn Toàn ComicPanelModal.tsx
+Hành động: Xây dựng một component modal nền tảng mới LifeSimModal.tsx.
+Đặc điểm: Nền xanh lam đậm, bo góc cực lớn, có thanh tiêu đề. Khi xuất hiện, nó làm mờ nền phía sau.
+Lý do: ComicPanelModal với "viền vàng dày" và "xoay nhẹ" là đặc trưng của phong cách cũ. Việc thay thế nó là bước quan trọng nhất để đạt được giao diện mới.
+Bước 7: Thiết Kế Lại ChoiceButton.tsx
+Hành động: Sửa đổi file ChoiceButton.tsx.
+Chi tiết: Báo cáo của bạn mô tả nó có "hoạt ảnh nhấn tinh tế" và "kiểu dáng chunky". Hãy giữ lại logic hoạt ảnh từ react-native-reanimated nhưng thay đổi hoàn toàn StyleSheet:
+Bỏ viền dưới dày.
+Đổi nền thành màu xanh lam (từ designSystem).
+Chữ màu trắng, bo góc lớn.
+Thêm prop variant="special" để đổi nền thành màu xanh lá.
+Bước 8: Mở Rộng designSystem.ts
+Hành động: Đây là "trái tim" của việc thay đổi. Mở file designSystem.ts.
+Cập nhật:
+Trong colors, định nghĩa bảng màu mới: các sắc thái xanh lam, xanh lá, vàng của game mẫu.
+Trong typography, định nghĩa một font chữ mới (sans-serif, tròn trịa).
+Áp dụng: Bắt đầu import và sử dụng các màu sắc và kiểu chữ mới này trong các component bạn chỉnh sửa.
+Bước 9: Đại Tu CharacterDetailModal.tsx
+Hành động: Đây là một dự án nhỏ trong dự án lớn. Thiết kế lại hoàn toàn CharacterDetailModal.tsx để khớp với Ảnh 4.
+Checklist:
+Loại bỏ Tab Navigation ("Chi tiết" và "Sự kiện cuộc đời").
+Sử dụng LifeSimModal làm container.
+Bố cục dọc: Avatar tròn lớn ở trên -> các thanh StatBar -> thông tin dạng danh sách -> lịch sử học vấn/sự nghiệp.
+Bước 10: Nâng Cấp StatBar.tsx
+Hành động: Component này đã rất mạnh mẽ với StarAnimation và SmokeAnimation. Hãy tập trung vào việc tái thiết kế giao diện của nó.
+Thay đổi: Cập nhật StyleSheet để thanh tiến trình, icon và văn bản khớp với phong cách của game mẫu (thanh mảnh hơn, màu sắc từ designSystem). Đảm bảo StarAnimation (cho chỉ số tăng) và SmokeAnimation (cho chỉ số giảm) vẫn hoạt động mượt mà.
+Giai Đoạn 3: Tích Hợp và Tinh Chỉnh Component (Bước 11-15)
+Áp dụng hệ thống hình ảnh mới một cách có hệ thống trên toàn bộ các component tương tác.
+Bước 11: Tái Cấu Trúc ModalManager.tsx
+Hành động: Mở ModalManager.tsx. Đây là nơi bạn có thể thực hiện thay đổi trên diện rộng.
+Nhiệm vụ: Tìm tất cả các component modal được render có điều kiện (EventModal, SchoolChoiceModal, v.v.). Trong mỗi component đó, thay thế wrapper <ComicPanelModal> bằng <LifeSimModal> mới.
+Bước 12: Áp Dụng Phong Cách Mới cho EventModal.tsx
+Hành động: Mở EventModal.tsx.
+Checklist:
+Đảm bảo nó sử dụng LifeSimModal.
+Thay thế các nút lựa chọn bằng ChoiceButton đã được thiết kế lại.
+Sắp xếp lại bố cục bên trong để khớp với Ảnh 2 (avatar, mô tả, các nút).
+Phần kết quả (Outcome Section) cần hiển thị thay đổi chỉ số và tiền bạc một cách rõ ràng như Ảnh 3.
+Bước 13: Cập Nhật Hàng Loạt Các Modal Lựa Chọn Khác
+Hành động: Thực hiện quy trình tương tự như Bước 12 cho các component sau: SchoolChoiceModal, CareerChoiceModal, UniversityChoiceModal, ClubChoiceModal, LoanModal, UnderqualifiedChoiceModal.
+Mục tiêu: Đảm bảo mọi màn hình lựa chọn đều mang lại cảm giác nhất quán.
+Bước 14: Tích hợp AvatarBuilder.tsx
+Hành động:
+Trong CharacterDetailModal (đã làm lại ở Bước 9), đảm bảo nút "Customize" gọi onCustomize.
+Logic trong GameUI hoặc ModalManager sẽ hiển thị AvatarBuilder.tsx.
+Cập nhật UI bên trong AvatarBuilder: các nút chọn lớp, các optionButton, nút "Save"/"Cancel" phải sử dụng phong cách của ChoiceButton và màu từ designSystem.
+Bước 15: Tích hợp GameLog vào Chi Tiết Nhân Vật
+Hành động: Loại bỏ tab log khỏi BottomNav. Thay vào đó, tích hợp một phiên bản rút gọn của GameLog.tsx vào CharacterDetailModal.
+Chi tiết: Trong CharacterDetailModal.tsx (đã làm lại ở Bước 9), thêm một FlatList ở dưới cùng để render các LogEntry liên quan đến nhân vật đó, tạo ra một mục "Sự kiện cuộc đời".
+Giai Đoạn 4: Tích Hợp Tính Năng Độc Quyền và Hoàn Thiện (Bước 16-20)
+Giai đoạn cuối cùng để đưa các tính năng đặc trưng của bạn vào và thêm phần "hồn" cho game.
+Bước 16: Xây Dựng Màn Hình Assets & Career
+Hành động: Tạo một component mới, ví dụ AssetsScreen.tsx.
+Logic: Trong GameUI.tsx, khi activeScene là assets (được kích hoạt bởi Tab 3 trên BottomNav), render component này.
+Nội dung ban đầu: Hiển thị component FamilyAssetsPanel bên trong AssetsScreen.
+Bước 17: Tái Thiết Kế và Tích Hợp FamilyAssetsPanel & BusinessMap
+Hành động:
+Thiết kế lại giao diện của FamilyAssetsPanel và AssetDetailModal để sử dụng các component và style mới.
+Trong AssetsScreen, thêm một nút/mục menu để chuyển sang BusinessMap.tsx.
+Thiết kế lại các modal liên quan đến kinh doanh (BusinessManagementModal, BusinessPurchaseModal) để sử dụng LifeSimModal.
+Bước 18: Hoàn Thiện Tương Tác Cốt Lõi trên FamilyTree
+Hành động: Trong FamilyTree.tsx, lập trình sự kiện onPress của mỗi CharacterNode.
+Luồng hoạt động: Sự kiện này sẽ gọi callback onSelectCharacter. Trong GameUI.tsx hoặc ModalManager.tsx, khi selectedCharacter thay đổi, nó sẽ trigger việc hiển thị CharacterDetailModal dưới dạng một pop-up.
+Lợi ích: Người chơi có thể xem chi tiết và quản lý nhân vật ngay trên cây gia phả mà không cần rời màn hình chính.
+Bước 19: Thêm "Juice" (Hiệu Ứng và Phản Hồi)
+Hành động: Nâng cao trải nghiệm người dùng.
+Âm thanh: Tận dụng soundManager.play('click') đã có trong ChoiceButton và thêm các âm thanh khác cho việc nhận tiền, hoàn thành nhiệm vụ...
+Hiệu ứng: Thêm hiệu ứng chuyển động tinh tế (fade, scale) cho LifeSimModal khi nó xuất hiện.
+Phản hồi: Kích hoạt hoạt ảnh tiền bay trên HUD khi có thu nhập.
+Bước 20: Rà Soát Toàn Diện và Đồng Bộ Hóa
+Hành động: Chơi lại game và kiểm tra mọi màn hình, kể cả những màn hình ít dùng.
+Checklist: Mở StartMenu.tsx, SummaryScreen.tsx, và WelcomeBackMenu.tsx. Cập nhật StyleSheet của chúng để sử dụng màu sắc, font chữ và kiểu nút từ designSystem, đảm bảo toàn bộ trải nghiệm từ đầu đến cuối đều nhất quán.
