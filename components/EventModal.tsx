@@ -34,7 +34,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   const [initialCharacterState, setInitialCharacterState] = React.useState(character);
   const [displayEventData, setDisplayEventData] = React.useState(eventData);
   const [outcome, setOutcome] = React.useState<EventEffect | null>(null);
-
+ 
   const okButtonPressState = useSharedValue(0);
 
   const okButtonAnimatedStyle = useAnimatedStyle(() => {
@@ -135,7 +135,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                             <Text style={eventModalStyles.choiceTriggerText}>
                               {`(${choice.effect.triggers.map((trigger, idx) => {
                                 const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
-                                if (!triggeredEvent) return '';
+                                if (!triggeredEvent) return null;
                                 const triggerText = t(triggeredEvent.titleKey, lang);
                                 return `${Math.round(trigger.chance * 100)}% ${triggerText}${idx < choice.effect.triggers!.length - 1 ? ', ' : ''}`;
                               }).filter(Boolean).join(', ')})`}
@@ -175,12 +175,13 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                     value={finalValue}
                                     max={stat === 'iq' ? 200 : 100}
                                     color={'#cbd5e1'}
+                                    initialValue={initialValue}
                                  />
                             );
                         })}
                     </View>
                      <TouchableOpacity
-                            onPress={() => {
+                            onPress={() => { 
                                 clearTimer();
                                 const isNewEventPending = eventData.event.id !== displayEventData.event.id || eventData.characterId !== displayEventData.characterId;
                                 if (isNewEventPending) {

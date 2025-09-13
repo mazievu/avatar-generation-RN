@@ -4,44 +4,76 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedProps } from 'react-native-reanimated';
 import { TextInput } from 'react-native-gesture-handler';
-
-// Import các icon SVG của bạn tại đây
-// import IqIcon from './icons/IqIcon';
-// import HappinessIcon from './icons/HappinessIcon';
+import { StarAnimation } from './StarAnimation'; // Import StarAnimation
+import { SmokeAnimation } from './SmokeAnimation'; // Import SmokeAnimation
 
 interface StatBarProps {
   label: string;
   value: number;
   max: number;
-  Icon?: React.ElementType; // Cho phép truyền component Icon vào
+  Icon?: React.ElementType;
   color?: string;
+  initialValue: number;
 }
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color = '#60a5fa' }) => {
-  const progress = useSharedValue(0);
+export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color = '#60a5fa', initialValue }) => {
+  const progress = useSharedValue(initialValue);
   const scale = useSharedValue(1);
+  const changeTextOpacity = useSharedValue(0);
+  const changeTextTranslateY = useSharedValue(0);
+
+  const shouldAnimateStars = useSharedValue(0); // 0 for false, 1 for true
+  const shouldAnimateSmoke = useSharedValue(0); // 0 for false, 1 for true
+
+  const statChange = value - initialValue;
+  const statChangeColor = statChange > 0 ? '#22c55e' : statChange < 0 ? '#ef4444' : color;
 
   useEffect(() => {
     progress.value = withTiming(value, { duration: 500 });
-    // Hiệu ứng nảy
     scale.value = withSpring(1.2, { damping: 2, stiffness: 200 }, () => {
       scale.value = withSpring(1);
     });
-  }, [value, progress, scale]);
+
+    if (statChange !== 0) {
+      changeTextOpacity.value = 1;
+      changeTextTranslateY.value = withTiming(-20, { duration: 500 }, () => {
+        changeTextOpacity.value = withTiming(0, { duration: 300 });
+        changeTextTranslateY.value = 0;
+      });
+
+      if (statChange > 0) {
+        shouldAnimateStars.value = 1;
+        // Reset after animation
+        setTimeout(() => { shouldAnimateStars.value = 0; }, 1000);
+      } else if (statChange < 0) {
+        shouldAnimateSmoke.value = 1;
+        // Reset after animation
+        setTimeout(() => { shouldAnimateSmoke.value = 0; }, 1000);
+      }
+    }
+  }, [value, progress, scale, statChange, changeTextOpacity, changeTextTranslateY, shouldAnimateStars, shouldAnimateSmoke]);
 
   const animatedFillStyle = useAnimatedStyle(() => {
     const percentage = (progress.value / max) * 100;
     return {
       width: `${percentage}%`,
-      backgroundColor: color,
+      backgroundColor: statChangeColor,
     };
   });
 
   const animatedTextStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
+    };
+  });
+
+  const animatedChangeTextStyle = useAnimatedStyle(() => {
+    return {
+      opacity: changeTextOpacity.value,
+      transform: [{ translateY: changeTextTranslateY.value }],
+      color: statChangeColor,
     };
   });
 
@@ -71,20 +103,33 @@ export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color
           animatedProps={animatedProps}
         />
       </Animated.View>
+
+      {statChange !== 0 && (
+        <Animated.View style={[styles.changeTextContainer, animatedChangeTextStyle]}>
+          <Text style={styles.changeText}>
+            {statChange > 0 ? `+${statChange}` : statChange}
+          </Text>
+        </Animated.View>
+      )}
+
+      {/* Star/Smoke Animations - Moved outside statBarBackground */}
+      <StarAnimation shouldAnimate={shouldAnimateStars.value === 1} />
+      <SmokeAnimation shouldAnimate={shouldAnimateSmoke.value === 1} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   barContainer: {
-    flex: 0.6, // Quan trọng: Chiếm toàn bộ không gian còn lại
+    flex: 0.6,
     marginHorizontal: 8,
   },
   statBarBackground: {
     backgroundColor: '#e2e8f0',
     borderRadius: 7,
     height: 14,
-    overflow: 'hidden', // Đảm bảo fill không tràn ra ngoài
+    
+    justifyContent: 'center', // Center the animations vertically
   },
   statBarFill: {
     borderRadius: 7,
@@ -101,13 +146,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginBottom: 10,
+    position: 'relative',
   },
   statValue: {
-    minWidth: 35, // Đảm bảo đủ không gian
+    minWidth: 35,
     textAlign: 'right',
     fontWeight: 'bold',
     fontSize: 14,
     color: '#334155',
-    padding: 0, // Xóa padding mặc định của TextInput
+    padding: 0,
+  },
+  changeTextContainer: {
+    position: 'absolute',
+    right: 0,
+    top: -10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+  changeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
