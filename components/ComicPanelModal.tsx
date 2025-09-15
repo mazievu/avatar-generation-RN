@@ -25,9 +25,9 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
       visible={visible}
       transparent={true}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={() => {}}
     >
-      <Pressable style={styles.modalOverlay} onPress={onClose}>
+      <Pressable style={styles.modalOverlay}>
         <Pressable 
              style={[
                 styles.panelContainer, 
