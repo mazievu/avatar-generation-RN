@@ -53,9 +53,18 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
   };
   
   return (
-    <ComicPanelModal visible={!!character} onClose={onClose} flexContent={true}>
+    <ComicPanelModal
+      visible={!!character}
+      onClose={onClose}
+      flexContent={true}
+      closeButtonComponent={
+        <Pressable onPress={onClose} style={styles.closeButton}>
+          <CloseIcon width={28} height={20} color="#EF4444" />
+        </Pressable>
+      }
+    >
       <View style={styles.container}>
-        <View style={styles.header}><Text style={styles.characterName}>{character.name} (G{character.generation})</Text><Pressable onPress={onClose} style={styles.closeButton}><CloseIcon width={28} height={20} color="#94a3b8" /></Pressable></View>
+        <View style={styles.header}><Text style={styles.characterName}>{character.name} (G{character.generation})</Text></View>
         <View style={styles.tabContainer}><Pressable style={[styles.tab, activeTab === 'details' ? styles.activeTab : {}]} onPress={() => setActiveTab('details')}><Text style={[styles.tabText, activeTab === 'details' && styles.activeTabText]}>Chi tiết</Text></Pressable><Pressable style={[styles.tab, activeTab === 'events' ? styles.activeTab : {}]} onPress={() => setActiveTab('events')}><Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Sự kiện cuộc đời</Text></Pressable></View>
         
         {/* Sửa lỗi layout ở đây */}

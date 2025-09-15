@@ -93,7 +93,7 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
             {displayName}
           </Text>
 
-          {isAlive && monthlyNetIncome !== 0 && (
+          {isAlive && (
             <View style={styles.incomeContainer}>
               <Text style={[styles.incomeText, { color: netIncomeColor }]}>
                 {formattedIncome}/mo

@@ -11,6 +11,8 @@ interface ComicPanelModalProps {
   children: React.ReactNode;
   rotate?: string;
   flexContent?: boolean; 
+  closeButtonComponent?: React.ReactNode;
+  disableDismissOnPressOutside?: boolean; // New prop
 }
 
 export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
@@ -19,15 +21,22 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
   children,
   rotate = '-1.5deg',
   flexContent = false,
+  closeButtonComponent,
+  disableDismissOnPressOutside = false, // Destructure new prop with default
 }) => {
   return (
     <Modal
       visible={visible}
       transparent={true}
       animationType="fade"
-      onRequestClose={() => {}}
+      onRequestClose={disableDismissOnPressOutside ? () => {} : onClose}
     >
-      <Pressable style={styles.modalOverlay}>
+      <Pressable style={styles.modalOverlay} onPress={disableDismissOnPressOutside ? () => {} : onClose}>
+        {closeButtonComponent && (
+          <View style={styles.absoluteCloseButtonContainer}>
+            {closeButtonComponent}
+          </View>
+        )}
         <Pressable 
              style={[
                 styles.panelContainer, 
@@ -53,6 +62,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: responsiveSize(24),
+  },
+  absoluteCloseButtonContainer: {
+    position: 'absolute',
+    top: responsiveSize(10), 
+    right: responsiveSize(10), 
+    zIndex: 10, 
   },
    panelContainer: {
      // Quan trọng: Cung cấp không gian cho con

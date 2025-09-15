@@ -231,6 +231,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             newState.currentDate = { day, year };
             const isNewYear = day === 1 && year > prevState.currentDate.year;
 
+            let memberUpdates: Record<string, Partial<Character>> = {};
+
             if (isNewMonth) {
                 // Cleanup invalid business assignments
                 for (const businessId in newState.familyBusinesses) {
@@ -479,11 +481,14 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 if (newState.familyFund < 0 && !prevState.pendingLoanChoice) {
                     newState.pendingLoanChoice = true;
                 }
+
+                // After monthly updates, merge them into nextFamilyMembers
+                for (const id in memberUpdates) {
+                    nextFamilyMembers[id] = { ...nextFamilyMembers[id], ...memberUpdates[id] };
+                }
             }
             
-            const memberUpdates: Record<string, Partial<Character>> = {};
-            let hasMemberUpdates = false;
-
+            // Daily updates will now add to the same memberUpdates object
             const livingMemberIds = Object.values(nextFamilyMembers).filter(c => c.isAlive).map(c => c.id);
             for (const id of livingMemberIds) {
                 const character = nextFamilyMembers[id];
@@ -532,16 +537,12 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 if (Object.keys(statsUpdate).length > 0) charUpdate.stats = { ...character.stats, ...statsUpdate };
                 if (Object.keys(charUpdate).length > 0) {
                      memberUpdates[id] = { ...(memberUpdates[id] || {}), ...charUpdate };
-                     hasMemberUpdates = true;
                 }
             }
 
-            if(hasMemberUpdates) {
-                 const updatedFamilyMembers = { ...nextFamilyMembers };
-                 for (const id in memberUpdates) {
-                    updatedFamilyMembers[id] = { ...updatedFamilyMembers[id], ...memberUpdates[id] };
-                 }
-                 nextFamilyMembers = updatedFamilyMembers;
+            // Apply all updates (monthly and daily) to the characters
+            for (const id in memberUpdates) {
+                nextFamilyMembers[id] = { ...nextFamilyMembers[id], ...memberUpdates[id] };
             }
 
             if (isNewYear) {

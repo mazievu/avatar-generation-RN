@@ -273,6 +273,10 @@ export const formatDate = (day: number, year: number, lang: Language): string =>
   return `${month} ${dayOfMonth}, ${year}`;
 };
 
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+};
+
 export const assignNpcCareer = (character: Character, manifest: Manifest): Partial<Character> => {
     if (character.age < 23) {
         return { education: 'education_high_school', status: CharacterStatus.Unemployed };

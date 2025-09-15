@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { View, StyleSheet, Dimensions, ImageSourcePropType, Text, ViewStyle } from 'react-native';
 import {
   PanGestureHandler,
@@ -17,6 +17,7 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 import { CharacterNode } from './CharacterNode';
 import type { Character, GameState, Language, Manifest } from '../core/types';
+import IncomeAnimation from './IncomeAnimation';
 
 // --- 1. TYPES AND INTERFACES ---
 
@@ -283,8 +284,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     const bufferX = viewPortWidth * 0.5;
     const bufferY = viewPortHeight * 0.5;
 
-    for (const id in layouts) {
-      const node = layouts[id];
+    for (const id in layouts) {     const node = layouts[id];
       const nodeRight = node.x + NODE_WIDTH;
       const nodeBottom = node.y + NODE_HEIGHT;
 
@@ -334,6 +334,11 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
                       lang={lang}
                       manifest={manifest}
                       images={images}
+                    />
+                    <IncomeAnimation
+                      netIncome={character.monthlyNetIncome}
+                      characterId={character.id}
+                      currentDate={gameState.currentDate}
                     />
                   </View>
                 );

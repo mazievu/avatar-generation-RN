@@ -99,7 +99,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   }
 
   return (
-    <ComicPanelModal visible={true} onClose={onClose} rotate="2deg">
+    <ComicPanelModal visible={true} onClose={onClose} rotate="2deg" disableDismissOnPressOutside={true}>
         
       
         <View style={eventModalStyles.header}>
