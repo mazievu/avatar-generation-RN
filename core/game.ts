@@ -83,6 +83,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].lowHappinessYears = 0;
                 initialState.familyMembers[charId].lowHealthYears = 0;
                 initialState.familyMembers[charId].monthsInCurrentJobLevel = 0;
+                initialState.familyMembers[charId].monthsUnemployed = 0;
             }
             setGameState(initialState);
         } else {
@@ -92,6 +93,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].lowHappinessYears = 0;
                 initialState.familyMembers[charId].lowHealthYears = 0;
                 initialState.familyMembers[charId].monthsInCurrentJobLevel = 0;
+                initialState.familyMembers[charId].monthsUnemployed = 0;
             }
             setGameState(initialState);
         }
@@ -124,6 +126,9 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                         }
                         if (savedState.familyMembers[charId].monthsInCurrentJobLevel === undefined) {
                             savedState.familyMembers[charId].monthsInCurrentJobLevel = 0;
+                        }
+                        if (savedState.familyMembers[charId].monthsUnemployed === undefined) {
+                            savedState.familyMembers[charId].monthsUnemployed = 0;
                         }
                     }
                 }
@@ -436,12 +441,27 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                         };
                         charUpdate.monthlyNetIncome = -personalExpenses;
                     } else if (char.status === CharacterStatus.Unemployed) {
+                        charUpdate.monthsUnemployed = (char.monthsUnemployed || 0) + 1;
                         statsUpdate = {
                             ...(statsUpdate || char.stats), 
                             happiness: Math.max(0, char.stats.happiness - 1),
                             eq: Math.max(0, char.stats.eq - 1)
                         };
                         charUpdate.monthlyNetIncome = -personalExpenses;
+
+                        // If unemployed for more than a year, character actively seeks job
+                        if (charUpdate.monthsUnemployed > 12 && Math.random() < 0.2) {
+                            if (!newState.pendingCareerChoice) {
+                                const careerOptions = generateCareerChoices(char);
+                                newState.pendingCareerChoice = { characterId: char.id, options: careerOptions };
+                                nextGameLog.push({
+                                    year: newState.currentDate.year,
+                                    messageKey: 'log_unemployed_seeking_job',
+                                    replacements: { name: getCharacterDisplayName(char, language) },
+                                    characterId: char.id,
+                                });
+                            }
+                        }
                     } else {
                         charUpdate.monthlyNetIncome = -personalExpenses;
                     }
@@ -1260,7 +1280,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 updatedCharacter = {
                     careerTrack: choiceKey, careerLevel: 0, status: CharacterStatus.Working,
                     phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: 0,
-                    monthsInCurrentJobLevel: 0
+                    monthsInCurrentJobLevel: 0,
+                    monthsUnemployed: 0
                 };
                 logEntry = { year: prevState.currentDate.year, messageKey: 'log_found_job', replacements: { name: displayName, title: t(trackDetails.levels[0].titleKey, language) }, characterId, eventTitleKey: 'event_career_choice_title' };
             } else if (hasDegree && !isMajorMatch && isStatQualified) {

@@ -196,6 +196,7 @@ export const createInitialCharacter = (year: number, lang: Language, manifest: M
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
 };
 
@@ -246,6 +247,7 @@ export const handleBirth = (parent1: Character, parent2: Character, currentDate:
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
 };
 

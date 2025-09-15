@@ -36,7 +36,7 @@ export const UnderqualifiedChoiceModal: React.FC<UnderqualifiedChoiceModalProps>
             rotate="0deg"
         >
             <Text style={underqualifiedChoiceModalStyles.title}>{t('modal_underqualified_title', lang)}</Text>
-            <Text style={underqualifiedChoiceModalStyles.description}>{t('modal_underqualified_desc', lang, { careerName: t(track.nameKey, lang) })}</Text>
+            <Text style={underqualifiedChoiceModalStyles.description}>{t('modal_underqualified_desc', lang, { name: character.name, careerName: t(track.nameKey, lang) })}</Text>
             <ChoiceButton onClick={() => onSelect(true)}>
                 <Text style={underqualifiedChoiceModalStyles.choiceTitle}>{t('underqualified_choice_trainee', lang)}</Text>
                 <Text style={underqualifiedChoiceModalStyles.choiceDescription}>{t('underqualified_choice_trainee_desc', lang)}</Text>

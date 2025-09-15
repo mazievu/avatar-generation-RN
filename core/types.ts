@@ -164,6 +164,7 @@ export interface Character {
   lowHappinessYears: number; // New: Tracks years happiness is below threshold
   lowHealthYears: number; // New: Tracks years health is below threshold
   monthsInCurrentJobLevel: number; // New: Tracks months in current job level
+  monthsUnemployed: number;
 }
 export enum AssetType {
     Housing = 'Housing',

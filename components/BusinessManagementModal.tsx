@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropTy
 import { Picker } from '@react-native-picker/picker';
 import type { Business, GameState, Manifest, Language, Character } from '../core/types';
 import { BUSINESS_DEFINITIONS, ROBOT_HIRE_COST } from '../core/constants';
-import { t } from '../core/localization';
+import * as localization from '../core/localization';
 import { getCharacterDisplayName, calculateEmployeeSalary } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { UpgradeIcon, RobotAvatarIcon, CloseIcon } from './icons';
@@ -75,14 +75,14 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
         <ComicPanelModal visible={true} onClose={onClose} rotate="-2deg">
             <View style={businessManagementModalStyles.header}>
                 <View>
-                    <Text style={businessManagementModalStyles.title}>{t(businessDef.nameKey, lang)}</Text>
-                    <Text style={businessManagementModalStyles.levelText}>{t('level_label', lang)}: {business.level}</Text>
+                    <Text style={businessManagementModalStyles.title}>{localization.t(businessDef.nameKey, lang)}</Text>
+                    <Text style={businessManagementModalStyles.levelText}>{localization.t('level_label', lang)}: {business.level}</Text>
                 </View>
                 <Pressable onPress={onClose} style={businessManagementModalStyles.closeButton}><CloseIcon width={32} height={32} color="#94a3b8" /></Pressable>
             </View>
 
             <ScrollView style={businessManagementModalStyles.slotsContainer}>
-                <Text style={businessManagementModalStyles.sectionTitle}>{t('family_members_label', lang)}</Text>
+                <Text style={businessManagementModalStyles.sectionTitle}>{localization.t('family_members_label', lang)}</Text>
                 {business.slots.map((slot, index) => {
                         const assignedCharacter = slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? gameState.familyMembers[slot.assignedCharacterId] : null;
                         const isRobot = slot.assignedCharacterId === 'robot';
@@ -100,11 +100,11 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                                     )}
                                 </View>
                                 <View style={businessManagementModalStyles.slotDetails}>
-                                    <Text style={businessManagementModalStyles.slotRole}>{t(slot.role, lang)}</Text>
-                                    <Text style={businessManagementModalStyles.slotRequirement}>{t('req_major_label', lang)}: {slot.requiredMajor === 'Unskilled' ? t('unskilled_major', lang) : t(slot.requiredMajor, lang)}</Text>
+                                    <Text style={businessManagementModalStyles.slotRole}>{localization.t(slot.role, lang)}</Text>
+                                    <Text style={businessManagementModalStyles.slotRequirement}>{localization.t('req_major_label', lang)}: {slot.requiredMajor === 'Unskilled' ? localization.t('unskilled_major', lang) : localization.t(slot.requiredMajor, lang)}</Text>
                                     {assignedCharacter && (
                                         <Text style={businessManagementModalStyles.slotSalary}>
-                                            {t('salary_label', lang)}: ${salary.toLocaleString()}/mo
+                                            {localization.t('salary_label', lang)}: ${salary.toLocaleString()}/mo
                                         </Text>
                                     )}
                                 </View>
@@ -114,8 +114,8 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                                     style={businessManagementModalStyles.picker}
                                     itemStyle={businessManagementModalStyles.pickerItem}
                                 >
-                                    <Picker.Item label={t('unassigned_option', lang)} value="unassigned" />
-                                    <Picker.Item label={`${t('hire_robot_option', lang)} (-${ROBOT_HIRE_COST}/mo)`} value="robot" />
+                                    <Picker.Item label={localization.t('unassigned_option', lang)} value="unassigned" />
+                                    <Picker.Item label={`${localization.t('hire_robot_option', lang)} (-${ROBOT_HIRE_COST}/mo)`} value="robot" />
                                     {/* Optgroup is not directly supported in React Native Picker, so we'll just list items */}
                                     {availableMembers.map(char => {
                                         const isMajorMatch = slot.requiredMajor !== 'Unskilled' && char.major === slot.requiredMajor;
@@ -138,7 +138,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                         >
                             <UpgradeIcon style={businessManagementModalStyles.upgradeIcon} />
                             <Text style={businessManagementModalStyles.upgradeButtonText}>
-                                {t('upgrade_button', lang)} (-${upgradeCost.toLocaleString()})
+                                {localization.t('upgrade_button', lang)} (-${upgradeCost.toLocaleString()})
                             </Text>
                         </TouchableOpacity>
                     )}

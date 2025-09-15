@@ -29,7 +29,7 @@ interface CareerChoiceModalProps extends LocalizedProps {
 export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character, options, onSelect, currentFunds, lang }) => (
      <ComicPanelModal visible={true} onClose={() => {}} rotate="1deg">
         <Text style={careerChoiceModalStyles.title}>{t('modal_career_title', lang)}</Text>
-        <Text style={careerChoiceModalStyles.description}>{t('modal_career_desc', lang)}</Text>
+        <Text style={careerChoiceModalStyles.description}>{t('modal_career_desc', lang, { name: getCharacterDisplayName(character, lang) })}</Text>
         {options.map((optionKey, index) => {
              if (CAREER_LADDER[optionKey]) {
                 const track = CAREER_LADDER[optionKey];

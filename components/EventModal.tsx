@@ -202,7 +202,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                             </Animated.View>
                         </TouchableOpacity>
                 </View>
-            )}
+            )} 
       </ComicPanelModal>)
 };
 

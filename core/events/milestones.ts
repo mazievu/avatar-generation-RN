@@ -62,6 +62,7 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                         lowHappinessYears: 0,
                         lowHealthYears: 0,
                         monthsInCurrentJobLevel: 0,
+                        monthsUnemployed: 0,
                     };
                     partner = { ...partner, ...assignNpcCareer(partner, manifest) };
                     
