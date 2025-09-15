@@ -273,6 +273,13 @@ export const formatDate = (day: number, year: number, lang: Language): string =>
   return `${month} ${dayOfMonth}, ${year}`;
 };
 
+export const getEducationDisplay = (character: Character, lang: Language): string => {
+  if (character.major) {
+    return `${t('phase_University', lang)} (${t(character.major, lang)})`;
+  }
+  return t(character.education, lang);
+};
+
 export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 };
