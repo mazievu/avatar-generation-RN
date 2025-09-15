@@ -71,7 +71,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
         }
     };
 
-    return (
+        return (
         <ComicPanelModal visible={true} onClose={onClose} rotate="-2deg">
             <View style={businessManagementModalStyles.header}>
                 <View>
@@ -143,8 +143,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                         </TouchableOpacity>
                     )}
             </View>
-        </ComicPanelModal>
-    );
+        </ComicPanelModal>)
 };
 
 const businessManagementModalStyles = StyleSheet.create({
@@ -173,6 +172,7 @@ const businessManagementModalStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 16,
+        height: 30,
     },
     levelText: {
         color: '#64748b',
@@ -205,6 +205,7 @@ const businessManagementModalStyles = StyleSheet.create({
         padding: 12,
         borderRadius: 8,
         marginBottom: 8,
+        height: 100,
     },
     slotRequirement: {
         color: '#64748b',
@@ -219,7 +220,7 @@ const businessManagementModalStyles = StyleSheet.create({
         fontSize: 12, // green-600
     },
     slotsContainer: {
-        // maxHeight: 400, // Example max height
+        // flex: 1, // Make the scroll view take up available space
     },
     title: {
         color: '#1e293b',
