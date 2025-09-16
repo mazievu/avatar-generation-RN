@@ -20,6 +20,7 @@ import { ModalManager } from './ModalManager';
 import SettingsModal from './SettingsModal';
 import { colors } from './designSystem';
 import { CLUBS } from '../core/clubsAndEventsData';
+import { imageAssets } from './ImageAssets';
 
 const { width: screenWidth } = Dimensions.get('window');
 const baseWidth = 375; // A common base width for scaling
@@ -30,11 +31,6 @@ const responsiveSize = (size: number) => Math.round(size * scale);
 
 export type SceneName = 'tree' | 'log' | 'assets' | 'business';
 
-const iconFamilyTree = require('../public/asset/icon_family_tree.png');
-const iconLog = require('../public/asset/icon_log.png');
-const iconAssets = require('../public/asset/icon_assets.png');
-const iconBusiness = require('../public/asset/icon_business.png');
-
 const BottomNav: React.FC<{
   activeScene: SceneName;
   onSceneChange: (scene: SceneName) => void;
@@ -43,16 +39,16 @@ const BottomNav: React.FC<{
   return (
     <View style={gameUIStyles.bottomNavContainer}>
       <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={iconFamilyTree} style={gameUIStyles.bottomNavIcon} />
+        <Image source={imageAssets['../public/asset/icon_family_tree.webp']} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('log')} style={[gameUIStyles.bottomNavButton, activeScene === 'log' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={iconLog} style={gameUIStyles.bottomNavIcon} />
+        <Image source={imageAssets['../public/asset/icon_log.webp']} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={iconAssets} style={gameUIStyles.bottomNavIcon} />
+        <Image source={imageAssets['../public/asset/icon_assets.webp']} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('business')} style={[gameUIStyles.bottomNavButton, activeScene === 'business' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={iconBusiness} style={gameUIStyles.bottomNavIcon} />
+        <Image source={imageAssets['../public/asset/icon_business.webp']} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
     </View>
   );
