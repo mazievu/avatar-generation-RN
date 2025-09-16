@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType, Dimensions, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType, Dimensions, TextInput, Image } from 'react-native';
 
 
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club, Language } from '../core/types';
@@ -29,6 +29,11 @@ const responsiveSize = (size: number) => Math.round(size * scale);
 
 export type SceneName = 'tree' | 'log' | 'assets' | 'business';
 
+const iconFamilyTree = require('../public/asset/icon_family_tree.png');
+const iconLog = require('../public/asset/icon_log.png');
+const iconAssets = require('../public/asset/icon_assets.png');
+const iconBusiness = require('../public/asset/icon_business.png');
+
 const BottomNav: React.FC<{
   activeScene: SceneName;
   onSceneChange: (scene: SceneName) => void;
@@ -37,16 +42,16 @@ const BottomNav: React.FC<{
   return (
     <View style={gameUIStyles.bottomNavContainer}>
       <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
-        <Text>{t('scene_tree', lang)}</Text>
+        <Image source={iconFamilyTree} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('log')} style={[gameUIStyles.bottomNavButton, activeScene === 'log' && gameUIStyles.bottomNavButtonActive]}>
-        <Text>{t('scene_log', lang)}</Text>
+        <Image source={iconLog} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
-        <Text>{t('scene_assets', lang)}</Text>
+        <Image source={iconAssets} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('business')} style={[gameUIStyles.bottomNavButton, activeScene === 'business' && gameUIStyles.bottomNavButtonActive]}>
-        <Text>{t('scene_business', lang)}</Text>
+        <Image source={iconBusiness} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
     </View>
   );
@@ -446,6 +451,10 @@ const gameUIStyles = StyleSheet.create({
     bottomNavButtonActive: {
         backgroundColor: '#e0e0e0',
         borderRadius: 8,
+    },
+    bottomNavIcon: {
+        width: 50,
+        height: 50,
     },
     settingsButton: { // NEW STYLE
         position: 'absolute',
