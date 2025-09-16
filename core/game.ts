@@ -767,6 +767,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                     if (event) {
                         newState.activeEvent = { characterId: chosenCharacter.id, event: event };
+                        console.log("GameLoop: Active event set for character:", chosenCharacter.id, "Event:", event.id); // ADD THIS
 
                         const livingMembersCount = Object.values(nextFamilyMembers).filter(c => c.isAlive).length;
                         const cooldownDays = livingMembersCount <= 3 ? 120 : 180;

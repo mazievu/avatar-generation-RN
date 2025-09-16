@@ -194,7 +194,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                 }
                             }}
                             onPressIn={handleOkPressIn}
-                            onPressOut={handleOkPressOut}
+                                                        onPressOut={handleOkPressOut}
                             activeOpacity={1}
                         >
                             <Animated.View style={[eventModalStyles.okButton, okButtonAnimatedStyle]}>
