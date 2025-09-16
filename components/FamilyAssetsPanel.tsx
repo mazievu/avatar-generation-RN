@@ -107,7 +107,7 @@ const assetSlotStyles = StyleSheet.create({
     imageContainer: {
         flexShrink: 0,
         width: '100%',
-        height: '66%', // h-2/3
+        height: '100%', // h-4/5, increased from 66%
         alignItems: 'center',
         justifyContent: 'center',
         padding: 4, // p-1

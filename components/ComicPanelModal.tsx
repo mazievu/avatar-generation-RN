@@ -19,7 +19,7 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
   visible,
   onClose,
   children,
-  rotate = '-1.5deg',
+  rotate = '0deg',
   flexContent = false,
   closeButtonComponent,
   disableDismissOnPressOutside = false, // Destructure new prop with default
@@ -41,7 +41,7 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
              style={[
                 styles.panelContainer, 
                 flexContent && styles.flexContainer, // Áp dụng flex: 1 nếu prop là true
-                { transform: [{ rotate }] }
+                
             ]} 
             onPress={() => { /* Ngăn click xuyên qua */ }}
         >

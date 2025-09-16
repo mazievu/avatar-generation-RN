@@ -18,9 +18,10 @@ import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { Picker } from '@react-native-picker/picker';
 import { ModalManager } from './ModalManager';
 import SettingsModal from './SettingsModal';
+import { colors } from './designSystem';
+import { CLUBS } from '../core/clubsAndEventsData';
 
 const { width: screenWidth } = Dimensions.get('window');
-import { CLUBS } from '../core/clubsAndEventsData';
 const baseWidth = 375; // A common base width for scaling
 const scale = screenWidth / baseWidth;
 
@@ -230,14 +231,7 @@ export const GameUI: React.FC<GameUIProps> = ({
         switch (activeScene) {
             case 'tree':
                 return (
-                    <>
-                        <TextInput
-                            style={gameUIStyles.familyTreeTitleEditable} // New style for editable title
-                            value={familyNameInput}
-                            onChangeText={setFamilyNameInput}
-                            onBlur={() => onSetFamilyName(familyNameInput)} // Save on blur
-                            onSubmitEditing={() => onSetFamilyName(familyNameInput)} // Save on submit
-                        />
+                    <View style={gameUIStyles.sceneContainer}>
                         <View style={gameUIStyles.familyTreeContainer}>
                             <FamilyTree
                                 gameState={gameState}
@@ -250,7 +244,14 @@ export const GameUI: React.FC<GameUIProps> = ({
                                 onCharacterCenteredOnEvent={onCharacterCenteredOnEvent} // NEW
                             />
                         </View>
-                    </>
+                        <TextInput
+                            style={gameUIStyles.familyTreeTitleEditable} // Style updated to be an overlay
+                            value={familyNameInput}
+                            onChangeText={setFamilyNameInput}
+                            onBlur={() => onSetFamilyName(familyNameInput)} // Save on blur
+                            onSubmitEditing={() => onSetFamilyName(familyNameInput)} // Save on submit
+                        />
+                    </View>
                 );
             case 'log':
                 return <GameLog log={gameState.gameLog} lang={lang} familyMembers={gameState.familyMembers} />;
@@ -363,111 +364,128 @@ export const GameUI: React.FC<GameUIProps> = ({
 const gameUIStyles = StyleSheet.create({
     flexCenter: { alignItems: 'center', justifyContent: 'center' },
     fullScreen: { flex: 1 },
-    mainContainer: { backgroundColor: '#f0f4f8', flex: 1 },
-    maxWidthContainer: { flex: 1, padding: 16, paddingBottom: 60 }, // Added paddingBottom to avoid overlap with bottom nav
+    mainContainer: { backgroundColor: colors.neutral50, flex: 1 }, // Use new cream background
+    maxWidthContainer: { flex: 1, padding: 16, paddingBottom: 90 }, // Increased paddingBottom for taller nav
     headerContainer: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
     headerLeft: { },
-    gameTitle: { color: '#ec4899', fontSize: 32, fontWeight: 'bold' },
-    dateText: { color: '#64748b', fontSize: 16 },
+    gameTitle: { color: colors.primary, fontSize: 32, fontWeight: 'bold' },
+    dateText: { color: colors.textSecondary, fontSize: 21 }, // Increased font size by ~30%
     fundContainer: { },
     fundTextContainer: { alignItems: 'baseline', flexDirection: 'row' },
-    fundLabel: { color: '#64748b', fontSize: 16 },
+    fundLabel: { color: colors.textSecondary, fontSize: 16 },
     fundValue: { fontSize: 20, fontWeight: 'bold', marginLeft: 8 },
-    fundPositive: { color: '#1f2937' },
-    fundNegative: { color: '#ef4444' },
+    fundPositive: { color: colors.textPrimary },
+    fundNegative: { color: colors.error },
     fundBubble: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 20, // Rounded corners for bubble effect
+        backgroundColor: colors.neutral200, // Use light blue-gray for contrast
+        borderRadius: 20,
         paddingVertical: 8,
         paddingHorizontal: 12,
-        shadowColor: '#000', // Optional: for a subtle shadow
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.22,
-        shadowRadius: 2.22,
-        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 4,
     },
     fundIcon: {
         fontSize: 20,
         marginRight: 5,
-        color: '#22c55e', // Green color for money icon
+        color: colors.success, // Use success color from design system
         fontWeight: 'bold',
     },
     monthlyChange: { fontSize: 14, marginLeft: 8 },
-    monthlyChangePositive: { color: '#22c55e' },
-    monthlyChangeNegative: { color: '#ef4444' },
+    monthlyChangePositive: { color: colors.success },
+    monthlyChangeNegative: { color: colors.error },
     overlayControlsContainer: {
         position: 'absolute',
-        top: 16, // Adjust as needed
-        right: 16, // Adjust as needed
+        top: 16,
+        right: 16,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8, // Spacing between buttons
-        zIndex: 10, // Ensure it's above other content
+        gap: 8,
+        zIndex: 10,
     },
     headerRight: { alignItems: 'center', flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' },
-    languageButtonsContainer: { backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', padding: 4 },
+    languageButtonsContainer: { backgroundColor: colors.white, borderRadius: 8, flexDirection: 'row', padding: 4 },
     languageButton: { borderRadius: 6, paddingHorizontal: 12, paddingVertical: 4 },
-    languageButtonActive: { backgroundColor: '#6366f1' }, // indigo-500
+    languageButtonActive: { backgroundColor: colors.primary },
     languageButtonText: { fontWeight: 'bold' },
-    languageButtonTextActive: { color: 'white' },
-    languageButtonTextInactive: { color: '#475569' }, // slate-600
-    chunkyButtonSlate: { backgroundColor: '#64748b', borderRadius: 8, padding: 12 },
-    chunkyButtonBlue: { backgroundColor: '#3b82f6', borderRadius: 8, padding: 12 },
-    chunkyButtonText: { color: 'white', fontWeight: 'bold' },
+    languageButtonTextActive: { color: colors.white },
+    languageButtonTextInactive: { color: colors.textSecondary },
+    chunkyButtonSlate: { backgroundColor: colors.neutral700, borderRadius: 8, padding: 12 },
+    chunkyButtonBlue: { backgroundColor: colors.primary, borderRadius: 8, padding: 12 },
+    chunkyButtonText: { color: colors.white, fontWeight: 'bold' },
     speedPicker: { height: 44, width: responsiveSize(120) },
     speedPickerItem: { height: 44 },
     mainContentGrid: { flex: 1 },
-    familyTreeTitle: { color: '#6366f1', fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+    familyTreeTitle: { color: colors.primary, fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
     familyTreeTitleEditable: {
+        position: 'absolute', // Make it an overlay
+        top: 0,
+        left: 16,
+        right: 16,
+        zIndex: 10, // Ensure it's on top
         borderBottomWidth: 1,
-        borderColor: '#ccc',
-        color: '#6366f1',
+        borderColor: colors.neutral300,
+        color: colors.primary,
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 16,
         paddingVertical: 4,
         textAlign: 'center',
+        
+        borderRadius: 8,
+    },
+    sceneContainer: {
+        flex: 1,
+        position: 'relative',
     },
     familyTreeContainer: { flex: 1 },
-    noFamilyText: { color: '#64748b', fontStyle: 'italic' },
+    noFamilyText: { color: colors.textSecondary, fontStyle: 'italic' },
     bottomNavContainer: {
-        backgroundColor: '#f0f4f8',
-        borderColor: '#ccc',
-        borderTopWidth: 1,
+        backgroundColor: colors.neutral200, // Use light blue-gray
+        borderTopWidth: 0, // Remove top border for a cleaner look
         bottom: 0,
         flexDirection: 'row',
         justifyContent: 'space-around',
         left: 0,
-        paddingVertical: 8,
+        paddingVertical: 12, // Increased padding
         position: 'absolute',
         right: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
     bottomNavButton: {
         alignItems: 'center',
-        padding: 8,
+        padding: 4,
+        borderRadius: 12,
+        flex: 1,
+        marginHorizontal: 4,
     },
     bottomNavButtonActive: {
-        backgroundColor: '#e0e0e0',
-        borderRadius: 8,
+        backgroundColor: colors.primary, // Use primary color for active background
     },
     bottomNavIcon: {
-        width: 50,
+        width: 50, // Reverted to bigger size
         height: 50,
+        marginVertical: 4,
     },
-    settingsButton: { // NEW STYLE
+    settingsButton: {
         position: 'absolute',
-        top: 60,
+        top: 140,
         right: 16,
-        backgroundColor: '#6366f1', // indigo-500
+        backgroundColor: colors.accent, // Use accent color
         borderRadius: 8,
         paddingVertical: 8,
         paddingHorizontal: 12,
         zIndex: 10,
     },
-    settingsButtonText: { // NEW STYLE
-        color: 'white',
+    settingsButtonText: {
+        color: colors.white,
         fontWeight: 'bold',
     },
 });

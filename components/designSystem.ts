@@ -8,33 +8,32 @@ import { TextStyle } from 'react-native';
  */
 export const colors = {
   // Primary & Accent
-  primary: '#60a5fa', // blue-400
-  primaryDark: '#3b82f6', // blue-500
-  accent: '#facc15', // yellow-400
-  accentDark: '#f59e0b', // amber-500
+  primary: '#FF6B6B', // Vibrant Coral
+  primaryDark: '#E65A5A', // Darker Coral
+  accent: '#4ECDC4', // Bright Teal
+  accentDark: '#45B8AF', // Darker Teal
   
-  // Neutral (Grays/Slates)
-  // Tên màu được đặt theo độ sáng, 900 là tối nhất, 50 là sáng nhất
-  neutral900: '#1e293b', // slate-800 (Dùng cho tiêu đề chính)
-  neutral800: '#334155', // slate-700 (Dùng cho văn bản đậm)
-  neutral700: '#475569', // slate-600 (Dùng cho văn bản thường, độ tương phản tốt)
-  neutral600: '#64748b', // slate-500 (Dùng cho văn bản phụ, ghi chú)
-  neutral300: '#cbd5e1', // slate-300 (Dùng cho đường viền, nền vô hiệu hóa)
-  neutral200: '#e2e8f0', // slate-200 (Dùng cho đường viền, nền)
-  neutral100: '#f1f5f9', // slate-100 (Dùng cho nền nút, nền phần tử)
-  neutral50: '#f8fafc',  // slate-50  (Dùng cho nền trang)
+  // Neutral Backgrounds & Text
+  neutral900: '#3D405B', // Dark Slate Blue (For main headers)
+  neutral800: '#4A4E6D', // Slightly lighter slate blue
+  neutral700: '#6D6F81', // Mid-range slate blue (Good for sub-headings)
+  neutral600: '#9A9CAA', // Lighter gray for secondary text, notes
+  neutral300: '#D8DDE2', // Light gray for borders, disabled elements
+  neutral200: '#E8F0F2', // Light Blue Gray (For panels, secondary backgrounds)
+  neutral100: '#F5F7F8', // Very light gray for element backgrounds
+  neutral50: '#FAF8F2',  // Light Cream (For main page background)
 
-  // Semantic Colors (Màu theo ngữ nghĩa)
-  success: '#22c55e',      // green-500
-  successDark: '#16a34a',  // green-600
-  error: '#ef4444',        // red-500
-  errorDark: '#dc2626',    // red-600
-  warning: '#f59e0b',      // amber-500
+  // Semantic Colors
+  success: '#52C41A',      // Playful Green
+  successDark: '#40A916',  // Darker Green
+  error: '#FF4D4F',        // Pinkish Red
+  errorDark: '#E64446',    // Darker Red
+  warning: '#FADB5F',      // Sunny Yellow
 
   // Text Colors
-  textPrimary: '#1e293b',    // slate-800
-  textSecondary: '#475569', // slate-600
-  textDisabled: '#94a3b8',   // slate-400
+  textPrimary: '#3D405B',    // Dark Slate Blue
+  textSecondary: '#6D6F81', // Mid-range slate blue
+  textDisabled: '#BDBEC6',   // Light gray for disabled text
   textLight: '#ffffff',
 
   // Common Colors
