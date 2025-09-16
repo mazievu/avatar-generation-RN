@@ -24,6 +24,7 @@ interface ModalManagerProps {
     selectedCharacter: Character | null;
     editingBusiness: Business | null;
     avatarImages: Record<string, ImageSourcePropType>;
+    isCenteringAnimationDone: boolean; // NEW PROP
 
     // Callbacks
     onEventChoice: (choice: EventChoice) => void;
@@ -67,12 +68,13 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     onAssignToBusiness,
     onUpgradeBusiness,
     setEditingBusiness,
+    isCenteringAnimationDone, // NEW
 }) => {
     const { lang, familyMembers } = gameState;
 
     return (
         <>
-            {gameState.activeEvent && (
+            {gameState.activeEvent && isCenteringAnimationDone && (
                 <EventModal
                     eventData={gameState.activeEvent}
                     character={familyMembers[gameState.activeEvent.characterId]}

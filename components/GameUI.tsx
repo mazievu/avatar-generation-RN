@@ -138,6 +138,7 @@ export const GameUI: React.FC<GameUIProps> = ({
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null); // NEW STATE
+    const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false); // NEW STATE
     
     const [showSettingsModal, setShowSettingsModal] = useState(false); // NEW STATE for settings modal
 
@@ -157,8 +158,22 @@ export const GameUI: React.FC<GameUIProps> = ({
 
 
     const onCharacterCenteredOnEvent = useCallback(() => { // NEW CALLBACK
-        setCharacterIdToCenterOnEvent(null);
+        setCharacterIdToCenterOnEvent(null); // This resets the ID in FamilyTree
+        setIsCenteringAnimationDone(true); // Indicate animation is done
     }, []);
+
+    // Effect to set characterIdToCenterOnEvent when a new event starts
+    useEffect(() => {
+        if (gameState?.activeEvent?.characterId) { // Check if activeEvent and characterId exist
+            console.log("GameUI: Setting characterIdToCenterOnEvent to:", gameState.activeEvent.characterId);
+            setCharacterIdToCenterOnEvent(gameState.activeEvent.characterId);
+            setIsCenteringAnimationDone(false); // Reset for new animation
+        } else {
+            console.log("GameUI: activeEvent.characterId is null or undefined.");
+            // If activeEvent is cleared (modal closed), reset animation done flag
+            setIsCenteringAnimationDone(false);
+        }
+    }, [gameState?.activeEvent?.characterId]); // Dependency on activeEvent.characterId
 
     const handleEventHandled = useCallback(() => {
         // Logic to handle event being handled, e.g., clear current event, update game state
@@ -287,6 +302,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                 onAssignToBusiness={onAssignToBusiness}
                 onUpgradeBusiness={onUpgradeBusiness}
                 setEditingBusiness={setEditingBusiness}
+                isCenteringAnimationDone={isCenteringAnimationDone} // NEW PROP
             />
             
             {/* Settings Button */}

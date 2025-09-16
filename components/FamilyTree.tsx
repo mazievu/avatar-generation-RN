@@ -120,7 +120,7 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
 type AnimatedContext = { startX: number; startY: number; startScale: number; };
 
 export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
-  
+  const hasCenteredInitially = useRef(false); // Flag to ensure initial centering happens only once
 
   // Shared values for animation on UI Thread (as before)
   const scale = useSharedValue(1);
@@ -138,10 +138,21 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
   useEffect(() => {
     let characterToCenter: Character | null = null;
 
+    // Priority 1: Selected character (user click)
     if (selectedCharacter && layouts[selectedCharacter.id]) {
       characterToCenter = selectedCharacter;
-    } else if (characterIdToCenterOnEvent && gameState.familyMembers[characterIdToCenterOnEvent] && layouts[characterIdToCenterOnEvent]) {
+    }
+    // Priority 2: Event-driven character
+    else if (characterIdToCenterOnEvent && gameState.familyMembers[characterIdToCenterOnEvent] && layouts[characterIdToCenterOnEvent]) {
       characterToCenter = gameState.familyMembers[characterIdToCenterOnEvent];
+    }
+    // Priority 3: Initial centering on player character (only once)
+    else if (!hasCenteredInitially.current && Object.keys(layouts).length > 0) {
+      const playerCharacter = Object.values(gameState.familyMembers).find(char => char.isPlayerCharacter);
+      if (playerCharacter && layouts[playerCharacter.id]) {
+        characterToCenter = playerCharacter;
+        hasCenteredInitially.current = true; // Mark as centered
+      }
     }
 
     if (characterToCenter && layouts[characterToCenter.id]) {
@@ -157,11 +168,12 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
       translateX.value = withTiming(newTranslateX, { duration: 500 });
       translateY.value = withTiming(newTranslateY, { duration: 500 }, (finished) => {
         if (finished) {
-          // UPDATE STATE WHEN ANIMATION FINISHES
           runOnJS(setRenderScale)(targetScale);
           runOnJS(setRenderTranslateX)(newTranslateX);
           runOnJS(setRenderTranslateY)(newTranslateY);
-          // NEW: Notify parent that centering is done for event character
+          // Notify parent that centering is done for event character.
+          // IMPORTANT: The parent component MUST reset `characterIdToCenterOnEvent` to `null`
+          // after this callback to allow future event-driven centering.
           if (characterIdToCenterOnEvent && onCharacterCenteredOnEvent) {
             runOnJS(onCharacterCenteredOnEvent)();
           }
