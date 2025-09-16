@@ -85,26 +85,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
 const settingsModalStyles = StyleSheet.create({
     container: {
+        alignItems: 'center',
         padding: 20,
-        alignItems: 'center',
-    },
-    settingRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        marginBottom: 20,
-    },
-    settingLabel: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    languageButtonsContainer: {
-        backgroundColor: 'white',
-        borderRadius: 8,
-        flexDirection: 'row',
-        padding: 4,
     },
     languageButton: {
         borderRadius: 6,
@@ -123,12 +105,11 @@ const settingsModalStyles = StyleSheet.create({
     languageButtonTextInactive: {
         color: '#475569', // slate-600
     },
-    speedPicker: {
-        height: 44,
-        width: responsiveSize(150), // Adjusted width for better fit
-    },
-    speedPickerItem: {
-        height: 44,
+    languageButtonsContainer: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        flexDirection: 'row',
+        padding: 4,
     },
     pauseResumeButton: { // NEW STYLE
         backgroundColor: '#3b82f6', // blue-500
@@ -151,8 +132,27 @@ const settingsModalStyles = StyleSheet.create({
     },
     quitButtonText: {
         color: 'white',
-        fontWeight: 'bold',
         fontSize: 18,
+        fontWeight: 'bold',
+    },
+    settingLabel: {
+        color: '#333',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    settingRow: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+        width: '100%',
+    },
+    speedPicker: {
+        height: 44,
+        width: responsiveSize(150), // Adjusted width for better fit
+    },
+    speedPickerItem: {
+        height: 44,
     },
 });
 

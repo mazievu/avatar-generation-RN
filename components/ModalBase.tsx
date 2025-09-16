@@ -37,10 +37,38 @@ const ModalBase: React.FC<ModalBaseProps> = ({ isVisible, onClose, title, childr
 
 const modalBaseStyles = StyleSheet.create({
   centeredView: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     flex: 1,
+    justifyContent: 'center', // Semi-transparent background
+  },
+  closeButton: {
+    backgroundColor: '#FF6347', // Tomato color
+    borderRadius: 15,
+    width: 30,
+    height: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)', // Semi-transparent background
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalBody: {
+    width: '100%',
+  },
+  modalHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+    width: '100%',
+  },
+  modalTitle: {
+    color: '#333',
+    fontSize: 22,
+    fontWeight: 'bold',
   },
   modalView: {
     margin: 20,
@@ -58,34 +86,6 @@ const modalBaseStyles = StyleSheet.create({
     elevation: 5,
     width: '80%', // Adjust width as needed
     maxHeight: '80%', // Adjust max height as needed
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 15,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  modalBody: {
-    width: '100%',
-  },
-  closeButton: {
-    backgroundColor: '#FF6347', // Tomato color
-    borderRadius: 15,
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
 });
 

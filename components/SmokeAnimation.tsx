@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
     zIndex: 100, // High zIndex
   },
   smokePuff: {
+    backgroundColor: '#A0AEC0',
+    borderRadius: 7.5,
+    height: 15,
     position: 'absolute',
     width: 15,
-    height: 15,
-    borderRadius: 7.5,
-    backgroundColor: '#A0AEC0',
   },
 });

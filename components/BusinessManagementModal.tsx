@@ -170,9 +170,9 @@ const businessManagementModalStyles = StyleSheet.create({
     header: {
         alignItems: 'flex-start',
         flexDirection: 'row',
+        height: 30,
         justifyContent: 'space-between',
         marginBottom: 16,
-        height: 30,
     },
     levelText: {
         color: '#64748b',

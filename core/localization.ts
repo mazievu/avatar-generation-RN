@@ -19,7 +19,7 @@ export function t(key: string, lang: Language, replacements?: Record<string, str
         });
     }
     return translation;
-};
+}
 
 export const displayPhase = (phase: LifePhase, lang: Language): string => t(`phase_${phase.replace(/ /g, '_')}`, lang);
 export const displayStatus = (status: CharacterStatus, lang: Language): string => t(`status_${status.replace(/ /g, '_')}`, lang);

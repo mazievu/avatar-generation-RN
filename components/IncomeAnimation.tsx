@@ -62,11 +62,11 @@ const IncomeAnimation: React.FC<IncomeAnimationProps> = ({ netIncome, characterI
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: -20,
-    left: 0,
-    right: 0,
     alignItems: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: -20,
   },
   incomeText: {
     fontSize: 16,

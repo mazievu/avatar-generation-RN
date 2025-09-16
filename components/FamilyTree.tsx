@@ -112,6 +112,45 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
     totalY += NODE_HEIGHT + VERTICAL_SPACING;
   });
 
+  // Post-processing to center parents over children
+  Object.values(allMembers).forEach(parentChar => {
+    const parentLayout = layouts[parentChar.id];
+    if (!parentLayout || parentChar.childrenIds.length === 0) return;
+
+    let childrenXPositions: number[] = [];
+    parentChar.childrenIds.forEach(childId => {
+      const childLayout = layouts[childId];
+      if (childLayout) {
+        childrenXPositions.push(childLayout.x + NODE_WIDTH / 2); // Get center X of each child
+      }
+    });
+
+    if (childrenXPositions.length > 0) {
+      const minChildXCenter = Math.min(...childrenXPositions);
+      const maxChildXCenter = Math.max(...childrenXPositions);
+      const desiredParentXCenter = (minChildXCenter + maxChildXCenter) / 2;
+
+      let currentParentXCenter;
+      if (parentChar.partnerId && layouts[parentChar.partnerId]) {
+        // If it's a couple, find the midpoint between the two parents
+        const partnerLayout = layouts[parentChar.partnerId];
+        currentParentXCenter = (parentLayout.x + NODE_WIDTH / 2 + partnerLayout.x + NODE_WIDTH / 2) / 2;
+      } else {
+        // Single parent
+        currentParentXCenter = parentLayout.x + NODE_WIDTH / 2;
+      }
+
+      // Calculate the offset needed
+      const offsetX = desiredParentXCenter - currentParentXCenter;
+
+      // Apply the offset to the parent(s)
+      parentLayout.x += offsetX;
+      if (parentChar.partnerId && layouts[parentChar.partnerId]) {
+        layouts[parentChar.partnerId].x += offsetX;
+      }
+    }
+  });
+
   return layouts;
 }
 
@@ -245,34 +284,56 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
 
       // --- Draw Children Connectors ---
       if (childrenIds.length > 0) {
-        if (partnerId && id > partnerId) return; // Draw only from one parent in a couple
+        // Determine if this is the "primary" parent to draw children connectors
+        // This prevents drawing the same set of child connectors twice for a couple
+        const isPrimaryParent = !partnerId || id < partnerId;
 
-        const parentMidY = y + NODE_HEIGHT;
-        let parentMidX = x + NODE_WIDTH / 2;
+        if (isPrimaryParent) {
+          const parentMidY = y + NODE_HEIGHT;
+          let parentConnectorX: number;
 
-        if (partnerId && layouts[partnerId]) {
-            parentMidX = (x + NODE_WIDTH + layouts[partnerId].x) / 2;
-        }
-
-        const junctionY = parentMidY + VERTICAL_SPACING / 2;
-        paths.push(<Path key={`${id}-v-down`} d={`M ${parentMidX} ${parentMidY} V ${junctionY}`} stroke="#a1a1aa" strokeWidth="2" />);
-
-        let minChildX = Infinity;
-        let maxChildX = -Infinity;
-
-        childrenIds.forEach(childId => {
-          const childLayout = layouts[childId];
-          if (childLayout) {
-            const childMidX = childLayout.x + NODE_WIDTH / 2;
-            minChildX = Math.min(minChildX, childMidX);
-            maxChildX = Math.max(maxChildX, childMidX);
-            const childTopY = childLayout.y;
-            paths.push(<Path key={`${childId}-v-up`} d={`M ${childMidX} ${junctionY} V ${childTopY}`} stroke="#a1a1aa" strokeWidth="2" />);
+          if (partnerId && layouts[partnerId]) {
+            // If there's a partner, the connector should originate from the midpoint between the two parents
+            const partnerLayout = layouts[partnerId];
+            parentConnectorX = (x + NODE_WIDTH / 2 + partnerLayout.x + NODE_WIDTH / 2) / 2;
+          } else {
+            // Single parent, connector originates from the center of the parent node
+            parentConnectorX = x + NODE_WIDTH / 2;
           }
-        });
 
-        if (childrenIds.length > 1 && minChildX < maxChildX) {
-          paths.push(<Path key={`${id}-h-line`} d={`M ${minChildX} ${junctionY} H ${maxChildX}`} stroke="#a1a1aa" strokeWidth="2" />);
+          const junctionY = parentMidY + VERTICAL_SPACING / 2;
+
+          let minChildX = Infinity;
+          let maxChildX = -Infinity;
+
+          // First, calculate minChildX and maxChildX
+          childrenIds.forEach(childId => {
+            const childLayout = layouts[childId];
+            if (childLayout) {
+              const childMidX = childLayout.x + NODE_WIDTH / 2;
+              minChildX = Math.min(minChildX, childMidX);
+              maxChildX = Math.max(maxChildX, childMidX);
+            }
+          });
+
+          // Draw the vertical line from parent to the junction
+          // Use the calculated parentConnectorX
+          paths.push(<Path key={`${id}-v-down`} d={`M ${parentConnectorX} ${parentMidY} V ${junctionY}`} stroke="#a1a1aa" strokeWidth="2" />);
+
+          // Then, draw the horizontal line connecting all children
+          if (childrenIds.length > 1 && minChildX !== Infinity && maxChildX !== -Infinity) {
+            paths.push(<Path key={`${id}-h-line`} d={`M ${minChildX} ${junctionY} H ${maxChildX}`} stroke="#a1a1aa" strokeWidth="2" />);
+          }
+
+          // Finally, draw the vertical lines from the junction to each child
+          childrenIds.forEach(childId => {
+            const childLayout = layouts[childId];
+            if (childLayout) {
+              const childMidX = childLayout.x + NODE_WIDTH / 2;
+              const childTopY = childLayout.y;
+              paths.push(<Path key={`${childId}-v-up`} d={`M ${childMidX} ${junctionY} V ${childTopY}`} stroke="#a1a1aa" strokeWidth="2" />);
+            }
+          });
         }
       }
     });

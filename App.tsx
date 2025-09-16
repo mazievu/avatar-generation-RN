@@ -10,6 +10,7 @@ import { GameUI } from './components/GameUI';
 import AvatarBuilder from './components/AvatarBuilder';
 import { initGodMode } from './core/godmod';
 import { createGameLogicHandlers } from './core/game';
+import { SceneName } from './components/GameUI';
 
 type GameView = 'menu' | 'playing' | 'gameover' | 'welcome_back';
 
@@ -46,6 +47,7 @@ const App: React.FC = () => {
     const [isInitialized, setIsInitialized] = useState(false);
     const [language, setLanguage] = useState<Language>('vi');
     const [customizingCharacterId, setCustomizingCharacterId] = useState<string | null>(null);
+    const [activeScene, setActiveScene] = useState<SceneName>('tree');
     
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -207,11 +209,13 @@ const App: React.FC = () => {
                     onContinueGame={handleContinueGame}
                     onStartNewGame={handleStartNewGame}
                     onPurchaseAsset={handlePurchaseAsset}
-                    onSetMainView={setMainView} onSetFamilyName={function (name: string): void {
+                    onSetMainView={setMainView}
+                    onSetFamilyName={function (name: string): void {
                         throw new Error('Function not implemented.');
-                    } } activeScene={'tree'} onSetActiveScene={function (scene: 'tree' | 'business' | 'log' | 'assets'): void {
-                        throw new Error('Function not implemented.');
-                    } }            />
+                    } }
+                    activeScene={activeScene}
+                    onSetActiveScene={setActiveScene}
+            />
         </GestureHandlerRootView>
     );
 };

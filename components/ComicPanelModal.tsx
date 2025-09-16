@@ -53,6 +53,12 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
 };
 
 const styles = StyleSheet.create({
+  absoluteCloseButtonContainer: {
+    position: 'absolute',
+    right: responsiveSize(10), 
+    top: responsiveSize(10), 
+    zIndex: 10, 
+  },
   flexContainer: {
     flex: 1,
   },
@@ -62,12 +68,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: responsiveSize(24),
-  },
-  absoluteCloseButtonContainer: {
-    position: 'absolute',
-    top: responsiveSize(10), 
-    right: responsiveSize(10), 
-    zIndex: 10, 
   },
    panelContainer: {
      // Quan trọng: Cung cấp không gian cho con

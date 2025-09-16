@@ -33,6 +33,7 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
         contentVersion: 1,
+        familyName: 'Family',
     };
 };
 
@@ -80,6 +81,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
     const initialDate = { day: 1, year: initialYear };
     return {
@@ -103,6 +105,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
         contentVersion: 1,
+        familyName: 'Family',
     };
 };
 
@@ -133,6 +136,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 0,
@@ -153,6 +157,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
     const alice: Character = {
         id: aliceId, name: 'Alice', gender: Gender.Female, generation: 1,
@@ -173,6 +178,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
     const lucas: Character = {
         id: lucasId, name: 'Lucas', gender: Gender.Male, generation: 1,
@@ -193,6 +199,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
     const daisy: Character = {
         id: daisyId, name: 'Daisy', gender: Gender.Female, generation: 1,
@@ -213,6 +220,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
     };
     const mio: Pet = {
         id: mioId, name: 'Mio', type: PetType.Dog, ownerId: milaId, age: 2,
@@ -239,6 +247,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
         contentVersion: 1,
+        familyName: 'Mila Family',
     };
 };
 

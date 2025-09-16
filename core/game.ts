@@ -222,7 +222,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             }
 
             const newState = { ...prevState };
-            let nextFamilyMembers = { ...prevState.familyMembers };
+            const nextFamilyMembers = { ...prevState.familyMembers };
             let nextGameLog = [...prevState.gameLog];
 
             const isNewMonth = prevState.currentDate.day % 30 === 1;
@@ -236,7 +236,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             newState.currentDate = { day, year };
             const isNewYear = day === 1 && year > prevState.currentDate.year;
 
-            let memberUpdates: Record<string, Partial<Character>> = {};
+            const memberUpdates: Record<string, Partial<Character>> = {};
 
             if (isNewMonth) {
                 // Cleanup invalid business assignments

@@ -124,6 +124,19 @@ const styles = StyleSheet.create({
     flex: 0.6,
     marginHorizontal: 8,
   },
+  changeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  changeTextContainer: {
+    alignItems: 'center',
+    borderRadius: 4,
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    position: 'absolute',
+    right: 0,
+    top: -10,
+  },
   statBarBackground: {
     backgroundColor: '#e2e8f0',
     borderRadius: 7,
@@ -149,24 +162,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   statValue: {
-    minWidth: 35,
-    textAlign: 'right',
-    fontWeight: 'bold',
-    fontSize: 14,
     color: '#334155',
-    padding: 0,
-  },
-  changeTextContainer: {
-    position: 'absolute',
-    right: 0,
-    top: -10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-    borderRadius: 4,
-  },
-  changeText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
+    minWidth: 35,
+    padding: 0,
+    textAlign: 'right',
   },
 });

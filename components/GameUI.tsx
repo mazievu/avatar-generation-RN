@@ -27,7 +27,7 @@ const scale = screenWidth / baseWidth;
 const responsiveFontSize = (size: number) => Math.round(size * scale);
 const responsiveSize = (size: number) => Math.round(size * scale);
 
-type SceneName = 'tree' | 'log' | 'assets' | 'business';
+export type SceneName = 'tree' | 'log' | 'assets' | 'business';
 
 const BottomNav: React.FC<{
   activeScene: SceneName;
@@ -416,12 +416,12 @@ const gameUIStyles = StyleSheet.create({
     mainContentGrid: { flex: 1 },
     familyTreeTitle: { color: '#6366f1', fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
     familyTreeTitleEditable: {
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
         color: '#6366f1',
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 16,
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
         paddingVertical: 4,
         textAlign: 'center',
     },
