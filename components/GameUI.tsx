@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType, Dimensions, TextInput } from 'react-native';
 
 
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club, Language } from '../core/types';
@@ -17,6 +17,7 @@ import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { Picker } from '@react-native-picker/picker';
 import { ModalManager } from './ModalManager';
+import SettingsModal from './SettingsModal';
 
 const { width: screenWidth } = Dimensions.get('window');
 import { CLUBS } from '../core/clubsAndEventsData';
@@ -89,6 +90,9 @@ interface GameUIProps {
     onStartNewGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
     onSetMainView: (view: 'tree' | 'business') => void;
+    onSetFamilyName: (name: string) => void;
+    activeScene: SceneName; // NEW PROP
+    onSetActiveScene: (scene: SceneName) => void; // NEW PROP
 }
 
 export const GameUI: React.FC<GameUIProps> = ({
@@ -128,11 +132,29 @@ export const GameUI: React.FC<GameUIProps> = ({
     onStartNewGame,
     onPurchaseAsset,
     onSetMainView,
+    onSetFamilyName, // Added here
+    activeScene, // NEW PROP
+    onSetActiveScene, // NEW PROP
 }) => {
-    const [activeScene, setActiveScene] = useState<SceneName>('tree');
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null); // NEW STATE
-    const [wasPausedBeforeBusinessMap, setWasPausedBeforeBusinessMap] = useState(false); // NEW STATE
+    
+    const [showSettingsModal, setShowSettingsModal] = useState(false); // NEW STATE for settings modal
+
+    // New state for editable family name
+    const [familyNameInput, setFamilyNameInput] = useState<string>(
+        gameState?.familyName || (gameState?.familyMembers && Object.keys(gameState.familyMembers).length > 0
+            ? `${getCharacterDisplayName(gameState.familyMembers[Object.keys(gameState.familyMembers)[0]], lang)}${t('family_suffix', lang)}`
+            : t('default_family_name_placeholder', lang))
+    );
+
+    // Effect to update familyNameInput if gameState.familyName changes externally
+    useEffect(() => {
+        if (gameState?.familyName && gameState.familyName !== familyNameInput) {
+            setFamilyNameInput(gameState.familyName);
+        }
+    }, [gameState?.familyName]);
+
 
     const onCharacterCenteredOnEvent = useCallback(() => { // NEW CALLBACK
         setCharacterIdToCenterOnEvent(null);
@@ -153,15 +175,18 @@ export const GameUI: React.FC<GameUIProps> = ({
     }, [gameState?.familyBusinesses, editingBusiness]);
 
     const handleSceneChange = (scene: SceneName) => {
-        setActiveScene(scene);
+        onSetActiveScene(scene); // Always update the active tab
+
+        // Pause if not on 'tree' tab, resume if on 'tree' tab
+        onSetIsPaused(scene !== 'tree');
+
+        // Update mainView only if explicitly going to/from 'business'
         if (scene === 'business') {
-            setWasPausedBeforeBusinessMap(isPaused);
-            onSetIsPaused(true);
             onSetMainView('business');
-        } else {
-            onSetIsPaused(wasPausedBeforeBusinessMap);
-            onSetMainView('tree'); // Assuming 'tree' is the default view for other scenes
+        } else if (mainView === 'business' && (scene === 'tree' || scene === 'log' || scene === 'assets')) { // If currently on business mainView and switching to another non-business scene
+            onSetMainView('tree'); // Revert mainView to 'tree'
         }
+        // If mainView is already 'tree' and we're going to 'log' or 'assets', it stays 'tree'. This is fine.
     };
     
     if (view === 'welcome_back') {
@@ -186,7 +211,13 @@ export const GameUI: React.FC<GameUIProps> = ({
             case 'tree':
                 return (
                     <>
-                        <Text style={gameUIStyles.familyTreeTitle}>{t('family_tree_title', lang)}</Text>
+                        <TextInput
+                            style={gameUIStyles.familyTreeTitleEditable} // New style for editable title
+                            value={familyNameInput}
+                            onChangeText={setFamilyNameInput}
+                            onBlur={() => onSetFamilyName(familyNameInput)} // Save on blur
+                            onSubmitEditing={() => onSetFamilyName(familyNameInput)} // Save on submit
+                        />
                         <View style={gameUIStyles.familyTreeContainer}>
                             <FamilyTree
                                 gameState={gameState}
@@ -221,8 +252,8 @@ export const GameUI: React.FC<GameUIProps> = ({
                             mainView={mainView}
                             onBackToTree={() => {
                                 onSetMainView('tree');
-                                setActiveScene('tree');
-                                onSetIsPaused(wasPausedBeforeBusinessMap);
+                                onSetActiveScene('tree');
+                                onSetIsPaused(false);
                             }}
                         />;
             default:
@@ -258,17 +289,35 @@ export const GameUI: React.FC<GameUIProps> = ({
                 setEditingBusiness={setEditingBusiness}
             />
             
+            {/* Settings Button */}
+            <TouchableOpacity onPress={() => setShowSettingsModal(true)} style={gameUIStyles.settingsButton}>
+                <Text style={gameUIStyles.settingsButtonText}>{t('settings_button', lang)}</Text>
+            </TouchableOpacity>
+
+            {/* Settings Modal */}
+            <SettingsModal
+                isVisible={showSettingsModal}
+                onClose={() => setShowSettingsModal(false)}
+                lang={lang}
+                onSetLang={onSetLang}
+                gameSpeed={gameSpeed}
+                onSetGameSpeed={onSetGameSpeed}
+                onQuitGame={onQuitGame}
+                isPaused={isPaused} // NEW PROP
+                onSetIsPaused={onSetIsPaused} // NEW PROP
+            />
+
             <View style={gameUIStyles.maxWidthContainer}>
                 <View style={gameUIStyles.headerContainer}>
                     <View style={gameUIStyles.headerLeft}>
-                        <Text style={gameUIStyles.gameTitle}>{t('game_title', lang)}</Text>
                         <Text style={gameUIStyles.dateText}>{formatDate(gameState.currentDate.day, gameState.currentDate.year, lang)}</Text>
                     </View>
-                    <View style={gameUIStyles.fundContainer}>
+                    <View style={gameUIStyles.fundBubble}>
+                        <Text style={gameUIStyles.fundIcon}>$</Text>
                         <View style={gameUIStyles.fundTextContainer}>
-                            <Text style={gameUIStyles.fundLabel}>{t('family_fund_label', lang)}:</Text>
+                            
                             <Text style={[gameUIStyles.fundValue, gameState.familyFund >= 0 ? gameUIStyles.fundPositive : gameUIStyles.fundNegative]}>
-                                ${Math.round(gameState.familyFund).toLocaleString()}
+                                {Math.round(gameState.familyFund).toLocaleString()}
                             </Text>
                             {gameState.monthlyNetChange !== 0 && (
                                 <Text style={[gameUIStyles.monthlyChange, gameState.monthlyNetChange >= 0 ? gameUIStyles.monthlyChangePositive : gameUIStyles.monthlyChangeNegative]}>
@@ -277,31 +326,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                             )}
                         </View>
                     </View>
-                    <View style={gameUIStyles.headerRight}>
-                         <View style={gameUIStyles.languageButtonsContainer}>
-                            <TouchableOpacity onPress={() => onSetLang('en')} style={[gameUIStyles.languageButton, lang === 'en' && gameUIStyles.languageButtonActive]}>
-                                <Text style={[gameUIStyles.languageButtonText, lang === 'en' ? gameUIStyles.languageButtonTextActive : gameUIStyles.languageButtonTextInactive]}>EN</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => onSetLang('vi')} style={[gameUIStyles.languageButton, lang === 'vi' && gameUIStyles.languageButtonActive]}>
-                                <Text style={[gameUIStyles.languageButtonText, lang === 'vi' ? gameUIStyles.languageButtonTextActive : gameUIStyles.languageButtonTextInactive]}>VI</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity onPress={onQuitGame} style={gameUIStyles.chunkyButtonSlate}><Text style={gameUIStyles.chunkyButtonText}>{t('quit_game_button', lang)}</Text></TouchableOpacity>
-                        <TouchableOpacity onPress={() => onSetIsPaused(!isPaused)} style={gameUIStyles.chunkyButtonBlue}>
-                            <Text style={gameUIStyles.chunkyButtonText}>{isPaused ? t('resume_button', lang) : t('pause_button', lang)}</Text>
-                        </TouchableOpacity>
-                        <Picker
-                            selectedValue={gameSpeed}
-                            onValueChange={(itemValue) => onSetGameSpeed(Number(itemValue))}
-                            style={gameUIStyles.speedPicker}
-                            itemStyle={gameUIStyles.speedPickerItem}
-                        >
-                            <Picker.Item label={t('speed_slow', lang)} value={200} />
-                            <Picker.Item label={t('speed_normal', lang)} value={100} />
-                            <Picker.Item label={t('speed_fast', lang)} value={50} />
-                            <Picker.Item label={t('speed_very_fast', lang)} value={10} />
-                        </Picker>
-                    </View>
+                    {/* Removed headerRight content */}
                 </View>
 
                 <View style={gameUIStyles.mainContentGrid}>
@@ -329,9 +354,37 @@ const gameUIStyles = StyleSheet.create({
     fundValue: { fontSize: 20, fontWeight: 'bold', marginLeft: 8 },
     fundPositive: { color: '#1f2937' },
     fundNegative: { color: '#ef4444' },
+    fundBubble: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 20, // Rounded corners for bubble effect
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        shadowColor: '#000', // Optional: for a subtle shadow
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3,
+    },
+    fundIcon: {
+        fontSize: 20,
+        marginRight: 5,
+        color: '#22c55e', // Green color for money icon
+        fontWeight: 'bold',
+    },
     monthlyChange: { fontSize: 14, marginLeft: 8 },
     monthlyChangePositive: { color: '#22c55e' },
     monthlyChangeNegative: { color: '#ef4444' },
+    overlayControlsContainer: {
+        position: 'absolute',
+        top: 16, // Adjust as needed
+        right: 16, // Adjust as needed
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8, // Spacing between buttons
+        zIndex: 10, // Ensure it's above other content
+    },
     headerRight: { alignItems: 'center', flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' },
     languageButtonsContainer: { backgroundColor: 'white', borderRadius: 8, flexDirection: 'row', padding: 4 },
     languageButton: { borderRadius: 6, paddingHorizontal: 12, paddingVertical: 4 },
@@ -346,6 +399,16 @@ const gameUIStyles = StyleSheet.create({
     speedPickerItem: { height: 44 },
     mainContentGrid: { flex: 1 },
     familyTreeTitle: { color: '#6366f1', fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+    familyTreeTitleEditable: {
+        color: '#6366f1',
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        paddingVertical: 4,
+        textAlign: 'center',
+    },
     familyTreeContainer: { flex: 1 },
     noFamilyText: { color: '#64748b', fontStyle: 'italic' },
     bottomNavContainer: {
@@ -367,5 +430,19 @@ const gameUIStyles = StyleSheet.create({
     bottomNavButtonActive: {
         backgroundColor: '#e0e0e0',
         borderRadius: 8,
+    },
+    settingsButton: { // NEW STYLE
+        position: 'absolute',
+        top: 60,
+        right: 16,
+        backgroundColor: '#6366f1', // indigo-500
+        borderRadius: 8,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        zIndex: 10,
+    },
+    settingsButtonText: { // NEW STYLE
+        color: 'white',
+        fontWeight: 'bold',
     },
 });

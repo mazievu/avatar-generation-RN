@@ -131,6 +131,8 @@ const App: React.FC = () => {
 
         if (isModalOrSpecialViewActive) {
             setIsPaused(true);
+        } else {
+            setIsPaused(false);
         }
     }, [gameState?.activeEvent, gameState?.pendingSchoolChoice, gameState?.pendingUniversityChoice, gameState?.pendingMajorChoice, gameState?.pendingCareerChoice, gameState?.pendingLoanChoice, gameState?.pendingPromotion, gameState?.pendingUnderqualifiedChoice, gameState?.pendingClubChoice, customizingCharacterId, mainView]);
 
@@ -170,43 +172,46 @@ const App: React.FC = () => {
         return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <GameUI
-                view={view}
-                mainView={mainView}
-                gameState={gameState}
-                isPaused={isPaused}
-                gameSpeed={gameSpeed}
-                showInstructions={showInstructions}
-                selectedCharacter={selectedCharacter}
-                lang={language}
-                avatarImages={avatarImages}
-                onSetLang={setLanguage}
-                onStartGame={handleStartGame}
-                onShowInstructions={() => setShowInstructions(true)}
-                onCloseInstructions={() => setShowInstructions(false)}
-                onQuitGame={handleStartNewGame}
-                onSetIsPaused={setIsPaused}
-                onSetGameSpeed={(speed) => setGameSpeed(Number(speed))}
-                onSetSelectedCharacter={handleSetSelectedCharacter}
-                onOpenAvatarBuilder={setCustomizingCharacterId}
-                onEventChoice={handleEventChoice}
-                onEventModalClose={handleCloseEventModal}
-                onSchoolChoice={handleSchoolChoice}
-                onClubChoice={handleClubChoice}
-                onUniversityChoice={handleUniversityChoice}
-                onMajorChoice={handleMajorChoice}
-                onAbandonUniversity={handleAbandonUniversity}
-                onCareerChoice={handleCareerChoice}
-                onUnderqualifiedChoice={handleUnderqualifiedChoice}
-                onLoanChoice={handleLoanChoice}
-                onPromotionAccept={handlePromotionAccept}
-                onAssignToBusiness={handleAssignToBusiness}
-                onUpgradeBusiness={handleUpgradeBusiness}
-                onBuyBusiness={handleBuyBusiness}
-                onContinueGame={handleContinueGame}
-                onStartNewGame={handleStartNewGame}
-                onPurchaseAsset={handlePurchaseAsset}
-                onSetMainView={setMainView}
-            />
+                    view={view}
+                    mainView={mainView}
+                    gameState={gameState}
+                    isPaused={isPaused}
+                    gameSpeed={gameSpeed}
+                    showInstructions={showInstructions}
+                    selectedCharacter={selectedCharacter}
+                    lang={language}
+                    avatarImages={avatarImages}
+                    onSetLang={setLanguage}
+                    onStartGame={handleStartGame}
+                    onShowInstructions={() => setShowInstructions(true)}
+                    onCloseInstructions={() => setShowInstructions(false)}
+                    onQuitGame={handleStartNewGame}
+                    onSetIsPaused={setIsPaused}
+                    onSetGameSpeed={(speed) => setGameSpeed(Number(speed))}
+                    onSetSelectedCharacter={handleSetSelectedCharacter}
+                    onOpenAvatarBuilder={setCustomizingCharacterId}
+                    onEventChoice={handleEventChoice}
+                    onEventModalClose={handleCloseEventModal}
+                    onSchoolChoice={handleSchoolChoice}
+                    onClubChoice={handleClubChoice}
+                    onUniversityChoice={handleUniversityChoice}
+                    onMajorChoice={handleMajorChoice}
+                    onAbandonUniversity={handleAbandonUniversity}
+                    onCareerChoice={handleCareerChoice}
+                    onUnderqualifiedChoice={handleUnderqualifiedChoice}
+                    onLoanChoice={handleLoanChoice}
+                    onPromotionAccept={handlePromotionAccept}
+                    onAssignToBusiness={handleAssignToBusiness}
+                    onUpgradeBusiness={handleUpgradeBusiness}
+                    onBuyBusiness={handleBuyBusiness}
+                    onContinueGame={handleContinueGame}
+                    onStartNewGame={handleStartNewGame}
+                    onPurchaseAsset={handlePurchaseAsset}
+                    onSetMainView={setMainView} onSetFamilyName={function (name: string): void {
+                        throw new Error('Function not implemented.');
+                    } } activeScene={'tree'} onSetActiveScene={function (scene: 'tree' | 'business' | 'log' | 'assets'): void {
+                        throw new Error('Function not implemented.');
+                    } }            />
         </GestureHandlerRootView>
     );
 };

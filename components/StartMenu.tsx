@@ -24,7 +24,7 @@ interface StartMenuProps extends LocalizedProps {
 
 export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstructions, lang }) => (
     <View style={startMenuStyles.startMenuContainer}>
-        <Text style={startMenuStyles.gameTitle}>{t('game_title', lang)}</Text>
+        
         <Text style={startMenuStyles.gameSubtitle}>{t('game_subtitle', lang)}</Text>
         <View style={startMenuStyles.scenarioList}>
             {SCENARIOS.map((scenario, i) => (

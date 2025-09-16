@@ -248,6 +248,7 @@ export interface GameState {
   eventCooldownUntil: { day: number, year: number } | null;
   lang: Language;
   contentVersion: number; // Added content version
+  familyName: string;
 }
 
 export type StatChanges = Partial<Stats>;
