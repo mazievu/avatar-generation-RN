@@ -241,9 +241,9 @@ export const BusinessMap: React.FC<{
     const [selectedLocationKey, setSelectedLocationKey] = useState<string | null>(null);
     const [showManageModalForType, setShowManageModalForType] = useState<string | null>(null);
 
-    const scale = useSharedValue(1);
-    const translateX = useSharedValue(0);
-    const translateY = useSharedValue(0);
+    const scale = useSharedValue(0.8);
+    const translateX = useSharedValue(-1200);
+    const translateY = useSharedValue(-1100);
 
     type AnimatedContext = { startX: number; startY: number; startScale: number; };
 
@@ -298,9 +298,7 @@ export const BusinessMap: React.FC<{
         <View style={businessMapStyles.container}>
             <View style={businessMapStyles.header}>
                 <Text style={businessMapStyles.title}>{t('purchase_business_title', lang)}</Text>
-                <TouchableOpacity onPress={onBackToTree} style={[businessMapStyles.button, businessMapStyles.buttonSlate]}>
-                    <Text style={businessMapStyles.buttonText}>{t('back_button', lang)}</Text>
-                </TouchableOpacity>
+                
             </View>
             <PanGestureHandler onGestureEvent={panHandler}>
                 <Animated.View style={businessMapStyles.mapWrapper}>
