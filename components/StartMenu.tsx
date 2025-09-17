@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 
 
 import type { Language } from '../core/types';
-import { SCENARIOS } from '../core/scenarios';
 import { t } from '../core/localization';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -18,28 +17,23 @@ interface LocalizedProps {
 }
 
 interface StartMenuProps extends LocalizedProps {
-  onStart: (mode: string) => void;
+  onStart: () => void;
   onShowInstructions: () => void;
+  onSetLang: (lang: Language) => void; // New prop
 }
 
-export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstructions, lang }) => (
+export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstructions, lang, onSetLang }) => (
     <View style={startMenuStyles.startMenuContainer}>
         
         <Text style={startMenuStyles.gameSubtitle}>{t('game_subtitle', lang)}</Text>
-        <View style={startMenuStyles.scenarioList}>
-            {SCENARIOS.map((scenario, i) => (
-                <TouchableOpacity
-                    key={scenario.id}
-                    onPress={() => onStart(scenario.id)}
-                    style={startMenuStyles.scenarioButton}
-                >
-                    <View>
-                        <Text style={startMenuStyles.scenarioName}>{t(scenario.nameKey, lang)}</Text>
-                        <Text style={startMenuStyles.scenarioDescription}>{t(scenario.descriptionKey, lang)}</Text>
-                    </View>
-                </TouchableOpacity>
-            ))}
-        </View>
+        <TouchableOpacity
+            onPress={onStart}
+            style={startMenuStyles.startButton}
+        >
+            <Text style={startMenuStyles.startButtonText}>
+                {t('start_game_button', lang)}
+            </Text>
+        </TouchableOpacity>
         <TouchableOpacity
             onPress={onShowInstructions}
             style={startMenuStyles.howToPlayButton}
@@ -48,6 +42,27 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstruction
                 {t('how_to_play_button', lang)}
             </Text>
         </TouchableOpacity>
+
+        
+    {/* Language Selection */}
+        <View style={startMenuStyles.languageButtonsContainer}>
+            <TouchableOpacity
+                onPress={() => onSetLang('en')}
+                style={[startMenuStyles.languageButton, lang === 'en' && startMenuStyles.languageButtonActive]}
+            >
+                <Text style={[startMenuStyles.languageButtonText, lang === 'en' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>
+                    EN
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => onSetLang('vi')}
+                style={[startMenuStyles.languageButton, lang === 'vi' && startMenuStyles.languageButtonActive]}
+            >
+                <Text style={[startMenuStyles.languageButtonText, lang === 'vi' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>
+                    VI
+                </Text>
+            </TouchableOpacity>
+        </View>
     </View>
 );
 
@@ -74,13 +89,30 @@ const startMenuStyles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    scenarioButton: {
+    languageButton: {
+        borderRadius: 6,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    languageButtonActive: {
+        backgroundColor: '#2563eb', // blue-700
+    },
+    languageButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    languageButtonTextActive: {
+        color: 'white',
+    },
+    languageButtonTextInactive: {
+        color: '#4b5563', // slate-600
+    },
+    languageButtonsContainer: {
+        flexDirection: 'row',
+        marginTop: 24,
         backgroundColor: '#f1f5f9', // slate-100
-        padding: 16,
         borderRadius: 8,
-        marginBottom: 12,
-        borderBottomWidth: 4,
-        borderColor: '#e2e8f0', // slate-200
+        padding: 4,
     },
     scenarioDescription: {
         fontSize: 14,
@@ -95,6 +127,18 @@ const startMenuStyles = StyleSheet.create({
         color: '#1e293b',
         fontSize: 18,
         fontWeight: 'bold', // slate-800
+    },
+    startButton: {
+        backgroundColor: '#2563eb', // blue-700
+        paddingVertical: 16,
+        paddingHorizontal: 32,
+        borderRadius: 8,
+        marginBottom: 24,
+    },
+    startButtonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
     },
     startMenuContainer: {
         alignItems: 'center',

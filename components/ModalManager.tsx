@@ -6,6 +6,7 @@ import { getCharacterDisplayName } from '../core/utils';
 import { SCHOOL_OPTIONS } from '../core/constants';
 import { exampleManifest } from '../core/types'; // Assuming this is a placeholder/default
 import { CLUBS } from '../core/clubsAndEventsData';
+import { t } from '../core/localization';
 
 import { EventModal } from './EventModal';
 import { SchoolChoiceModal } from './SchoolChoiceModal';
@@ -71,6 +72,8 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     isCenteringAnimationDone, // NEW
 }) => {
     const { lang, familyMembers } = gameState;
+
+    
 
     return (
         <>

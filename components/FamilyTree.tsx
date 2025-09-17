@@ -117,7 +117,7 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
     const parentLayout = layouts[parentChar.id];
     if (!parentLayout || parentChar.childrenIds.length === 0) return;
 
-    let childrenXPositions: number[] = [];
+    const childrenXPositions: number[] = [];
     parentChar.childrenIds.forEach(childId => {
       const childLayout = layouts[childId];
       if (childLayout) {
@@ -429,7 +429,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1f5f9', // slate-100 for contrast
+    backgroundColor: '#eeeeeeff', // slate-100 for contrast
     overflow: 'hidden',
   },
   treeContainer: {

@@ -50,7 +50,9 @@ const ONE_TIME_EVENT_IDS = [
 export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: any) => {
 
     // Initialize game data (build events, etc.)
-    initializeAllGameData();
+    if (typeof initializeAllGameData === 'function') {
+            initializeAllGameData(language);
+    }
 
     const stopGameLoop = () => {
         if (timerRef.current) {
@@ -147,7 +149,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     savedState.familyBusinesses = {}; // Initialize as an empty object
                 }
 
-                setLanguage(savedState.lang || 'vi');
+                                setLanguage(savedState.lang || 'en');
                 setGameState(savedState);
                 setView('playing');
                 setIsPaused(true); 
@@ -166,7 +168,29 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     };
 
     const handleStartGame = (mode: string) => {
-        initializeGame(mode);
+        if (mode === '') {
+            // If mode is empty, it means we're transitioning from the initial "Start" button
+            // to the main game UI where the story choice modal will be available.
+            setView('playing');
+            setIsPaused(true); // Keep game paused until a story is chosen
+        } else {
+            // If mode is not empty, it means a specific story mode was chosen
+            initializeGame(mode);
+        }
+    };
+
+    const handleAutoStart = async () => {
+        try {
+            const savedGame = await AsyncStorage.getItem(SAVE_KEY);
+            if (savedGame) {
+                handleContinueGame();
+            } else {
+                initializeGame('classic');
+            }
+        } catch (error) {
+            console.error("Failed to auto start game:", error);
+            initializeGame('classic'); // Fallback to new game on error
+        }
     };
 
     const generateCareerChoices = (character: Character): string[] => {
@@ -1053,7 +1077,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     const logEntry: GameLogEntry = {
                         year: prevState.currentDate.year,
                         messageKey: 'log_joined_club',
-                        replacements: { name: displayName, clubName: t(club.nameKey, language) },
+                        replacements: { name: displayName, clubName: club.nameKey },
                         characterId: characterId,
                         eventTitleKey: 'event_club_join_title',
                     };
@@ -1148,7 +1172,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const logEntry: GameLogEntry = {
                 year: prevState.currentDate.year,
                 messageKey: 'log_enrolled_university',
-                replacements: { name: displayName, major: t(major.nameKey, language) },
+                replacements: { name: displayName, major: major.nameKey },
                 statChanges: major.effects,
                 fundChange: -major.cost,
                 characterId: characterId,
@@ -1284,14 +1308,14 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     monthsInCurrentJobLevel: 0,
                     monthsUnemployed: 0
                 };
-                logEntry = { year: prevState.currentDate.year, messageKey: 'log_found_job', replacements: { name: displayName, title: t(trackDetails.levels[0].titleKey, language) }, characterId, eventTitleKey: 'event_career_choice_title' };
+                logEntry = { year: prevState.currentDate.year, messageKey: 'log_found_job', replacements: { name: displayName, title: trackDetails.levels[0].titleKey }, characterId, eventTitleKey: 'event_career_choice_title' };
             } else if (hasDegree && !isMajorMatch && isStatQualified) {
                 updatedCharacter = {
                     careerTrack: choiceKey, careerLevel: 0, status: CharacterStatus.Working,
                     phase: LifePhase.PostGraduation, stats: { ...character.stats, skill: 0 }, progressionPenalty: 0.30,
                     monthsInCurrentJobLevel: 0
                 };
-                logEntry = { year: prevState.currentDate.year, messageKey: 'log_accepted_mismatched_job', replacements: { name: displayName, title: t(trackDetails.levels[0].titleKey, language) }, characterId, eventTitleKey: 'event_career_choice_title' };
+                logEntry = { year: prevState.currentDate.year, messageKey: 'log_accepted_mismatched_job', replacements: { name: displayName, title: trackDetails.levels[0].titleKey }, characterId, eventTitleKey: 'event_career_choice_title' };
             } else { // Underqualified for other reasons (mismatched major + low stats, or no degree + low stats)
                 const iqDeficit = Math.max(0, iqReq - character.stats.iq);
                 const eqDeficit = Math.max(0, eqReq - character.stats.eq);
@@ -1310,7 +1334,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 };
 
                 const messageKey = mismatchPenalty > 0 ? 'log_accepted_severely_underqualified_job' : 'log_accepted_penalized_job';
-                logEntry = { year: prevState.currentDate.year, messageKey, replacements: { name: displayName, title: t(trackDetails.levels[0].titleKey, language) }, characterId, eventTitleKey: 'event_career_choice_title' };
+                logEntry = { year: prevState.currentDate.year, messageKey, replacements: { name: displayName, title: trackDetails.levels[0].titleKey }, characterId, eventTitleKey: 'event_career_choice_title' };
             }
             
             if (logEntry) {
@@ -1348,7 +1372,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 logEntry = {
                     year: prevState.currentDate.year,
                     messageKey: 'log_became_trainee',
-                    replacements: { name: displayName, careerName: t(track.nameKey, language) },
+                    replacements: { name: displayName, careerName: track.nameKey },
                     characterId: characterId,
                     eventTitleKey: 'event_underqualified_decision_title',
                 }
@@ -1372,7 +1396,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                  logEntry = {
                     year: prevState.currentDate.year,
                     messageKey: 'log_accepted_penalized_job',
-                    replacements: { name: displayName, title: t(track.levels[0].titleKey, language) },
+                    replacements: { name: displayName, title: track.levels[0].titleKey },
                     characterId: characterId,
                     eventTitleKey: 'event_underqualified_decision_title',
                 }
@@ -1432,7 +1456,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const logEntry: GameLogEntry = {
                 year: prevState.currentDate.year,
                 messageKey: 'log_promoted',
-                replacements: { name: displayName, title: t(newTitleKey, language) },
+                replacements: { name: displayName, title: newTitleKey },
                 statChanges: { happiness: 20, eq: 5 },
                 characterId: characterId,
                 eventTitleKey: 'event_promotion_title',
@@ -1665,6 +1689,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         handleContinueGame,
         handleStartNewGame,
         handleStartGame,
+        handleAutoStart,
         generateCareerChoices,
         gameLoop,
         handleEventChoice,

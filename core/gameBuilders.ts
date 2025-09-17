@@ -1,5 +1,6 @@
-import { EventDraft, GameEvent, EventChoice, EventChoiceDraft, EventEffect, GameState, Character, ClubEventDraft, ClubEvent } from './types';
+import { EventDraft, GameEvent, EventChoice, EventChoiceDraft, EventEffect, GameState, Character, ClubEventDraft, ClubEvent, Language } from './types';
 import { EventIdByKey, ChoiceIdByKey } from '../src/generated/eventIds';
+import { t } from './localization';
 
 // Helper to ensure effect is properly typed
 function ensureEventEffect(effect: unknown): EventEffect {
@@ -8,7 +9,7 @@ function ensureEventEffect(effect: unknown): EventEffect {
     return effect as EventEffect;
 }
 
-export function buildEvent(draft: EventDraft): GameEvent {
+export function buildEvent(draft: EventDraft, lang: Language): GameEvent {
     const eventId = EventIdByKey[draft.id];
     if (!eventId) {
         console.warn(`Warning: No stable ID found for event draft ID: ${draft.id}. This event might not be properly linked.`);
@@ -20,13 +21,15 @@ export function buildEvent(draft: EventDraft): GameEvent {
         return {
             ...draft,
             id: draft.id, // Use draft.id as fallback
+            title: t(draft.titleKey, lang),
+            description: t(draft.descriptionKey, lang),
             choices: draft.choices.map(choiceDraft => {
                 const choiceLockKey = `${draft.id}|${choiceDraft.textKey}`;
                 const choiceId = ChoiceIdByKey[choiceLockKey] || choiceLockKey; // Fallback for choice ID
                 return {
                     ...choiceDraft,
                     id: choiceId,
-                    labelKey: choiceDraft.textKey,
+                    label: t(choiceDraft.textKey, lang),
                     effect: ensureEventEffect(choiceDraft.effect),
                 };
             }),
@@ -43,7 +46,7 @@ export function buildEvent(draft: EventDraft): GameEvent {
             return {
                 ...choiceDraft,
                 id: choiceLockKey, // Use lockKey as fallback
-                labelKey: choiceDraft.textKey,
+                label: t(choiceDraft.textKey, lang),
                 effect: ensureEventEffect(choiceDraft.effect),
             };
         }
@@ -51,7 +54,7 @@ export function buildEvent(draft: EventDraft): GameEvent {
         return {
             ...choiceDraft,
             id: choiceId,
-            labelKey: choiceDraft.textKey,
+            label: t(choiceDraft.textKey, lang),
             effect: ensureEventEffect(choiceDraft.effect),
         };
     });
@@ -59,11 +62,13 @@ export function buildEvent(draft: EventDraft): GameEvent {
     return {
         ...draft,
         id: eventId,
+        title: t(draft.titleKey, lang),
+        description: t(draft.descriptionKey, lang),
         choices: builtChoices,
     };
 }
 
-export function buildClubEvent(draft: ClubEventDraft): ClubEvent {
+export function buildClubEvent(draft: ClubEventDraft, lang: Language): ClubEvent {
     const eventId = draft.id; // Club events use their draft ID directly for now.
 
     const builtChoices: EventChoice[] = draft.choices.map(choiceDraft => {
@@ -77,7 +82,7 @@ export function buildClubEvent(draft: ClubEventDraft): ClubEvent {
             return {
                 ...choiceDraft,
                 id: choiceLockKey, // Fallback
-                labelKey: choiceDraft.textKey,
+                label: t(choiceDraft.textKey, lang),
                 effect: ensureEventEffect(choiceDraft.effect),
             };
         }
@@ -85,7 +90,7 @@ export function buildClubEvent(draft: ClubEventDraft): ClubEvent {
         return {
             ...choiceDraft,
             id: choiceId,
-            labelKey: choiceDraft.textKey,
+            label: t(choiceDraft.textKey, lang),
             effect: ensureEventEffect(choiceDraft.effect),
         };
     });
@@ -93,6 +98,8 @@ export function buildClubEvent(draft: ClubEventDraft): ClubEvent {
     return {
         ...draft,
         id: eventId,
+        title: t(draft.titleKey, lang),
+        description: t(draft.descriptionKey, lang),
         choices: builtChoices,
     };
 }

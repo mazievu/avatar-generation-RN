@@ -7,7 +7,7 @@ export default {
     year_label: 'Year',
     family_tree_title: 'Family Tree',
     default_family_name_placeholder: 'Family Name',
-    family_suffix: '\'s Family',
+    family_suffix: "'s Family",
     settings_button: 'Settings',
     settings_modal_title: 'Game Settings',
     language_label: 'Language',
@@ -63,6 +63,9 @@ export default {
     welcome_back_subtitle: 'Your previous session has been saved.',
     continue_game_button: 'Continue Game',
     start_new_game_button: 'Start New Game',
+    start_game_button: 'Start', // New key
+    story_button: 'Story', // New key
+    choose_story_mode: 'Choose a Story Mode', // New key
     // Instructions
     instructions_title: 'How to Play',
     instructions_objective_title: 'Objective',
@@ -94,7 +97,7 @@ export default {
     summary_ending_year: 'Ending Year',
     // Modals
     modal_school_title: 'Choose a School',
-    modal_school_desc: "It\'s time for {name} to go to school! Choose an educational path.",
+    modal_school_desc: "It's time for {name} to go to school! Choose an educational path.",
     modal_university_title: 'Higher Education',
     modal_university_desc: 'Should {name} go to University? It will be costly but may open up better career opportunities.',
     university_choice_yes: 'Yes, invest in the future',
@@ -105,7 +108,7 @@ export default {
     modal_career_title: 'Choose a Career Path',
     modal_career_desc: '{name} has finished their education. What career path should they pursue?',
     modal_loan_title: "Financial Assistance",
-    modal_loan_desc: "Your family\'s funds have fallen into the negative! To avoid immediate bankruptcy, you must take out a loan. Please select an amount and a repayment term.",
+    modal_loan_desc: "Your family's funds have fallen into the negative! To avoid immediate bankruptcy, you must take out a loan. Please select an amount and a repayment term.",
     loan_amount_label: "Loan Amount",
     loan_term_label: "Repayment Term (Years)",
     accept_loan_button: "Accept Loan",

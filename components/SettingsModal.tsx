@@ -14,7 +14,7 @@ interface SettingsModalProps {
     isVisible: boolean;
     onClose: () => void;
     lang: Language;
-    onSetLang: (lang: Language) => void;
+    
     gameSpeed: number;
     onSetGameSpeed: (speed: number) => void;
     onQuitGame: () => void;
@@ -26,7 +26,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     isVisible,
     onClose,
     lang,
-    onSetLang,
     gameSpeed,
     onSetGameSpeed,
     onQuitGame,
@@ -40,18 +39,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     return (
         <ModalBase isVisible={isVisible} onClose={onClose} title={t('settings_modal_title', lang)}>
             <View style={settingsModalStyles.container}>
-                {/* Language Selection */}
-                <View style={settingsModalStyles.settingRow}>
-                    <Text style={settingsModalStyles.settingLabel}>{t('language_label', lang) || 'Language'}:</Text>
-                    <View style={settingsModalStyles.languageButtonsContainer}>
-                        <TouchableOpacity onPress={() => onSetLang('en')} style={[settingsModalStyles.languageButton, lang === 'en' && settingsModalStyles.languageButtonActive]}>
-                            <Text style={[settingsModalStyles.languageButtonText, lang === 'en' ? settingsModalStyles.languageButtonTextActive : settingsModalStyles.languageButtonTextInactive]}>EN</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => onSetLang('vi')} style={[settingsModalStyles.languageButton, lang === 'vi' && settingsModalStyles.languageButtonActive]}>
-                            <Text style={[settingsModalStyles.languageButtonText, lang === 'vi' ? settingsModalStyles.languageButtonTextActive : settingsModalStyles.languageButtonTextInactive]}>VI</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                
 
                 {/* Game Speed */}
                 <View style={settingsModalStyles.settingRow}>
@@ -88,29 +76,7 @@ const settingsModalStyles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
     },
-    languageButton: {
-        borderRadius: 6,
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-    },
-    languageButtonActive: {
-        backgroundColor: '#6366f1', // indigo-500
-    },
-    languageButtonText: {
-        fontWeight: 'bold',
-    },
-    languageButtonTextActive: {
-        color: 'white',
-    },
-    languageButtonTextInactive: {
-        color: '#475569', // slate-600
-    },
-    languageButtonsContainer: {
-        backgroundColor: 'white',
-        borderRadius: 8,
-        flexDirection: 'row',
-        padding: 4,
-    },
+    
     pauseResumeButton: { // NEW STYLE
         backgroundColor: '#3b82f6', // blue-500
         borderRadius: 8,

@@ -14,12 +14,12 @@ export const colors = {
   accentDark: '#45B8AF', // Darker Teal
   
   // Neutral Backgrounds & Text
-  neutral900: '#3D405B', // Dark Slate Blue (For main headers)
-  neutral800: '#4A4E6D', // Slightly lighter slate blue
-  neutral700: '#6D6F81', // Mid-range slate blue (Good for sub-headings)
-  neutral600: '#9A9CAA', // Lighter gray for secondary text, notes
-  neutral300: '#D8DDE2', // Light gray for borders, disabled elements
-  neutral200: '#E8F0F2', // Light Blue Gray (For panels, secondary backgrounds)
+  neutral900: '#00010aff', // Dark Slate Blue (For main headers)
+  neutral800: '#03072bff', // Slightly lighter slate blue
+  neutral700: '#03093aff', // Mid-range slate blue (Good for sub-headings)
+  neutral600: '#10195cff', // Lighter gray for secondary text, notes
+  neutral300: '#085cb1ff', // Light gray for borders, disabled elements
+  neutral200: '#95aeffff', // Light Blue Gray (For panels, secondary backgrounds)
   neutral100: '#F5F7F8', // Very light gray for element backgrounds
   neutral50: '#FAF8F2',  // Light Cream (For main page background)
 
