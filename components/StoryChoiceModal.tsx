@@ -20,7 +20,7 @@ interface StoryChoiceModalProps {
 }
 
 export const StoryChoiceModal: React.FC<StoryChoiceModalProps> = ({ isVisible, onClose, onSelectMode, lang }) => {
-  console.log('StoryChoiceModal rendered, isVisible:', isVisible);
+  
   return (
     <Modal
       animationType="slide"

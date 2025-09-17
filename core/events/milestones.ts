@@ -130,7 +130,7 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                         }
                     } else {
                         return {
-                            statChanges: { happiness: -20 },
+                            statChanges: { happiness: -10 },
                             logKey: 'log_milestone_children_try_fail',
                             triggers: []
                         }

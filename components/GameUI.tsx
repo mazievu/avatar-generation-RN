@@ -169,11 +169,11 @@ export const GameUI: React.FC<GameUIProps> = ({
     // Effect to set characterIdToCenterOnEvent when a new event starts
     useEffect(() => {
         if (gameState?.activeEvent?.characterId) { // Check if activeEvent and characterId exist
-            console.log("GameUI: Setting characterIdToCenterOnEvent to:", gameState.activeEvent.characterId);
+            
             setCharacterIdToCenterOnEvent(gameState.activeEvent.characterId);
             setIsCenteringAnimationDone(false); // Reset for new animation
         } else {
-            console.log("GameUI: activeEvent.characterId is null or undefined.");
+           
             // If activeEvent is cleared (modal closed), reset animation done flag
             setIsCenteringAnimationDone(false);
         }
@@ -433,18 +433,18 @@ const gameUIStyles = StyleSheet.create({
     mainContentGrid: { flex: 1 },
     familyTreeTitle: { color: colors.primary, fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
     familyTreeTitleEditable: {
-        position: 'absolute',
-        top: 0,
         alignSelf: 'center',
-        zIndex: 10,
         borderBottomWidth: 1,
         borderColor: colors.neutral300,
+        borderRadius: 8,
         color: colors.primary,
         fontSize: 24,
         fontWeight: 'bold',
-        paddingVertical: 4,
         paddingHorizontal: 16,
-        borderRadius: 8,
+        paddingVertical: 4,
+        position: 'absolute',
+        top: 0,
+        zIndex: 10,
     },
     sceneContainer: {
         flex: 1,

@@ -51,7 +51,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
     // Initialize game data (build events, etc.)
     if (typeof initializeAllGameData === 'function') {
-            initializeAllGameData(language);
+      initializeAllGameData(language);
     }
 
     const stopGameLoop = () => {
@@ -168,29 +168,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     };
 
     const handleStartGame = (mode: string) => {
-        if (mode === '') {
-            // If mode is empty, it means we're transitioning from the initial "Start" button
-            // to the main game UI where the story choice modal will be available.
-            setView('playing');
-            setIsPaused(true); // Keep game paused until a story is chosen
-        } else {
-            // If mode is not empty, it means a specific story mode was chosen
-            initializeGame(mode);
-        }
-    };
-
-    const handleAutoStart = async () => {
-        try {
-            const savedGame = await AsyncStorage.getItem(SAVE_KEY);
-            if (savedGame) {
-                handleContinueGame();
-            } else {
-                initializeGame('classic');
-            }
-        } catch (error) {
-            console.error("Failed to auto start game:", error);
-            initializeGame('classic'); // Fallback to new game on error
-        }
+        initializeGame(mode);
     };
 
     const generateCareerChoices = (character: Character): string[] => {
@@ -829,14 +807,28 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const { characterId, event, replacements } = prevState.activeEvent;
             const { effect } = choice;
 
-            let finalEffect = effect;
+            // Defensive check: Ensure effect is not undefined
+            if (!effect) {
+                console.error("Error: 'effect' is undefined in handleEventChoice for event:", event.id, "choice:", choice);
+                return prevState;
+            }
+
+            const finalEffect = { ...effect }; // Start with a copy of effect
+            let childrenEventSuccess = false;
+
             if (effect.getDynamicEffect) {
                 const dynamicResult = effect.getDynamicEffect();
-                finalEffect = { 
-                    ...effect, 
-                    ...dynamicResult,
-                    statChanges: { ...effect.statChanges, ...dynamicResult.statChanges }
+                // Merge dynamicResult into finalEffect
+                Object.assign(finalEffect, dynamicResult);
+                // Merge statChanges specifically to handle potential undefined statChanges in either
+                finalEffect.statChanges = {
+                    ...(effect.statChanges || {}), // Ensure it's an object even if undefined
+                    ...(dynamicResult.statChanges || {}) // Ensure it's an object even if undefined
                 };
+
+                if (event.id === 'milestone_children' && dynamicResult.logKey === 'log_milestone_children_try_success') {
+                    childrenEventSuccess = true;
+                }
             }
             console.log(`[DEBUG] handleEventChoice called for event: ${event.id}, action present: ${!!finalEffect.action}`);
     
@@ -886,7 +878,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             // 2. Update one-time event list or cooldowns
             const character = nextState.familyMembers[characterId];
             if (event.id === 'milestone_children') {
-                const cooldownYears = 3; // 3 years
+                const cooldownYears = childrenEventSuccess ? 2 : 1; // 2 years for success, 1 year for failure
                 character.childrenEventCooldownUntil = addDays(nextState.currentDate, cooldownYears * DAYS_IN_YEAR);
             } 
             else if (ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) {
@@ -1031,7 +1023,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 if (clubOptions.length > 0) {
                     pendingClubChoice = { characterId, options: clubOptions };
                 }
-            }
+                }
 
             return {
                 ...prevState,
@@ -1689,7 +1681,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         handleContinueGame,
         handleStartNewGame,
         handleStartGame,
-        handleAutoStart,
         generateCareerChoices,
         gameLoop,
         handleEventChoice,

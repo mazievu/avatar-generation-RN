@@ -374,4 +374,5 @@ log_happiness_no_promotion: "Hạnh phúc của {name} đang giảm dần do kh�
     log_investment_success_small_2: 'Tôi tự thưởng cho mình một chút.',
     choice_investment_success_small_3: 'Tiếp tục đầu tư có kiểm soát.',
     log_investment_success_small_3: 'Tôi dùng kinh nghiệm này để phát triển dần dần.',
+    log_milestone_children_try_fail: 'Đã thử nhưng không thành công. Có thể thử lại vào năm sau.',
 };

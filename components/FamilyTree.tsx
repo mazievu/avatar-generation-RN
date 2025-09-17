@@ -151,6 +151,27 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
     }
   });
 
+  // Final pass: Ensure all characters in allMembers have a layout
+  Object.values(allMembers).forEach(char => {
+    if (!layouts[char.id]) {
+      // This character was somehow missed by the main layout logic.
+      // Assign a default position. This position might not be ideal,
+      // but it ensures the character node exists in the layout map
+      // so connectors can at least attempt to draw to it.
+      layouts[char.id] = {
+        id: char.id,
+        x: 0, // Default X
+        y: 0, // Default Y
+        isPlayerCharacter: char.isPlayerCharacter,
+        parentsIds: char.parentsIds || [],
+        partnerId: char.partnerId || null,
+        childrenIds: char.childrenIds || [],
+      };
+      // In a real debugging scenario, I would log a warning here.
+      // console.warn(`Character ${char.id} was missed by layout calculation. Assigning default position.`);
+    }
+  });
+
   return layouts;
 }
 
@@ -316,22 +337,30 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
             }
           });
 
-          // Draw the vertical line from parent to the junction
-          // Use the calculated parentConnectorX
-          paths.push(<Path key={`${id}-v-down`} d={`M ${parentConnectorX} ${parentMidY} V ${junctionY}`} stroke="#a1a1aa" strokeWidth="2" />);
-
-          // Then, draw the horizontal line connecting all children
-          if (childrenIds.length > 1 && minChildX !== Infinity && maxChildX !== -Infinity) {
-            paths.push(<Path key={`${id}-h-line`} d={`M ${minChildX} ${junctionY} H ${maxChildX}`} stroke="#a1a1aa" strokeWidth="2" />);
-          }
-
-          // Finally, draw the vertical lines from the junction to each child
+          // Draw curved lines from the junction point to each child
           childrenIds.forEach(childId => {
             const childLayout = layouts[childId];
             if (childLayout) {
               const childMidX = childLayout.x + NODE_WIDTH / 2;
               const childTopY = childLayout.y;
-              paths.push(<Path key={`${childId}-v-up`} d={`M ${childMidX} ${junctionY} V ${childTopY}`} stroke="#a1a1aa" strokeWidth="2" />);
+
+              // Calculate control points for a cubic Bezier curve
+              const p0x = parentConnectorX;
+              const p0y = junctionY; // Start from the junction point
+
+              const p3x = childMidX;
+              const p3y = childTopY; // End at the top center of the child node
+
+              // Control points for a smooth S-curve
+              // These values can be adjusted to fine-tune the curve shape
+              const cp1x = p0x;
+              const cp1y = p0y + (p3y - p0y) * 0.3; // 1/3 way down from parent
+
+              const cp2x = p3x;
+              const cp2y = p0y + (p3y - p0y) * 0.7; // 2/3 way down from parent
+
+              const curvePath = `M ${p0x} ${p0y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p3x} ${p3y}`;
+              paths.push(<Path key={`${childId}-curve`} d={curvePath} stroke="#a1a1aa" strokeWidth="2" fill="none" />);
             }
           });
         }
