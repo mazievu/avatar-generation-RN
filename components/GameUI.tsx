@@ -11,6 +11,7 @@ import { SummaryScreen } from './SummaryScreen';
 import { StartMenu } from './StartMenu';
 import { InstructionsModal } from './InstructionsModal';    
 import { WelcomeBackMenu } from './WelcomeBackMenu';
+import { StoryChoiceModal } from './StoryChoiceModal';
 import { t } from '../core/localization';
 import { exampleManifest } from '../core/types';
 import { BusinessMap } from './BusinessMap';
@@ -143,13 +144,14 @@ export const GameUI: React.FC<GameUIProps> = ({
     const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false); // NEW STATE
     
     const [showSettingsModal, setShowSettingsModal] = useState(false); // NEW STATE for settings modal
+    const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
 
     // New state for editable family name
     const [familyNameInput, setFamilyNameInput] = useState<string>(
         gameState?.familyName || (gameState?.familyMembers && Object.keys(gameState.familyMembers).length > 0
             ? `${getCharacterDisplayName(gameState.familyMembers[Object.keys(gameState.familyMembers)[0]], lang)}${t('family_suffix', lang)}`
-            : t('default_family_name_placeholder', lang))
-    );
+            : t('default_family_name_placeholder', lang)))
+    ;
 
     // Effect to update familyNameInput if gameState.familyName changes externally
     useEffect(() => {
@@ -213,7 +215,7 @@ export const GameUI: React.FC<GameUIProps> = ({
     if (view === 'menu') {
         return (
             <>
-                <StartMenu onStart={onStartGame} onShowInstructions={onShowInstructions} lang={lang} />
+                <StartMenu onStart={() => onStartGame('new')} onShowInstructions={onShowInstructions} lang={lang} onSetLang={onSetLang} />
                 {showInstructions && <InstructionsModal onClose={onCloseInstructions} lang={lang} />}
             </>
         );
@@ -280,6 +282,17 @@ export const GameUI: React.FC<GameUIProps> = ({
 
     return (
         <View style={gameUIStyles.mainContainer}>
+
+            <StoryChoiceModal
+                isVisible={showStoryChoiceModal}
+                onClose={() => setShowStoryChoiceModal(false)}
+                onSelectMode={(mode) => {
+                    onStartGame(mode);
+                    setShowStoryChoiceModal(false);
+                }}
+                lang={lang}
+            />
+
             {view === 'gameover' && gameState.gameOverReason && <SummaryScreen gameState={gameState} onRestart={onStartNewGame} lang={lang}/>}
             
             <ModalManager
@@ -307,6 +320,13 @@ export const GameUI: React.FC<GameUIProps> = ({
                 isCenteringAnimationDone={isCenteringAnimationDone} // NEW PROP
             />
             
+            {/* Story Button */}
+            {view === 'playing' && (
+                <TouchableOpacity onPress={() => setShowStoryChoiceModal(true)} style={gameUIStyles.storyButton}>
+                    <Text style={gameUIStyles.storyButtonText}>{t('story_button', lang)}</Text>
+                </TouchableOpacity>
+            )}
+
             {/* Settings Button */}
             <TouchableOpacity onPress={() => setShowSettingsModal(true)} style={gameUIStyles.settingsButton}>
                 <Text style={gameUIStyles.settingsButtonText}>{t('settings_button', lang)}</Text>
@@ -317,7 +337,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                 isVisible={showSettingsModal}
                 onClose={() => setShowSettingsModal(false)}
                 lang={lang}
-                onSetLang={onSetLang}
+                
                 gameSpeed={gameSpeed}
                 onSetGameSpeed={onSetGameSpeed}
                 onQuitGame={onQuitGame}
@@ -327,7 +347,7 @@ export const GameUI: React.FC<GameUIProps> = ({
 
             <View style={gameUIStyles.maxWidthContainer}>
                 <View style={gameUIStyles.headerContainer}>
-                    <View style={gameUIStyles.headerLeft}>
+                                        <View style={gameUIStyles.headerLeft}>
                         <Text style={gameUIStyles.dateText}>{formatDate(gameState.currentDate.day, gameState.currentDate.year, lang)}</Text>
                     </View>
                     <View style={gameUIStyles.fundBubble}>
@@ -375,7 +395,7 @@ const gameUIStyles = StyleSheet.create({
     fundBubble: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.neutral200, // Use light blue-gray for contrast
+        backgroundColor: colors.neutral100, // Use light blue-gray for contrast
         borderRadius: 20,
         paddingVertical: 8,
         paddingHorizontal: 12,
@@ -395,21 +415,16 @@ const gameUIStyles = StyleSheet.create({
     monthlyChangePositive: { color: colors.success },
     monthlyChangeNegative: { color: colors.error },
     overlayControlsContainer: {
-        position: 'absolute',
-        top: 16,
-        right: 16,
-        flexDirection: 'row',
         alignItems: 'center',
+        flexDirection: 'row',
         gap: 8,
+        position: 'absolute',
+        right: 16,
+        top: 16,
         zIndex: 10,
     },
     headerRight: { alignItems: 'center', flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' },
-    languageButtonsContainer: { backgroundColor: colors.white, borderRadius: 8, flexDirection: 'row', padding: 4 },
-    languageButton: { borderRadius: 6, paddingHorizontal: 12, paddingVertical: 4 },
-    languageButtonActive: { backgroundColor: colors.primary },
-    languageButtonText: { fontWeight: 'bold' },
-    languageButtonTextActive: { color: colors.white },
-    languageButtonTextInactive: { color: colors.textSecondary },
+    
     chunkyButtonSlate: { backgroundColor: colors.neutral700, borderRadius: 8, padding: 12 },
     chunkyButtonBlue: { backgroundColor: colors.primary, borderRadius: 8, padding: 12 },
     chunkyButtonText: { color: colors.white, fontWeight: 'bold' },
@@ -418,19 +433,17 @@ const gameUIStyles = StyleSheet.create({
     mainContentGrid: { flex: 1 },
     familyTreeTitle: { color: colors.primary, fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
     familyTreeTitleEditable: {
-        position: 'absolute', // Make it an overlay
+        position: 'absolute',
         top: 0,
-        left: 16,
-        right: 16,
-        zIndex: 10, // Ensure it's on top
+        alignSelf: 'center',
+        zIndex: 10,
         borderBottomWidth: 1,
         borderColor: colors.neutral300,
         color: colors.primary,
         fontSize: 24,
         fontWeight: 'bold',
         paddingVertical: 4,
-        textAlign: 'center',
-        
+        paddingHorizontal: 16,
         borderRadius: 8,
     },
     sceneContainer: {
@@ -457,10 +470,10 @@ const gameUIStyles = StyleSheet.create({
     },
     bottomNavButton: {
         alignItems: 'center',
-        padding: 4,
         borderRadius: 12,
         flex: 1,
         marginHorizontal: 4,
+        padding: 4,
     },
     bottomNavButtonActive: {
         backgroundColor: colors.primary, // Use primary color for active background
@@ -469,6 +482,20 @@ const gameUIStyles = StyleSheet.create({
         width: 50, // Reverted to bigger size
         height: 50,
         marginVertical: 4,
+    },
+    storyButton: {
+        position: 'absolute',
+        top: 90, // Placed above settings button
+        right: 16,
+        backgroundColor: colors.primary, // Use primary color
+        borderRadius: 8,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        zIndex: 10,
+    },
+    storyButtonText: {
+        color: colors.white,
+        fontWeight: 'bold',
     },
     settingsButton: {
         position: 'absolute',

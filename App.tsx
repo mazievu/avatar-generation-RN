@@ -11,8 +11,9 @@ import AvatarBuilder from './components/AvatarBuilder';
 import { initGodMode } from './core/godmod';
 import { createGameLogicHandlers } from './core/game';
 import { SceneName } from './components/GameUI';
+import { reinitializeAllGameData } from './core/gameData';
 
-type GameView = 'menu' | 'playing' | 'gameover' | 'welcome_back';
+type GameView = 'menu' | 'playing' | 'gameover';
 
 const allAvatarUrls = new Set<string>();
 exampleManifest.forEach((layer) =>
@@ -45,9 +46,10 @@ const App: React.FC = () => {
     const [showInstructions, setShowInstructions] = useState<boolean>(false);
     const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
-    const [language, setLanguage] = useState<Language>('vi');
+    const [language, setLanguage] = useState<Language>('en');
     const [customizingCharacterId, setCustomizingCharacterId] = useState<string | null>(null);
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
+    const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
     
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -79,31 +81,14 @@ const App: React.FC = () => {
 
     useEffect(() => {
         initGodMode(setGameState);
+        setIsInitialized(true);
     }, [setGameState]);
 
-    // Initial load check
     useEffect(() => {
-        const loadSavedGame = async () => {
-            try {
-                const savedGame = await AsyncStorage.getItem(SAVE_KEY);
-                if (savedGame) {
-                    const savedState = JSON.parse(savedGame);
-                    if (savedState.lang) {
-                        setLanguage(savedState.lang);
-                    }
-                    setView('welcome_back');
-                } else {
-                    setView('menu');
-                }
-            } catch (error) {
-                console.error("Failed to check for saved game:", error);
-                setView('menu');
-            }
-            setIsInitialized(true);
-        };
-        loadSavedGame();
-    }, []);
-     // Auto-save interval
+        reinitializeAllGameData(language);
+    }, [language]);
+
+    // Auto-save interval
     useEffect(() => {
         if (view === 'playing' && !isPaused) {
             const interval = setInterval(() => {
