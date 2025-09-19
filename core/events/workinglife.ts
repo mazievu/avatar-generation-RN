@@ -257,7 +257,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
             { textKey: 'choice_workinglife_new_project_1', effect: { 
                 statChanges: { skill: 2, eq: 1 }, 
                 logKey: 'log_workinglife_new_project_1',
-                action: (state, charId, manifest) => {
+                action: (state, charId) => {
                     const char = state.familyMembers[charId];
                     if (Math.random() < 0.2) { // 20% chance of a bonus
                         const bonusAmount = 500;
@@ -416,7 +416,7 @@ export const WORKING_LIFE_EVENTS: EventDraft[] = [
             { textKey: 'choice_workinglife_bonus_cut_3', effect: { 
                 statChanges: { eq: -1 }, 
                 logKey: 'log_workinglife_bonus_cut_3',
-                action: (state, charId, manifest) => {
+                action: (state, charId) => {
                     const char = state.familyMembers[charId];
                     const updatedChar = { 
                         ...char, 

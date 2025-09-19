@@ -1,31 +1,25 @@
-import * as React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
-import type { Character, SchoolOption, Language } from '../core/types';
+import type { SchoolOption, Language, Stats } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
-import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
     lang: Language;
 }
 
 interface SchoolChoiceModalProps extends LocalizedProps {
-    character: Character;
     schoolOptions: SchoolOption[];
     onSelect: (option: SchoolOption) => void;
     currentFunds: number;
 }
-export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ character, schoolOptions, onSelect, currentFunds, lang }) => (
+export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOptions, onSelect, currentFunds, lang }) => (
     <ComicPanelModal visible={true} onClose={() => {}} rotate="2deg">
       <Text style={schoolChoiceModalStyles.title}>{t('modal_school_title', lang)}</Text>
       <Text style={schoolChoiceModalStyles.description}>{t('modal_school_desc', lang)}</Text>
@@ -36,7 +30,7 @@ export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ character,
                     <Text style={[schoolChoiceModalStyles.choiceCost, currentFunds >= option.cost ? schoolChoiceModalStyles.costAffordable : schoolChoiceModalStyles.costUnaffordable]}>(-${option.cost.toLocaleString()})</Text>
                 </View>
                 <Text style={schoolChoiceModalStyles.choiceEffects}>
-                    {Object.entries(option.effects).map(([stat, val]) => `${t(`stat_${stat}` as any, lang)} ${val > 0 ? `+${val}` : val}`).join(', ')}
+                    {Object.entries(option.effects).map(([stat, val]) => `${t(`stat_${stat}` as keyof Stats, lang)} ${val > 0 ? `+${val}` : val}`).join(', ')}
                 </Text>
             </ChoiceButton>
         ))}
@@ -53,17 +47,14 @@ const schoolChoiceModalStyles = StyleSheet.create({
         fontSize: 14,
     },
   choiceEffects: {
-        fontSize: 12,
         color: '#475569', // slate-600
+        fontSize: 12,
         marginTop: 4,
     },
     choiceName: {
         fontSize: 16,
         fontWeight: 'bold',
     },
-    choicesContainer: {
-    gap: 12,
-  },
     costAffordable: {
         color: '#64748b', // slate-500
     },

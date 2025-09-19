@@ -39,7 +39,10 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
 
   const okButtonAnimatedStyle = useAnimatedStyle(() => {
     return {
-        transform: [{ translateY: withTiming(okButtonPressState.value * 2, { duration: 75 }) }],
+        transform: [
+            { translateY: withTiming(okButtonPressState.value * 2, { duration: 75 }) },
+            { scale: withTiming(1 - okButtonPressState.value * 0.02, { duration: 75 }) }
+        ] as const,
         borderBottomWidth: withTiming(4 - okButtonPressState.value * 2, { duration: 75 }),
     };
   });
@@ -153,7 +156,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                 </View>
             ) : (
                 <View style={eventModalStyles.outcomeContainer}>
-                    <Text style={eventModalStyles.outcomeMessage}>"{t(outcome.logKey, lang, { name: characterDisplayName })}"</Text>
+                    <Text style={eventModalStyles.outcomeMessage}>&quot;{t(outcome.logKey, lang, { name: characterDisplayName })}&quot;</Text>
                     <View style={eventModalStyles.outcomeDetails}>
                         {outcome.fundChange && (
                             <View style={eventModalStyles.fundChangeDetail}>
@@ -214,15 +217,15 @@ const eventModalStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     choiceButton: {
+        alignItems: 'center',
         backgroundColor: '#f1f5f9', // slate-100
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 12,
         borderBottomWidth: 4,
         borderColor: '#e2e8f0', // slate-200
+        borderRadius: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        marginBottom: 12,
+        padding: 12,
     },
     choiceButtonContent: {
         flex: 1,
@@ -276,13 +279,13 @@ const eventModalStyles = StyleSheet.create({
         flex: 1,
     },
     okButton: {
+        alignItems: 'center',
         backgroundColor: '#60a5fa', // blue-400
-        paddingVertical: 12,
-        borderRadius: 8,
         borderBottomWidth: 4,
         borderColor: '#3b82f6', // blue-500
-        alignItems: 'center',
+        borderRadius: 8,
         marginTop: 16,
+        paddingVertical: 12,
     },
     okButtonText: {
         color: 'white',
@@ -296,9 +299,9 @@ const eventModalStyles = StyleSheet.create({
         marginBottom: 20,
     },
     outcomeMessage: {
+        color: '#475569', // slate-600
         fontSize: responsiveFontSize(16),
         fontStyle: 'italic',
-        color: '#475569', // slate-600
         marginBottom: 16,
     },
     subtitle: {

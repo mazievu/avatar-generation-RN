@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, ImageSourcePropType, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ImageSourcePropType, Dimensions } from 'react-native';
 import type { Character, Manifest, Language } from '../core/types';
 import { getCharacterDisplayName } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
@@ -32,29 +32,29 @@ export const CharacterNode: React.FC<CharacterNodeProps> = ({ character, onClick
   // We create this inside the component so it can access props like `isPlayerCharacter`
   const dynamicStyles = StyleSheet.create({
     ageBadge: {
-      position: 'absolute',
-      top: -2,
-      right: -2,
-      minWidth: 26, // Dùng minWidth để số tuổi lớn vẫn hiển thị được
-      height: 26,
-      borderRadius: 13,
-      backgroundColor: '#1e293b',
       alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 2,
+      backgroundColor: '#1e293b',
       borderColor: 'white',
+      borderRadius: 13,
+      borderWidth: 2,
+      height: 26,
+      justifyContent: 'center',
+      minWidth: 26, // Dùng minWidth để số tuổi lớn vẫn hiển thị được
       paddingHorizontal: 4,
+      position: 'absolute',
+      right: -2,
+      top: -2,
     },
     avatarBase: {
-      width: '100%',
-      height: '100%',
+      alignItems: 'center',
+      backgroundColor: '#e2e8f0', // Always have a background color for consistency
+      borderColor: isPlayerCharacter ? '#facc15' : '#cbd5e1',
       borderRadius: avatarSize / 2, // Luôn là hình tròn
       borderWidth: 3,
-      alignItems: 'center',
+      height: '100%',
       justifyContent: 'center',
       overflow: 'hidden',
-      borderColor: isPlayerCharacter ? '#facc15' : '#cbd5e1',
-      backgroundColor: '#e2e8f0', // Always have a background color for consistency
+      width: '100%',
     },
     avatarWrapper: {
       height: avatarSize,

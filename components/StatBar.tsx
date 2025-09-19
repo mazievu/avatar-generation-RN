@@ -80,7 +80,7 @@ export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color
   const animatedProps = useAnimatedProps(() => {
     return {
       text: `${Math.round(progress.value)}`,
-    } as any;
+    } as { text: string };
   });
 
   return (

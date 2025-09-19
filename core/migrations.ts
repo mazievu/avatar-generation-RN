@@ -2,13 +2,12 @@ import { GameState } from './types';
 import { CONTENT_VERSION } from './constants';
 
 // Define a type for migration functions
-type MigrationFunction = (state: any) => GameState;
+type MigrationFunction = (state: GameState) => GameState;
 
 // Map of migrations, keyed by the version they migrate *from*
 const migrations: Record<number, MigrationFunction> = {
     // Migrate from version 0 (no contentVersion) to version 1
-    0: (oldState: any): GameState => {
-        console.log("Migrating save file from v0 to v1...");
+    0: (oldState: GameState): GameState => {
         const newState: GameState = {
             ...oldState,
             contentVersion: 1, // Set the new content version
@@ -23,7 +22,7 @@ const migrations: Record<number, MigrationFunction> = {
     // 1: (oldState: GameState): GameState => { /* migrate from v1 to v2 */ return newState; },
 };
 
-export function applyMigrations(savedState: any): GameState {
+export function applyMigrations(savedState: GameState): GameState {
     let state = savedState;
     let currentVersion = state.contentVersion || 0; // Assume 0 if not present
 
@@ -33,7 +32,6 @@ export function applyMigrations(savedState: any): GameState {
             state = migrateFn(state);
             currentVersion = state.contentVersion; // Update currentVersion after migration
         } else {
-            console.warn(`No migration function found for version ${currentVersion}. Stopping migrations.`);
             break;
         }
     }

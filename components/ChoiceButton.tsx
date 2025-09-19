@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { TouchableOpacity, StyleSheet, GestureResponderEvent } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import { colors, spacing } from './designSystem';
 import { soundManager } from '../services/soundManager'; // Import sound manager
 
@@ -30,7 +30,7 @@ const ChoiceButton: React.FC<{onClick: () => void, disabled?: boolean, children:
         }
     };
 
-    const handlePress = (event: GestureResponderEvent) => {
+    const handlePress = () => {
         if (!disabled) {
             onClick();
         }
@@ -50,13 +50,13 @@ export { ChoiceButton };
 const choiceButtonStyles = StyleSheet.create({
     button: {
         backgroundColor: colors.neutral100,
-        padding: spacing.md,
-        borderRadius: spacing.sm,
-        marginBottom: spacing.md,
         borderBottomWidth: 4,
         borderColor: colors.neutral200,
-        minHeight: 44, // Cải thiện Accessibility: Đảm bảo vùng chạm đủ lớn
+        borderRadius: spacing.sm,
         justifyContent: 'center',
+        marginBottom: spacing.md,
+        minHeight: 44, // Cải thiện Accessibility: Đảm bảo vùng chạm đủ lớn
+        padding: spacing.md,
     },
     buttonDisabled: {
         backgroundColor: colors.neutral200,

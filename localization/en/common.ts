@@ -149,6 +149,7 @@ export default {
     select_business_to_manage: 'Select which business you\'d like to manage',
     business_map_intro: 'View the city map to purchase or manage your businesses.',
     salary_label: 'Salary',
+    sell_button: 'Sell',
     // Life Phases
     phase_Newborn: 'Newborn',
     phase_Elementary_School: 'Elementary School',

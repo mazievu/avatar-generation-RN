@@ -10,7 +10,6 @@ const baseWidth = 375; // A common base width for scaling
 const scale = screenWidth / baseWidth;
 
 const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface StoryChoiceModalProps {
   isVisible: boolean;

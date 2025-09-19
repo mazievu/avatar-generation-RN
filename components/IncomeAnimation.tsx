@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Text, StyleSheet, Animated } from 'react-native';
 import { formatCurrency } from '../core/utils';
@@ -35,7 +34,7 @@ const IncomeAnimation: React.FC<IncomeAnimationProps> = ({ netIncome, characterI
         }),
       ]).start();
     }
-  }, [netIncome, characterId, currentDate]);
+  }, [netIncome, characterId, currentDate, fadeAnim, translateYAnim]);
 
   if (netIncome === 0) {
     return null;

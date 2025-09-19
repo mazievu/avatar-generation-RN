@@ -1,17 +1,13 @@
-import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
 
 import type { Language } from '../core/types';
 import { t } from '../core/localization';
 import { ComicPanelModal } from './ComicPanelModal';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
     lang: Language;
@@ -112,13 +108,13 @@ const loanModalStyles = StyleSheet.create({
         marginBottom: 16,
     },
     gridButton: {
-        flexGrow: 1,
-        minWidth: '45%', // for 2-column layout
-        paddingVertical: 12,
+        alignItems: 'center',
         borderRadius: 8,
         borderWidth: 2,
-        alignItems: 'center',
+        flexGrow: 1,
         justifyContent: 'center',
+        minWidth: '45%', // for 2-column layout
+        paddingVertical: 12,
     },
     gridButtonNormal: {
         backgroundColor: '#f1f5f9', // slate-100
@@ -133,18 +129,18 @@ const loanModalStyles = StyleSheet.create({
         fontWeight: 'bold', // slate-800
     },
     label: {
+        color: '#334155', // slate-700
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#334155', // slate-700
         marginBottom: 8,
     },
     optionsContainer: {
         marginBottom: 24,
     },
     title: {
+        color: '#1e293b', // slate-800
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#1e293b', // slate-800
         marginBottom: 8,
         textAlign: 'center',
     },

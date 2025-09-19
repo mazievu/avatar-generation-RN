@@ -32,7 +32,7 @@ export const SmokeAnimation: React.FC<SmokeAnimationProps> = ({ shouldAnimate, c
       scale2.value = withDelay(200, withTiming(2.2, { duration: 1000 })); // Increased scale
       opacity2.value = withDelay(300, withTiming(0, { duration: 900 }));
     }
-  }, [shouldAnimate]);
+  }, [shouldAnimate, opacity1, opacity2, scale1, scale2, translateY1, translateY2]);
 
   const animatedStyle1 = useAnimatedStyle(() => {
     return {
@@ -68,13 +68,12 @@ export const SmokeAnimation: React.FC<SmokeAnimationProps> = ({ shouldAnimate, c
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    // alignSelf: 'center', // Removed alignSelf
-    width: 30, // Container width
     height: 30, // Container height
     left: '50%',
     marginLeft: -15, // Half of container width
+    position: 'absolute',
     top: 0, // Start from the top of the stat bar
+    width: 30, // Container width
     zIndex: 100, // High zIndex
   },
   smokePuff: {

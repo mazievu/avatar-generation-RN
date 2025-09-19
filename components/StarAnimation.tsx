@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay, Easing } from 'react-native-reanimated';
-import { View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 interface StarAnimationProps {
@@ -23,7 +23,7 @@ export const StarAnimation: React.FC<StarAnimationProps> = ({ shouldAnimate, col
       opacity.value = withDelay(200, withTiming(0, { duration: 800 })); // Adjusted duration
       scale.value = withTiming(1, { duration: 300 });
     }
-  }, [shouldAnimate]);
+  }, [shouldAnimate, opacity, scale, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -37,10 +37,16 @@ export const StarAnimation: React.FC<StarAnimationProps> = ({ shouldAnimate, col
   });
 
   return shouldAnimate ? (
-    <Animated.View style={[{ position: 'absolute' }, animatedStyle]}>
+    <Animated.View style={[styles.container, animatedStyle]}>
       <Svg height="20" width="20" viewBox="0 0 24 24" fill={color}>
         <Path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.908-7.416 3.908 1.48-8.279-6.064-5.828 8.332-1.151z"/>
       </Svg>
     </Animated.View>
   ) : null;
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+  },
+});

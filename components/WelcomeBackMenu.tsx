@@ -1,16 +1,12 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 
 import type { Language } from '../core/types';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
   lang: Language;
@@ -48,9 +44,9 @@ export const WelcomeBackMenu: React.FC<WelcomeBackMenuProps> = ({ onContinue, on
 
 const welcomeBackMenuStyles = StyleSheet.create({
     button: {
-        paddingVertical: 16, // py-4
-        paddingHorizontal: 48, // px-12
         borderRadius: 8,
+        paddingHorizontal: 48, // px-12
+        paddingVertical: 16, // py-4
         // chunky-button styles need to be defined
     },
     buttonGreen: {
@@ -60,10 +56,10 @@ const welcomeBackMenuStyles = StyleSheet.create({
     },
     buttonGroup: {
         flexDirection: 'row',
+        gap: 24, // gap-6
         // sm:flex-row gap-6
         // For small screens, it might stack vertically, but for now, row.
         // Gap can be simulated with margin.
-        gap: 24, // gap-6
     },
     buttonSlate: {
         backgroundColor: '#64748b', // slate-500
@@ -76,22 +72,22 @@ const welcomeBackMenuStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     container: {
-        flex: 1,
         alignItems: 'center',
+        flex: 1,
         justifyContent: 'center',
-        textAlign: 'center', // Not directly applicable to View, but for Text children
         padding: 16,
+        textAlign: 'center', // Not directly applicable to View, but for Text children
     },
     subtitle: {
-        fontSize: 24, // text-2xl
         color: '#475569', // slate-600
-        marginBottom: 48, // mb-12
+        fontSize: 24, // text-2xl
         fontWeight: 'bold',
+        marginBottom: 48, // mb-12
     },
     title: {
+        color: '#60a5fa', // blue-400
         fontSize: 64, // text-8xl, adjusted for RN
         fontWeight: '900', // font-black
-        color: '#60a5fa', // blue-400
         marginBottom: 8,
         textShadowColor: '#fde047', // yellow-200
         textShadowOffset: { width: 4, height: 4 },

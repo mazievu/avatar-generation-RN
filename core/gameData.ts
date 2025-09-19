@@ -13,8 +13,6 @@ export function initializeAllGameData(lang: Language): void {
     }
     ALL_EVENTS = ALL_EVENT_DRAFTS.map(draft => buildEvent(draft, lang));
     ALL_CLUB_EVENTS = CLUB_EVENT_DRAFTS.map(draft => buildClubEvent(draft, lang));
-    console.log(`Initialized ${ALL_EVENTS.length} game events.`);
-    console.log(`Initialized ${ALL_CLUB_EVENTS.length} club events.`);
     isInitialized = true;
 }
 

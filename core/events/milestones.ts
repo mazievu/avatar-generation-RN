@@ -1,9 +1,10 @@
-import { EventDraft, LifePhase, CharacterStatus, RelationshipStatus, Gender, GameState, Character, GameLogEntry } from '../types';
-import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, addDays, getCharacterDisplayName } from '../utils';
+import { EventDraft, LifePhase, CharacterStatus, RelationshipStatus, Gender, Character, GameLogEntry } from '../types';
+import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, getCharacterDisplayName } from '../utils';
 import { randomUUID } from 'expo-crypto';
 
 import { t } from '../localization';
 import { EventIdByKey } from '../../src/generated/eventIds';
+import { TWIN_BIRTH_UNLOCK_CHILDREN_COUNT, TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT } from '../constants'; // Import constants
 
 export const MILESTONE_EVENTS: EventDraft[] = [
     // Relationships & Family
@@ -121,7 +122,6 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                 getDynamicEffect: () => {
                     const randomValue = Math.random(); // Capture random value
                     const success = randomValue < 0.7;
-                    console.log(`[DEBUG] Children attempt: Random value = ${randomValue}, Success = ${success}`); // Add this line
                     if (success) {
                         return {
                             statChanges: { happiness: 20 },
@@ -157,10 +157,11 @@ export const MILESTONE_EVENTS: EventDraft[] = [
 
                     const roll = Math.random();
                     let numberOfChildren = 1;
-                    // 5% chance of twins, 1% chance of triplets
-                    if (roll < 0.01) { 
+
+                    // Conditional twin/triplet chance based on totalChildrenBorn
+                    if (state.totalChildrenBorn >= TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.01) {
                         numberOfChildren = 3;
-                    } else if (roll < 0.06) {
+                    } else if (state.totalChildrenBorn >= TWIN_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.06) {
                         numberOfChildren = 2;
                     }
 
@@ -213,6 +214,7 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                         familyMembers: newFamilyMembers,
                         totalMembers: state.totalMembers + numberOfChildren,
                         gameLog: [...state.gameLog, logMessage],
+                        totalChildrenBorn: state.totalChildrenBorn + numberOfChildren, // Increment totalChildrenBorn
                     };
                 }
             }}

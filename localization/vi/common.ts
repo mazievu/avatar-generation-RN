@@ -146,6 +146,7 @@ export default {
     select_business_to_manage: 'Chọn doanh nghiệp bạn muốn quản lý',
     business_map_intro: 'Xem bản đồ thành phố để mua hoặc quản lý các doanh nghiệp của bạn.',
     salary_label: 'Lương',
+    sell_button: 'Bán',
     // Life Phases
     phase_Newborn: 'Sơ sinh',
     phase_Elementary_School: 'Tiểu học',

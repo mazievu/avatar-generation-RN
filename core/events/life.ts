@@ -1,6 +1,5 @@
-import { EventDraft, LifePhase, Business, GameState, CharacterStatus } from '../types';
+import { EventDraft, LifePhase, CharacterStatus } from '../types';
 import { EventIdByKey } from '../../src/generated/eventIds';
-import { BUSINESS_DEFINITIONS } from '../constants';
 
 export const LIFE_EVENTS: EventDraft[] = [
     {
@@ -147,12 +146,12 @@ export const LIFE_EVENTS: EventDraft[] = [
         phases: [LifePhase.PostGraduation],
         condition: (state, char) => char.status === CharacterStatus.Working,
         choices: [
-            { textKey: 'choice_job_loss_social_crisis_1', effect: { logKey: 'log_job_loss_social_crisis_1', action: (state, charId, manifest) => {
+            { textKey: 'choice_job_loss_social_crisis_1', effect: { logKey: 'log_job_loss_social_crisis_1', action: (state, charId) => {
                 const char = state.familyMembers[charId];
                 const updatedChar = { ...char, status: CharacterStatus.Unemployed, careerTrack: null, careerLevel: 0 };
                 return { familyMembers: { ...state.familyMembers, [charId]: updatedChar }};
             }}},
-            { textKey: 'choice_job_loss_social_crisis_2', effect: { logKey: 'log_job_loss_social_crisis_2', action: (state, charId, manifest) => {
+            { textKey: 'choice_job_loss_social_crisis_2', effect: { logKey: 'log_job_loss_social_crisis_2', action: (state, charId) => {
                 const char = state.familyMembers[charId];
                 const updatedChar = { ...char, status: CharacterStatus.Unemployed, careerTrack: null, careerLevel: 0 };
                 return { familyMembers: { ...state.familyMembers, [charId]: updatedChar }};
@@ -182,8 +181,8 @@ export const LIFE_EVENTS: EventDraft[] = [
                 statChanges: { health: -3, happiness: -3, eq: -3 }, 
                 fundChange: -500,
                 logKey: 'log_street_assault_2', 
-                                triggers: [{ eventId: EventIdByKey.sickness_worsens, chance: 0.5 }]
-            }},,
+                triggers: [{ eventId: EventIdByKey.sickness_worsens, chance: 0.5 }]
+            }},
             { textKey: 'choice_street_assault_3', effect: { statChanges: { iq: 3, eq: 3 }, logKey: 'log_street_assault_3' } },
         ]
     },

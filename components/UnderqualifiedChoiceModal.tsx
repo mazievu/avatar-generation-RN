@@ -1,20 +1,15 @@
-import * as React from 'react';
-import { Text, StyleSheet, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 
 import type { Character, Language } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { CAREER_LADDER } from '../core/constants';
-import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
     lang: Language;
@@ -51,8 +46,8 @@ export const UnderqualifiedChoiceModal: React.FC<UnderqualifiedChoiceModalProps>
 
 const underqualifiedChoiceModalStyles = StyleSheet.create({
     choiceDescription: {
-        fontSize: 12,
         color: '#475569', // slate-600
+        fontSize: 12,
         marginTop: 4,
     },
     choiceTitle: {
@@ -60,15 +55,15 @@ const underqualifiedChoiceModalStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     description: {
-        fontSize: 16,
         color: '#475569', // slate-600
+        fontSize: 16,
         marginBottom: 24,
         textAlign: 'center',
     },
     title: {
+        color: '#1e293b', // slate-800
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#1e293b', // slate-800
         marginBottom: 8,
         textAlign: 'center',
     },

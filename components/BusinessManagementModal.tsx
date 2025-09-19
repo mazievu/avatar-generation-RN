@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType, Pressable, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Pressable } from 'react-native';
 
 
 import { Picker } from '@react-native-picker/picker';
-import type { Business, GameState, Manifest, Language, Character } from '../core/types';
+import type { Business, GameState, Manifest, Language } from '../core/types';
 import { BUSINESS_DEFINITIONS, ROBOT_HIRE_COST } from '../core/constants';
 import * as localization from '../core/localization';
 import { getCharacterDisplayName, calculateEmployeeSalary } from '../core/utils';
@@ -12,12 +12,8 @@ import { UpgradeIcon, RobotAvatarIcon, CloseIcon } from './icons';
 import { LifePhase, CharacterStatus } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface BusinessManagementModalProps {
     lang: Language;
@@ -25,6 +21,7 @@ interface BusinessManagementModalProps {
     gameState: GameState;
     onAssignToBusiness: (businessId: string, slotIndex: number, characterId: string | null) => void;
     onUpgradeBusiness: (businessId: string) => void;
+    onSellBusiness: (businessId: string) => void;
     onClose: () => void;
     images: Record<string, ImageSourcePropType>;
     manifest: Manifest;
@@ -35,6 +32,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     gameState,
     onAssignToBusiness,
     onUpgradeBusiness,
+    onSellBusiness,
     onClose,
     lang,
     images,
@@ -142,6 +140,17 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                             </Text>
                         </TouchableOpacity>
                     )}
+                    <TouchableOpacity
+                        onPress={() => {
+                            onSellBusiness(business.id);
+                            onClose();
+                        }}
+                        style={businessManagementModalStyles.sellButton}
+                    >
+                        <Text style={businessManagementModalStyles.sellButtonText}>
+                            {`Sell (+$${(businessDef.cost * 0.5).toLocaleString()})`}
+                        </Text>
+                    </TouchableOpacity>
             </View>
         </ComicPanelModal>)
 };
@@ -156,10 +165,10 @@ const businessManagementModalStyles = StyleSheet.create({
         // No direct equivalent for absolute positioning within a flex item without more structure
     },
     emptyAvatar: {
-        width: 64,
-        height: 64,
         backgroundColor: '#e2e8f0', // slate-200
         borderRadius: 32,
+        height: 64,
+        width: 64,
     },
     footer: {
         borderColor: '#e2e8f0',
@@ -190,22 +199,22 @@ const businessManagementModalStyles = StyleSheet.create({
         width: '100%',
     },
     sectionTitle: {
+        color: '#334155', // slate-700
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#334155', // slate-700
         marginBottom: 8,
     },
     slotDetails: {
         flex: 1,
     },
     slotItem: {
-        flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#f1f5f9', // slate-100
-        padding: 12,
         borderRadius: 8,
-        marginBottom: 8,
+        flexDirection: 'row',
         height: 100,
+        marginBottom: 8,
+        padding: 12,
     },
     slotRequirement: {
         color: '#64748b',
@@ -228,12 +237,12 @@ const businessManagementModalStyles = StyleSheet.create({
         fontWeight: 'bold', // slate-800
     },
     upgradeButton: {
-        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#60a5fa', // blue-400
-        padding: 12,
         borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        padding: 12,
     },
     upgradeButtonDisabled: {
         opacity: 0.5,
@@ -247,5 +256,18 @@ const businessManagementModalStyles = StyleSheet.create({
         height: 20,
         marginRight: 8,
         width: 20,
+    },
+    sellButton: {
+        alignItems: 'center',
+        backgroundColor: '#ef4444', // red-500
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        padding: 12,
+        marginTop: 8,
+    },
+    sellButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });

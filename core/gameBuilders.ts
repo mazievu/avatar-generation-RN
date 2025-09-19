@@ -1,4 +1,4 @@
-import { EventDraft, GameEvent, EventChoice, EventChoiceDraft, EventEffect, GameState, Character, ClubEventDraft, ClubEvent, Language } from './types';
+import { EventDraft, GameEvent, EventChoice, EventEffect, ClubEventDraft, ClubEvent, Language } from './types';
 import { EventIdByKey, ChoiceIdByKey } from '../src/generated/eventIds';
 import { t } from './localization';
 
@@ -12,7 +12,6 @@ function ensureEventEffect(effect: unknown): EventEffect {
 export function buildEvent(draft: EventDraft, lang: Language): GameEvent {
     const eventId = EventIdByKey[draft.id];
     if (!eventId) {
-        console.warn(`Warning: No stable ID found for event draft ID: ${draft.id}. This event might not be properly linked.`);
         // Fallback to draft.id if no stable ID is found, though this defeats the purpose
         // In a production environment, you might want to throw an error or handle this more strictly.
         // For now, we'll use the draft.id as a fallback.
@@ -41,7 +40,6 @@ export function buildEvent(draft: EventDraft, lang: Language): GameEvent {
         const choiceId = ChoiceIdByKey[choiceLockKey];
 
         if (!choiceId) {
-            console.warn(`Warning: No stable ID found for choice lock key: ${choiceLockKey}. This choice might not be properly linked.`);
             // Fallback to choiceLockKey if no stable ID is found
             return {
                 ...choiceDraft,
@@ -78,7 +76,6 @@ export function buildClubEvent(draft: ClubEventDraft, lang: Language): ClubEvent
         const choiceId = ChoiceIdByKey[choiceLockKey];
 
         if (!choiceId) {
-            console.warn(`Warning: No stable ID found for club choice lock key: ${choiceLockKey}. This choice might not be properly linked.`);
             return {
                 ...choiceDraft,
                 id: choiceLockKey, // Fallback

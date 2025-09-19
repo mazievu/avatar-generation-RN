@@ -1,4 +1,4 @@
-import { EventDraft, LifePhase, Pet, PetType, Stats, Character } from '../types';
+import { EventDraft, LifePhase, Pet, PetType, Stats, Character, GameState } from '../types';
 import { PET_DATA } from '../constants';
 import { randomUUID } from 'expo-crypto';
 import { EventIdByKey } from '../../src/generated/eventIds';
@@ -16,7 +16,7 @@ const getRandomPetName = (type: PetType): string => {
     return names[Math.floor(Math.random() * names.length)];
 }
 
-const removePetFromOwner = (state: any, charId: string) => {
+const removePetFromOwner = (state: GameState, charId: string) => {
     const familyMembers = { ...state.familyMembers };
     const char = { ...familyMembers[charId] };
     const petId = char.petId;
@@ -63,7 +63,7 @@ export const PET_EVENTS: EventDraft[] = [
                 effect: { 
                     fundChange: -50, 
                     logKey: 'log_pet_adoption_1',
-                    action: (state, charId, manifest) => {
+                    action: (state, charId) => {
                         const char = state.familyMembers[charId];
 
                         if (char.petId) {
@@ -170,7 +170,7 @@ export const PET_EVENTS: EventDraft[] = [
                 effect: { 
                     statChanges: { happiness: -2 },
                     logKey: 'log_pet_gets_old_2',
-                    action: (state, charId, manifest) => removePetFromOwner(state, charId)
+                    action: (state, charId) => removePetFromOwner(state, charId)
                 } 
             },
         ]
@@ -208,7 +208,7 @@ export const PET_EVENTS: EventDraft[] = [
             { textKey: 'choice_pet_lost_forever_1', effect: { 
                 statChanges: { happiness: -2 }, 
                 logKey: 'log_pet_lost_forever_1', 
-                action: (state, charId, manifest) => removePetFromOwner(state, charId)
+                action: (state, charId) => removePetFromOwner(state, charId)
             }}
         ]
     },
@@ -242,7 +242,7 @@ export const PET_EVENTS: EventDraft[] = [
              { textKey: 'choice_pet_dies_1', effect: { 
                 statChanges: { happiness: -4 }, 
                 logKey: 'log_pet_dies_1', 
-                action: (state, charId, manifest) => removePetFromOwner(state, charId)
+                action: (state, charId) => removePetFromOwner(state, charId)
             }}
         ]
     }

@@ -1,16 +1,12 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 
 import type { Language } from '../core/types';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
   lang: Language;
@@ -68,21 +64,15 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstruction
 
 const startMenuStyles = StyleSheet.create({
     gameSubtitle: {
-        fontSize: 18,
         color: '#4b5563', // slate-600
+        fontSize: 18,
         marginBottom: 32,
-    },
-    gameTitle: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#2563eb', // blue-700
-        marginBottom: 8,
     },
     howToPlayButton: {
         backgroundColor: '#60a5fa', // blue-400
-        paddingVertical: 12,
-        paddingHorizontal: 24,
         borderRadius: 8,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
     },
     howToPlayButtonText: {
         color: 'white',
@@ -108,32 +98,18 @@ const startMenuStyles = StyleSheet.create({
         color: '#4b5563', // slate-600
     },
     languageButtonsContainer: {
-        flexDirection: 'row',
-        marginTop: 24,
         backgroundColor: '#f1f5f9', // slate-100
         borderRadius: 8,
+        flexDirection: 'row',
+        marginTop: 24,
         padding: 4,
-    },
-    scenarioDescription: {
-        fontSize: 14,
-        color: '#64748b', // slate-500
-        marginTop: 4,
-    },
-    scenarioList: {
-        marginBottom: 24,
-        width: '100%',
-    },
-    scenarioName: {
-        color: '#1e293b',
-        fontSize: 18,
-        fontWeight: 'bold', // slate-800
     },
     startButton: {
         backgroundColor: '#2563eb', // blue-700
-        paddingVertical: 16,
-        paddingHorizontal: 32,
         borderRadius: 8,
         marginBottom: 24,
+        paddingHorizontal: 32,
+        paddingVertical: 16,
     },
     startButtonText: {
         color: 'white',

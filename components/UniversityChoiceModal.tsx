@@ -1,28 +1,22 @@
-import * as React from 'react';
-import { Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
-import type { Character, Language } from '../core/types';
+import type { Language } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
-import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
     lang: Language;
 }
 
 interface UniversityChoiceModalProps extends LocalizedProps {
-    character: Character;
     onSelect: (goToUniversity: boolean) => void;
 }
-export const UniversityChoiceModal: React.FC<UniversityChoiceModalProps> = ({ character, onSelect, lang }) => (
+export const UniversityChoiceModal: React.FC<UniversityChoiceModalProps> = ({ onSelect, lang }) => (
     <ComicPanelModal visible={true} onClose={() => {}} rotate="0deg">
         <Text style={universityChoiceModalStyles.title}>{t('modal_university_title', lang)}</Text>
         <Text style={universityChoiceModalStyles.description}>{t('modal_university_desc', lang)}</Text>
@@ -58,15 +52,15 @@ const universityChoiceModalStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     description: {
-        fontSize: 16,
         color: '#475569', // slate-600
+        fontSize: 16,
         marginBottom: 24,
         textAlign: 'center',
     },
     title: {
+        color: '#1e293b', // slate-800
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#1e293b', // slate-800
         marginBottom: 8,
         textAlign: 'center',
     },

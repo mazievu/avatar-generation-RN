@@ -83,7 +83,7 @@ export const RELATIONSHIP_EVENTS: EventDraft[] = [
             { textKey: 'choice_relationship_first_argument_3', effect: { 
                 statChanges: { happiness: -2, eq: -2 }, 
                 logKey: 'log_relationship_first_argument_3',
-                action: (state, charId, manifest) => {
+                action: (state, charId) => {
                     const char = state.familyMembers[charId];
                     if (char.partnerId && state.familyMembers[char.partnerId]) {
                         const partner = state.familyMembers[char.partnerId];

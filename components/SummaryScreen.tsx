@@ -1,16 +1,13 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
 import type { GameState, Character, Language } from '../core/types';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
   lang: Language;
@@ -67,10 +64,10 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({ gameState, onResta
 
 const summaryScreenStyles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#f8fafc', // slate-50
+        flex: 1,
+        justifyContent: 'center',
         padding: 16,
     },
     content: {
@@ -91,17 +88,17 @@ const summaryScreenStyles = StyleSheet.create({
         // For now, just a container
     },
     description: {
-        fontSize: 16,
         color: '#475569', // slate-600
+        fontSize: 16,
         marginBottom: 20,
         textAlign: 'center',
     },
     restartButton: {
         backgroundColor: '#60a5fa', // blue-400
-        paddingVertical: 12,
-        paddingHorizontal: 24,
         borderRadius: 8,
         marginTop: 16,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
     },
     restartButtonText: {
         color: 'white',
@@ -123,9 +120,9 @@ const summaryScreenStyles = StyleSheet.create({
         // space-y-2
     },
     title: {
+        color: '#2563eb', // blue-700
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#2563eb', // blue-700
         marginBottom: 12,
         textAlign: 'center',
     },

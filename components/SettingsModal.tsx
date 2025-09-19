@@ -80,21 +80,21 @@ const settingsModalStyles = StyleSheet.create({
     pauseResumeButton: { // NEW STYLE
         backgroundColor: '#3b82f6', // blue-500
         borderRadius: 8,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
         marginTop: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
     },
     pauseResumeButtonText: { // NEW STYLE
         color: 'white',
-        fontWeight: 'bold',
         fontSize: 18,
+        fontWeight: 'bold',
     },
     quitButton: {
         backgroundColor: '#ef4444', // red-500
         borderRadius: 8,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
         marginTop: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
     },
     quitButtonText: {
         color: 'white',

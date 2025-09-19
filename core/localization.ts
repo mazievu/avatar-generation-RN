@@ -1,4 +1,4 @@
-import { LifePhase, CharacterStatus, RelationshipStatus, Stats, Language } from './types';
+import { LifePhase, CharacterStatus, RelationshipStatus, Language } from './types';
 import translationsEn from '../localization/en';
 import translationsVi from '../localization/vi';
 

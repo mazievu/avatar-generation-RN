@@ -132,7 +132,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
         choices: [
             { textKey: 'choice_newborn_parents_sleepless_1', effect: { 
                 logKey: 'log_newborn_parents_sleepless_1',
-                action: (state, parentId, manifest) => {
+                action: (state, parentId) => {
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
@@ -143,7 +143,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
                         const parent2 = newState.familyMembers[parent1.partnerId];
                         if (parent2 && parent2.isAlive) {
                             parent2.stats.health = Math.max(0, parent2.stats.health + statChanges.health);
-                            parent2.stats.happiness = Math.max(0, parent2.stats.happiness + statChanges.happiness);
+                            parent2.stats.happiness = Math.min(100, parent2.stats.happiness + statChanges.happiness);
                         }
                     }
                     return newState;
@@ -151,7 +151,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
             } },
             { textKey: 'choice_newborn_parents_sleepless_2', effect: { 
                 logKey: 'log_newborn_parents_sleepless_2',
-                action: (state, parentId, manifest) => {
+                action: (state, parentId) => {
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;
@@ -170,7 +170,7 @@ export const NEWBORN_EVENTS: EventDraft[] = [
             } },
             { textKey: 'choice_newborn_parents_sleepless_3', effect: { 
                 logKey: 'log_newborn_parents_sleepless_3',
-                action: (state, parentId, manifest) => {
+                action: (state, parentId) => {
                     const newState = JSON.parse(JSON.stringify(state));
                     const parent1 = newState.familyMembers[parentId];
                     if (!parent1) return newState;

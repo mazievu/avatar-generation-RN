@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 
 import type { Character, GameLogEntry, Stats, Language } from '../core/types';
@@ -7,12 +7,8 @@ import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon, MoneyIcon } from 
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
   lang: Language;
@@ -21,7 +17,7 @@ interface LocalizedProps {
 interface GameLogProps extends LocalizedProps {
   log: GameLogEntry[];
   familyMembers: Record<string, Character>;
-  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
+  ListHeaderComponent?: React.ComponentType<unknown> | React.ReactElement | null;
 }
 
 const LogStatChanges: React.FC<{ entry: GameLogEntry, lang: Language }> = ({ entry, lang }) => {
@@ -153,9 +149,6 @@ const logStatChangesStyles = StyleSheet.create({
 });
 
 const gameLogStyles = StyleSheet.create({
-    logContainer: {
-        // space-y-4
-    },
     logEntry: {
         borderBottomColor: '#e2e8f0',
         borderBottomWidth: 1,
@@ -181,9 +174,9 @@ const gameLogStyles = StyleSheet.create({
         fontSize: 16,
     },
     logEntryYear: {
+        color: '#64748b', // slate-500
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#64748b', // slate-500
         marginBottom: 4,
     },
     scrollView: {

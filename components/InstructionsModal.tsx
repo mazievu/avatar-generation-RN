@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
 import type { Language } from '../core/types';
@@ -7,12 +7,8 @@ import { t } from '../core/localization';
 import { ComicPanelModal } from './ComicPanelModal';
 import { CloseIcon } from './icons';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
   lang: Language;
@@ -49,17 +45,17 @@ const instructionsModalStyles = StyleSheet.create({
         // space-y-3
     },
     instructionsParagraph: {
-        fontSize: 14, // text-base
         color: '#475569', // slate-600
+        fontSize: 14, // text-base
         marginBottom: 12, // space-y-3 equivalent
     },
     instructionsStrong: {
         fontWeight: 'bold',
     },
     instructionsTitle: {
+        color: '#60a5fa', // blue-400
         fontSize: 28, // text-3xl
         fontWeight: 'bold',
-        color: '#60a5fa', // blue-400
         marginBottom: 16,
     },
 });

@@ -1,4 +1,4 @@
-import { GameEvent, LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, BusinessDefinition, CareerTrack, AssetDefinition, AssetType } from './types';
+import { LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, CareerTrack, BusinessDefinition, AssetDefinition, AssetType } from './types';
 
 // ==============================
 // GAME ECONOMY CORE
@@ -12,8 +12,8 @@ export const PENSION_AMOUNT = 4200; // Per year (~$50/mo savings)
 export const CONTENT_VERSION = 1; // Added content version
 
 // Trần lương tuyệt đối
-export const SALARY_CAP_MONTHLY = 1400;
-export const SALARY_CAP_ANNUAL = SALARY_CAP_MONTHLY * 12; // 16,800
+export const SALARY_CAP_MONTHLY = 800;
+export const SALARY_CAP_ANNUAL = SALARY_CAP_MONTHLY * 12; // 9,600
 
 export const LIFE_PHASE_AGES = {
     Newborn: 5,
@@ -93,57 +93,57 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
             { titleKey: 'career_unskilled_1', salary: 6000, skillRequired: 0 }, // 500/tháng
             { titleKey: 'career_unskilled_2', salary: 7200, skillRequired: 20 }, // 600/tháng
             { titleKey: 'career_unskilled_3', salary: 8400, skillRequired: 40 }, // 700/tháng
-            { titleKey: 'career_unskilled_4', salary: 9600, skillRequired: 60 }, // 800/tháng
+            { titleKey: 'career_unskilled_4', salary: 9600, skillRequired: 80 }, // 800/tháng
         ],
     },
     Trade: {
         nameKey: 'career_track_trade_name', descriptionKey: 'career_track_trade_desc',
-        iqRequired: 80, eqRequired: 40,
+        iqRequired: 0, eqRequired: 0,
         levels: [
-            { titleKey: 'career_trade_1', salary: 8400, skillRequired: 0 }, // 700/tháng
-            { titleKey: 'career_trade_2', salary: 9600, skillRequired: 30 }, // 800/tháng
-            { titleKey: 'career_trade_3', salary: 10800, skillRequired: 60 }, // 900/tháng
-            { titleKey: 'career_trade_4', salary: 12000, skillRequired: 80 }, // 1,000/tháng
+            { titleKey: 'career_trade_1', salary: 6000, skillRequired: 0 }, // 500/tháng
+            { titleKey: 'career_trade_2', salary: 7600, skillRequired: 30 }, // 620/tháng
+            { titleKey: 'career_trade_3', salary: 9000, skillRequired: 60 }, // 750/tháng
+            { titleKey: 'career_trade_4', salary: 9600, skillRequired: 80 }, // 800/tháng
         ],
     },
     Arts: {
         nameKey: 'career_track_arts_name', descriptionKey: 'career_track_arts_desc',
         requiredMajor: 'major_arts', iqRequired: 100, eqRequired: 80,
         levels: [
-            { titleKey: 'career_arts_1', salary: 10200, skillRequired: 0 }, // 850/tháng
-            { titleKey: 'career_arts_2', salary: 11400, skillRequired: 40 }, // 950/tháng
-            { titleKey: 'career_arts_3', salary: 12600, skillRequired: 65 }, // 1,050/tháng
-            { titleKey: 'career_arts_4', salary: 13800, skillRequired: 85 }, // 1,150/tháng
+            { titleKey: 'career_arts_1', salary: 7200, skillRequired: 0 }, // 600/tháng
+            { titleKey: 'career_arts_2', salary: 8400, skillRequired: 40 }, // 700/tháng
+            { titleKey: 'career_arts_3', salary: 9000, skillRequired: 65 }, // 750/tháng
+            { titleKey: 'career_arts_4', salary: 9600, skillRequired: 85 }, // 800/tháng
         ],
     },
     Business: {
         nameKey: 'career_track_business_name', descriptionKey: 'career_track_business_desc',
         requiredMajor: 'major_business', iqRequired: 110, eqRequired: 70,
         levels: [
-            { titleKey: 'career_business_1', salary: 11400, skillRequired: 0 }, // 950/tháng
-            { titleKey: 'career_business_2', salary: 12600, skillRequired: 30 }, // 1,050/tháng
-            { titleKey: 'career_business_3', salary: 13800, skillRequired: 60 }, // 1,150/tháng
-            { titleKey: 'career_business_4', salary: 15000, skillRequired: 90 }, // 1,250/tháng
+            { titleKey: 'career_business_1', salary: 7200, skillRequired: 0 }, // 600/tháng
+            { titleKey: 'career_business_2', salary: 8400, skillRequired: 30 }, // 700/tháng
+            { titleKey: 'career_business_3', salary: 9000, skillRequired: 60 }, // 750/tháng
+            { titleKey: 'career_business_4', salary: 9600, skillRequired: 90 }, // 800/tháng
         ],
     },
     Technology: {
         nameKey: 'career_track_technology_name', descriptionKey: 'career_track_technology_desc',
         requiredMajor: 'major_technology', iqRequired: 120, eqRequired: 50,
         levels: [
-            { titleKey: 'career_technology_1', salary: 12000, skillRequired: 0 }, // 1,000/tháng
-            { titleKey: 'career_technology_2', salary: 13800, skillRequired: 40 }, // 1,150/tháng
-            { titleKey: 'career_technology_3', salary: 15600, skillRequired: 65 }, // 1,300/tháng
-            { titleKey: 'career_technology_4', salary: 16800, skillRequired: 90 }, // 1,400/tháng
+            { titleKey: 'career_technology_1', salary: 7200, skillRequired: 0 }, // 600/tháng
+            { titleKey: 'career_technology_2', salary: 8400, skillRequired: 40 }, // 700/tháng
+            { titleKey: 'career_technology_3', salary: 9000, skillRequired: 65 }, // 750/tháng
+            { titleKey: 'career_technology_4', salary: 9600, skillRequired: 90 }, // 800/tháng
         ],
     },
     Medicine: {
         nameKey: 'career_track_medicine_name', descriptionKey: 'career_track_medicine_desc',
         requiredMajor: 'major_medicine', iqRequired: 130, eqRequired: 80,
         levels: [
-            { titleKey: 'career_medicine_1', salary: 12000, skillRequired: 0 }, // 1,000/tháng
-            { titleKey: 'career_medicine_2', salary: 13800, skillRequired: 40 }, // 1,150/tháng
-            { titleKey: 'career_medicine_3', salary: 15600, skillRequired: 70 }, // 1,300/tháng
-            { titleKey: 'career_medicine_4', salary: 16800, skillRequired: 95 }, // 1,400/tháng
+            { titleKey: 'career_medicine_1', salary: 7200, skillRequired: 0 }, // 600/tháng
+            { titleKey: 'career_medicine_2', salary: 8400, skillRequired: 40 }, // 700/tháng
+            { titleKey: 'career_medicine_3', salary: 9000, skillRequired: 70 }, // 750/tháng
+            { titleKey: 'career_medicine_4', salary: 9600, skillRequired: 95 }, // 800/tháng
         ],
     },
 };
@@ -152,8 +152,8 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
 // TRAINING & EARLY CAREER
 // ==============================
 export const VOCATIONAL_TRAINING = { duration: 3, cost: 40000, effects: { skill: 40, eq: 10 } };
-export const INTERNSHIP = { duration: 1, stipend: 5400 }; // 450/tháng
-export const TRAINEE_SALARY = 5400; // 450/tháng
+export const INTERNSHIP = { duration: 1, stipend: 6000 }; // 500/tháng
+export const TRAINEE_SALARY = 6000; // 500/tháng
 
 // ==============================
 // EVENTS
@@ -187,12 +187,12 @@ export const AVATAR_COLOR_PALETTE = [
 // ==============================
 // BUSINESS ECONOMY
 // ==============================
-export const BUSINESS_REVENUE_SCALE = 0.06;
+export const BUSINESS_REVENUE_SCALE = 0.01;
 export const BUSINESS_FIXED_COST_SCALE = 0.10;
 export const BUSINESS_COGS_BONUS_ABS = 0.05;
 export const BUSINESS_COGS_MAX = 0.85;
 // Lương nhân viên DN
-export const BUSINESS_WORKER_BASE_SALARY_MONTHLY = 400;
+export const BUSINESS_WORKER_BASE_SALARY_MONTHLY = 500;
 export const BUSINESS_WORKER_SKILL_MULTIPLIER = 15;
 export const BUSINESS_WORKER_WAGE_CAP_MONTHLY = SALARY_CAP_MONTHLY;
 // Overhead theo đầu người
@@ -281,7 +281,13 @@ export const ASSET_DEFINITIONS: Record<string, AssetDefinition> = {
     'vacation_3': { id: 'vacation_3', type: AssetType.Vacation, tier: 3, nameKey: 'asset_vacation_3_name', descriptionKey: 'asset_vacation_3_desc', cost: 2500000, effects: { happiness: 0.03 }, imageSrc: '../public/asset/vacation_3.webp' },
 };
 
-
+// ==============================
+// UNLOCK THRESHOLDS
+// ==============================
+export const BUSINESS_UNLOCK_CHILDREN_COUNT = 1;
+export const CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT = 2;
+export const TWIN_BIRTH_UNLOCK_CHILDREN_COUNT = 3;
+export const TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT = 5;
 
 export const BUSINESS_MAP_LOCATIONS: Record<string, { x: number; y: number; width: number; height: number; buildingType: string }> = {
     // Medical District

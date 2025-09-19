@@ -1,10 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, ImageSourcePropType, Dimensions, TextInput, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ImageSourcePropType, TextInput, Image, Dimensions } from 'react-native';
 
 
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Manifest, Business, Club, Language } from '../core/types';
+import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Business, Language } from '../core/types';
 import { formatDate, getCharacterDisplayName } from '../core/utils';
-import { ASSET_DEFINITIONS } from '../core/constants';
 import { FamilyTree } from './FamilyTree';
 import { GameLog } from './GameLog';
 import { SummaryScreen } from './SummaryScreen';
@@ -16,40 +15,36 @@ import { t } from '../core/localization';
 import { exampleManifest } from '../core/types';
 import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
-import { Picker } from '@react-native-picker/picker';
 import { ModalManager } from './ModalManager';
 import SettingsModal from './SettingsModal';
 import { colors } from './designSystem';
-import { CLUBS } from '../core/clubsAndEventsData';
-import { imageAssets } from './ImageAssets';
 
 const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
+const responsiveSize = (size: number) => Math.round(size * (screenWidth / 375));
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
+
+
 
 export type SceneName = 'tree' | 'log' | 'assets' | 'business';
 
 const BottomNav: React.FC<{
   activeScene: SceneName;
   onSceneChange: (scene: SceneName) => void;
-  lang: Language;
-}> = ({ activeScene, onSceneChange, lang }) => {
+}> = ({ activeScene, onSceneChange }) => {
   return (
     <View style={gameUIStyles.bottomNavContainer}>
       <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={imageAssets['../public/asset/icon_family_tree.webp']} style={gameUIStyles.bottomNavIcon} />
+        <Image source={require('../public/asset/icon_family_tree.webp')} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('log')} style={[gameUIStyles.bottomNavButton, activeScene === 'log' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={imageAssets['../public/asset/icon_log.webp']} style={gameUIStyles.bottomNavIcon} />
+        <Image source={require('../public/asset/icon_log.webp')} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={imageAssets['../public/asset/icon_assets.webp']} style={gameUIStyles.bottomNavIcon} />
+        <Image source={require('../public/asset/icon_assets.webp')} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('business')} style={[gameUIStyles.bottomNavButton, activeScene === 'business' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={imageAssets['../public/asset/icon_business.webp']} style={gameUIStyles.bottomNavIcon} />
+        <Image source={require('../public/asset/icon_business.webp')} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
     </View>
   );
@@ -92,6 +87,7 @@ interface GameUIProps {
     onContinueGame: () => void;
     onStartNewGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
+    onSellBusiness: (businessId: string) => void;
     onSetMainView: (view: 'tree' | 'business') => void;
     onSetFamilyName: (name: string) => void;
     activeScene: SceneName; // NEW PROP
@@ -158,10 +154,10 @@ export const GameUI: React.FC<GameUIProps> = ({
         if (gameState?.familyName && gameState.familyName !== familyNameInput) {
             setFamilyNameInput(gameState.familyName);
         }
-    }, [gameState?.familyName]);
+    }, [gameState?.familyName, familyNameInput]);
 
 
-    const onCharacterCenteredOnEvent = useCallback(() => { // NEW CALLBACK
+    const onCharacterCenteredOnEvent = useCallback(() => { //  CALLBACK
         setCharacterIdToCenterOnEvent(null); // This resets the ID in FamilyTree
         setIsCenteringAnimationDone(true); // Indicate animation is done
     }, []);
@@ -181,7 +177,6 @@ export const GameUI: React.FC<GameUIProps> = ({
 
     const handleEventHandled = useCallback(() => {
         // Logic to handle event being handled, e.g., clear current event, update game state
-        console.log("Event handled!");
     }, []);
     
     useEffect(() => {
@@ -316,6 +311,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                 onPromotionAccept={onPromotionAccept}
                 onAssignToBusiness={onAssignToBusiness}
                 onUpgradeBusiness={onUpgradeBusiness}
+                onSellBusiness={onSellBusiness}
                 setEditingBusiness={setEditingBusiness}
                 isCenteringAnimationDone={isCenteringAnimationDone} // NEW PROP
             />
@@ -371,66 +367,48 @@ export const GameUI: React.FC<GameUIProps> = ({
                     {renderScene()}
                 </View>
             </View>
-            <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} lang={lang} />
+            <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} />
         </View>
     );
 };
 
 // NOTE: This is a simplified stylesheet. A real app would have more extensive styling.
 const gameUIStyles = StyleSheet.create({
-    flexCenter: { alignItems: 'center', justifyContent: 'center' },
-    fullScreen: { flex: 1 },
-    mainContainer: { backgroundColor: colors.neutral50, flex: 1 }, // Use new cream background
-    maxWidthContainer: { flex: 1, padding: 16, paddingBottom: 90 }, // Increased paddingBottom for taller nav
-    headerContainer: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
-    headerLeft: { },
-    gameTitle: { color: colors.primary, fontSize: 32, fontWeight: 'bold' },
-    dateText: { color: colors.textSecondary, fontSize: 21 }, // Increased font size by ~30%
-    fundContainer: { },
-    fundTextContainer: { alignItems: 'baseline', flexDirection: 'row' },
-    fundLabel: { color: colors.textSecondary, fontSize: 16 },
-    fundValue: { fontSize: 20, fontWeight: 'bold', marginLeft: 8 },
-    fundPositive: { color: colors.textPrimary },
-    fundNegative: { color: colors.error },
-    fundBubble: {
-        flexDirection: 'row',
+    bottomNavButton: {
         alignItems: 'center',
-        backgroundColor: colors.neutral100, // Use light blue-gray for contrast
-        borderRadius: 20,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 4,
+        borderRadius: 12,
+        flex: 1,
+        marginHorizontal: 4,
+        padding: 4,
     },
-    fundIcon: {
-        fontSize: 20,
-        marginRight: 5,
-        color: colors.success, // Use success color from design system
-        fontWeight: 'bold',
+    bottomNavButtonActive: {
+        backgroundColor: colors.primary, // Use primary color for active background
     },
-    monthlyChange: { fontSize: 14, marginLeft: 8 },
-    monthlyChangePositive: { color: colors.success },
-    monthlyChangeNegative: { color: colors.error },
-    overlayControlsContainer: {
-        alignItems: 'center',
+    bottomNavContainer: {
+        backgroundColor: colors.neutral200, // Use light blue-gray
+        borderTopWidth: 0, // Remove top border for a cleaner look
+        bottom: 0,
+        elevation: 5,
         flexDirection: 'row',
-        gap: 8,
+        justifyContent: 'space-around',
+        left: 0,
+        paddingVertical: 12, // Increased padding
         position: 'absolute',
-        right: 16,
-        top: 16,
-        zIndex: 10,
+        right: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
-    headerRight: { alignItems: 'center', flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' },
-    
-    chunkyButtonSlate: { backgroundColor: colors.neutral700, borderRadius: 8, padding: 12 },
+    bottomNavIcon: {
+        height: 24,
+        width: 24,
+    },
     chunkyButtonBlue: { backgroundColor: colors.primary, borderRadius: 8, padding: 12 },
+    chunkyButtonSlate: { backgroundColor: colors.neutral700, borderRadius: 8, padding: 12 },
     chunkyButtonText: { color: colors.white, fontWeight: 'bold' },
-    speedPicker: { height: 44, width: responsiveSize(120) },
-    speedPickerItem: { height: 44 },
-    mainContentGrid: { flex: 1 },
+    dateText: { color: colors.textSecondary, fontSize: 21 }, // Increased font size by ~30%
+    familyTreeContainer: { flex: 1 },
     familyTreeTitle: { color: colors.primary, fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
     familyTreeTitleEditable: {
         alignSelf: 'center',
@@ -446,68 +424,84 @@ const gameUIStyles = StyleSheet.create({
         top: 0,
         zIndex: 10,
     },
+    flexCenter: { alignItems: 'center', justifyContent: 'center' },
+    fullScreen: { flex: 1 },
+    fundBubble: {
+        alignItems: 'center',
+        backgroundColor: colors.neutral100, // Use light blue-gray for contrast
+        borderRadius: 20,
+        elevation: 4,
+        flexDirection: 'row',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+    },
+    fundContainer: { },
+    fundIcon: {
+        color: colors.success, // Use success color from design system
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginRight: 5,
+    },
+    fundLabel: { color: colors.textSecondary, fontSize: 16 },
+    fundNegative: { color: colors.error },
+    fundPositive: { color: colors.textPrimary },
+    fundTextContainer: { alignItems: 'baseline', flexDirection: 'row' },
+    fundValue: { fontSize: 20, fontWeight: 'bold', marginLeft: 8 },
+    gameTitle: { color: colors.primary, fontSize: 32, fontWeight: 'bold' },
+    headerContainer: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
+    headerLeft: { },
+    headerRight: { alignItems: 'center', flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' },
+    mainContainer: { backgroundColor: colors.neutral50, flex: 1 }, // Use new cream background
+    mainContentGrid: { flex: 1 },
+    maxWidthContainer: { flex: 1, padding: 16, paddingBottom: 90 }, // Increased paddingBottom for taller nav,
+    monthlyChange: { fontSize: 14, marginLeft: 8 },
+    monthlyChangeNegative: { color: colors.error },
+    monthlyChangePositive: { color: colors.success },
+    noFamilyText: { color: colors.textSecondary, fontStyle: 'italic' },
+    overlayControlsContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 8,
+        position: 'absolute',
+        right: 16,
+        top: 16,
+        zIndex: 10,
+    },
     sceneContainer: {
         flex: 1,
         position: 'relative',
     },
-    familyTreeContainer: { flex: 1 },
-    noFamilyText: { color: colors.textSecondary, fontStyle: 'italic' },
-    bottomNavContainer: {
-        backgroundColor: colors.neutral200, // Use light blue-gray
-        borderTopWidth: 0, // Remove top border for a cleaner look
-        bottom: 0,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        left: 0,
-        paddingVertical: 12, // Increased padding
-        position: 'absolute',
-        right: 0,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    bottomNavButton: {
-        alignItems: 'center',
-        borderRadius: 12,
-        flex: 1,
-        marginHorizontal: 4,
-        padding: 4,
-    },
-    bottomNavButtonActive: {
-        backgroundColor: colors.primary, // Use primary color for active background
-    },
-    bottomNavIcon: {
-        width: 50, // Reverted to bigger size
-        height: 50,
-        marginVertical: 4,
-    },
-    storyButton: {
-        position: 'absolute',
-        top: 90, // Placed above settings button
-        right: 16,
-        backgroundColor: colors.primary, // Use primary color
-        borderRadius: 8,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        zIndex: 10,
-    },
-    storyButtonText: {
-        color: colors.white,
-        fontWeight: 'bold',
-    },
     settingsButton: {
-        position: 'absolute',
-        top: 140,
-        right: 16,
         backgroundColor: colors.accent, // Use accent color
         borderRadius: 8,
-        paddingVertical: 8,
         paddingHorizontal: 12,
+        paddingVertical: 8,
+        position: 'absolute',
+        right: 16,
+        top: 140,
         zIndex: 10,
     },
     settingsButtonText: {
+        color: colors.white,
+        fontWeight: 'bold',
+    },
+    speedPicker: { height: 44, width: responsiveSize(120) },
+    speedPickerItem: { height: 44 },
+    storyButton: {
+        backgroundColor: colors.primary, // Use primary color
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        position: 'absolute',
+        right: 16,
+        top: 90, // Placed above settings button
+        zIndex: 10,
+    },
+    storyButtonText: {
         color: colors.white,
         fontWeight: 'bold',
     },

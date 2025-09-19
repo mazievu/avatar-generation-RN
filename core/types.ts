@@ -249,6 +249,7 @@ export interface GameState {
   lang: Language;
   contentVersion: number; // Added content version
   familyName: string;
+  totalChildrenBorn: number; // New: Tracks total children born in the family
 }
 
 export type StatChanges = Partial<Stats>;
@@ -393,8 +394,6 @@ export interface ClubEventDraft {
   choices: EventChoiceDraft[];
   condition?: (state: GameState, char: Character) => boolean;
 }
-
-type AgeCategory = 'baby' | 'normal' | 'old';
 
 
 // --- Start of generated asset lists ---

@@ -1,5 +1,5 @@
-import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, CareerChoice, PurchasedAsset, Business, Pet, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, RelationshipStatus, Gender, Language } from './types';
-import { GAME_SPEED_MS, DAYS_IN_YEAR, SCHOOL_OPTIONS, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, MOURNING_PERIOD_YEARS, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION } from './constants';
+import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, PurchasedAsset, Business, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, Language, Manifest } from './types';
+import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT } from './constants';
 import { CLUBS } from './clubsAndEventsData';
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
@@ -47,7 +47,7 @@ const ONE_TIME_EVENT_IDS = [
 ];
 
 // This function will encapsulate all game logic handlers
-export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: any) => {
+export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: Manifest) => {
 
     // Initialize game data (build events, etc.)
     if (typeof initializeAllGameData === 'function') {
@@ -87,6 +87,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].monthsInCurrentJobLevel = 0;
                 initialState.familyMembers[charId].monthsUnemployed = 0;
             }
+            initialState.totalChildrenBorn = 0; // Initialize for new game
             setGameState(initialState);
         } else {
             const initialState = scenario.createInitialState(initialYear, language);
@@ -97,6 +98,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].monthsInCurrentJobLevel = 0;
                 initialState.familyMembers[charId].monthsUnemployed = 0;
             }
+            initialState.totalChildrenBorn = 0; // Initialize for new game
             setGameState(initialState);
         }
         
@@ -147,6 +149,9 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 }
                 if (!savedState.familyBusinesses) { // Migration for old saves
                     savedState.familyBusinesses = {}; // Initialize as an empty object
+                }
+                if (savedState.totalChildrenBorn === undefined) {
+                    savedState.totalChildrenBorn = 0;
                 }
 
                                 setLanguage(savedState.lang || 'en');
@@ -769,7 +774,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                     if (event) {
                         newState.activeEvent = { characterId: chosenCharacter.id, event: event };
-                        console.log("GameLoop: Active event set for character:", chosenCharacter.id, "Event:", event.id); // ADD THIS
 
                         const livingMembersCount = Object.values(nextFamilyMembers).filter(c => c.isAlive).length;
                         const cooldownDays = livingMembersCount <= 3 ? 120 : 180;
@@ -830,7 +834,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     childrenEventSuccess = true;
                 }
             }
-            console.log(`[DEBUG] handleEventChoice called for event: ${event.id}, action present: ${!!finalEffect.action}`);
     
             // 1. Apply direct stat/fund changes
             if (event.applyEffectToAll) {
@@ -872,7 +875,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             }
 
             if (event.applyEffectToAll) {
-                nextState.eventQueue = nextState.eventQueue.filter((e: any) => e.event.id !== event.id);
+                nextState.eventQueue = nextState.eventQueue.filter(q => q.event.id !== event.id);
             }
     
             // 2. Update one-time event list or cooldowns
@@ -889,7 +892,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             if (finalEffect.action) {
                 const updates = finalEffect.action(nextState, characterId, exampleManifest);
                 Object.assign(nextState, updates);
-                console.log(`[DEBUG] After action, familyMembers count: ${Object.keys(nextState.familyMembers).length}`);
             }
     
             // 4. Determine the next event (trigger or null)
@@ -898,7 +900,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     if (Math.random() < trigger.chance) {
                         const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
                         if (triggeredEvent) {
-                            console.log(`[DEBUG] Found triggered event: ${triggeredEvent.id}`);
                             let newCharacterId = characterId;
                             if (trigger.reTarget === 'parents') {
                                 const originalChar = nextState.familyMembers[characterId];
@@ -906,10 +907,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                                 if (parents.length > 0) newCharacterId = parents[0].id;
                             }
                             const allAvailableEvents = getAllEvents();
-                            console.log(`[DEBUG] All available events count: ${allAvailableEvents.length}`);
                             const foundTriggeredEvent = allAvailableEvents.find(e => e.id === trigger.eventId);
                             if (foundTriggeredEvent) {
-                                console.log(`[DEBUG] Found triggered event: ${foundTriggeredEvent.id}`);
                                 nextState.eventQueue.push({ characterId: newCharacterId, event: foundTriggeredEvent });
                                 break; // We only process one trigger
                             }
@@ -1576,6 +1575,11 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     
             const actor = Object.values(prevState.familyMembers).find(c => c.isAlive);
 
+            // Check if business feature is unlocked
+            if (prevState.totalChildrenBorn < BUSINESS_UNLOCK_CHILDREN_COUNT) {
+                return { ...prevState, gameLog: [...prevState.gameLog, { year: prevState.currentDate.year, messageKey: 'log_business_locked', replacements: { requiredChildren: BUSINESS_UNLOCK_CHILDREN_COUNT } }] };
+            }
+
             if (prevState.familyFund < definition.cost) {
                 return { ...prevState, gameLog: [...prevState.gameLog, { year: prevState.currentDate.year, messageKey: 'log_business_purchase_fail', replacements: { businessName: t(definition.nameKey, language) } }] };
             }
@@ -1660,6 +1664,48 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         });
     };
 
+    const handleSellBusiness = (businessId: string) => {
+        setGameState(prevState => {
+            if (!prevState) return null;
+            const business = prevState.familyBusinesses[businessId];
+            if (!business) return prevState;
+
+            const definition = BUSINESS_DEFINITIONS[business.type];
+            if (!definition) return prevState;
+
+            const sellPrice = definition.cost * 0.5;
+            const actor = Object.values(prevState.familyMembers).find(c => c.isAlive);
+
+            const nextState: GameState = JSON.parse(JSON.stringify(prevState));
+
+            // Unassign all characters from the business
+            for (const slot of business.slots) {
+                if (slot.assignedCharacterId && slot.assignedCharacterId !== 'robot') {
+                    const char = nextState.familyMembers[slot.assignedCharacterId];
+                    if (char) {
+                        char.status = CharacterStatus.Unemployed;
+                        char.monthlyNetIncome = 0;
+                        char.careerTrack = null;
+                        char.careerLevel = 0;
+                    }
+                }
+            }
+
+            delete nextState.familyBusinesses[businessId];
+            nextState.familyFund += sellPrice;
+
+            nextState.gameLog.push({
+                year: nextState.currentDate.year,
+                messageKey: 'log_business_sold',
+                replacements: { businessName: t(definition.nameKey, nextState.lang), amount: sellPrice.toLocaleString() },
+                characterId: actor?.id,
+                eventTitleKey: 'event_business_sold_title',
+            });
+
+            return nextState;
+        });
+    };
+
     const handleAvatarSave = (customizingCharacterId: string | null, newState: AvatarState) => {
         if (customizingCharacterId) {
             setGameState(prevState => {
@@ -1699,6 +1745,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         handleBuyBusiness,
         handlePurchaseAsset,
         handleAvatarSave,
+        handleSellBusiness,
         ONE_TIME_EVENT_IDS,
         SAVE_KEY,
         stopGameLoop,

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { GameState, Character, Language } from './core/types';
@@ -35,7 +35,7 @@ allAvatarUrls.add('../public/asset/daisy.png');
 
 import { imageAssets } from './components/ImageAssets';
 
-const avatarImages: Record<string, any> = imageAssets;
+const avatarImages: Record<string, number> = imageAssets;
 
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -49,7 +49,7 @@ const App: React.FC = () => {
     const [language, setLanguage] = useState<Language>('en');
     const [customizingCharacterId, setCustomizingCharacterId] = useState<string | null>(null);
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
-    const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
+    
     
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -75,9 +75,10 @@ const App: React.FC = () => {
         handleBuyBusiness,
         handlePurchaseAsset,
         handleAvatarSave,
+        handleSellBusiness,
         stopGameLoop,
-        SAVE_KEY,
-    } = useMemo(() => createGameLogicHandlers(setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest), [setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest]);
+        
+    } = useMemo(() => createGameLogicHandlers(setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest), [setGameState, language, timerRef, setView, setIsPaused, setLanguage]);
 
     useEffect(() => {
         initGodMode(setGameState);
@@ -129,7 +130,7 @@ const App: React.FC = () => {
             timerRef.current = setInterval(gameLoop, gameSpeed);
         }
         return () => stopGameLoop();
-    }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState]);
+    }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState, stopGameLoop]);
     const handleSetSelectedCharacter = useCallback((character: Character | null) => {
        
         setSelectedCharacter(character);
@@ -157,7 +158,7 @@ const App: React.FC = () => {
         );
     }
         return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={appStyles.rootView}>
             <GameUI
                     view={view}
                     mainView={mainView}
@@ -194,8 +195,9 @@ const App: React.FC = () => {
                     onContinueGame={handleContinueGame}
                     onStartNewGame={handleStartNewGame}
                     onPurchaseAsset={handlePurchaseAsset}
+                    onSellBusiness={handleSellBusiness}
                     onSetMainView={setMainView}
-                    onSetFamilyName={function (name: string): void {
+                    onSetFamilyName={function (): void {
                         throw new Error('Function not implemented.');
                     } }
                     activeScene={activeScene}
@@ -218,5 +220,8 @@ const appStyles = StyleSheet.create({
         color: '#333',
         fontSize: 24,
         fontWeight: 'bold',
+    },
+    rootView: {
+        flex: 1,
     },
 });

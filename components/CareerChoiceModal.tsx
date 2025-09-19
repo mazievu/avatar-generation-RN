@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 
 import type { Character, Language } from '../core/types';
@@ -9,12 +9,8 @@ import { CAREER_LADDER, VOCATIONAL_TRAINING } from '../core/constants';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface LocalizedProps {
     lang: Language;
@@ -92,13 +88,8 @@ const careerChoiceModalStyles = StyleSheet.create({
         fontSize: 14,
     },
     choiceDescription: {
+        color: '#475569', // slate-600
         fontSize: 14,
-        color: '#475569', // slate-600
-        marginTop: 4,
-    },
-    choiceEffects: {
-        fontSize: 12,
-        color: '#475569', // slate-600
         marginTop: 4,
     },
     choiceNameContainer: {
@@ -115,11 +106,11 @@ const careerChoiceModalStyles = StyleSheet.create({
     costUnaffordable: {
         color: '#ef4444', // red-500
     },
-    description: {
-    color: '#475569',
-    fontSize: 16,
-    marginBottom: 24,
-  },
+        description: {
+        color: '#475569',
+        fontSize: 16,
+        marginBottom: 24,
+    },
     majorMatchIcon: {
         fontSize: 16,
         marginLeft: 8,

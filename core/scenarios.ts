@@ -1,4 +1,4 @@
-import type { GameState, Character, Pet, GameScenario, Club, Language, PurchasedAsset } from './types';
+import type { GameState, Character, Pet, GameScenario, Language } from './types';
 import { LifePhase, CharacterStatus, RelationshipStatus, Gender, PetType, exampleManifest } from './types';
 import { INITIAL_FUNDS, UNIVERSITY_MAJORS } from './constants';
 import { createInitialCharacter, generateName, generateRandomAvatar, addDays } from './utils';

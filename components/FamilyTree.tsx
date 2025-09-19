@@ -5,7 +5,6 @@ import {
   PinchGestureHandler,
   PanGestureHandlerGestureEvent,
   PinchGestureHandlerGestureEvent,
-  State,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -240,7 +239,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
         }
       });
     }
-  }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.familyMembers, onCharacterCenteredOnEvent]);
+  }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.familyMembers, onCharacterCenteredOnEvent, scale, translateX, translateY]);
 
   
 
@@ -297,7 +296,6 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
           const p1x = x + NODE_WIDTH;
           const p1y = y + NODE_HEIGHT / 2;
           const p2x = partnerLayout.x;
-          const p2y = partnerLayout.y + NODE_HEIGHT / 2;
           paths.push(<Path key={connectionId} d={`M ${p1x} ${p1y} H ${p2x}`} stroke="#a1a1aa" strokeWidth="2" />);
           drawnConnections.add(connectionId);
         }
@@ -424,11 +422,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
                 return (
                   <View
                     key={character.id}
-                    style={{
-                      position: 'absolute',
-                      left: nodeLayout.x,
-                      top: nodeLayout.y,
-                    }}
+                    style={styles.nodeContainer}
                   >
                     <CharacterNode
                       character={character}
@@ -457,12 +451,14 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#eeeeeeff', // slate-100 for contrast
+    flex: 1,
     overflow: 'hidden',
+  },
+  nodeContainer: {
+    position: 'absolute',
   },
   treeContainer: {
     ...StyleSheet.absoluteFillObject,
   },
 });
-                  

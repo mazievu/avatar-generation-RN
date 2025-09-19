@@ -44,6 +44,7 @@ interface ModalManagerProps {
     onPromotionAccept: () => void;
     onAssignToBusiness: (businessId: string, slotIndex: number, characterId: string | null) => void;
     onUpgradeBusiness: (businessId: string) => void;
+    onSellBusiness: (businessId: string) => void;
     setEditingBusiness: (business: Business | null) => void;
 }
 
@@ -170,6 +171,7 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     gameState={gameState}
                     onAssignToBusiness={onAssignToBusiness}
                     onUpgradeBusiness={onUpgradeBusiness}
+                    onSellBusiness={onSellBusiness}
                     onClose={() => setEditingBusiness(null)}
                     lang={lang}
                     images={avatarImages}

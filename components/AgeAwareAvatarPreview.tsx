@@ -1,18 +1,12 @@
 import React, { useMemo } from "react";
-import { View, Image, StyleSheet, ImageSourcePropType, ViewStyle, Dimensions } from 'react-native';
+import { Image, StyleSheet, View, ImageSourcePropType, ViewStyle } from 'react-native';
 
 
-import type { Manifest, AvatarState, LayerKey, Character } from '../core/types';
-import { AVATAR_COLOR_PALETTE } from "../core/constants";
+import type { Manifest, LayerKey, Character } from '../core/types';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
-
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
 
 type AgeStage = 'baby' | 'child' | 'teen' | 'adult' | 'elder';
+
 
 function ageStageFromAge(age: number): AgeStage {
   if (age <= 3) return 'baby';
@@ -104,6 +98,8 @@ interface Props {
 }
 
 export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, character, size, style }) => {
+    const orderedLayers = useMemo(() => [...manifest].sort((a, b) => a.zIndex - b.zIndex), [manifest]);
+
     // Handle static avatars for specific characters (e.g., Mila's family)
     if (character.staticAvatarUrl) {
         return (
@@ -126,7 +122,7 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
 
   const { age, avatarState: state } = character;
   const stage = ageStageFromAge(age);
-  const orderedLayers = useMemo(() => [...manifest].sort((a, b) => a.zIndex - b.zIndex), [manifest]);
+  
 
   return (
       <View
@@ -167,15 +163,15 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
 
 const ageAwareAvatarPreviewStyles = StyleSheet.create({
     container: {
-        position: 'relative',
-        overflow: 'hidden',
+        backgroundColor: '#e2e8f0', // bg-slate-200
         borderRadius: 16, // rounded-2xl (assuming 2xl is 16px radius)
+        elevation: 3, // shadow-md
+        overflow: 'hidden',
+        position: 'relative',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 3, // shadow-md
-        backgroundColor: '#e2e8f0', // bg-slate-200
     },
     layerImage: {
         height: '100%',

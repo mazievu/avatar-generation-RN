@@ -1,27 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
-import type { Character, Club, Language } from '../core/types';
+import type { Club, Language } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
 
-const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
-const scale = screenWidth / baseWidth;
 
-const responsiveFontSize = (size: number) => Math.round(size * scale);
-const responsiveSize = (size: number) => Math.round(size * scale);
+
 
 interface ClubChoiceModalProps {
-  character: Character;
   clubs: Club[];
   onSelect: (clubId: string) => void;
   onSkip: () => void;
   lang: Language;
 }
 
-export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clubs, onSelect, onSkip, lang }) => {
+export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ clubs, onSelect, onSkip, lang }) => {
   return (
     <ComicPanelModal 
       visible={true}
@@ -57,12 +52,12 @@ export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clu
 
 const clubChoiceModalStyles = StyleSheet.create({
   button: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
         alignItems: 'center',
+        borderRadius: 8,
         justifyContent: 'center',
         marginTop: 8, // mt-2
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         width: '100%',
     },
   buttonGreen: {
@@ -81,24 +76,24 @@ const clubChoiceModalStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     clubDescription: {
-        fontSize: 14, // text-sm
         color: '#cbd5e1', // text-slate-300
+        fontSize: 14, // text-sm
         fontStyle: 'italic',
         marginVertical: 4, // my-1
     },
     clubItem: {
-        borderWidth: 1,
-        borderColor: '#e2e8f0', // Example border color
-        padding: 16, // p-4
-        borderRadius: 8, // rounded-lg
         backgroundColor: 'rgba(71, 85, 105, 0.5)', // bg-slate-700/50
-        width: '48%', // Approximate for md:grid-cols-2 gap-4
+        borderColor: '#e2e8f0', // Example border color
+        borderRadius: 8, // rounded-lg
+        borderWidth: 1,
         marginBottom: 16, // For gap between rows
+        padding: 16, // p-4
+        width: '48%', // Approximate for md:grid-cols-2 gap-4
     },
     clubName: {
+        color: '#fcd34d', // text-yellow-300
         fontSize: 18, // text-lg
         fontWeight: 'bold',
-        color: '#fcd34d', // text-yellow-300
     },
     description: {
     color: '#475569',
@@ -108,9 +103,9 @@ const clubChoiceModalStyles = StyleSheet.create({
     gridContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
+        gap: 16, // gap-4
         justifyContent: 'space-between',
         marginVertical: 16, // my-4
-        gap: 16, // gap-4
     },
     title: {
     color: '#1e293b',

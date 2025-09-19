@@ -2,7 +2,6 @@ import { Gender, LifePhase, Character, Stats, CharacterStatus, RelationshipStatu
 import { LIFE_PHASE_AGES, CAREER_LADDER, UNIVERSITY_MAJORS, DAYS_IN_YEAR, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, AVATAR_COLOR_PALETTE } from './constants';
 import { t } from './localization';
 
-import { CLUBS } from './clubsAndEventsData';
 
 const MALE_NAMES_EN = ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Daniel", "Matthew", "Anthony", "Mark", "Donald", "Steven", "Paul", "Andrew", "Joshua", "Kevin"];
 const FEMALE_NAMES_EN = ["Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen", "Nancy", "Lisa", "Betty", "Margaret", "Sandra", "Ashley", "Kimberly", "Emily", "Donna", "Michelle"];
@@ -191,8 +190,6 @@ export const createInitialCharacter = (year: number, lang: Language, manifest: M
         completedOneTimeEvents: [],
         currentClubs: [],
         completedClubEvents: [],
-        displayAdjective: null,
-        avatarState: generateRandomAvatar(manifest, age, gender),
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
@@ -242,8 +239,6 @@ export const handleBirth = (parent1: Character, parent2: Character, currentDate:
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: generateRandomAvatar(manifest, age, gender),
-        currentClubs: [],
-        completedClubEvents: [],
         lowHappinessYears: 0,
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,

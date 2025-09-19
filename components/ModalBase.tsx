@@ -43,12 +43,12 @@ const modalBaseStyles = StyleSheet.create({
     justifyContent: 'center', // Semi-transparent background
   },
   closeButton: {
+    alignItems: 'center',
     backgroundColor: '#FF6347', // Tomato color
     borderRadius: 15,
-    width: 30,
     height: 30,
     justifyContent: 'center',
-    alignItems: 'center',
+    width: 30,
   },
   closeButtonText: {
     color: 'white',
@@ -71,11 +71,13 @@ const modalBaseStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   modalView: {
-    margin: 20,
+    alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 20,
+    elevation: 5,
+    margin: 20,
+    maxHeight: '80%', // Adjust max height as needed
     padding: 35,
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -83,9 +85,7 @@ const modalBaseStyles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
     width: '80%', // Adjust width as needed
-    maxHeight: '80%', // Adjust max height as needed
   },
 });
 

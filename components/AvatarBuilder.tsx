@@ -57,7 +57,7 @@ export default function AvatarBuilder({
 }: {
     manifest: Manifest;
     character: Character;
-    images: Record<string, any>;
+    images: Record<string, number>;
     onSave: (newState: AvatarState) => void;
     onClose: () => void;
 }) {
@@ -222,7 +222,7 @@ export default function AvatarBuilder({
       return (
         <ScrollView>
           <TouchableOpacity
-            style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonSlate, { marginBottom: 16 }]}
+            style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonSlate, avatarBuilderStyles.chunkyButtonMarginBottom]}
             onPress={() => setSelectedLayerKey(null)}
           >
             <Text style={avatarBuilderStyles.chunkyButtonText}>Back to Layers</Text>
@@ -311,6 +311,9 @@ const avatarBuilderStyles = StyleSheet.create({
     chunkyButtonGreen: {
         backgroundColor: '#22c55e',
         borderColor: '#16a34a',
+    },
+    chunkyButtonMarginBottom: {
+        marginBottom: 16,
     },
     chunkyButtonPink: {
         backgroundColor: '#ec4899',
@@ -468,14 +471,12 @@ const avatarBuilderStyles = StyleSheet.create({
         fontSize: 10,
         textAlign: 'center',
     },
-    previewColumn: {
+        previewColumn: {
+        alignItems: 'center',
         flex: 1,
         flexDirection: 'column',
-        alignItems: 'center',
-        // === THAY ĐỔI DUY NHẤT LÀ Ở ĐÂY ===
-        justifyContent: 'flex-start', // Thay 'space-between' thành 'flex-start'
-        // ===================================
         gap: 16,
+        justifyContent: 'flex-start', // Thay 'space-between' thành 'flex-start'
     },
     rightColumnContainer: {
         flex: 1,
