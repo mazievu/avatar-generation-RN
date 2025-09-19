@@ -87,7 +87,7 @@ interface GameUIProps {
     onContinueGame: () => void;
     onStartNewGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
-    onSellBusiness: (businessId: string) => void;
+        onSellBusiness,
     onSetMainView: (view: 'tree' | 'business') => void;
     onSetFamilyName: (name: string) => void;
     activeScene: SceneName; // NEW PROP
@@ -275,6 +275,10 @@ export const GameUI: React.FC<GameUIProps> = ({
         }
     }
 
+    function onSellBusiness(businessId: string): void {
+        throw new Error('Function not implemented.');
+    }
+
     return (
         <View style={gameUIStyles.mainContainer}>
 
@@ -378,7 +382,7 @@ const gameUIStyles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 12,
         flex: 1,
-        marginHorizontal: 4,
+        marginHorizontal: 20,
         padding: 4,
     },
     bottomNavButtonActive: {
@@ -392,7 +396,7 @@ const gameUIStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         left: 0,
-        paddingVertical: 12, // Increased padding
+        paddingVertical: 15, // Increased padding
         position: 'absolute',
         right: 0,
         shadowColor: '#000',
@@ -401,8 +405,8 @@ const gameUIStyles = StyleSheet.create({
         shadowRadius: 4,
     },
     bottomNavIcon: {
-        height: 24,
-        width: 24,
+        height: 50,
+        width: 50,
     },
     chunkyButtonBlue: { backgroundColor: colors.primary, borderRadius: 8, padding: 12 },
     chunkyButtonSlate: { backgroundColor: colors.neutral700, borderRadius: 8, padding: 12 },

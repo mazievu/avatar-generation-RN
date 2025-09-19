@@ -21,7 +21,6 @@ export function buildEvent(draft: EventDraft, lang: Language): GameEvent {
             ...draft,
             id: draft.id, // Use draft.id as fallback
             title: t(draft.titleKey, lang),
-            description: t(draft.descriptionKey, lang),
             choices: draft.choices.map(choiceDraft => {
                 const choiceLockKey = `${draft.id}|${choiceDraft.textKey}`;
                 const choiceId = ChoiceIdByKey[choiceLockKey] || choiceLockKey; // Fallback for choice ID
@@ -61,7 +60,6 @@ export function buildEvent(draft: EventDraft, lang: Language): GameEvent {
         ...draft,
         id: eventId,
         title: t(draft.titleKey, lang),
-        description: t(draft.descriptionKey, lang),
         choices: builtChoices,
     };
 }
@@ -96,7 +94,6 @@ export function buildClubEvent(draft: ClubEventDraft, lang: Language): ClubEvent
         ...draft,
         id: eventId,
         title: t(draft.titleKey, lang),
-        description: t(draft.descriptionKey, lang),
         choices: builtChoices,
     };
 }

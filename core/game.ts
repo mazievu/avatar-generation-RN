@@ -134,6 +134,10 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                         if (savedState.familyMembers[charId].monthsUnemployed === undefined) {
                             savedState.familyMembers[charId].monthsUnemployed = 0;
                         }
+                        // NEW: Initialize avatarState if missing
+                        if (savedState.familyMembers[charId].avatarState === undefined) {
+                            savedState.familyMembers[charId].avatarState = {}; // Initialize with an empty object
+                        }
                     }
                 }
                  if (!savedState.purchasedAssets || Array.isArray(savedState.purchasedAssets)) { // Migration for old saves
@@ -832,6 +836,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                 if (event.id === 'milestone_children' && dynamicResult.logKey === 'log_milestone_children_try_success') {
                     childrenEventSuccess = true;
+                    // Tăng tổng số trẻ em đã sinh ra khi có trẻ mới
+                    nextState.totalChildrenBorn = (nextState.totalChildrenBorn || 0) + 1;
                 }
             }
     
@@ -1664,7 +1670,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         });
     };
 
-    const handleSellBusiness = (businessId: string) => {
+    const onSellBusiness = (businessId: string) => {
         setGameState(prevState => {
             if (!prevState) return null;
             const business = prevState.familyBusinesses[businessId];
@@ -1745,7 +1751,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         handleBuyBusiness,
         handlePurchaseAsset,
         handleAvatarSave,
-        handleSellBusiness,
+        onSellBusiness,
         ONE_TIME_EVENT_IDS,
         SAVE_KEY,
         stopGameLoop,

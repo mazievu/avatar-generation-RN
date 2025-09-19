@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Pressable, ImageSourcePropType } from 'react-native';
 
 
 import { Picker } from '@react-native-picker/picker';
@@ -21,7 +21,7 @@ interface BusinessManagementModalProps {
     gameState: GameState;
     onAssignToBusiness: (businessId: string, slotIndex: number, characterId: string | null) => void;
     onUpgradeBusiness: (businessId: string) => void;
-    onSellBusiness: (businessId: string) => void;
+    handleSellBusiness: (businessId: string) => void;
     onClose: () => void;
     images: Record<string, ImageSourcePropType>;
     manifest: Manifest;
@@ -32,7 +32,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     gameState,
     onAssignToBusiness,
     onUpgradeBusiness,
-    onSellBusiness,
+    handleSellBusiness,
     onClose,
     lang,
     images,
@@ -142,13 +142,13 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                     )}
                     <TouchableOpacity
                         onPress={() => {
-                            onSellBusiness(business.id);
+                            handleSellBusiness(business.id);
                             onClose();
                         }}
                         style={businessManagementModalStyles.sellButton}
                     >
                         <Text style={businessManagementModalStyles.sellButtonText}>
-                            {`Sell (+$${(businessDef.cost * 0.5).toLocaleString()})`}
+                            {`Sell (+${(businessDef.cost * 0.5).toLocaleString()})`}
                         </Text>
                     </TouchableOpacity>
             </View>

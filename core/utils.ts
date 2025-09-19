@@ -194,6 +194,7 @@ export const createInitialCharacter = (year: number, lang: Language, manifest: M
         lowHealthYears: 0,
         monthsInCurrentJobLevel: 0,
         monthsUnemployed: 0,
+        avatarState: generateRandomAvatar(manifest, age, gender),
     };
 };
 

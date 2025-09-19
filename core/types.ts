@@ -300,13 +300,14 @@ export type EventDraft = {
 // Choice hoàn chỉnh để runtime dùng.
 export type EventChoice = EventChoiceDraft & {
   id: string;
-  labelKey: string;
+  label: string;
   effect: EventEffect;
 };
 
 // Event hoàn chỉnh để runtime dùng.
 export interface GameEvent extends Omit<EventDraft, "choices"> { // Omit choices from EventDraft to redefine explicitly
   id: string; // Runtime ID for the event
+  title: string;
   choices: EventChoice[]; // Runtime choices (using EventChoice)
   // stableKey and other properties are inherited from EventDraft
 }

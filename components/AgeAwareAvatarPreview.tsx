@@ -98,6 +98,10 @@ interface Props {
 }
 
 export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, character, size, style }) => {
+    if (!character || !character.avatarState) {
+        console.warn("AgeAwareAvatarPreview received undefined or null character or avatarState prop.");
+        return null; 
+    }
     const orderedLayers = useMemo(() => [...manifest].sort((a, b) => a.zIndex - b.zIndex), [manifest]);
 
     // Handle static avatars for specific characters (e.g., Mila's family)

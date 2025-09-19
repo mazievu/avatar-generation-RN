@@ -62,7 +62,7 @@ export default function AvatarBuilder({
     onClose: () => void;
 }) {
   const [seed, setSeed] = useState<number>(() => Math.floor(Math.random() * 100000));
-  const [state, setState] = useState<AvatarState>(character.avatarState);
+  const [state, setState] = useState<AvatarState>(character.avatarState || {});
   const [optionsContainerWidth, setOptionsContainerWidth] = useState(0);
   const [optionSize, setOptionSize] = useState(0);
   const [selectedLayerKey, setSelectedLayerKey] = useState<LayerKey | null>(null);

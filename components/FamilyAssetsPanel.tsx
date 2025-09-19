@@ -243,6 +243,57 @@ const assetDetailModalStyles = StyleSheet.create({
 });
 
 
+const familyAssetsPanelStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        color: '#1e293b',
+    },
+    totalValueText: {
+        fontSize: 16,
+        marginBottom: 16,
+        color: '#475569',
+    },
+    totalValueAmount: {
+        fontWeight: 'bold',
+        color: '#16a34a',
+    },
+    purchaseSectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 24,
+        marginBottom: 16,
+        color: '#1e293b',
+    },
+    assetTypesContainer: {
+        // flex-wrap container for asset types
+    },
+    assetTypeSection: {
+        marginBottom: 24,
+        backgroundColor: '#f1f5f9',
+        borderRadius: 12,
+        padding: 16,
+    },
+    assetTypeTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 12,
+        color: '#334155',
+    },
+    assetGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+        justifyContent: 'flex-start',
+    },
+});
+
+
 const FamilyAssetsPanelInternal: React.FC<{
     purchasedAssets: Record<string, PurchasedAsset>;
     familyFund: number;

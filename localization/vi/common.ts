@@ -413,4 +413,7 @@ export default {
     club_art_desc: 'Giải phóng sự sáng tạo và trí tuệ cảm xúc của bạn trong câu lạc bộ nghệ thuật.',
     club_science: 'Câu lạc bộ Khoa học',
     club_science_desc: 'Khám phá những điều kỳ diệu của khoa học và tăng cường IQ và kỹ năng giải quyết vấn đề của bạn.',
+    log_business_locked: "Bạn cần có {requiredChildren} đứa trẻ để mở khóa tính năng kinh doanh.",
+    event_business_locked_title: "Tính năng bị khóa",
+    avatar_customization_locked: "Bạn cần có {requiredChildren} đứa trẻ để mở khóa tùy chỉnh avatar.",
 };

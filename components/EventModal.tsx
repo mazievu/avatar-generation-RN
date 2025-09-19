@@ -115,7 +115,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                 />
             </View>
             <View style={eventModalStyles.headerTextContainer}>
-                <Text style={eventModalStyles.title}>{t(displayEventData.event.titleKey, lang)}</Text>
+                <Text style={eventModalStyles.title}>{displayEventData.event.title}</Text>
                 <Text style={eventModalStyles.subtitle}>{t('event_for', lang)}: <Text style={eventModalStyles.characterName}>{characterDisplayName}</Text></Text>
             </View>
         </View>
@@ -133,13 +133,13 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                     >
                       <View style={eventModalStyles.choiceButtonContent}>
                         <Text style={eventModalStyles.choiceButtonText}>
-                          {t(choice.textKey, lang)}
+                          {choice.label}
                           {choice.effect.triggers && choice.effect.triggers.length > 0 && (
                             <Text style={eventModalStyles.choiceTriggerText}>
                               {`(${choice.effect.triggers.map((trigger, idx) => {
                                 const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
                                 if (!triggeredEvent) return null;
-                                const triggerText = t(triggeredEvent.titleKey, lang);
+                                const triggerText = triggeredEvent.title;
                                 return `${Math.round(trigger.chance * 100)}% ${triggerText}${idx < choice.effect.triggers!.length - 1 ? ', ' : ''}`;
                               }).filter(Boolean).join(', ')})`}
                             </Text>

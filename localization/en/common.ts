@@ -416,4 +416,7 @@ export default {
     club_art_desc: 'Unleash your creativity and emotional intelligence in the art club.',
     club_science: 'Science Club',
     club_science_desc: 'Explore the wonders of science and boost your IQ and problem-solving skills.',
+    log_business_locked: "You need to have {requiredChildren} children to unlock the business feature.",
+    event_business_locked_title: "Feature Locked",
+    avatar_customization_locked: "You need to have {requiredChildren} children to unlock avatar customization.",
 };
