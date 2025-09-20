@@ -102,35 +102,28 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   }
 
   return (
-    <ComicPanelModal visible={true} onClose={onClose} rotate="2deg" disableDismissOnPressOutside={true}>
-        
-      
-        <View style={eventModalStyles.header}>
-            <View style={eventModalStyles.avatarButton}> {/* Changed from TouchableOpacity to View */}
-                <AgeAwareAvatarPreview
-                    manifest={manifest}
-                    character={character}
-                    images={images}
-                    size={{ width: responsiveSize(80), height: responsiveSize(80) }}
-                />
+    <ComicPanelModal visible={true} onClose={onClose} rotate="0deg" disableDismissOnPressOutside={true}>
+               <View style={eventModalStyles.header}>
+                <View style={eventModalStyles.avatarButton}>
+                    <AgeAwareAvatarPreview
+                        manifest={manifest}
+                        character={character}
+                        images={images}
+                        size={{ width: responsiveSize(80), height: responsiveSize(80) }}
+                    />
+                </View>
+                <View style={eventModalStyles.headerTextContainer}>
+                    <Text style={eventModalStyles.title}>{displayEventData.event.title}</Text>
+                    <Text style={eventModalStyles.subtitle}>{t('event_for', lang)}: <Text style={eventModalStyles.characterName}>{characterDisplayName}</Text></Text>
+                </View>
             </View>
-            <View style={eventModalStyles.headerTextContainer}>
-                <Text style={eventModalStyles.title}>{displayEventData.event.title}</Text>
-                <Text style={eventModalStyles.subtitle}>{t('event_for', lang)}: <Text style={eventModalStyles.characterName}>{characterDisplayName}</Text></Text>
-            </View>
-        </View>
-        
-        <Text style={eventModalStyles.description}>{String(t(displayEventData.event.descriptionKey, lang, displayEventData.replacements))}</Text>
-        
-        {!outcome ? (
+
+            <Text style={eventModalStyles.description}>{String(t(displayEventData.event.descriptionKey, lang, displayEventData.replacements))}</Text>
+            
+            {!outcome ? (
                 <View style={eventModalStyles.choicesContainer}>
                   {displayEventData.event.choices.map((choice, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => handleSelectChoice(choice)}
-                      disabled={!!outcome}
-                      style={eventModalStyles.choiceButton}
-                    >
+                    <TouchableOpacity key={index} onPress={() => handleSelectChoice(choice)} disabled={!!outcome} style={eventModalStyles.choiceButton}>
                       <View style={eventModalStyles.choiceButtonContent}>
                         <Text style={eventModalStyles.choiceButtonText}>
                           {choice.label}
@@ -140,11 +133,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                               {choice.effect.triggers.map((trigger, idx) => {
                                 const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
                                 if (!triggeredEvent) return null;
-                                return (
-                                    <Text key={idx}>
-                                        {`${Math.round(trigger.chance * 100)}% ${triggeredEvent.title}${idx < choice.effect.triggers.length - 1 ? ', ' : ''}`}
-                                    </Text>
-                                );
+                                return ( <Text key={idx}>{`${Math.round(trigger.chance * 100)}% ${triggeredEvent.title}${idx < choice.effect.triggers.length - 1 ? ', ' : ''}`}</Text> );
                               })}
                               {')'}
                             </Text>
@@ -153,7 +142,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                       </View>
                       {choice.effect.fundChange && choice.effect.fundChange !== 0 && (
                           <Text style={[eventModalStyles.fundChangeText, choice.effect.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>
-                              {choice.effect.fundChange > 0 ? '+' : ''}${Math.abs(choice.effect.fundChange).toLocaleString()}
+                              {`${choice.effect.fundChange > 0 ? '+' : ''}$${Math.abs(choice.effect.fundChange).toLocaleString()}`}
                           </Text>
                       )}
                     </TouchableOpacity>
@@ -161,12 +150,12 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                 </View>
             ) : (
                 <View style={eventModalStyles.outcomeContainer}>
-                    <Text style={eventModalStyles.outcomeMessage}>&quot;{t(outcome.logKey, lang, { name: characterDisplayName })}&quot;</Text>
+                    <Text style={eventModalStyles.outcomeMessage}>"{t(outcome.logKey, lang, { name: characterDisplayName })}"</Text>
                     <View style={eventModalStyles.outcomeDetails}>
                         {outcome.fundChange && (
                             <View style={eventModalStyles.fundChangeDetail}>
                                 <MoneyIcon />
-                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{t('family_fund_label', lang)}: {outcome.fundChange > 0 ? '+' : ''}${outcome.fundChange.toLocaleString()}</Text>
+                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{`${t('family_fund_label', lang)}: ${outcome.fundChange > 0 ? '+' : ''}$${outcome.fundChange.toLocaleString()}`}</Text>
                             </View>
                         )}
                         {outcome.statChanges && Object.entries(outcome.statChanges).map(([stat, change]) => {
@@ -179,7 +168,6 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                     key={stat}
                                     Icon={statIcons[stat] || IqIcon}
                                     label={statLabels[stat]}
-                                    
                                     value={finalValue}
                                     max={stat === 'iq' ? 200 : 100}
                                     color={'#cbd5e1'}
@@ -197,12 +185,12 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                     setInitialCharacterState(character);
                                     setOutcome(null);
                                 } else {
-                                    onEventHandled(character.id); // NEW: Call the new prop
+                                    onEventHandled(character.id);
                                     onClose();
                                 }
                             }}
                             onPressIn={handleOkPressIn}
-                                                        onPressOut={handleOkPressOut}
+                            onPressOut={handleOkPressOut}
                             activeOpacity={1}
                         >
                             <Animated.View style={[eventModalStyles.okButton, okButtonAnimatedStyle]}>
@@ -210,7 +198,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                             </Animated.View>
                         </TouchableOpacity>
                 </View>
-            )} 
+            )}
       </ComicPanelModal>)
 };
 

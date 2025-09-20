@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedProps } from 'react-native-reanimated';
-import { TextInput } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native';
 import { StarAnimation } from './StarAnimation'; // Import StarAnimation
 import { SmokeAnimation } from './SmokeAnimation'; // Import SmokeAnimation
 
@@ -80,20 +80,18 @@ export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color
   const animatedProps = useAnimatedProps(() => {
     return {
       text: `${Math.round(progress.value)}`,
-    } as { text: string };
+    } as any;
   });
 
   return (
     <View style={styles.statRow}>
       {Icon && <Icon width={24} height={24} color="#334155" />}
       <Text style={styles.statLabel}>{label}</Text>
-
       <View style={styles.barContainer}>
         <View style={styles.statBarBackground}>
           <Animated.View style={[styles.statBarFill, animatedFillStyle]} />
         </View>
       </View>
-
       <Animated.View style={animatedTextStyle}>
         <AnimatedTextInput
           underlineColorAndroid="transparent"
@@ -103,7 +101,6 @@ export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color
           animatedProps={animatedProps}
         />
       </Animated.View>
-
       {statChange !== 0 && (
         <Animated.View style={[styles.changeTextContainer, animatedChangeTextStyle]}>
           <Text style={styles.changeText}>
@@ -111,7 +108,6 @@ export const StatBar: React.FC<StatBarProps> = ({ label, value, max, Icon, color
           </Text>
         </Animated.View>
       )}
-
       {/* Star/Smoke Animations - Moved outside statBarBackground */}
       <StarAnimation shouldAnimate={shouldAnimateStars.value === 1} />
       <SmokeAnimation shouldAnimate={shouldAnimateSmoke.value === 1} />

@@ -143,9 +143,13 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
 
             const { src: displaySrc, name: optionName } = getVariantSrc(optionId, layer.key, stage, manifest, images);
 
-            if (!displaySrc) return null;
+            // BƯỚC 1: XÓA DÒNG `if` GÂY LỖI BÊN DƯỚI
+            // if (!displaySrc) return null; 
 
-            const finalSrc = displaySrc || { uri: makePlaceholderSVG(size.width, size.height, `${layer.label}: ${optionName}`) };
+            // BƯỚC 2: SỬA LẠI LOGIC TÍNH `finalSrc` ĐỂ LUÔN TẠO RA SOURCE HỢP LỆ
+            const finalSrc = displaySrc 
+                ? displaySrc 
+                : { uri: makePlaceholderSVG(size.width, size.height, `${layer.label}: ${optionName || 'N/A'}`) };
             
             // Image filters are not directly supported in React Native Image component.
             // Consider using a third-party library for image manipulation if complex filters are needed.
