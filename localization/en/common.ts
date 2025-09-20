@@ -419,4 +419,22 @@ export default {
     log_business_locked: "You need to have {requiredChildren} children to unlock the business feature.",
     event_business_locked_title: "Feature Locked",
     avatar_customization_locked: "You need to have {requiredChildren} children to unlock avatar customization.",
+
+    // Unlockables
+    unlocks_button_title: "Goals & Unlocks",
+    unlocks_modal_title: "Goals & Unlocks",
+    unlocked: "Unlocked",
+    unlock_business_name: "Business",
+    unlock_business_desc: "Start your own business and build a commercial empire.",
+    unlock_custom_avatar_name: "Avatar Customization",
+    unlock_custom_avatar_desc: "Freely customize the appearance of your family members.",
+    unlock_twins_name: "Twin Births",
+    unlock_twins_desc: "Increases the chance of having twins.",
+    unlock_triplets_name: "Triplet Births",
+    unlock_triplets_desc: "A small chance of having triplets.",
+    log_feature_unlocked: "{featureName} has been unlocked!",
+    event_feature_unlocked_title: "Feature Unlocked",
+    unlock_notification_title: "Congratulations!",
+    unlock_notification_body: "You have unlocked the {featureName} feature!",
+    unlock_notification_button: "Awesome!",
 };

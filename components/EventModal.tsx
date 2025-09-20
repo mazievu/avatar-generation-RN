@@ -120,7 +120,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
             </View>
         </View>
         
-        <Text style={eventModalStyles.description}>{t(displayEventData.event.descriptionKey, lang, displayEventData.replacements)}</Text>
+        <Text style={eventModalStyles.description}>{String(t(displayEventData.event.descriptionKey, lang, displayEventData.replacements))}</Text>
         
         {!outcome ? (
                 <View style={eventModalStyles.choicesContainer}>
@@ -136,12 +136,17 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                           {choice.label}
                           {choice.effect.triggers && choice.effect.triggers.length > 0 && (
                             <Text style={eventModalStyles.choiceTriggerText}>
-                              {`(${choice.effect.triggers.map((trigger, idx) => {
+                              {' ('}
+                              {choice.effect.triggers.map((trigger, idx) => {
                                 const triggeredEvent = getAllEvents().find(e => e.id === trigger.eventId);
                                 if (!triggeredEvent) return null;
-                                const triggerText = triggeredEvent.title;
-                                return `${Math.round(trigger.chance * 100)}% ${triggerText}${idx < choice.effect.triggers!.length - 1 ? ', ' : ''}`;
-                              }).filter(Boolean).join(', ')})`}
+                                return (
+                                    <Text key={idx}>
+                                        {`${Math.round(trigger.chance * 100)}% ${triggeredEvent.title}${idx < choice.effect.triggers.length - 1 ? ', ' : ''}`}
+                                    </Text>
+                                );
+                              })}
+                              {')'}
                             </Text>
                           )}
                         </Text>

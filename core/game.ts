@@ -1,5 +1,5 @@
 import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, PurchasedAsset, Business, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, Language, Manifest } from './types';
-import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT } from './constants';
+import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT } from './constants';
 import { CLUBS } from './clubsAndEventsData';
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
@@ -88,6 +88,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].monthsUnemployed = 0;
             }
             initialState.totalChildrenBorn = 0; // Initialize for new game
+            initialState.unlockedFeatures = [];
+            initialState.newlyUnlockedFeature = null;
             setGameState(initialState);
         } else {
             const initialState = scenario.createInitialState(initialYear, language);
@@ -99,6 +101,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].monthsUnemployed = 0;
             }
             initialState.totalChildrenBorn = 0; // Initialize for new game
+            initialState.unlockedFeatures = [];
+            initialState.newlyUnlockedFeature = null;
             setGameState(initialState);
         }
         
@@ -156,6 +160,12 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 }
                 if (savedState.totalChildrenBorn === undefined) {
                     savedState.totalChildrenBorn = 0;
+                }
+                if (savedState.unlockedFeatures === undefined) {
+                    savedState.unlockedFeatures = [];
+                }
+                if (savedState.newlyUnlockedFeature === undefined) {
+                    savedState.newlyUnlockedFeature = null;
                 }
 
                                 setLanguage(savedState.lang || 'en');
@@ -838,6 +848,22 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     childrenEventSuccess = true;
                     // Tăng tổng số trẻ em đã sinh ra khi có trẻ mới
                     nextState.totalChildrenBorn = (nextState.totalChildrenBorn || 0) + 1;
+
+                    // Check for newly unlocked features
+                    for (const feature of UNLOCKABLE_FEATURES) {
+                        const isAlreadyUnlocked = nextState.unlockedFeatures.includes(feature.id);
+                        if (!isAlreadyUnlocked && nextState.totalChildrenBorn >= feature.childrenRequired) {
+                            nextState.unlockedFeatures.push(feature.id);
+                            nextState.newlyUnlockedFeature = feature.id;
+                            nextState.gameLog.push({
+                                year: nextState.currentDate.year,
+                                messageKey: 'log_feature_unlocked',
+                                replacements: { featureName: t(feature.nameKey, language) },
+                                eventTitleKey: 'event_feature_unlocked_title',
+                            });
+                            break; // Only unlock one feature at a time
+                        }
+                    }
                 }
             }
     
@@ -1727,6 +1753,16 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         }
     };
 
+    const handleAcknowledgeUnlock = () => {
+      setGameState(prevState => {
+        if (!prevState) return null;
+        return {
+          ...prevState,
+          newlyUnlockedFeature: null, // Xóa trạng thái "vừa mở khóa"
+        };
+      });
+    };
+
     return {
         saveGame,
         initializeGame,
@@ -1752,6 +1788,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         handlePurchaseAsset,
         handleAvatarSave,
         onSellBusiness,
+        handleAcknowledgeUnlock,
         ONE_TIME_EVENT_IDS,
         SAVE_KEY,
         stopGameLoop,

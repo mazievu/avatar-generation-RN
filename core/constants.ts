@@ -289,6 +289,41 @@ export const CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT = 2;
 export const TWIN_BIRTH_UNLOCK_CHILDREN_COUNT = 3;
 export const TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT = 5;
 
+export interface UnlockableFeature {
+  id: 'business' | 'custom_avatar' | 'twins' | 'triplets';
+  nameKey: string; // Key cho localization, ví dụ: 'unlock_business_name'
+  descriptionKey: string; // Key cho mô tả, ví dụ: 'unlock_business_desc'
+  childrenRequired: number;
+}
+
+export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
+  {
+    id: 'business',
+    nameKey: 'unlock_business_name',
+    descriptionKey: 'unlock_business_desc',
+    childrenRequired: BUSINESS_UNLOCK_CHILDREN_COUNT,
+  },
+  {
+    id: 'custom_avatar',
+    nameKey: 'unlock_custom_avatar_name',
+    descriptionKey: 'unlock_custom_avatar_desc',
+    childrenRequired: CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT,
+  },
+  {
+    id: 'twins',
+    nameKey: 'unlock_twins_name',
+    descriptionKey: 'unlock_twins_desc',
+    childrenRequired: TWIN_BIRTH_UNLOCK_CHILDREN_COUNT,
+  },
+  {
+    id: 'triplets',
+    nameKey: 'unlock_triplets_name',
+    descriptionKey: 'unlock_triplets_desc',
+    childrenRequired: TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT,
+  },
+];
+
+
 export const BUSINESS_MAP_LOCATIONS: Record<string, { x: number; y: number; width: number; height: number; buildingType: string }> = {
     // Medical District
     'medicine_t1': { x: 1556, y: 1800, width: 150, height: 120, buildingType: 'clinic' },

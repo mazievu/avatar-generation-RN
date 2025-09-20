@@ -34,6 +34,7 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         lang: lang,
         contentVersion: 1,
         familyName: 'Family',
+        totalChildrenBorn: 0,
     };
 };
 
@@ -106,6 +107,7 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         lang: lang,
         contentVersion: 1,
         familyName: 'Family',
+        totalChildrenBorn: 0,
     };
 };
 
@@ -248,6 +250,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         lang: lang,
         contentVersion: 1,
         familyName: 'Mila Family',
+        totalChildrenBorn: 3,
     };
 };
 

@@ -250,6 +250,8 @@ export interface GameState {
   contentVersion: number; // Added content version
   familyName: string;
   totalChildrenBorn: number; // New: Tracks total children born in the family
+  unlockedFeatures: string[];
+  newlyUnlockedFeature: string | null;
 }
 
 export type StatChanges = Partial<Stats>;

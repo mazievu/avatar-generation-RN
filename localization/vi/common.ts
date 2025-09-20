@@ -416,4 +416,22 @@ export default {
     log_business_locked: "Bạn cần có {requiredChildren} đứa trẻ để mở khóa tính năng kinh doanh.",
     event_business_locked_title: "Tính năng bị khóa",
     avatar_customization_locked: "Bạn cần có {requiredChildren} đứa trẻ để mở khóa tùy chỉnh avatar.",
+
+    // Unlockables
+    unlocks_button_title: "Mục tiêu & Mở khóa",
+    unlocks_modal_title: "Mục tiêu & Mở khóa",
+    unlocked: "Đã mở khóa",
+    unlock_business_name: "Kinh doanh",
+    unlock_business_desc: "Thành lập doanh nghiệp của riêng bạn và xây dựng một đế chế thương mại.",
+    unlock_custom_avatar_name: "Tùy chỉnh Avatar",
+    unlock_custom_avatar_desc: "Tự do tùy chỉnh ngoại hình của các thành viên trong gia đình.",
+    unlock_twins_name: "Sinh đôi",
+    unlock_twins_desc: "Tăng cơ hội sinh được con sinh đôi.",
+    unlock_triplets_name: "Sinh ba",
+    unlock_triplets_desc: "Mở ra một cơ hội nhỏ để có con sinh ba.",
+    log_feature_unlocked: "Tính năng {featureName} đã được mở khóa!",
+    event_feature_unlocked_title: "Tính năng được mở khóa",
+    unlock_notification_title: "Chúc mừng!",
+    unlock_notification_body: "Bạn đã mở khóa tính năng {featureName}!",
+    unlock_notification_button: "Tuyệt vời!",
 };

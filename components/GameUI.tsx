@@ -17,6 +17,8 @@ import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { ModalManager } from './ModalManager';
 import SettingsModal from './SettingsModal';
+import { UnlocksModal } from './UnlocksModal'; // Import the new modal
+import { UnlockNotificationModal } from './UnlockNotificationModal'; // Import the new modal
 import { colors } from './designSystem';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -28,10 +30,15 @@ const responsiveSize = (size: number) => Math.round(size * (screenWidth / 375));
 
 export type SceneName = 'tree' | 'log' | 'assets' | 'business';
 
+import { BUSINESS_UNLOCK_CHILDREN_COUNT } from '../core/constants';
+
 const BottomNav: React.FC<{
   activeScene: SceneName;
   onSceneChange: (scene: SceneName) => void;
-}> = ({ activeScene, onSceneChange }) => {
+  gameState: GameState;
+}> = ({ activeScene, onSceneChange, gameState }) => {
+  const isBusinessUnlocked = gameState.totalChildrenBorn >= BUSINESS_UNLOCK_CHILDREN_COUNT;
+
   return (
     <View style={gameUIStyles.bottomNavContainer}>
       <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
@@ -43,7 +50,15 @@ const BottomNav: React.FC<{
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
         <Image source={require('../public/asset/icon_assets.webp')} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => onSceneChange('business')} style={[gameUIStyles.bottomNavButton, activeScene === 'business' && gameUIStyles.bottomNavButtonActive]}>
+      <TouchableOpacity 
+        onPress={() => onSceneChange('business')} 
+        style={[
+            gameUIStyles.bottomNavButton, 
+            activeScene === 'business' && gameUIStyles.bottomNavButtonActive,
+            !isBusinessUnlocked && gameUIStyles.disabledButton
+        ]}
+        disabled={!isBusinessUnlocked}
+      >
         <Image source={require('../public/asset/icon_business.webp')} style={gameUIStyles.bottomNavIcon} />
       </TouchableOpacity>
     </View>
@@ -87,11 +102,12 @@ interface GameUIProps {
     onContinueGame: () => void;
     onStartNewGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
-        onSellBusiness,
+    onSellBusiness: (businessId: string) => void; // Corrected prop name
     onSetMainView: (view: 'tree' | 'business') => void;
     onSetFamilyName: (name: string) => void;
     activeScene: SceneName; // NEW PROP
     onSetActiveScene: (scene: SceneName) => void; // NEW PROP
+    onAcknowledgeUnlock: () => void; // NEW PROP FOR UNLOCK NOTIFICATION
 }
 
 export const GameUI: React.FC<GameUIProps> = ({
@@ -134,13 +150,14 @@ export const GameUI: React.FC<GameUIProps> = ({
     onSetFamilyName, // Added here
     activeScene, // NEW PROP
     onSetActiveScene, // NEW PROP
+    onAcknowledgeUnlock, // NEW PROP
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null); // NEW STATE
     const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false); // NEW STATE
-    
-    const [showSettingsModal, setShowSettingsModal] = useState(false); // NEW STATE for settings modal
+    const [isUnlocksModalVisible, setIsUnlocksModalVisible] = useState(false); // State for the new modal
     const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
 
     // New state for editable family name
     const [familyNameInput, setFamilyNameInput] = useState<string>(
@@ -210,7 +227,7 @@ export const GameUI: React.FC<GameUIProps> = ({
     if (view === 'menu') {
         return (
             <>
-                <StartMenu onStart={() => onStartGame('new')} onShowInstructions={onShowInstructions} lang={lang} onSetLang={onSetLang} />
+                <StartMenu onStart={() => onStartGame('classic')} onShowInstructions={onShowInstructions} lang={lang} onSetLang={onSetLang} />
                 {showInstructions && <InstructionsModal onClose={onCloseInstructions} lang={lang} />}
             </>
         );
@@ -332,6 +349,11 @@ export const GameUI: React.FC<GameUIProps> = ({
                 <Text style={gameUIStyles.settingsButtonText}>{t('settings_button', lang)}</Text>
             </TouchableOpacity>
 
+            {/* Unlocks Button */}
+            <TouchableOpacity onPress={() => setIsUnlocksModalVisible(true)} style={gameUIStyles.unlocksButton}>
+                <Text style={gameUIStyles.settingsButtonText}>{t('unlocks_button_title', lang)}</Text>
+            </TouchableOpacity>
+
             {/* Settings Modal */}
             <SettingsModal
                 isVisible={showSettingsModal}
@@ -344,6 +366,25 @@ export const GameUI: React.FC<GameUIProps> = ({
                 isPaused={isPaused} // NEW PROP
                 onSetIsPaused={onSetIsPaused} // NEW PROP
             />
+
+            
+
+            {gameState && (
+                <>
+                    <UnlocksModal
+                        isVisible={isUnlocksModalVisible}
+                        onClose={() => setIsUnlocksModalVisible(false)}
+                        gameState={gameState}
+                        lang={lang}
+                    />
+
+                    <UnlockNotificationModal
+                        newlyUnlockedFeatureId={gameState.newlyUnlockedFeature}
+                        onAcknowledge={onAcknowledgeUnlock}
+                        lang={lang}
+                    />
+                </>
+            )}
 
             <View style={gameUIStyles.maxWidthContainer}>
                 <View style={gameUIStyles.headerContainer}>
@@ -371,7 +412,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                     {renderScene()}
                 </View>
             </View>
-            <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} />
+            <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} gameState={gameState} />
         </View>
     );
 };
@@ -411,6 +452,7 @@ const gameUIStyles = StyleSheet.create({
     chunkyButtonBlue: { backgroundColor: colors.primary, borderRadius: 8, padding: 12 },
     chunkyButtonSlate: { backgroundColor: colors.neutral700, borderRadius: 8, padding: 12 },
     chunkyButtonText: { color: colors.white, fontWeight: 'bold' },
+    disabledButton: { opacity: 0.5 },
     dateText: { color: colors.textSecondary, fontSize: 21 }, // Increased font size by ~30%
     familyTreeContainer: { flex: 1 },
     familyTreeTitle: { color: colors.primary, fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
@@ -508,5 +550,15 @@ const gameUIStyles = StyleSheet.create({
     storyButtonText: {
         color: colors.white,
         fontWeight: 'bold',
+    },
+    unlocksButton: {
+        backgroundColor: colors.accent,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        position: 'absolute',
+        right: 16,
+        top: 190, // Placed below settings button
+        zIndex: 10,
     },
 });
