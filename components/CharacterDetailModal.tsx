@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, TouchableOpacity } from 
 
 
 import { ComicPanelModal } from './ComicPanelModal';
-import type { Character, GameState, Language, Manifest } from '../core/types'; 
+import type { Character, GameState, Language, Manifest, Club } from '../core/types'; 
 import { LogEntry } from './GameLog';
 import { ImageSourcePropType } from 'react-native';
 import { t } from '../core/localization';
@@ -23,6 +23,7 @@ interface CharacterDetailModalProps {
   lang: Language;
   manifest: Manifest;
   images: Record<string, ImageSourcePropType>;
+  clubs: Club[];
 }
 
 export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ character, gameState, onClose, onCustomize, lang, manifest, images }) => {
@@ -134,6 +135,6 @@ const styles = StyleSheet.create({
   statsContainer: { backgroundColor: '#f8fafc', borderColor: '#e2e8f0', borderRadius: 12, borderWidth: 1, gap: 12, marginTop: 8, padding: 12, },
   // ĐÃ BỎ `flex: 1` và THÊM `width` CỐ ĐỊNH
   tab: { alignItems: 'center', borderRadius: 6, justifyContent: 'center', paddingVertical: 8, width: 200, },
-  tabContainer: { backgroundColor: '#e2e8f0', borderRadius: 8, flexDirection: 'row', marginBottom: 16, padding: 4, justifyContent: 'center', },
+  tabContainer: { backgroundColor: '#e2e8f0', borderRadius: 8, flexDirection: 'row', justifyContent: 'center', marginBottom: 16, padding: 4, },
   tabText: { color: '#64748b', fontSize: 20, fontWeight: 'bold', },
 });

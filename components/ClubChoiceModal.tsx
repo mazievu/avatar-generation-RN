@@ -10,6 +10,7 @@ import { t } from '../core/localization';
 
 
 interface ClubChoiceModalProps {
+  character: Character;
   clubs: Club[];
   onSelect: (clubId: string) => void;
   onSkip: () => void;

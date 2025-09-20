@@ -14,6 +14,7 @@ interface LocalizedProps {
 }
 
 interface UniversityChoiceModalProps extends LocalizedProps {
+    character: Character;
     onSelect: (goToUniversity: boolean) => void;
 }
 export const UniversityChoiceModal: React.FC<UniversityChoiceModalProps> = ({ onSelect, lang }) => (

@@ -69,6 +69,7 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     onPromotionAccept,
     onAssignToBusiness,
     onUpgradeBusiness,
+    onSellBusiness,
     setEditingBusiness,
     isCenteringAnimationDone, // NEW
 }) => {

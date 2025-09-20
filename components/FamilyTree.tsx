@@ -97,13 +97,39 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
     couples.forEach(members => {
       if (members.length === 2) {
         const [char1, char2] = members;
-        layouts[char1.id] = { id: char1.id, x: currentX, y: totalY, ...char1 };
+        // === SỬA LỖI LOGIC: Gán thuộc tính tường minh thay vì dùng spread operator ===
+        layouts[char1.id] = {
+            id: char1.id,
+            x: currentX,
+            y: totalY,
+            isPlayerCharacter: char1.isPlayerCharacter,
+            parentsIds: char1.parentsIds || [],
+            partnerId: char1.partnerId || null,
+            childrenIds: char1.childrenIds || [],
+        };
         currentX += NODE_WIDTH + HORIZONTAL_SPACING;
-        layouts[char2.id] = { id: char2.id, x: currentX, y: totalY, ...char2 };
+        layouts[char2.id] = {
+            id: char2.id,
+            x: currentX,
+            y: totalY,
+            isPlayerCharacter: char2.isPlayerCharacter,
+            parentsIds: char2.parentsIds || [],
+            partnerId: char2.partnerId || null,
+            childrenIds: char2.childrenIds || [],
+        };
         currentX += NODE_WIDTH + HORIZONTAL_SPACING;
       } else {
         const [char] = members;
-        layouts[char.id] = { id: char.id, x: currentX, y: totalY, ...char };
+        // === SỬA LỖI LOGIC: Gán thuộc tính tường minh thay vì dùng spread operator ===
+        layouts[char.id] = {
+            id: char.id,
+            x: currentX,
+            y: totalY,
+            isPlayerCharacter: char.isPlayerCharacter,
+            parentsIds: char.parentsIds || [],
+            partnerId: char.partnerId || null,
+            childrenIds: char.childrenIds || [],
+        };
         currentX += NODE_WIDTH + HORIZONTAL_SPACING;
       }
     });
@@ -153,10 +179,6 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
   // Final pass: Ensure all characters in allMembers have a layout
   Object.values(allMembers).forEach(char => {
     if (!layouts[char.id]) {
-      // This character was somehow missed by the main layout logic.
-      // Assign a default position. This position might not be ideal,
-      // but it ensures the character node exists in the layout map
-      // so connectors can at least attempt to draw to it.
       layouts[char.id] = {
         id: char.id,
         x: 0, // Default X
@@ -166,8 +188,6 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
         partnerId: char.partnerId || null,
         childrenIds: char.childrenIds || [],
       };
-      // In a real debugging scenario, I would log a warning here.
-      // console.warn(`Character ${char.id} was missed by layout calculation. Assigning default position.`);
     }
   });
 
@@ -179,38 +199,31 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
 type AnimatedContext = { startX: number; startY: number; startScale: number; };
 
 export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
-  const hasCenteredInitially = useRef(false); // Flag to ensure initial centering happens only once
+  const hasCenteredInitially = useRef(false);
 
-  // Shared values for animation on UI Thread (as before)
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
-  // NEW State for rendering on JS Thread
   const [renderScale, setRenderScale] = useState(1);
   const [renderTranslateX, setRenderTranslateX] = useState(0);
   const [renderTranslateY, setRenderTranslateY] = useState(0);
 
   const layouts = useMemo(() => calculateTreeLayout(gameState.familyMembers), [gameState.familyMembers]);
 
-  // Center on selected character or event character
   useEffect(() => {
     let characterToCenter: Character | null = null;
-
-    // Priority 1: Selected character (user click)
     if (selectedCharacter && layouts[selectedCharacter.id]) {
       characterToCenter = selectedCharacter;
     }
-    // Priority 2: Event-driven character
     else if (characterIdToCenterOnEvent && gameState.familyMembers[characterIdToCenterOnEvent] && layouts[characterIdToCenterOnEvent]) {
       characterToCenter = gameState.familyMembers[characterIdToCenterOnEvent];
     }
-    // Priority 3: Initial centering on player character (only once)
     else if (!hasCenteredInitially.current && Object.keys(layouts).length > 0) {
       const playerCharacter = Object.values(gameState.familyMembers).find(char => char.isPlayerCharacter);
       if (playerCharacter && layouts[playerCharacter.id]) {
         characterToCenter = playerCharacter;
-        hasCenteredInitially.current = true; // Mark as centered
+        hasCenteredInitially.current = true;
       }
     }
 
@@ -218,7 +231,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
       const layout = layouts[characterToCenter.id];
       const targetScale = 1.2;
       const centerX = screenWidth / 2;
-      const centerY = screenHeight / 2; // Center of the screen
+      const centerY = screenHeight / 2;
 
       const newTranslateX = centerX - (layout.x + NODE_WIDTH / 2) * targetScale;
       const newTranslateY = centerY - (layout.y + NODE_HEIGHT / 2) * targetScale;
@@ -230,9 +243,6 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
           runOnJS(setRenderScale)(targetScale);
           runOnJS(setRenderTranslateX)(newTranslateX);
           runOnJS(setRenderTranslateY)(newTranslateY);
-          // Notify parent that centering is done for event character.
-          // IMPORTANT: The parent component MUST reset `characterIdToCenterOnEvent` to `null`
-          // after this callback to allow future event-driven centering.
           if (characterIdToCenterOnEvent && onCharacterCenteredOnEvent) {
             runOnJS(onCharacterCenteredOnEvent)();
           }
@@ -240,8 +250,6 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
       });
     }
   }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.familyMembers, onCharacterCenteredOnEvent, scale, translateX, translateY]);
-
-  
 
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, AnimatedContext>({
     onStart: (event, ctx) => {
@@ -253,7 +261,6 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
         translateY.value = ctx.startY + event.translationY;
     },
     onEnd: () => {
-      // UPDATE STATE WHEN FINISHED
       runOnJS(setRenderTranslateX)(translateX.value);
       runOnJS(setRenderTranslateY)(translateY.value);
     }
@@ -265,10 +272,9 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     },
     onActive: (event, ctx) => {
         const newScale = ctx.startScale * event.scale;
-        scale.value = Math.max(0.5, Math.min(newScale, 3)); // Clamp scale
+        scale.value = Math.max(0.5, Math.min(newScale, 3));
     },
     onEnd: () => {
-      // UPDATE STATE WHEN FINISHED
       runOnJS(setRenderScale)(scale.value);
     }
   });
@@ -284,11 +290,8 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
   const renderConnectors = () => {
     const paths = [];
     const drawnConnections = new Set<string>();
-
     Object.values(layouts).forEach(nodeLayout => {
       const { id, x, y, partnerId, childrenIds } = nodeLayout;
-
-      // --- Draw Spouse Connector ---
       if (partnerId && layouts[partnerId]) {
         const partnerLayout = layouts[partnerId];
         const connectionId = [id, partnerId].sort().join('-');
@@ -300,32 +303,20 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
           drawnConnections.add(connectionId);
         }
       }
-
-      // --- Draw Children Connectors ---
       if (childrenIds.length > 0) {
-        // Determine if this is the "primary" parent to draw children connectors
-        // This prevents drawing the same set of child connectors twice for a couple
         const isPrimaryParent = !partnerId || id < partnerId;
-
         if (isPrimaryParent) {
           const parentMidY = y + NODE_HEIGHT;
           let parentConnectorX: number;
-
           if (partnerId && layouts[partnerId]) {
-            // If there's a partner, the connector should originate from the midpoint between the two parents
             const partnerLayout = layouts[partnerId];
             parentConnectorX = (x + NODE_WIDTH / 2 + partnerLayout.x + NODE_WIDTH / 2) / 2;
           } else {
-            // Single parent, connector originates from the center of the parent node
             parentConnectorX = x + NODE_WIDTH / 2;
           }
-
           const junctionY = parentMidY + VERTICAL_SPACING / 2;
-
           let minChildX = Infinity;
           let maxChildX = -Infinity;
-
-          // First, calculate minChildX and maxChildX
           childrenIds.forEach(childId => {
             const childLayout = layouts[childId];
             if (childLayout) {
@@ -334,29 +325,19 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
               maxChildX = Math.max(maxChildX, childMidX);
             }
           });
-
-          // Draw curved lines from the junction point to each child
           childrenIds.forEach(childId => {
             const childLayout = layouts[childId];
             if (childLayout) {
               const childMidX = childLayout.x + NODE_WIDTH / 2;
               const childTopY = childLayout.y;
-
-              // Calculate control points for a cubic Bezier curve
               const p0x = parentConnectorX;
-              const p0y = junctionY; // Start from the junction point
-
+              const p0y = junctionY;
               const p3x = childMidX;
-              const p3y = childTopY; // End at the top center of the child node
-
-              // Control points for a smooth S-curve
-              // These values can be adjusted to fine-tune the curve shape
+              const p3y = childTopY;
               const cp1x = p0x;
-              const cp1y = p0y + (p3y - p0y) * 0.3; // 1/3 way down from parent
-
+              const cp1y = p0y + (p3y - p0y) * 0.3;
               const cp2x = p3x;
-              const cp2y = p0y + (p3y - p0y) * 0.7; // 2/3 way down from parent
-
+              const cp2y = p0y + (p3y - p0y) * 0.7;
               const curvePath = `M ${p0x} ${p0y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p3x} ${p3y}`;
               paths.push(<Path key={`${childId}-curve`} d={curvePath} stroke="#a1a1aa" strokeWidth="2" fill="none" />);
             }
@@ -369,25 +350,19 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
 
   const getVisibleNodes = () => {
     const visibleNodes = [];
-    // USE STATE, NOT .value
     const currentScale = renderScale;
     const currentX = renderTranslateX;
     const currentY = renderTranslateY;
-
-    // Calculate visible area in the coordinate system of the tree
     const viewPortX = -currentX / currentScale;
     const viewPortY = -currentY / currentScale;
     const viewPortWidth = screenWidth / currentScale;
     const viewPortHeight = screenHeight / currentScale;
-
-    // Add a buffer to render nodes slightly off-screen
     const bufferX = viewPortWidth * 0.5;
     const bufferY = viewPortHeight * 0.5;
-
-    for (const id in layouts) {     const node = layouts[id];
+    for (const id in layouts) {
+      const node = layouts[id];
       const nodeRight = node.x + NODE_WIDTH;
       const nodeBottom = node.y + NODE_HEIGHT;
-
       if (
         nodeRight >= viewPortX - bufferX &&
         node.x <= viewPortX + viewPortWidth + bufferX &&
@@ -400,7 +375,6 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     return visibleNodes;
   };
 
-  // visibleNodes will only be recalculated when render state changes
   const visibleNodes = useMemo(getVisibleNodes, [layouts, renderScale, renderTranslateX, renderTranslateY]);
 
   if (Object.keys(layouts).length === 0) {
@@ -420,9 +394,18 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
                 const character = gameState.familyMembers[nodeLayout.id];
                 if (!character) return null;
                 return (
+                  // === SỬA LỖI CHÍNH: Áp dụng tọa độ (left, top) và kích thước vào style ===
                   <View
                     key={character.id}
-                    style={styles.nodeContainer}
+                    style={[
+                      styles.nodeContainer,
+                      {
+                        left: nodeLayout.x,
+                        top: nodeLayout.y,
+                        width: NODE_WIDTH,
+                        height: NODE_HEIGHT
+                      }
+                    ]}
                   >
                     <CharacterNode
                       character={character}
@@ -451,7 +434,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#eeeeeeff', // slate-100 for contrast
+    backgroundColor: '#eeeeeeff',
     flex: 1,
     overflow: 'hidden',
   },

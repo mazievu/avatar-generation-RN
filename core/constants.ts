@@ -152,10 +152,10 @@ export const CAREER_LADDER: Record<string, CareerTrack> = {
 // TRAINING & EARLY CAREER
 // ==============================
 export const VOCATIONAL_TRAINING = { duration: 3, cost: 40000, effects: { skill: 40, eq: 10 } };
-export const INTERNSHIP = { duration: 1, stipend: 6000 }; // 500/tháng
-export const TRAINEE_SALARY = 6000; // 500/tháng
+export const INTERNSHIP = { duration: 1, stipend: 4800 }; // 500/tháng
+export const TRAINEE_SALARY = 4800; // 500/tháng
 
-// ==============================
+// ============================== 
 // EVENTS
 // ==============================
 // export const EVENTS = ALL_EVENTS; // This line will be removed or commented out
@@ -187,9 +187,9 @@ export const AVATAR_COLOR_PALETTE = [
 // ==============================
 // BUSINESS ECONOMY
 // ==============================
-export const BUSINESS_REVENUE_SCALE = 0.01;
-export const BUSINESS_FIXED_COST_SCALE = 0.10;
-export const BUSINESS_COGS_BONUS_ABS = 0.05;
+export const BUSINESS_REVENUE_SCALE = 1;
+export const BUSINESS_FIXED_COST_SCALE = 1.25;
+export const BUSINESS_COGS_BONUS_ABS = 1;
 export const BUSINESS_COGS_MAX = 0.85;
 // Lương nhân viên DN
 export const BUSINESS_WORKER_BASE_SALARY_MONTHLY = 500;
@@ -200,7 +200,7 @@ export const BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY = 250;
 // Trần lợi nhuận chủ DN
 export const BUSINESS_OWNER_PROFIT_CAP_MONTHLY = SALARY_CAP_MONTHLY;
 // Chi phí thuê robot
-export const ROBOT_HIRE_COST = 2500; // /tháng
+export const ROBOT_HIRE_COST = 700; // /tháng
 
 
 export const BUSINESS_DEFINITIONS: Record<string, BusinessDefinition> = {

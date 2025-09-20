@@ -71,64 +71,64 @@ export const UnlocksModal: React.FC<UnlocksModalProps> = ({ isVisible, onClose, 
 };
 
 const styles = StyleSheet.create({
+  closeButton: {
+    padding: 4,
+  },
   container: {
     padding: 16,
     // Removed flex: 1
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: 20,
+  featureDescription: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    marginBottom: 12,
   },
-  closeButton: {
-    padding: 4,
+  featureName: {
+    color: colors.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   itemContainer: {
     backgroundColor: colors.neutral100,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
     borderColor: colors.neutral200,
+    borderRadius: 12,
+    borderWidth: 1,
     height: 120,
+    marginBottom: 12,
+    padding: 16,
   },
   itemHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 8,
   },
-  featureName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  featureDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: 12,
-  },
-  progressText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  unlockedText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.success,
-  },
   progressBarBackground: {
-    height: 10,
     backgroundColor: colors.neutral200,
     borderRadius: 5,
+    height: 10,
     overflow: 'hidden',
   },
   progressBarFill: {
-    height: '100%',
     backgroundColor: colors.primary,
     borderRadius: 5,
+    height: '100%',
+  },
+  progressText: {
+    color: colors.textSecondary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  title: {
+    color: colors.textPrimary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  unlockedText: {
+    color: colors.success,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

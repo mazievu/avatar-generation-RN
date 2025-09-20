@@ -146,6 +146,7 @@ export const GameUI: React.FC<GameUIProps> = ({
     onContinueGame,
     onStartNewGame,
     onPurchaseAsset,
+    onSellBusiness,
     onSetMainView,
     onSetFamilyName, // Added here
     activeScene, // NEW PROP
@@ -292,9 +293,7 @@ export const GameUI: React.FC<GameUIProps> = ({
         }
     }
 
-    function onSellBusiness(businessId: string): void {
-        throw new Error('Function not implemented.');
-    }
+    
 
     return (
         <View style={gameUIStyles.mainContainer}>

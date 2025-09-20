@@ -1,5 +1,5 @@
 import { Gender, LifePhase, Character, Stats, CharacterStatus, RelationshipStatus, Manifest, AvatarState, Business, Language } from './types';
-import { LIFE_PHASE_AGES, CAREER_LADDER, UNIVERSITY_MAJORS, DAYS_IN_YEAR, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, AVATAR_COLOR_PALETTE } from './constants';
+import { LIFE_PHASE_AGES, CAREER_LADDER, UNIVERSITY_MAJORS, DAYS_IN_YEAR, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, AVATAR_COLOR_PALETTE, BUSINESS_REVENUE_SCALE, BUSINESS_FIXED_COST_SCALE, BUSINESS_COGS_MAX, BUSINESS_WORKER_WAGE_CAP_MONTHLY, BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY, BUSINESS_OWNER_PROFIT_CAP_MONTHLY } from './constants';
 import { t } from './localization';
 
 
@@ -358,6 +358,11 @@ export const calculateBusinessMonthlyNetIncome = (business: Business, familyMemb
     const filledSlots = business.slots.filter(slot => slot.assignedCharacterId).length;
     const totalSlots = business.slots.length;
 
+    // Calculate scaled fixed cost, which applies even if there are no workers
+    const scaledFixedCost = definition.fixedMonthlyCost * BUSINESS_FIXED_COST_SCALE;
+
+    let businessNet = 0;
+
     if (filledSlots > 0) {
         const workersAndRobots = business.slots.map(slot => {
             if (!slot.assignedCharacterId) return null;
@@ -365,32 +370,44 @@ export const calculateBusinessMonthlyNetIncome = (business: Business, familyMemb
             return familyMembers[slot.assignedCharacterId];
         }).filter((w): w is (Character | { stats: { skill: number } }) => !!w);
 
-        let revenueBuff = 1;
-        if (workersAndRobots.length > 0) {
-            const totalSkill = workersAndRobots.reduce((sum, worker) => sum + worker.stats.skill, 0);
-            const avgSkill = totalSkill / workersAndRobots.length;
-            revenueBuff = 1 + (avgSkill / 200);
-        }
-        
+        // --- Revenue Calculation ---
+        const totalSkill = workersAndRobots.reduce((sum, worker) => sum + worker.stats.skill, 0);
+        const avgSkill = totalSkill / workersAndRobots.length;
+        const revenueBuff = 1 + (avgSkill / 200);
         const operationalCapacity = filledSlots / totalSlots;
-        const scaledBaseRevenue = business.baseRevenue * operationalCapacity;
+        const grossRevenue = business.baseRevenue * BUSINESS_REVENUE_SCALE * operationalCapacity * revenueBuff;
 
-        const robotCost = business.slots.filter(s => s.assignedCharacterId === 'robot').length * ROBOT_HIRE_COST;
-        
+        // --- Costs Calculation ---
+        // 1. COGS
+        const cogsRate = Math.min(BUSINESS_COGS_MAX, definition.costOfGoodsSold);
+        const costOfGoods = grossRevenue * cogsRate;
+
+        // 2. Salaries
         let salaryExpense = 0;
         const humanWorkers = business.slots
             .map(slot => slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? familyMembers[slot.assignedCharacterId] : null)
             .filter((c): c is Character => !!c);
         
         for (const worker of humanWorkers) {
-            salaryExpense += calculateEmployeeSalary(worker);
+            let salary = calculateEmployeeSalary(worker);
+            salary = Math.min(salary, BUSINESS_WORKER_WAGE_CAP_MONTHLY);
+            salaryExpense += salary;
         }
+        
+        // 3. Robot Hire Costs
+        const robotCost = business.slots.filter(s => s.assignedCharacterId === 'robot').length * ROBOT_HIRE_COST;
 
-        const grossRevenue = scaledBaseRevenue * revenueBuff;
-        const costOfGoods = grossRevenue * definition.costOfGoodsSold;
-        const netIncome = grossRevenue - costOfGoods - robotCost - definition.fixedMonthlyCost - salaryExpense;
-        return netIncome;
+        // 4. Overhead
+        const overheadCost = filledSlots * BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY;
+
+        // --- Net Calculation ---
+        const totalExpenses = costOfGoods + scaledFixedCost + salaryExpense + robotCost + overheadCost;
+        businessNet = grossRevenue - totalExpenses;
+
     } else {
-        return -definition.fixedMonthlyCost;
+        businessNet = -scaledFixedCost;
     }
+
+    // Apply owner profit cap
+    return Math.min(businessNet, BUSINESS_OWNER_PROFIT_CAP_MONTHLY);
 };

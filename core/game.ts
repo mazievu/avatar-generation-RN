@@ -1,5 +1,5 @@
 import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, PurchasedAsset, Business, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, Language, Manifest } from './types';
-import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT } from './constants';
+import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT, BUSINESS_REVENUE_SCALE, BUSINESS_FIXED_COST_SCALE, BUSINESS_COGS_MAX, BUSINESS_WORKER_WAGE_CAP_MONTHLY, BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY, BUSINESS_OWNER_PROFIT_CAP_MONTHLY } from './constants';
 import { CLUBS } from './clubsAndEventsData';
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
@@ -277,57 +277,75 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 let totalBusinessNetChange = 0;
                 const memberUpdates: Record<string, Partial<Character>> = {};
                 
-                const businessSalaries: Record<string, number> = {}; 
+                // Calculate salaries with wage cap
+                const businessSalaries: Record<string, number> = {};
                 for (const business of Object.values(prevState.familyBusinesses)) {
                     for (const slot of business.slots) {
                         if (slot.assignedCharacterId && slot.assignedCharacterId !== 'robot') {
                             const char = prevState.familyMembers[slot.assignedCharacterId];
                             if (char) {
-                                const salary = BUSINESS_WORKER_BASE_SALARY_MONTHLY + (char.stats.skill * BUSINESS_WORKER_SKILL_MULTIPLIER);
+                                let salary = BUSINESS_WORKER_BASE_SALARY_MONTHLY + (char.stats.skill * BUSINESS_WORKER_SKILL_MULTIPLIER);
+                                salary = Math.min(salary, BUSINESS_WORKER_WAGE_CAP_MONTHLY);
                                 businessSalaries[char.id] = (businessSalaries[char.id] || 0) + salary;
                             }
                         }
                     }
                 }
 
+                // Calculate business net income
                 for (const business of Object.values(prevState.familyBusinesses)) {
                     const definition = BUSINESS_DEFINITIONS[business.type];
                     if (!definition) continue;
-            
+
                     const filledSlots = business.slots.filter(slot => slot.assignedCharacterId).length;
                     const totalSlots = business.slots.length;
                     let businessNet = 0;
 
+                    // Calculate scaled fixed cost, which applies even if there are no workers
+                    const scaledFixedCost = definition.fixedMonthlyCost * BUSINESS_FIXED_COST_SCALE;
+
                     if (filledSlots > 0) {
                         const workersAndRobots = business.slots.map(slot => {
                             if (!slot.assignedCharacterId) return null;
-                            if (slot.assignedCharacterId === 'robot') return { stats: { skill: 30 } }; 
+                            if (slot.assignedCharacterId === 'robot') return { stats: { skill: 30 } };
                             return prevState.familyMembers[slot.assignedCharacterId];
                         }).filter((w): w is (Character | { stats: { skill: number } }) => !!w);
 
-                        let revenueBuff = 1;
-                        if (workersAndRobots.length > 0) {
-                            const totalSkill = workersAndRobots.reduce((sum, worker) => sum + worker.stats.skill, 0);
-                            const avgSkill = totalSkill / workersAndRobots.length;
-                            revenueBuff = 1 + (avgSkill / 200); 
-                        }
-                        
+                        // --- Revenue Calculation ---
+                        const totalSkill = workersAndRobots.reduce((sum, worker) => sum + worker.stats.skill, 0);
+                        const avgSkill = totalSkill / workersAndRobots.length;
+                        const revenueBuff = 1 + (avgSkill / 200);
                         const operationalCapacity = filledSlots / totalSlots;
-                        const scaledBaseRevenue = business.baseRevenue * operationalCapacity;
+                        const grossRevenue = business.baseRevenue * BUSINESS_REVENUE_SCALE * operationalCapacity * revenueBuff;
 
-                        const robotCostForBusiness = business.slots.filter(s => s.assignedCharacterId === 'robot').length * ROBOT_HIRE_COST;
-                        
+                        // --- Costs Calculation ---
+                        // 1. COGS
+                        const cogsRate = Math.min(BUSINESS_COGS_MAX, definition.costOfGoodsSold);
+                        const costOfGoods = grossRevenue * cogsRate;
+
+                        // 2. Salaries
                         const salaryExpenseForBusiness = business.slots
                             .map(slot => slot.assignedCharacterId ? businessSalaries[slot.assignedCharacterId] : 0)
                             .filter(Boolean)
                             .reduce((sum, s) => sum + s, 0);
+                        
+                        // 3. Robot Hire Costs
+                        const robotCostForBusiness = business.slots.filter(s => s.assignedCharacterId === 'robot').length * ROBOT_HIRE_COST;
 
-                        const grossRevenue = scaledBaseRevenue * revenueBuff;
-                        const costOfGoods = grossRevenue * definition.costOfGoodsSold;
-                        businessNet = grossRevenue - costOfGoods - robotCostForBusiness - definition.fixedMonthlyCost - salaryExpenseForBusiness;
+                        // 4. Overhead
+                        const overheadCost = filledSlots * BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY;
+
+                        // --- Net Calculation ---
+                        const totalExpenses = costOfGoods + scaledFixedCost + salaryExpenseForBusiness + robotCostForBusiness + overheadCost;
+                        businessNet = grossRevenue - totalExpenses;
+
                     } else {
-                        businessNet = -definition.fixedMonthlyCost;
+                        businessNet = -scaledFixedCost;
                     }
+
+                    // Apply owner profit cap
+                    businessNet = Math.min(businessNet, BUSINESS_OWNER_PROFIT_CAP_MONTHLY);
+
                     totalBusinessNetChange += businessNet;
                 }
 

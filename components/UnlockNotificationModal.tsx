@@ -51,28 +51,17 @@ export const UnlockNotificationModal: React.FC<UnlockNotificationModalProps> = (
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginBottom: 15,
-    textAlign: 'center',
-  },
   bodyText: {
-    fontSize: 18,
     color: colors.textPrimary,
-    textAlign: 'center',
+    fontSize: 18,
     marginBottom: 30,
+    textAlign: 'center',
   },
   button: {
     backgroundColor: colors.accent,
     borderRadius: 10,
-    paddingVertical: 12,
     paddingHorizontal: 25,
+    paddingVertical: 12,
   },
   buttonText: {
     color: colors.white,
@@ -81,5 +70,16 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 4,
+  },
+  container: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    color: colors.primary,
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });

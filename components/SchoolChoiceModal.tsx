@@ -15,6 +15,7 @@ interface LocalizedProps {
 }
 
 interface SchoolChoiceModalProps extends LocalizedProps {
+    character: Character;
     schoolOptions: SchoolOption[];
     onSelect: (option: SchoolOption) => void;
     currentFunds: number;

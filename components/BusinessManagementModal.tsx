@@ -21,7 +21,7 @@ interface BusinessManagementModalProps {
     gameState: GameState;
     onAssignToBusiness: (businessId: string, slotIndex: number, characterId: string | null) => void;
     onUpgradeBusiness: (businessId: string) => void;
-    handleSellBusiness: (businessId: string) => void;
+    onSellBusiness: (businessId: string) => void;
     onClose: () => void;
     images: Record<string, ImageSourcePropType>;
     manifest: Manifest;
@@ -32,7 +32,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     gameState,
     onAssignToBusiness,
     onUpgradeBusiness,
-    handleSellBusiness,
+    onSellBusiness,
     onClose,
     lang,
     images,
@@ -142,7 +142,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                     )}
                     <TouchableOpacity
                         onPress={() => {
-                            handleSellBusiness(business.id);
+                            onSellBusiness(business.id);
                             onClose();
                         }}
                         style={businessManagementModalStyles.sellButton}
@@ -204,6 +204,19 @@ const businessManagementModalStyles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 8,
     },
+    sellButton: {
+        alignItems: 'center',
+        backgroundColor: '#ef4444', // red-500
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        padding: 12,
+        marginTop: 8,
+    },
+    sellButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
     slotDetails: {
         flex: 1,
     },
@@ -256,18 +269,5 @@ const businessManagementModalStyles = StyleSheet.create({
         height: 20,
         marginRight: 8,
         width: 20,
-    },
-    sellButton: {
-        alignItems: 'center',
-        backgroundColor: '#ef4444', // red-500
-        borderRadius: 8,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        padding: 12,
-        marginTop: 8,
-    },
-    sellButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
     },
 });

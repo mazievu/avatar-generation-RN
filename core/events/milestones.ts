@@ -159,9 +159,9 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                     let numberOfChildren = 1;
 
                     // Conditional twin/triplet chance based on totalChildrenBorn
-                    if (state.totalChildrenBorn >= TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.01) {
+                    if (state.totalChildrenBorn >= TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.10) {
                         numberOfChildren = 3;
-                    } else if (state.totalChildrenBorn >= TWIN_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.06) {
+                    } else if (state.totalChildrenBorn >= TWIN_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.40) {
                         numberOfChildren = 2;
                     }
 
