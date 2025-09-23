@@ -382,6 +382,7 @@ export interface Club {
 
 export interface ClubEvent extends Omit<ClubEventDraft, 'choices'> {
   id: string;
+  title: string; // Add this line
   titleKey: string;
   descriptionKey: string;
   clubId: string;

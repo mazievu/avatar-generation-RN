@@ -35,6 +35,8 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         contentVersion: 1,
         familyName: 'Family',
         totalChildrenBorn: 0,
+        unlockedFeatures: [],
+        newlyUnlockedFeature: null,
     };
 };
 
@@ -108,6 +110,8 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         contentVersion: 1,
         familyName: 'Family',
         totalChildrenBorn: 0,
+        unlockedFeatures: [],
+        newlyUnlockedFeature: null,
     };
 };
 
@@ -251,6 +255,8 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         contentVersion: 1,
         familyName: 'Mila Family',
         totalChildrenBorn: 3,
+        unlockedFeatures: [],
+        newlyUnlockedFeature: null,
     };
 };
 

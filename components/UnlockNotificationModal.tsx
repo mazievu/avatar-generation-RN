@@ -1,5 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+
+import type { Language } from '../core/types';
+
 import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
 import { UNLOCKABLE_FEATURES } from '../core/constants';
@@ -9,7 +12,7 @@ import { CloseIcon } from './icons';
 interface UnlockNotificationModalProps {
   newlyUnlockedFeatureId: string | null;
   onAcknowledge: () => void;
-  lang: string;
+  lang: Language;
 }
 
 export const UnlockNotificationModal: React.FC<UnlockNotificationModalProps> = ({

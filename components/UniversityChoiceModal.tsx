@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
-import type { Language } from '../core/types';
+import type { Character, Language } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
 

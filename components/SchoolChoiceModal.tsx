@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
-import type { SchoolOption, Language, Stats } from '../core/types';
+import type { SchoolOption, Language, Stats, Character } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { t } from '../core/localization';
