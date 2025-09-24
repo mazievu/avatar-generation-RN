@@ -63,6 +63,9 @@ export default {
     welcome_back_subtitle: 'Lượt chơi trước của bạn đã được lưu.',
     continue_game_button: 'Tiếp tục chơi',
     start_new_game_button: 'Bắt đầu mới',
+    start_game_button: 'Bắt đầu', // New key
+    story_button: 'Cốt truyện', // New key
+    choose_story_mode: 'Chọn chế độ cốt truyện', // New key
     // Instructions
     instructions_title: 'Hướng dẫn chơi',
     instructions_objective_title: 'Mục tiêu',
@@ -169,9 +172,7 @@ export default {
     relationship_Married: 'Đã kết hôn',
     // Scenarios
     scenario_classic_name: 'Cổ điển',
-    scenario_classic_desc: 'Bắt đầu một cuộc sống mới từ khi sinh ra và dẫn dắt gia đình bạn qua các thế hệ.',
-    scenario_alone_name: 'Một mình',
-    scenario_alone_desc: 'Bắt đầu ở tuổi 24 sau tốt nghiệp với 50.000 đô la. Tùy bạn xây dựng một di sản từ đầu.',
+    scenario_classic_desc: 'Bắt đầu ở tuổi 24 với 50.000 đô la và một nghề nghiệp ngẫu nhiên. Tùy bạn xây dựng một di sản từ đầu.',
     scenario_mila_name: 'Gia đình Mila',
     scenario_mila_desc: 'Bước vào cuộc sống của một gia đình có sẵn, vượt qua thử thách và dẫn dắt họ đến sự thịnh vượng.',
     // Schools
@@ -421,6 +422,7 @@ export default {
     unlocks_button_title: "Mục tiêu & Mở khóa",
     unlocks_modal_title: "Mục tiêu & Mở khóa",
     unlocked: "Đã mở khóa",
+    unlock_condition_children: 'Con cái: {current} / {required}',
     unlock_business_name: "Kinh doanh",
     unlock_business_desc: "Thành lập doanh nghiệp của riêng bạn và xây dựng một đế chế thương mại.",
     unlock_custom_avatar_name: "Tùy chỉnh Avatar",
@@ -434,4 +436,7 @@ export default {
     unlock_notification_title: "Chúc mừng!",
     unlock_notification_body: "Bạn đã mở khóa tính năng {featureName}!",
     unlock_notification_button: "Tuyệt vời!",
+    log_customize_avatar: "{name} đã chi {amount} để tùy chỉnh ngoại hình.",
+    log_customize_avatar_ad: "{name} đã tùy chỉnh ngoại hình miễn phí bằng cách xem quảng cáo.",
+    event_customize_avatar_title: "Ngoại hình đã được tùy chỉnh",
 };

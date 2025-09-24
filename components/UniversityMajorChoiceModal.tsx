@@ -32,7 +32,7 @@ export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProp
 
     // Sử dụng onAbandon khi người dùng nhấn ra ngoài modal để hủy
     return (
-        <ComicPanelModal visible={true} onClose={onAbandon} rotate="-1.5deg">
+        <ComicPanelModal visible={true} onClose={onAbandon} rotate="0deg">
             <Text style={[universityMajorChoiceModalStyles.title, { fontSize: responsiveFontSize(typography.h2.fontSize, userFontScale) }]}>{t('modal_major_title', lang)}</Text>
             <Text style={[universityMajorChoiceModalStyles.characterNameLabel, { fontSize: responsiveFontSize(14, userFontScale) }]}>
                 {t('for_char_label', lang)}: <Text style={universityMajorChoiceModalStyles.characterName}>{getCharacterDisplayName(character, lang)}</Text>

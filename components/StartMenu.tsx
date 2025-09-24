@@ -27,7 +27,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstruction
             style={startMenuStyles.startButton}
         >
             <Text style={startMenuStyles.startButtonText}>
-                {t('start_game_button', lang)}
+                {t('start_new_game_button', lang)}
             </Text>
         </TouchableOpacity>
         <TouchableOpacity

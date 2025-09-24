@@ -6,6 +6,7 @@ export default {
     asset_effects: 'Hiệu ứng vĩnh viễn',
     asset_purchase_button: 'Mua',
     asset_owned_label: 'Đã sở hữu',
+    asset_cost_label: 'Chi phí:',
     log_asset_purchased: 'Gia đình đã mua một {name}!',
 
     // Asset Types

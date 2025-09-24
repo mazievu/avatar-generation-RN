@@ -30,7 +30,7 @@ const UnlockProgressItem: React.FC<UnlockProgressItemProps> = ({ feature, gameSt
         {isUnlocked ? (
           <Text style={styles.unlockedText}>✓ {t('unlocked', lang)}</Text>
         ) : (
-          <Text style={styles.progressText}>{`${gameState.totalChildrenBorn} / ${feature.childrenRequired}`}</Text>
+          <Text style={styles.progressText}>{t('unlock_condition_children', lang, { current: gameState.totalChildrenBorn, required: feature.childrenRequired })}</Text>
         )}
       </View>
       <Text style={styles.featureDescription}>{t(feature.descriptionKey, lang)}</Text>

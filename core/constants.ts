@@ -171,6 +171,8 @@ export const PET_DATA: Record<PetType, PetDefinition> = {
     [PetType.Fish]: { nameKey: 'pet_fish', monthlyCost: 20, effects: { happiness: 1 } },
 };
 
+export const CUSTOM_AVATAR_COST = 10000;
+
 export const AVATAR_COLOR_PALETTE = [
   { name: 'White', filter: 'grayscale(1) brightness(2.5)', previewBackground: '#ffffff' },
   { name: 'Natural Gray', filter: 'grayscale(0.8) brightness(1.1) sepia(0.1)', previewBackground: '#808080' },
@@ -284,10 +286,10 @@ export const ASSET_DEFINITIONS: Record<string, AssetDefinition> = {
 // ==============================
 // UNLOCK THRESHOLDS
 // ==============================
-export const BUSINESS_UNLOCK_CHILDREN_COUNT = 1;
-export const CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT = 2;
-export const TWIN_BIRTH_UNLOCK_CHILDREN_COUNT = 3;
-export const TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT = 5;
+export const BUSINESS_UNLOCK_CHILDREN_COUNT = 10;
+export const CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT = 1;
+export const TWIN_BIRTH_UNLOCK_CHILDREN_COUNT = 2;
+export const TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT = 3;
 
 export interface UnlockableFeature {
   id: 'business' | 'custom_avatar' | 'twins' | 'triplets';
@@ -322,6 +324,50 @@ export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
     childrenRequired: TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT,
   },
 ];
+
+export type PathNode =
+  | {
+      type: 'reward';
+      level: number; // Tương đương với childrenRequired
+      alignment: 'left' | 'right';
+      featureId: string; // ID trỏ tới một feature trong UNLOCKABLE_FEATURES
+    }
+  | {
+      type: 'milestone';
+      level: number;
+      specialAsset?: 'winged_heart' | 'gem'; // Tên asset đặc biệt
+    };
+
+export const PATH_NODES = [
+  { type: 'milestone', level: 0, specialAsset: 'winged_heart' }, // Starting point
+  { type: 'reward', level: 1, alignment: 'left', featureId: 'custom_avatar' },
+  { type: 'milestone', level: 2, specialAsset: 'gem' },
+  { type: 'reward', level: 2, alignment: 'right', featureId: 'twins' },
+  { type: 'milestone', level: 3, specialAsset: 'gem' },
+  { type: 'reward', level: 3, alignment: 'left', featureId: 'triplets' },
+  { type: 'milestone', level: 5, specialAsset: 'gem' },
+  { type: 'reward', level: 10, alignment: 'right', featureId: 'business' },
+  { type: 'milestone', level: 15, specialAsset: 'winged_heart' },
+  { type: 'milestone', level: 20, specialAsset: 'gem' },
+  { type: 'milestone', level: 25, specialAsset: 'gem' },
+  { type: 'milestone', level: 30, specialAsset: 'winged_heart' },
+  { type: 'milestone', level: 35, specialAsset: 'gem' },
+  { type: 'milestone', level: 40, specialAsset: 'gem' },
+  { type: 'milestone', level: 45, specialAsset: 'gem' },
+  { type: 'milestone', level: 50, specialAsset: 'winged_heart' },
+  { type: 'milestone', level: 55, specialAsset: 'gem' },
+  { type: 'milestone', level: 60, specialAsset: 'gem' },
+  { type: 'milestone', level: 65, specialAsset: 'gem' },
+  { type: 'milestone', level: 70, specialAsset: 'winged_heart' },
+  { type: 'milestone', level: 75, specialAsset: 'gem' },
+  { type: 'milestone', level: 80, specialAsset: 'gem' },
+  { type: 'milestone', level: 85, specialAsset: 'gem' },
+  { type: 'milestone', level: 90, specialAsset: 'winged_heart' },
+  { type: 'milestone', level: 95, specialAsset: 'gem' },
+  { type: 'milestone', level: 100, specialAsset: 'gem' },
+] as const;
+
+export const PATH_NODES_SORTED: PathNode[] = [...PATH_NODES].sort((a, b) => a.level - b.level); // Luôn sắp xếp theo level
 
 
 export const BUSINESS_MAP_LOCATIONS: Record<string, { x: number; y: number; width: number; height: number; buildingType: string }> = {

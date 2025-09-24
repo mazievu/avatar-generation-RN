@@ -1,5 +1,5 @@
 import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, PurchasedAsset, Business, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, Language, Manifest } from './types';
-import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT, BUSINESS_REVENUE_SCALE, BUSINESS_FIXED_COST_SCALE, BUSINESS_COGS_MAX, BUSINESS_WORKER_WAGE_CAP_MONTHLY, BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY, BUSINESS_OWNER_PROFIT_CAP_MONTHLY } from './constants';
+import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT, BUSINESS_REVENUE_SCALE, BUSINESS_FIXED_COST_SCALE, BUSINESS_COGS_MAX, BUSINESS_WORKER_WAGE_CAP_MONTHLY, BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY, BUSINESS_OWNER_PROFIT_CAP_MONTHLY, CUSTOM_AVATAR_COST } from './constants';
 import { CLUBS } from './clubsAndEventsData';
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
@@ -7,6 +7,7 @@ import { t } from './localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeAllGameData, getAllEvents } from './gameData';
 import { applyMigrations } from './migrations';
+import { adService } from '../services'; // Import adService
 
 
 const SAVE_KEY = 'generations_savegame';
@@ -48,6 +49,8 @@ const ONE_TIME_EVENT_IDS = [
 
 // This function will encapsulate all game logic handlers
 export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: Manifest) => {
+
+    let eventCounter = 0; // Initialize event counter for interstitial ads
 
     // Initialize game data (build events, etc.)
     if (typeof initializeAllGameData === 'function') {
@@ -982,6 +985,13 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 nextState.gameLog.push(logMessage);
             }
     
+            // Increment event counter and show interstitial ad
+            eventCounter++;
+            if (eventCounter >= 10) {
+                adService.showInterstitialAd();
+                eventCounter = 0; // Reset counter
+            }
+
             // If an event was NOT triggered, we leave the activeEvent as is.
             // The modal is responsible for closing itself by calling onEventModalClose.
             
@@ -1760,12 +1770,52 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         if (customizingCharacterId) {
             setGameState(prevState => {
                 if (!prevState) return null;
+                if (prevState.familyFund < CUSTOM_AVATAR_COST) {
+                    // Maybe show a message to the user that they don't have enough funds
+                    return prevState;
+                }
                 const char = prevState.familyMembers[customizingCharacterId];
                 if (!char) return prevState;
                 const updatedChar = { ...char, avatarState: newState };
+                const displayName = getCharacterDisplayName(char, language);
+                const logEntry: GameLogEntry = {
+                    year: prevState.currentDate.year,
+                    messageKey: 'log_customize_avatar',
+                    replacements: { name: displayName, amount: CUSTOM_AVATAR_COST.toLocaleString() },
+                    fundChange: -CUSTOM_AVATAR_COST,
+                    characterId: customizingCharacterId,
+                    eventTitleKey: 'event_customize_avatar_title',
+                };
                 return {
                     ...prevState,
-                    familyMembers: { ...prevState.familyMembers, [customizingCharacterId]: updatedChar }
+                    familyFund: prevState.familyFund - CUSTOM_AVATAR_COST,
+                    familyMembers: { ...prevState.familyMembers, [customizingCharacterId]: updatedChar },
+                    gameLog: [...prevState.gameLog, logEntry],
+                };
+            });
+        }
+    };
+
+    const handleAvatarSaveNoCost = (customizingCharacterId: string | null, newState: AvatarState) => {
+        if (customizingCharacterId) {
+            setGameState(prevState => {
+                if (!prevState) return null;
+                const char = prevState.familyMembers[customizingCharacterId];
+                if (!char) return prevState;
+                const updatedChar = { ...char, avatarState: newState };
+                const displayName = getCharacterDisplayName(char, language);
+                const logEntry: GameLogEntry = {
+                    year: prevState.currentDate.year,
+                    messageKey: 'log_customize_avatar_ad',
+                    replacements: { name: displayName },
+                    fundChange: 0,
+                    characterId: customizingCharacterId,
+                    eventTitleKey: 'event_customize_avatar_title',
+                };
+                return {
+                    ...prevState,
+                    familyMembers: { ...prevState.familyMembers, [customizingCharacterId]: updatedChar },
+                    gameLog: [...prevState.gameLog, logEntry],
                 };
             });
         }
@@ -1805,6 +1855,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         handleBuyBusiness,
         handlePurchaseAsset,
         handleAvatarSave,
+        handleAvatarSaveNoCost,
         onSellBusiness,
         handleAcknowledgeUnlock,
         ONE_TIME_EVENT_IDS,

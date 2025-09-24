@@ -1,49 +1,16 @@
 import type { GameState, Character, Pet, GameScenario, Language } from './types';
 import { LifePhase, CharacterStatus, RelationshipStatus, Gender, PetType, exampleManifest } from './types';
-import { INITIAL_FUNDS, UNIVERSITY_MAJORS } from './constants';
+import { INITIAL_FUNDS, UNIVERSITY_MAJORS, CAREER_LADDER } from './constants';
 import { createInitialCharacter, generateName, generateRandomAvatar, addDays } from './utils';
 import { randomUUID } from 'expo-crypto';
 
 const createClassicState = (initialYear: number, lang: Language): GameState => {
-    const firstCharacter = createInitialCharacter(initialYear, lang, exampleManifest);
-    const initialDate = { day: 1, year: initialYear };
-    return {
-        familyMembers: { [firstCharacter.id]: firstCharacter },
-        familyFund: INITIAL_FUNDS,
-        purchasedAssets: {},
-        familyPets: {},
-        familyBusinesses: {},
-        currentDate: initialDate,
-        gameLog: [{ year: initialYear, messageKey: 'log_first_generation', replacements: { name: firstCharacter.name } }],
-        gameOverReason: null,
-        activeEvent: null,
-        pendingSchoolChoice: null,
-        pendingUniversityChoice: null,
-        pendingMajorChoice: null,
-        pendingClubChoice: null,
-        pendingCareerChoice: null,
-        pendingLoanChoice: null,
-        pendingPromotion: null,
-        activeLoans: [],
-        eventQueue: [],
-        highestEducation: "None",
-        highestCareer: "Unemployed",
-        totalMembers: 1,
-        monthlyNetChange: 0,
-        eventCooldownUntil: addDays(initialDate, 30),
-        lang: lang,
-        contentVersion: 1,
-        familyName: 'Family',
-        totalChildrenBorn: 0,
-        unlockedFeatures: [],
-        newlyUnlockedFeature: null,
-    };
-};
-
-const createAloneState = (initialYear: number, lang: Language): GameState => {
     const gender = Math.random() < 0.5 ? Gender.Male : Gender.Female;
     const major = UNIVERSITY_MAJORS[Math.floor(Math.random() * UNIVERSITY_MAJORS.length)];
     const age = 24;
+    const careerTracks = Object.keys(CAREER_LADDER);
+    const randomCareerTrack = careerTracks[Math.floor(Math.random() * careerTracks.length)];
+
     const character: Character = {
         id: randomUUID(),
         name: generateName(gender, lang),
@@ -63,9 +30,9 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         phase: LifePhase.PostGraduation,
         education: `University (${major.nameKey})`,
         major: major.nameKey,
-        careerTrack: null,
+        careerTrack: randomCareerTrack,
         careerLevel: 0,
-        status: CharacterStatus.Unemployed,
+        status: CharacterStatus.Working, // Changed to Working since they have a random career
         statusEndYear: null,
         relationshipStatus: RelationshipStatus.Single,
         partnerId: null,
@@ -98,12 +65,13 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         gameOverReason: null, activeEvent: null, pendingSchoolChoice: null,
         pendingUniversityChoice: null, pendingMajorChoice: null,
         pendingClubChoice: null,
-        pendingCareerChoice: { characterId: character.id, options: ['job', 'internship', 'vocational'] },
+        pendingCareerChoice: null, // No pending career choice as it's randomized
         pendingLoanChoice: null,
         pendingPromotion: null,
         activeLoans: [],
         eventQueue: [], highestEducation: character.education,
-        highestCareer: "Unemployed", totalMembers: 1,
+        highestCareer: character.careerTrack, // Set highest career to the random career
+        totalMembers: 1,
         monthlyNetChange: 0,
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
@@ -111,7 +79,9 @@ const createAloneState = (initialYear: number, lang: Language): GameState => {
         familyName: 'Family',
         totalChildrenBorn: 0,
         unlockedFeatures: [],
+        claimedFeatures: [], // ADD THIS LINE
         newlyUnlockedFeature: null,
+        avatarCustomizationCount: 0,
     };
 };
 
@@ -125,7 +95,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
 
     const mila: Character = {
         id: milaId, name: 'Mila', gender: Gender.Female, generation: 0,
-        birthDate: { day: 1, year: initialYear - 23 }, age: 23, isAlive: true, deathDate: null,
+        birthDate: { day: 1, year: initialYear - 35 }, age: 35, isAlive: true, deathDate: null,
         stats: { iq: 95, happiness: 85, eq: 90, health: 80, skill: 70 },
         phase: LifePhase.PostGraduation,
         education: 'University (major_business)', major: 'major_business', careerTrack: 'Business', careerLevel: 2,
@@ -146,7 +116,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     };
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 0,
-        birthDate: { day: 1, year: initialYear - 23 }, age: 23, isAlive: true, deathDate: null,
+        birthDate: { day: 1, year: initialYear - 35 }, age: 35, isAlive: true, deathDate: null,
         stats: { iq: 85, happiness: 95, eq: 85, health: 95, skill: 80 },
         phase: LifePhase.PostGraduation,
         education: 'University (major_technology)', major: 'major_technology', careerTrack: 'Technology', careerLevel: 2,
@@ -256,7 +226,9 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         familyName: 'Mila Family',
         totalChildrenBorn: 3,
         unlockedFeatures: [],
+        claimedFeatures: [], // ADD THIS LINE
         newlyUnlockedFeature: null,
+        avatarCustomizationCount: 0,
     };
 };
 
@@ -266,15 +238,8 @@ export const SCENARIOS: GameScenario[] = [
         id: 'classic',
         nameKey: 'scenario_classic_name',
         descriptionKey: 'scenario_classic_desc',
-        themeColor: 'indigo',
-        createInitialState: createClassicState,
-    },
-    {
-        id: 'alone',
-        nameKey: 'scenario_alone_name',
-        descriptionKey: 'scenario_alone_desc',
         themeColor: 'green',
-        createInitialState: createAloneState,
+        createInitialState: createClassicState,
     },
     {
         id: 'mila',

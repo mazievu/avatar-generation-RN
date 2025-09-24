@@ -70,7 +70,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     };
 
         return (
-        <ComicPanelModal visible={true} onClose={onClose} rotate="-2deg">
+        <ComicPanelModal visible={true} onClose={onClose} rotate="0deg">
             <View style={businessManagementModalStyles.header}>
                 <View>
                     <Text style={businessManagementModalStyles.title}>{localization.t(businessDef.nameKey, lang)}</Text>

@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { GameState, Character, Language } from './core/types';
 import { exampleManifest } from './core/types';
-import { GAME_SPEED_MS, ASSET_DEFINITIONS } from './core/constants';
+import { GAME_SPEED_MS, ASSET_DEFINITIONS, UNLOCKABLE_FEATURES } from './core/constants';
 import { GameUI } from './components/GameUI';
 import AvatarBuilder from './components/AvatarBuilder';
 import { initGodMode } from './core/godmod';
@@ -75,6 +75,7 @@ const App: React.FC = () => {
         handleBuyBusiness,
         handlePurchaseAsset,
         handleAvatarSave,
+        handleAvatarSaveNoCost,
         handleSellBusiness,
         stopGameLoop,
         
@@ -83,6 +84,14 @@ const App: React.FC = () => {
     useEffect(() => {
         initGodMode(setGameState);
         setIsInitialized(true);
+
+        // Initialize AdMob and show App Open Ad
+        const initAndShowAds = async () => {
+            // await adService.initializeAds(); // Commented out as adService is not defined
+            // adService.showAppOpenAd(); // Commented out as adService is not defined
+        };
+        initAndShowAds();
+
     }, [setGameState]);
 
     useEffect(() => {
@@ -136,13 +145,37 @@ const App: React.FC = () => {
         setSelectedCharacter(character);
     }, []);
 
+    // New handler for claiming features
+    const handleClaimFeature = useCallback((featureId: string) => {
+        setGameState(prevGameState => {
+            if (!prevGameState) return prevGameState;
+
+            const featureToClaim = UNLOCKABLE_FEATURES.find(f => f.id === featureId);
+            if (!featureToClaim) {
+                console.warn(`Attempted to claim unknown feature: ${featureId}`);
+                return prevGameState;
+            }
+
+            if (prevGameState.claimedFeatures.includes(featureId)) {
+                console.warn(`Feature ${featureId} already claimed.`);
+                return prevGameState;
+            }
+
+            // Add the featureId to claimedFeatures
+            return {
+                ...prevGameState,
+                claimedFeatures: [...prevGameState.claimedFeatures, featureId],
+            };
+        });
+    }, []);
+
     if (!isInitialized) {
         // Simple loading screen
         return (
             <View style={appStyles.loadingContainer}>
                 <Text style={appStyles.loadingText}>Initializing...</Text>
             </View>
-        ); // Or a proper loading screen
+        );
     }
 
     if (customizingCharacterId && gameState) {
@@ -154,6 +187,12 @@ const App: React.FC = () => {
             images={avatarImages}
             onSave={(newState) => handleAvatarSave(customizingCharacterId, newState)}
             onClose={() => setCustomizingCharacterId(null)}
+            familyFund={gameState.familyFund}
+            onWatchAd={() => {
+                // adService.showRewardedAd(() => { // Commented out as adService is not defined
+                    handleAvatarSaveNoCost(customizingCharacterId, characterToCustomize.avatarState);
+                // });
+            }}
           />
         );
     }
@@ -202,6 +241,7 @@ const App: React.FC = () => {
                     } }
                     activeScene={activeScene}
                     onSetActiveScene={setActiveScene}
+                    onClaimFeature={handleClaimFeature} // Pass the new handler
             />
         </GestureHandlerRootView>
     );

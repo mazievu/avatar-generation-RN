@@ -19,7 +19,7 @@ interface InstructionsModalProps extends LocalizedProps {
 }
 
 export const InstructionsModal: React.FC<InstructionsModalProps> = ({ onClose, lang }) => (
-    <ComicPanelModal visible={true} onClose={onClose} rotate="1deg">
+    <ComicPanelModal visible={true} onClose={onClose} rotate="0deg">
         <Pressable onPress={onClose} style={instructionsModalStyles.closeButton}>
             <CloseIcon width={32} height={32} color="#94a3b8" />
         </Pressable>

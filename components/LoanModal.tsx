@@ -23,7 +23,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
     const [selectedTerm, setSelectedTerm] = React.useState(terms[0]);
 
     return (
-        <ComicPanelModal visible={true} onClose={() => {}} rotate="-1deg">
+        <ComicPanelModal visible={true} onClose={() => {}} rotate="0deg">
             <Text style={loanModalStyles.title}>{t('modal_loan_title', lang)}</Text>
             <Text style={loanModalStyles.description}>{t('modal_loan_desc', lang)}</Text>
             

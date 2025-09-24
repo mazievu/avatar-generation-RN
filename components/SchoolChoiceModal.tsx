@@ -6,6 +6,7 @@ import type { SchoolOption, Language, Stats, Character } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { t } from '../core/localization';
+import { colors } from './designSystem';
 
 
 
@@ -20,10 +21,10 @@ interface SchoolChoiceModalProps extends LocalizedProps {
     onSelect: (option: SchoolOption) => void;
     currentFunds: number;
 }
-export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOptions, onSelect, currentFunds, lang }) => (
+export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOptions, onSelect, currentFunds, lang, character }) => (
     <ComicPanelModal visible={true} onClose={() => {}} rotate="2deg">
       <Text style={schoolChoiceModalStyles.title}>{t('modal_school_title', lang)}</Text>
-      <Text style={schoolChoiceModalStyles.description}>{t('modal_school_desc', lang)}</Text>
+      <Text style={schoolChoiceModalStyles.description}>{t('modal_school_desc', lang, { name: character.name })}</Text>
         {schoolOptions.map((option, index) => (
             <ChoiceButton key={index} onClick={() => onSelect(option)} disabled={currentFunds < option.cost}>
                 <View style={schoolChoiceModalStyles.choiceContent}>
@@ -53,6 +54,7 @@ const schoolChoiceModalStyles = StyleSheet.create({
         marginTop: 4,
     },
     choiceName: {
+        color: colors.textPrimary,
         fontSize: 16,
         fontWeight: 'bold',
     },

@@ -19,6 +19,7 @@ import { ModalManager } from './ModalManager';
 import SettingsModal from './SettingsModal';
 import { UnlocksModal } from './UnlocksModal'; // Import the new modal
 import { UnlockNotificationModal } from './UnlockNotificationModal'; // Import the new modal
+import { PathOfLifeScreen } from './PathOfLifeScreen'; // Import the new PathOfLifeScreen
 import { colors } from './designSystem';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -28,7 +29,7 @@ const responsiveSize = (size: number) => Math.round(size * (screenWidth / 375));
 
 
 
-export type SceneName = 'tree' | 'log' | 'assets' | 'business';
+export type SceneName = 'tree' | 'log' | 'assets' | 'business' | 'path';
 
 import { BUSINESS_UNLOCK_CHILDREN_COUNT } from '../core/constants';
 
@@ -42,13 +43,13 @@ const BottomNav: React.FC<{
   return (
     <View style={gameUIStyles.bottomNavContainer}>
       <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={require('../public/asset/icon_family_tree.webp')} style={gameUIStyles.bottomNavIcon} />
+        <View><Image source={require('../public/asset/icon_family_tree.webp')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('log')} style={[gameUIStyles.bottomNavButton, activeScene === 'log' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={require('../public/asset/icon_log.webp')} style={gameUIStyles.bottomNavIcon} />
+        <View><Image source={require('../public/asset/icon_log.webp')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
-        <Image source={require('../public/asset/icon_assets.webp')} style={gameUIStyles.bottomNavIcon} />
+        <View><Image source={require('../public/asset/icon_assets.webp')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity 
         onPress={() => onSceneChange('business')} 
@@ -59,7 +60,10 @@ const BottomNav: React.FC<{
         ]}
         disabled={!isBusinessUnlocked}
       >
-        <Image source={require('../public/asset/icon_business.webp')} style={gameUIStyles.bottomNavIcon} />
+        <View><Image source={require('../public/asset/icon_business.webp')} style={gameUIStyles.bottomNavIcon} /></View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => onSceneChange('path')} style={[gameUIStyles.bottomNavButton, activeScene === 'path' && gameUIStyles.bottomNavButtonActive]}>
+        <View><Image source={require('../public/asset/icon_path.webp')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
     </View>
   );
@@ -108,6 +112,8 @@ interface GameUIProps {
     activeScene: SceneName; // NEW PROP
     onSetActiveScene: (scene: SceneName) => void; // NEW PROP
     onAcknowledgeUnlock: () => void; // NEW PROP FOR UNLOCK NOTIFICATION
+    onClearNewlyUnlockedFeature: () => void; // NEW PROP
+    onClaimFeature: (featureId: string) => void; // NEW PROP for claiming features
 }
 
 export const GameUI: React.FC<GameUIProps> = ({
@@ -152,13 +158,19 @@ export const GameUI: React.FC<GameUIProps> = ({
     activeScene, // NEW PROP
     onSetActiveScene, // NEW PROP
     onAcknowledgeUnlock, // NEW PROP
+    onClearNewlyUnlockedFeature, // NEW PROP
+    onClaimFeature, // NEW PROP
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null); // NEW STATE
     const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false); // NEW STATE
-    const [isUnlocksModalVisible, setIsUnlocksModalVisible] = useState(false); // State for the new modal
+    const [isUnlocksModalVisible, setIsUnlocksModalVisible] = useState(false); // Re-added
     const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const handleAcknowledgeUnlock = useCallback(() => {
+        onClearNewlyUnlockedFeature();
+    }, [onClearNewlyUnlockedFeature]);
+    
 
     // New state for editable family name
     const [familyNameInput, setFamilyNameInput] = useState<string>(
@@ -215,7 +227,7 @@ export const GameUI: React.FC<GameUIProps> = ({
         // Update mainView only if explicitly going to/from 'business'
         if (scene === 'business') {
             onSetMainView('business');
-        } else if (mainView === 'business' && (scene === 'tree' || scene === 'log' || scene === 'assets')) { // If currently on business mainView and switching to another non-business scene
+        } else if (mainView === 'business' && (scene === 'tree' || scene === 'log' || scene === 'assets' || scene === 'path')) { // If currently on business mainView and switching to another non-business scene
             onSetMainView('tree'); // Revert mainView to 'tree'
         }
         // If mainView is already 'tree' and we're going to 'log' or 'assets', it stays 'tree'. This is fine.
@@ -228,6 +240,8 @@ export const GameUI: React.FC<GameUIProps> = ({
     if (view === 'menu') {
         return (
             <>
+                {/* Default behavior: Start classic mode directly if no save game.
+                StoryChoiceModal is not shown here. */}
                 <StartMenu onStart={() => onStartGame('classic')} onShowInstructions={onShowInstructions} lang={lang} onSetLang={onSetLang} />
                 {showInstructions && <InstructionsModal onClose={onCloseInstructions} lang={lang} />}
             </>
@@ -288,6 +302,14 @@ export const GameUI: React.FC<GameUIProps> = ({
                                 onSetIsPaused(false);
                             }}
                         />;
+            case 'path':
+                return (
+                    <PathOfLifeScreen
+                        gameState={gameState}
+                        lang={lang}
+                        onClaimFeature={onClaimFeature}
+                    />
+                );
             default:
                 return null;
         }
@@ -353,6 +375,11 @@ export const GameUI: React.FC<GameUIProps> = ({
                 <Text style={gameUIStyles.settingsButtonText}>{t('unlocks_button_title', lang)}</Text>
             </TouchableOpacity>
 
+            {/* Path of Life Button */}
+            <TouchableOpacity onPress={() => onSetActiveScene('path')} style={gameUIStyles.pathButton}>
+                <Text style={gameUIStyles.settingsButtonText}>{t('path_of_life_title', lang)}</Text>
+            </TouchableOpacity>
+
             {/* Settings Modal */}
             <SettingsModal
                 isVisible={showSettingsModal}
@@ -379,7 +406,7 @@ export const GameUI: React.FC<GameUIProps> = ({
 
                     <UnlockNotificationModal
                         newlyUnlockedFeatureId={gameState.newlyUnlockedFeature}
-                        onAcknowledge={onAcknowledgeUnlock}
+                        onAcknowledge={handleAcknowledgeUnlock}
                         lang={lang}
                     />
                 </>
@@ -558,6 +585,16 @@ const gameUIStyles = StyleSheet.create({
         position: 'absolute',
         right: 16,
         top: 190, // Placed below settings button
+        zIndex: 10,
+    },
+    pathButton: { // NEW
+        backgroundColor: colors.accent,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        position: 'absolute',
+        right: 16,
+        top: 240, // Placed below unlocks button
         zIndex: 10,
     },
 });

@@ -6,6 +6,7 @@ export default {
     asset_effects: 'Effects on Family',
     asset_purchase_button: 'Purchase',
     asset_owned_label: 'Owned',
+    asset_cost_label: 'Cost:',
     log_asset_purchased: 'The family has purchased a {name}!',
     
     // Asset Types

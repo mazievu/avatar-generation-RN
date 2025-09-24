@@ -172,9 +172,7 @@ export default {
     relationship_Married: 'Married',
     // Scenarios
     scenario_classic_name: 'Classic',
-    scenario_classic_desc: 'Start a new life from birth and guide your family through the generations.',
-    scenario_alone_name: 'Alone',
-    scenario_alone_desc: 'Start at age 24 after graduation with $50,000. It\'s up to you to build a legacy from scratch.',
+    scenario_classic_desc: 'Start at age 24 with $50,000 and a random profession. It\'s up to you to build a legacy from scratch.',
     scenario_mila_name: 'Mila\'s Family',
     scenario_mila_desc: 'Step into the life of an established family, overcome challenges, and lead them to prosperity.',
     // Schools
@@ -424,6 +422,7 @@ export default {
     unlocks_button_title: "Goals & Unlocks",
     unlocks_modal_title: "Goals & Unlocks",
     unlocked: "Unlocked",
+    unlock_condition_children: 'Children: {current} / {required}',
     unlock_business_name: "Business",
     unlock_business_desc: "Start your own business and build a commercial empire.",
     unlock_custom_avatar_name: "Avatar Customization",
@@ -437,4 +436,7 @@ export default {
     unlock_notification_title: "Congratulations!",
     unlock_notification_body: "You have unlocked the {featureName} feature!",
     unlock_notification_button: "Awesome!",
+    log_customize_avatar: "{name} spent {amount} to customize their avatar.",
+    log_customize_avatar_ad: "{name} customized their avatar for free by watching an ad.",
+    event_customize_avatar_title: "Avatar Customized",
 };

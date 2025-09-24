@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, SafeAreaView } from 'react-native';
 
 import { LayerKey, Manifest, AvatarState, Character, Gender, LayerDefinition, ColorDefinition } from "../core/types";
-import { AVATAR_COLOR_PALETTE } from "../core/constants";
+import { AVATAR_COLOR_PALETTE, CUSTOM_AVATAR_COST } from "../core/constants";
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
 // =============================================
@@ -54,12 +54,16 @@ export default function AvatarBuilder({
     images,
     onSave,
     onClose,
+    familyFund,
+    onWatchAd,
 }: {
     manifest: Manifest;
     character: Character;
     images: Record<string, number>;
     onSave: (newState: AvatarState) => void;
     onClose: () => void;
+    familyFund: number;
+    onWatchAd: () => void;
 }) {
   const [seed, setSeed] = useState<number>(() => Math.floor(Math.random() * 100000));
   const [state, setState] = useState<AvatarState>(character.avatarState || {});
@@ -101,7 +105,7 @@ export default function AvatarBuilder({
 
   function setLayer(layer: LayerKey, optionId: string | null) { setState((s) => ({ ...s, [layer]: optionId })); }
 
-  function setColorForLayer(layerKey: LayerKey, colorName: string) {
+  function setColorForLayer(layerKey: LayerKey, colorName:string) {
     if (layerKey === 'frontHair' || layerKey === 'backHair') {
       setState(s => ({ ...s, frontHairColor: colorName, backHairColor: colorName }));
     } else {
@@ -291,7 +295,17 @@ export default function AvatarBuilder({
                 </View>
                  <View style={avatarBuilderStyles.footerButtonsContainer}>
                     <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonSlate]} onPress={onClose}><Text style={avatarBuilderStyles.chunkyButtonText}>Cancel</Text></TouchableOpacity>
-                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonGreen]} onPress={() => onSave(state)}><Text style={avatarBuilderStyles.chunkyButtonText}>Save</Text></TouchableOpacity>
+                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonBlue]} onPress={onWatchAd}><Text style={avatarBuilderStyles.chunkyButtonText}>Watch Ad</Text></TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[
+                            avatarBuilderStyles.chunkyButton, 
+                            familyFund < CUSTOM_AVATAR_COST ? avatarBuilderStyles.chunkyButtonDisabled : avatarBuilderStyles.chunkyButtonGreen
+                        ]} 
+                        onPress={() => onSave(state)}
+                        disabled={familyFund < CUSTOM_AVATAR_COST}
+                    >
+                        <Text style={avatarBuilderStyles.chunkyButtonText}>Pay {CUSTOM_AVATAR_COST.toLocaleString()}</Text>
+                    </TouchableOpacity>
                  </View>
             </View>
         </SafeAreaView>
@@ -307,6 +321,14 @@ const avatarBuilderStyles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 16,
         paddingVertical: 8,
+    },
+    chunkyButtonBlue: {
+        backgroundColor: '#3b82f6',
+        borderColor: '#2563eb',
+    },
+    chunkyButtonDisabled: {
+        backgroundColor: '#94a3b8',
+        borderColor: '#64748b',
     },
     chunkyButtonGreen: {
         backgroundColor: '#22c55e',

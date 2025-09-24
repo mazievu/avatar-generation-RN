@@ -251,7 +251,9 @@ export interface GameState {
   familyName: string;
   totalChildrenBorn: number; // New: Tracks total children born in the family
   unlockedFeatures: string[];
+  claimedFeatures: string[];
   newlyUnlockedFeature: string | null;
+  avatarCustomizationCount: number; // New: Tracks how many times avatar has been customized
 }
 
 export type StatChanges = Partial<Stats>;
@@ -555,3 +557,8 @@ export const exampleManifest: Manifest = [
   { key: "beard", label: "Beard", zIndex: 5, allowNone: true, required: false, options: beardOptions},
   { key: "frontHair", label: "Hair (Front)", zIndex: 7, allowNone: true, required: false, options: frontHairOptions},
 ];
+
+export interface UnlockableFeature {
+  id: string;
+  nameKey: string;
+}
