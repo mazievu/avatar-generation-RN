@@ -35,6 +35,9 @@ export default {
     cost_label: 'Cost',
     cancel_button: 'Cancel',
     back_button: 'Back',
+    close_button: 'Close',
+    claim_button_text: 'Claim',
+    claimed_text: 'Claimed',
     // Stats
     stat_iq: 'IQ',
     stat_happiness: 'Happiness',

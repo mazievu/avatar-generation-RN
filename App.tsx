@@ -76,7 +76,8 @@ const App: React.FC = () => {
         handlePurchaseAsset,
         handleAvatarSave,
         handleAvatarSaveNoCost,
-        handleSellBusiness,
+        onSellBusiness,
+        handleAcknowledgeUnlock,
         stopGameLoop,
         
     } = useMemo(() => createGameLogicHandlers(setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest), [setGameState, language, timerRef, setView, setIsPaused, setLanguage]);
@@ -234,13 +235,15 @@ const App: React.FC = () => {
                     onContinueGame={handleContinueGame}
                     onStartNewGame={handleStartNewGame}
                     onPurchaseAsset={handlePurchaseAsset}
-                    onSellBusiness={handleSellBusiness}
+                    onSellBusiness={onSellBusiness}
                     onSetMainView={setMainView}
                     onSetFamilyName={function (): void {
                         throw new Error('Function not implemented.');
                     } }
                     activeScene={activeScene}
                     onSetActiveScene={setActiveScene}
+                    onAcknowledgeUnlock={() => {}}
+                    onClearNewlyUnlockedFeature={handleAcknowledgeUnlock}
                     onClaimFeature={handleClaimFeature} // Pass the new handler
             />
         </GestureHandlerRootView>

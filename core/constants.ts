@@ -291,12 +291,7 @@ export const CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT = 1;
 export const TWIN_BIRTH_UNLOCK_CHILDREN_COUNT = 2;
 export const TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT = 3;
 
-export interface UnlockableFeature {
-  id: 'business' | 'custom_avatar' | 'twins' | 'triplets';
-  nameKey: string; // Key cho localization, ví dụ: 'unlock_business_name'
-  descriptionKey: string; // Key cho mô tả, ví dụ: 'unlock_business_desc'
-  childrenRequired: number;
-}
+
 
 export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
   {
@@ -323,49 +318,60 @@ export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
     descriptionKey: 'unlock_triplets_desc',
     childrenRequired: TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT,
   },
+    { id: 'milestone_0', nameKey: 'milestone_0_name', descriptionKey: 'milestone_0_desc', childrenRequired: 0 },
+    { id: 'milestone_5', nameKey: 'milestone_5_name', descriptionKey: 'milestone_5_desc', childrenRequired: 5 },
+    { id: 'milestone_15', nameKey: 'milestone_15_name', descriptionKey: 'milestone_15_desc', childrenRequired: 15 },
+    { id: 'milestone_20', nameKey: 'milestone_20_name', descriptionKey: 'milestone_20_desc', childrenRequired: 20 },
+    { id: 'milestone_25', nameKey: 'milestone_25_name', descriptionKey: 'milestone_25_desc', childrenRequired: 25 },
+    { id: 'milestone_30', nameKey: 'milestone_30_name', descriptionKey: 'milestone_30_desc', childrenRequired: 30 },
+    { id: 'milestone_35', nameKey: 'milestone_35_name', descriptionKey: 'milestone_35_desc', childrenRequired: 35 },
+    { id: 'milestone_40', nameKey: 'milestone_40_name', descriptionKey: 'milestone_40_desc', childrenRequired: 40 },
+    { id: 'milestone_45', nameKey: 'milestone_45_name', descriptionKey: 'milestone_45_desc', childrenRequired: 45 },
+    { id: 'milestone_50', nameKey: 'milestone_50_name', descriptionKey: 'milestone_50_desc', childrenRequired: 50 },
+    { id: 'milestone_55', nameKey: 'milestone_55_name', descriptionKey: 'milestone_55_desc', childrenRequired: 55 },
+    { id: 'milestone_60', nameKey: 'milestone_60_name', descriptionKey: 'milestone_60_desc', childrenRequired: 60 },
+    { id: 'milestone_65', nameKey: 'milestone_65_name', descriptionKey: 'milestone_65_desc', childrenRequired: 65 },
+    { id: 'milestone_70', nameKey: 'milestone_70_name', descriptionKey: 'milestone_70_desc', childrenRequired: 70 },
+    { id: 'milestone_75', nameKey: 'milestone_75_name', descriptionKey: 'milestone_75_desc', childrenRequired: 75 },
+    { id: 'milestone_80', nameKey: 'milestone_80_name', descriptionKey: 'milestone_80_desc', childrenRequired: 80 },
+    { id: 'milestone_85', nameKey: 'milestone_85_name', descriptionKey: 'milestone_85_desc', childrenRequired: 85 },
+    { id: 'milestone_90', nameKey: 'milestone_90_name', descriptionKey: 'milestone_90_desc', childrenRequired: 90 },
+    { id: 'milestone_95', nameKey: 'milestone_95_name', descriptionKey: 'milestone_95_desc', childrenRequired: 95 },
+    { id: 'milestone_100', nameKey: 'milestone_100_name', descriptionKey: 'milestone_100_desc', childrenRequired: 100 },
 ];
 
-export type PathNode =
-  | {
-      type: 'reward';
-      level: number; // Tương đương với childrenRequired
-      alignment: 'left' | 'right';
-      featureId: string; // ID trỏ tới một feature trong UNLOCKABLE_FEATURES
-    }
-  | {
-      type: 'milestone';
-      level: number;
-      specialAsset?: 'winged_heart' | 'gem'; // Tên asset đặc biệt
-    };
+export type PathNode = {
+  level: number;
+  featureId: string;
+  alignment: 'left' | 'right';
+};
 
-export const PATH_NODES = [
-  { type: 'milestone', level: 0, specialAsset: 'winged_heart' }, // Starting point
-  { type: 'reward', level: 1, alignment: 'left', featureId: 'custom_avatar' },
-  { type: 'milestone', level: 2, specialAsset: 'gem' },
-  { type: 'reward', level: 2, alignment: 'right', featureId: 'twins' },
-  { type: 'milestone', level: 3, specialAsset: 'gem' },
-  { type: 'reward', level: 3, alignment: 'left', featureId: 'triplets' },
-  { type: 'milestone', level: 5, specialAsset: 'gem' },
-  { type: 'reward', level: 10, alignment: 'right', featureId: 'business' },
-  { type: 'milestone', level: 15, specialAsset: 'winged_heart' },
-  { type: 'milestone', level: 20, specialAsset: 'gem' },
-  { type: 'milestone', level: 25, specialAsset: 'gem' },
-  { type: 'milestone', level: 30, specialAsset: 'winged_heart' },
-  { type: 'milestone', level: 35, specialAsset: 'gem' },
-  { type: 'milestone', level: 40, specialAsset: 'gem' },
-  { type: 'milestone', level: 45, specialAsset: 'gem' },
-  { type: 'milestone', level: 50, specialAsset: 'winged_heart' },
-  { type: 'milestone', level: 55, specialAsset: 'gem' },
-  { type: 'milestone', level: 60, specialAsset: 'gem' },
-  { type: 'milestone', level: 65, specialAsset: 'gem' },
-  { type: 'milestone', level: 70, specialAsset: 'winged_heart' },
-  { type: 'milestone', level: 75, specialAsset: 'gem' },
-  { type: 'milestone', level: 80, specialAsset: 'gem' },
-  { type: 'milestone', level: 85, specialAsset: 'gem' },
-  { type: 'milestone', level: 90, specialAsset: 'winged_heart' },
-  { type: 'milestone', level: 95, specialAsset: 'gem' },
-  { type: 'milestone', level: 100, specialAsset: 'gem' },
-] as const;
+export const PATH_NODES: PathNode[] = [
+    { level: 0, featureId: 'milestone_0', alignment: 'left' },
+    { level: 1, featureId: 'custom_avatar', alignment: 'right' },
+    { level: 2, featureId: 'twins', alignment: 'left' },
+    { level: 3, featureId: 'triplets', alignment: 'right' },
+    { level: 5, featureId: 'milestone_5', alignment: 'left' },
+    { level: 10, featureId: 'business', alignment: 'right' },
+    { level: 15, featureId: 'milestone_15', alignment: 'left' },
+    { level: 20, featureId: 'milestone_20', alignment: 'right' },
+    { level: 25, featureId: 'milestone_25', alignment: 'left' },
+    { level: 30, featureId: 'milestone_30', alignment: 'right' },
+    { level: 35, featureId: 'milestone_35', alignment: 'left' },
+    { level: 40, featureId: 'milestone_40', alignment: 'right' },
+    { level: 45, featureId: 'milestone_45', alignment: 'left' },
+    { level: 50, featureId: 'milestone_50', alignment: 'right' },
+    { level: 55, featureId: 'milestone_55', alignment: 'left' },
+    { level: 60, featureId: 'milestone_60', alignment: 'right' },
+    { level: 65, featureId: 'milestone_65', alignment: 'left' },
+    { level: 70, featureId: 'milestone_70', alignment: 'right' },
+    { level: 75, featureId: 'milestone_75', alignment: 'left' },
+    { level: 80, featureId: 'milestone_80', alignment: 'right' },
+    { level: 85, featureId: 'milestone_85', alignment: 'left' },
+    { level: 90, featureId: 'milestone_90', alignment: 'right' },
+    { level: 95, featureId: 'milestone_95', alignment: 'left' },
+    { level: 100, featureId: 'milestone_100', alignment: 'right' },
+].sort((a, b) => a.level - b.level);
 
 export const PATH_NODES_SORTED: PathNode[] = [...PATH_NODES].sort((a, b) => a.level - b.level); // Luôn sắp xếp theo level
 

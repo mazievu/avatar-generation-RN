@@ -561,4 +561,6 @@ export const exampleManifest: Manifest = [
 export interface UnlockableFeature {
   id: string;
   nameKey: string;
+  descriptionKey: string;
+  childrenRequired: number;
 }

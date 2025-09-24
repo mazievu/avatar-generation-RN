@@ -1,14 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageSourcePropType, TextInput, Image, Dimensions } from 'react-native';
 
-
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Business, Language } from '../core/types';
 import { formatDate, getCharacterDisplayName } from '../core/utils';
 import { FamilyTree } from './FamilyTree';
 import { GameLog } from './GameLog';
 import { SummaryScreen } from './SummaryScreen';
 import { StartMenu } from './StartMenu';
-import { InstructionsModal } from './InstructionsModal';    
+import { InstructionsModal } from './InstructionsModal';
 import { WelcomeBackMenu } from './WelcomeBackMenu';
 import { StoryChoiceModal } from './StoryChoiceModal';
 import { t } from '../core/localization';
@@ -17,17 +16,12 @@ import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { ModalManager } from './ModalManager';
 import SettingsModal from './SettingsModal';
-import { UnlocksModal } from './UnlocksModal'; // Import the new modal
-import { UnlockNotificationModal } from './UnlockNotificationModal'; // Import the new modal
-import { PathOfLifeScreen } from './PathOfLifeScreen'; // Import the new PathOfLifeScreen
+import { UnlockNotificationModal } from './UnlockNotificationModal';
+import { PathOfLifeScreen } from './PathOfLifeScreen'; // Corrected import path
 import { colors } from './designSystem';
 
 const { width: screenWidth } = Dimensions.get('window');
 const responsiveSize = (size: number) => Math.round(size * (screenWidth / 375));
-
-
-
-
 
 export type SceneName = 'tree' | 'log' | 'assets' | 'business' | 'path';
 
@@ -51,10 +45,10 @@ const BottomNav: React.FC<{
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
         <View><Image source={require('../public/asset/icon_assets.webp')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
-      <TouchableOpacity 
-        onPress={() => onSceneChange('business')} 
+      <TouchableOpacity
+        onPress={() => onSceneChange('business')}
         style={[
-            gameUIStyles.bottomNavButton, 
+            gameUIStyles.bottomNavButton,
             activeScene === 'business' && gameUIStyles.bottomNavButtonActive,
             !isBusinessUnlocked && gameUIStyles.disabledButton
         ]}
@@ -79,7 +73,7 @@ interface GameUIProps {
     showInstructions: boolean;
     selectedCharacter: Character | null;
     lang: Language;
-    avatarImages: Record<string, ImageSourcePropType>; // Changed HTMLImageElement to ImageSourcePropType
+    avatarImages: Record<string, ImageSourcePropType>;
     onSetLang: (lang: Language) => void;
     onStartGame: (mode: string) => void;
     onShowInstructions: () => void;
@@ -106,14 +100,14 @@ interface GameUIProps {
     onContinueGame: () => void;
     onStartNewGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
-    onSellBusiness: (businessId: string) => void; // Corrected prop name
+    onSellBusiness: (businessId: string) => void;
     onSetMainView: (view: 'tree' | 'business') => void;
     onSetFamilyName: (name: string) => void;
-    activeScene: SceneName; // NEW PROP
-    onSetActiveScene: (scene: SceneName) => void; // NEW PROP
-    onAcknowledgeUnlock: () => void; // NEW PROP FOR UNLOCK NOTIFICATION
-    onClearNewlyUnlockedFeature: () => void; // NEW PROP
-    onClaimFeature: (featureId: string) => void; // NEW PROP for claiming features
+    activeScene: SceneName;
+    onSetActiveScene: (scene: SceneName) => void;
+    onAcknowledgeUnlock: () => void;
+    onClearNewlyUnlockedFeature: () => void;
+    onClaimFeature: (featureId: string) => void;
 }
 
 export const GameUI: React.FC<GameUIProps> = ({
@@ -154,32 +148,29 @@ export const GameUI: React.FC<GameUIProps> = ({
     onPurchaseAsset,
     onSellBusiness,
     onSetMainView,
-    onSetFamilyName, // Added here
-    activeScene, // NEW PROP
-    onSetActiveScene, // NEW PROP
-    onAcknowledgeUnlock, // NEW PROP
-    onClearNewlyUnlockedFeature, // NEW PROP
-    onClaimFeature, // NEW PROP
+    onSetFamilyName,
+    activeScene,
+    onSetActiveScene,
+    onAcknowledgeUnlock,
+    onClearNewlyUnlockedFeature,
+    onClaimFeature,
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
-    const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null); // NEW STATE
-    const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false); // NEW STATE
-    const [isUnlocksModalVisible, setIsUnlocksModalVisible] = useState(false); // Re-added
+    const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null);
+    const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false);
     const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const handleAcknowledgeUnlock = useCallback(() => {
         onClearNewlyUnlockedFeature();
     }, [onClearNewlyUnlockedFeature]);
-    
 
-    // New state for editable family name
+
     const [familyNameInput, setFamilyNameInput] = useState<string>(
         gameState?.familyName || (gameState?.familyMembers && Object.keys(gameState.familyMembers).length > 0
             ? `${getCharacterDisplayName(gameState.familyMembers[Object.keys(gameState.familyMembers)[0]], lang)}${t('family_suffix', lang)}`
             : t('default_family_name_placeholder', lang)))
     ;
 
-    // Effect to update familyNameInput if gameState.familyName changes externally
     useEffect(() => {
         if (gameState?.familyName && gameState.familyName !== familyNameInput) {
             setFamilyNameInput(gameState.familyName);
@@ -187,28 +178,24 @@ export const GameUI: React.FC<GameUIProps> = ({
     }, [gameState?.familyName, familyNameInput]);
 
 
-    const onCharacterCenteredOnEvent = useCallback(() => { //  CALLBACK
-        setCharacterIdToCenterOnEvent(null); // This resets the ID in FamilyTree
-        setIsCenteringAnimationDone(true); // Indicate animation is done
+    const onCharacterCenteredOnEvent = useCallback(() => {
+        setCharacterIdToCenterOnEvent(null);
+        setIsCenteringAnimationDone(true);
     }, []);
 
-    // Effect to set characterIdToCenterOnEvent when a new event starts
     useEffect(() => {
-        if (gameState?.activeEvent?.characterId) { // Check if activeEvent and characterId exist
-            
+        if (gameState?.activeEvent?.characterId) {
             setCharacterIdToCenterOnEvent(gameState.activeEvent.characterId);
-            setIsCenteringAnimationDone(false); // Reset for new animation
+            setIsCenteringAnimationDone(false);
         } else {
-           
-            // If activeEvent is cleared (modal closed), reset animation done flag
             setIsCenteringAnimationDone(false);
         }
-    }, [gameState?.activeEvent?.characterId]); // Dependency on activeEvent.characterId
+    }, [gameState?.activeEvent?.characterId]);
 
     const handleEventHandled = useCallback(() => {
-        // Logic to handle event being handled, e.g., clear current event, update game state
+        // Logic to handle event being handled
     }, []);
-    
+
     useEffect(() => {
         if (editingBusiness && gameState?.familyBusinesses) {
             const updatedBusiness = gameState.familyBusinesses[editingBusiness.id];
@@ -219,20 +206,16 @@ export const GameUI: React.FC<GameUIProps> = ({
     }, [gameState?.familyBusinesses, editingBusiness]);
 
     const handleSceneChange = (scene: SceneName) => {
-        onSetActiveScene(scene); // Always update the active tab
-
-        // Pause if not on 'tree' tab, resume if on 'tree' tab
+        onSetActiveScene(scene);
         onSetIsPaused(scene !== 'tree');
 
-        // Update mainView only if explicitly going to/from 'business'
         if (scene === 'business') {
             onSetMainView('business');
-        } else if (mainView === 'business' && (scene === 'tree' || scene === 'log' || scene === 'assets' || scene === 'path')) { // If currently on business mainView and switching to another non-business scene
-            onSetMainView('tree'); // Revert mainView to 'tree'
+        } else if (mainView === 'business' && (scene === 'tree' || scene === 'log' || scene === 'assets' || scene === 'path')) {
+            onSetMainView('tree');
         }
-        // If mainView is already 'tree' and we're going to 'log' or 'assets', it stays 'tree'. This is fine.
     };
-    
+
     if (view === 'welcome_back') {
         return <WelcomeBackMenu onContinue={onContinueGame} onStartNew={onStartNewGame} lang={lang} />;
     }
@@ -240,8 +223,6 @@ export const GameUI: React.FC<GameUIProps> = ({
     if (view === 'menu') {
         return (
             <>
-                {/* Default behavior: Start classic mode directly if no save game.
-                StoryChoiceModal is not shown here. */}
                 <StartMenu onStart={() => onStartGame('classic')} onShowInstructions={onShowInstructions} lang={lang} onSetLang={onSetLang} />
                 {showInstructions && <InstructionsModal onClose={onCloseInstructions} lang={lang} />}
             </>
@@ -265,31 +246,31 @@ export const GameUI: React.FC<GameUIProps> = ({
                                 images={avatarImages}
                                 manifest={exampleManifest}
                                 selectedCharacter={selectedCharacter}
-                                characterIdToCenterOnEvent={characterIdToCenterOnEvent} // NEW
-                                onCharacterCenteredOnEvent={onCharacterCenteredOnEvent} // NEW
+                                characterIdToCenterOnEvent={characterIdToCenterOnEvent}
+                                onCharacterCenteredOnEvent={onCharacterCenteredOnEvent}
                             />
                         </View>
                         <TextInput
-                            style={gameUIStyles.familyTreeTitleEditable} // Style updated to be an overlay
+                            style={gameUIStyles.familyTreeTitleEditable}
                             value={familyNameInput}
                             onChangeText={setFamilyNameInput}
-                            onBlur={() => onSetFamilyName(familyNameInput)} // Save on blur
-                            onSubmitEditing={() => onSetFamilyName(familyNameInput)} // Save on submit
+                            onBlur={() => onSetFamilyName(familyNameInput)}
+                            onSubmitEditing={() => onSetFamilyName(familyNameInput)}
                         />
                     </View>
                 );
             case 'log':
                 return <GameLog log={gameState.gameLog} lang={lang} familyMembers={gameState.familyMembers} />;
             case 'assets':
-                return <FamilyAssetsPanel 
-                            purchasedAssets={gameState.purchasedAssets} 
+                return <FamilyAssetsPanel
+                            purchasedAssets={gameState.purchasedAssets}
                             familyFund={gameState.familyFund}
                             onPurchaseAsset={onPurchaseAsset}
-                            lang={lang} 
+                            lang={lang}
                         />;
             case 'business':
-                return <BusinessMap 
-                            gameState={gameState} 
+                return <BusinessMap
+                            gameState={gameState}
                             onBuyBusiness={onBuyBusiness}
                             onManageBusiness={(business) => setEditingBusiness(business)}
                             lang={lang}
@@ -302,20 +283,23 @@ export const GameUI: React.FC<GameUIProps> = ({
                                 onSetIsPaused(false);
                             }}
                         />;
-            case 'path':
-                return (
-                    <PathOfLifeScreen
-                        gameState={gameState}
-                        lang={lang}
-                        onClaimFeature={onClaimFeature}
-                    />
-                );
             default:
                 return null;
         }
     }
 
-    
+    if (activeScene === 'path' && gameState) {
+        return (
+            <View style={gameUIStyles.mainContainer}>
+                <PathOfLifeScreen
+                    gameState={gameState}
+                    lang={lang}
+                    onClaimFeature={onClaimFeature}
+                />
+                <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} gameState={gameState} />
+            </View>
+        );
+    }
 
     return (
         <View style={gameUIStyles.mainContainer}>
@@ -331,7 +315,7 @@ export const GameUI: React.FC<GameUIProps> = ({
             />
 
             {view === 'gameover' && gameState.gameOverReason && <SummaryScreen gameState={gameState} onRestart={onStartNewGame} lang={lang}/>}
-            
+
             <ModalManager
                 gameState={gameState}
                 selectedCharacter={selectedCharacter}
@@ -339,7 +323,7 @@ export const GameUI: React.FC<GameUIProps> = ({
                 avatarImages={avatarImages}
                 onEventChoice={onEventChoice}
                 onEventModalClose={onEventModalClose}
-                onEventHandled={handleEventHandled} // NEW
+                onEventHandled={handleEventHandled}
                 onSetSelectedCharacter={onSetSelectedCharacter}
                 onSchoolChoice={onSchoolChoice}
                 onClubChoice={onClubChoice}
@@ -355,72 +339,46 @@ export const GameUI: React.FC<GameUIProps> = ({
                 onUpgradeBusiness={onUpgradeBusiness}
                 onSellBusiness={onSellBusiness}
                 setEditingBusiness={setEditingBusiness}
-                isCenteringAnimationDone={isCenteringAnimationDone} // NEW PROP
+                isCenteringAnimationDone={isCenteringAnimationDone}
             />
-            
-            {/* Story Button */}
+
             {view === 'playing' && (
                 <TouchableOpacity onPress={() => setShowStoryChoiceModal(true)} style={gameUIStyles.storyButton}>
                     <Text style={gameUIStyles.storyButtonText}>{t('story_button', lang)}</Text>
                 </TouchableOpacity>
             )}
 
-            {/* Settings Button */}
             <TouchableOpacity onPress={() => setShowSettingsModal(true)} style={gameUIStyles.settingsButton}>
                 <Text style={gameUIStyles.settingsButtonText}>{t('settings_button', lang)}</Text>
             </TouchableOpacity>
 
-            {/* Unlocks Button */}
-            <TouchableOpacity onPress={() => setIsUnlocksModalVisible(true)} style={gameUIStyles.unlocksButton}>
-                <Text style={gameUIStyles.settingsButtonText}>{t('unlocks_button_title', lang)}</Text>
-            </TouchableOpacity>
-
-            {/* Path of Life Button */}
-            <TouchableOpacity onPress={() => onSetActiveScene('path')} style={gameUIStyles.pathButton}>
-                <Text style={gameUIStyles.settingsButtonText}>{t('path_of_life_title', lang)}</Text>
-            </TouchableOpacity>
-
-            {/* Settings Modal */}
             <SettingsModal
                 isVisible={showSettingsModal}
                 onClose={() => setShowSettingsModal(false)}
                 lang={lang}
-                
                 gameSpeed={gameSpeed}
                 onSetGameSpeed={onSetGameSpeed}
                 onQuitGame={onQuitGame}
-                isPaused={isPaused} // NEW PROP
-                onSetIsPaused={onSetIsPaused} // NEW PROP
+                isPaused={isPaused}
+                onSetIsPaused={onSetIsPaused}
             />
 
-            
-
             {gameState && (
-                <>
-                    <UnlocksModal
-                        isVisible={isUnlocksModalVisible}
-                        onClose={() => setIsUnlocksModalVisible(false)}
-                        gameState={gameState}
-                        lang={lang}
-                    />
-
-                    <UnlockNotificationModal
-                        newlyUnlockedFeatureId={gameState.newlyUnlockedFeature}
-                        onAcknowledge={handleAcknowledgeUnlock}
-                        lang={lang}
-                    />
-                </>
+                <UnlockNotificationModal
+                    newlyUnlockedFeatureId={gameState.newlyUnlockedFeature}
+                    onAcknowledge={handleAcknowledgeUnlock}
+                    lang={lang}
+                />
             )}
 
             <View style={gameUIStyles.maxWidthContainer}>
                 <View style={gameUIStyles.headerContainer}>
-                                        <View style={gameUIStyles.headerLeft}>
+                    <View style={gameUIStyles.headerLeft}>
                         <Text style={gameUIStyles.dateText}>{formatDate(gameState.currentDate.day, gameState.currentDate.year, lang)}</Text>
                     </View>
                     <View style={gameUIStyles.fundBubble}>
                         <Text style={gameUIStyles.fundIcon}>$</Text>
                         <View style={gameUIStyles.fundTextContainer}>
-                            
                             <Text style={[gameUIStyles.fundValue, gameState.familyFund >= 0 ? gameUIStyles.fundPositive : gameUIStyles.fundNegative]}>
                                 {Math.round(gameState.familyFund).toLocaleString()}
                             </Text>
@@ -431,7 +389,6 @@ export const GameUI: React.FC<GameUIProps> = ({
                             )}
                         </View>
                     </View>
-                    {/* Removed headerRight content */}
                 </View>
 
                 <View style={gameUIStyles.mainContentGrid}>
@@ -443,7 +400,6 @@ export const GameUI: React.FC<GameUIProps> = ({
     );
 };
 
-// NOTE: This is a simplified stylesheet. A real app would have more extensive styling.
 const gameUIStyles = StyleSheet.create({
     bottomNavButton: {
         alignItems: 'center',
@@ -453,17 +409,17 @@ const gameUIStyles = StyleSheet.create({
         padding: 4,
     },
     bottomNavButtonActive: {
-        backgroundColor: colors.primary, // Use primary color for active background
+        backgroundColor: colors.primary,
     },
     bottomNavContainer: {
-        backgroundColor: colors.neutral200, // Use light blue-gray
-        borderTopWidth: 0, // Remove top border for a cleaner look
+        backgroundColor: colors.neutral200,
+        borderTopWidth: 0,
         bottom: 0,
         elevation: 5,
         flexDirection: 'row',
         justifyContent: 'space-around',
         left: 0,
-        paddingVertical: 15, // Increased padding
+        paddingVertical: 15,
         position: 'absolute',
         right: 0,
         shadowColor: '#000',
@@ -479,7 +435,7 @@ const gameUIStyles = StyleSheet.create({
     chunkyButtonSlate: { backgroundColor: colors.neutral700, borderRadius: 8, padding: 12 },
     chunkyButtonText: { color: colors.white, fontWeight: 'bold' },
     disabledButton: { opacity: 0.5 },
-    dateText: { color: colors.textSecondary, fontSize: 21 }, // Increased font size by ~30%
+    dateText: { color: colors.textSecondary, fontSize: 21 },
     familyTreeContainer: { flex: 1 },
     familyTreeTitle: { color: colors.primary, fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
     familyTreeTitleEditable: {
@@ -500,7 +456,7 @@ const gameUIStyles = StyleSheet.create({
     fullScreen: { flex: 1 },
     fundBubble: {
         alignItems: 'center',
-        backgroundColor: colors.neutral100, // Use light blue-gray for contrast
+        backgroundColor: colors.neutral100,
         borderRadius: 20,
         elevation: 4,
         flexDirection: 'row',
@@ -513,7 +469,7 @@ const gameUIStyles = StyleSheet.create({
     },
     fundContainer: { },
     fundIcon: {
-        color: colors.success, // Use success color from design system
+        color: colors.success,
         fontSize: 20,
         fontWeight: 'bold',
         marginRight: 5,
@@ -527,9 +483,9 @@ const gameUIStyles = StyleSheet.create({
     headerContainer: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
     headerLeft: { },
     headerRight: { alignItems: 'center', flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' },
-    mainContainer: { backgroundColor: colors.neutral50, flex: 1 }, // Use new cream background
+    mainContainer: { backgroundColor: colors.neutral50, flex: 1 },
     mainContentGrid: { flex: 1 },
-    maxWidthContainer: { flex: 1, padding: 16, paddingBottom: 90 }, // Increased paddingBottom for taller nav,
+    maxWidthContainer: { flex: 1, padding: 16, paddingBottom: 90 },
     monthlyChange: { fontSize: 14, marginLeft: 8 },
     monthlyChangeNegative: { color: colors.error },
     monthlyChangePositive: { color: colors.success },
@@ -548,7 +504,7 @@ const gameUIStyles = StyleSheet.create({
         position: 'relative',
     },
     settingsButton: {
-        backgroundColor: colors.accent, // Use accent color
+        backgroundColor: colors.accent,
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 8,
@@ -564,37 +520,17 @@ const gameUIStyles = StyleSheet.create({
     speedPicker: { height: 44, width: responsiveSize(120) },
     speedPickerItem: { height: 44 },
     storyButton: {
-        backgroundColor: colors.primary, // Use primary color
+        backgroundColor: colors.primary,
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 8,
         position: 'absolute',
         right: 16,
-        top: 90, // Placed above settings button
+        top: 90,
         zIndex: 10,
     },
     storyButtonText: {
         color: colors.white,
         fontWeight: 'bold',
-    },
-    unlocksButton: {
-        backgroundColor: colors.accent,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        position: 'absolute',
-        right: 16,
-        top: 190, // Placed below settings button
-        zIndex: 10,
-    },
-    pathButton: { // NEW
-        backgroundColor: colors.accent,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        position: 'absolute',
-        right: 16,
-        top: 240, // Placed below unlocks button
-        zIndex: 10,
     },
 });
