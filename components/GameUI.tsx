@@ -19,6 +19,7 @@ import SettingsModal from './SettingsModal';
 import { UnlockNotificationModal } from './UnlockNotificationModal';
 import { PathOfLifeScreen } from './PathOfLifeScreen'; // Corrected import path
 import { colors } from './designSystem';
+import CharacterListModal from './CharacterListModal'; // New import
 
 const { width: screenWidth } = Dimensions.get('window');
 const responsiveSize = (size: number) => Math.round(size * (screenWidth / 375));
@@ -36,14 +37,14 @@ const BottomNav: React.FC<{
 
   return (
     <View style={gameUIStyles.bottomNavContainer}>
-      <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
-        <View><Image source={require('../public/asset/icon_family_tree.webp')} style={gameUIStyles.bottomNavIcon} /></View>
-      </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('log')} style={[gameUIStyles.bottomNavButton, activeScene === 'log' && gameUIStyles.bottomNavButtonActive]}>
         <View><Image source={require('../public/asset/icon_log.webp')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
         <View><Image source={require('../public/asset/icon_assets.webp')} style={gameUIStyles.bottomNavIcon} /></View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
+        <View><Image source={require('../public/asset/icon_family_tree.webp')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => onSceneChange('business')}
@@ -108,6 +109,9 @@ interface GameUIProps {
     onAcknowledgeUnlock: () => void;
     onClearNewlyUnlockedFeature: () => void;
     onClaimFeature: (featureId: string) => void;
+    pendingStatBoost: { stat: keyof Character['stats'], amount: number, featureId: string } | null; // New prop
+    onConfirmStatBoost: (characterId: string) => void; // New prop
+    onCloseStatBoostModal: () => void; // New prop
 }
 
 export const GameUI: React.FC<GameUIProps> = ({
@@ -154,6 +158,9 @@ export const GameUI: React.FC<GameUIProps> = ({
     onAcknowledgeUnlock,
     onClearNewlyUnlockedFeature,
     onClaimFeature,
+    pendingStatBoost, // New prop
+    onConfirmStatBoost, // New prop
+    onCloseStatBoostModal, // New prop
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null);
@@ -368,6 +375,16 @@ export const GameUI: React.FC<GameUIProps> = ({
                     newlyUnlockedFeatureId={gameState.newlyUnlockedFeature}
                     onAcknowledge={handleAcknowledgeUnlock}
                     lang={lang}
+                />
+            )}
+
+            {gameState && pendingStatBoost && (
+                <CharacterListModal
+                    isVisible={!!pendingStatBoost}
+                    characters={Object.values(gameState.familyMembers)}
+                    pendingBoost={pendingStatBoost}
+                    onConfirm={onConfirmStatBoost}
+                    onClose={onCloseStatBoostModal}
                 />
             )}
 

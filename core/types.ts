@@ -562,5 +562,6 @@ export interface UnlockableFeature {
   id: string;
   nameKey: string;
   descriptionKey: string;
+  type: 'mystery_box' | 'specific_feature'; 
   childrenRequired: number;
 }

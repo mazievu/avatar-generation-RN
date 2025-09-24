@@ -431,6 +431,8 @@ export default {
     unlock_twins_desc: "Tăng cơ hội sinh được con sinh đôi.",
     unlock_triplets_name: "Sinh ba",
     unlock_triplets_desc: "Mở ra một cơ hội nhỏ để có con sinh ba.",
+    feature_mystery_box_name: "Hộp Bí ẩn",
+    feature_mystery_box_desc: "Một chiếc hộp bí ẩn chứa phần thưởng ngẫu nhiên. Đó có thể là bất cứ thứ gì, từ một khoản tiền mặt cho đến việc tăng chỉ số cho một thành viên trong gia đình!",
     log_feature_unlocked: "Tính năng {featureName} đã được mở khóa!",
     event_feature_unlocked_title: "Tính năng được mở khóa",
     unlock_notification_title: "Chúc mừng!",

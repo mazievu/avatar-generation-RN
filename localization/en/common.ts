@@ -434,6 +434,8 @@ export default {
     unlock_twins_desc: "Increases the chance of having twins.",
     unlock_triplets_name: "Triplet Births",
     unlock_triplets_desc: "A small chance of having triplets.",
+    feature_mystery_box_name: "Mystery Box",
+    feature_mystery_box_desc: "A mysterious box containing a random reward. It could be anything from a cash injection to a stat boost for a family member!",
     log_feature_unlocked: "{featureName} has been unlocked!",
     event_feature_unlocked_title: "Feature Unlocked",
     unlock_notification_title: "Congratulations!",

@@ -49,6 +49,7 @@ const App: React.FC = () => {
     const [language, setLanguage] = useState<Language>('en');
     const [customizingCharacterId, setCustomizingCharacterId] = useState<string | null>(null);
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
+    const [pendingStatBoost, setPendingStatBoost] = useState<{ stat: keyof Character['stats'], amount: number, featureId: string } | null>(null); // New state
     
     
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -125,14 +126,15 @@ const App: React.FC = () => {
             !!gameState?.pendingUnderqualifiedChoice ||
             !!gameState?.pendingClubChoice ||
             !!customizingCharacterId ||
-            mainView === 'business';
+            mainView === 'business' ||
+            !!pendingStatBoost; // New condition
 
         if (isModalOrSpecialViewActive) {
             setIsPaused(true);
         } else {
             setIsPaused(false);
         }
-    }, [gameState?.activeEvent, gameState?.pendingSchoolChoice, gameState?.pendingUniversityChoice, gameState?.pendingMajorChoice, gameState?.pendingCareerChoice, gameState?.pendingLoanChoice, gameState?.pendingPromotion, gameState?.pendingUnderqualifiedChoice, gameState?.pendingClubChoice, customizingCharacterId, mainView]);
+    }, [gameState?.activeEvent, gameState?.pendingSchoolChoice, gameState?.pendingUniversityChoice, gameState?.pendingMajorChoice, gameState?.pendingCareerChoice, gameState?.pendingLoanChoice, gameState?.pendingPromotion, gameState?.pendingUnderqualifiedChoice, gameState?.pendingClubChoice, customizingCharacterId, mainView, pendingStatBoost]); // Add pendingStatBoost to dependencies
 
     useEffect(() => {
         stopGameLoop();
@@ -141,10 +143,33 @@ const App: React.FC = () => {
         }
         return () => stopGameLoop();
     }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState, stopGameLoop]);
+
     const handleSetSelectedCharacter = useCallback((character: Character | null) => {
        
         setSelectedCharacter(character);
     }, []);
+
+    const handleConfirmStatBoost = useCallback((characterId: string) => {
+        setGameState(prevGameState => {
+            if (!prevGameState || !pendingStatBoost) return prevGameState;
+
+            const nextGameState = { ...prevGameState };
+            const characterToBuff = nextGameState.familyMembers[characterId];
+
+            if (characterToBuff) {
+                const { stat, amount, featureId } = pendingStatBoost;
+                const currentStatValue = characterToBuff.stats[stat];
+                const maxStatValue = stat === 'iq' ? 200 : 100;
+                characterToBuff.stats[stat] = Math.min(maxStatValue, currentStatValue + amount);
+
+                // Mark the feature as claimed
+                nextGameState.claimedFeatures = [...nextGameState.claimedFeatures, featureId];
+            }
+
+            return nextGameState;
+        });
+        setPendingStatBoost(null); // Clear the pending boost to close the modal
+    }, [pendingStatBoost]);
 
     // New handler for claiming features
     const handleClaimFeature = useCallback((featureId: string) => {
@@ -152,21 +177,35 @@ const App: React.FC = () => {
             if (!prevGameState) return prevGameState;
 
             const featureToClaim = UNLOCKABLE_FEATURES.find(f => f.id === featureId);
-            if (!featureToClaim) {
-                console.warn(`Attempted to claim unknown feature: ${featureId}`);
+            if (!featureToClaim || prevGameState.claimedFeatures.includes(featureId)) {
                 return prevGameState;
             }
 
-            if (prevGameState.claimedFeatures.includes(featureId)) {
-                console.warn(`Feature ${featureId} already claimed.`);
-                return prevGameState;
-            }
+            let nextGameState = { ...prevGameState };
 
-            // Add the featureId to claimedFeatures
-            return {
-                ...prevGameState,
-                claimedFeatures: [...prevGameState.claimedFeatures, featureId],
-            };
+            // --- BẮT ĐẦU LOGIC NÂNG CẤP ---
+
+            if (featureToClaim.type === 'mystery_box') {
+                // Random Family Fund
+                const randomFund = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
+                nextGameState.familyFund += randomFund;
+
+                // Random một chỉ số và số lượng để tăng
+                const stats: (keyof Character['stats'])[] = ['happiness', 'health', 'iq', 'eq', 'skill'];
+                const randomStat = stats[Math.floor(Math.random() * stats.length)];
+                const statIncrease = Math.floor(Math.random() * 6); // 0-5
+
+                // Lưu vào pendingStatBoost thay vì áp dụng ngay
+                setPendingStatBoost({ stat: randomStat, amount: statIncrease, featureId: featureToClaim.id });
+                return nextGameState; // Do not claim the feature yet
+            }
+            
+            // For other feature types, claim immediately
+            nextGameState.claimedFeatures = [...nextGameState.claimedFeatures, featureId];
+
+            // --- KẾT THÚC LOGIC NÂNG CẤP ---
+
+            return nextGameState;
         });
     }, []);
 
@@ -245,6 +284,9 @@ const App: React.FC = () => {
                     onAcknowledgeUnlock={() => {}}
                     onClearNewlyUnlockedFeature={handleAcknowledgeUnlock}
                     onClaimFeature={handleClaimFeature} // Pass the new handler
+                    pendingStatBoost={pendingStatBoost} // New prop
+                    onConfirmStatBoost={handleConfirmStatBoost} // New prop
+                    onCloseStatBoostModal={() => setPendingStatBoost(null)} // New prop
             />
         </GestureHandlerRootView>
     );

@@ -103,14 +103,28 @@ interface PathOfLifeScreenProps {
   onClaimFeature: (featureId: string) => void;
 }
 
+// NEW LOGIC FOR FIXED SPACING
 export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, lang, onClaimFeature }) => {
   const [infoModalFeature, setInfoModalFeature] = useState<UnlockableFeature | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   
-  const highestLevel = PATH_NODES[PATH_NODES.length - 1].level;
-  const contentHeight = highestLevel * 15;
+  const nodeSpacing = 400; // New: Fixed spacing between nodes
+  const contentHeight = (PATH_NODES.length - 1) * nodeSpacing; // New: Height based on fixed spacing
+
   const currentProgress = gameState.totalChildrenBorn;
-  const overallProgress = currentProgress / highestLevel;
+
+  // New: Find the index of the last passed node for progress bar and scrolling
+  const lastPassedNodeIndex = useMemo(() => {
+    for (let i = PATH_NODES.length - 1; i >= 0; i--) {
+      if (currentProgress >= PATH_NODES[i].level) {
+        return i;
+      }
+    }
+    return -1; // No nodes passed yet
+  }, [currentProgress]);
+
+  // New: Progress is now based on the index of the last passed node
+  const overallProgress = lastPassedNodeIndex >= 0 ? lastPassedNodeIndex / (PATH_NODES.length - 1) : 0;
   const progressAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -133,23 +147,24 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
       return lastUnlockableNode ? lastUnlockableNode.level : null;
   }, [currentProgress]);
 
+  // New: Scrolling logic updated for fixed spacing
   useEffect(() => {
-    const scrollPosition = contentHeight * (1 - (currentProgress / highestLevel));
-    if (scrollViewRef.current) {
+    if (scrollViewRef.current && lastPassedNodeIndex > -1) {
+      const scrollPosition = contentHeight - (lastPassedNodeIndex * nodeSpacing);
       scrollViewRef.current.scrollTo({ y: scrollPosition, animated: true });
     }
-  }, [currentProgress, contentHeight, highestLevel]);
+  }, [lastPassedNodeIndex, contentHeight, nodeSpacing]);
 
   return (
     <ImageBackground source={bgImage} style={styles.background} resizeMode="cover">
       <Image source={titleBannerImage} style={styles.screenTitleBanner} resizeMode="contain" />
 
-      <ScrollView ref={scrollViewRef} style={styles.scrollContainer} contentContainerStyle={{ paddingVertical: 50 }}>
+      <ScrollView ref={scrollViewRef} style={styles.scrollContainer} contentContainerStyle={{ paddingTop: 50, paddingBottom: 120 }}>
         <View style={[styles.pathContainer, { height: contentHeight }]}>
           <Image source={pathTrackImage} style={styles.pathTrack} resizeMode="stretch" />
           <Animated.View style={[styles.pathFill, { height: animatedHeight }]} />
           
-          {PATH_NODES.map(node => {
+          {PATH_NODES.map((node, index) => { // New: Get index from map
             const feature = UNLOCKABLE_FEATURES.find(f => f.id === node.featureId);
             if (!feature) return null;
 
@@ -157,7 +172,8 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
             const isClaimed = gameState.claimedFeatures.includes(node.featureId);
             const isClaimable = isPassed && !isClaimed;
             const isCurrentGlowTarget = node.level === currentGlowLevel;
-            const positionStyle = { bottom: `${(node.level / highestLevel) * 100}%` };
+            // New: Position style based on index and fixed spacing
+            const positionStyle = { bottom: index * nodeSpacing };
 
             return (
               <PathNodeItem
@@ -178,6 +194,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
         </View>
       </ScrollView>
 
+      {/* Modal to display detailed information */}
       {infoModalFeature && (
         <Modal
           transparent={true}
@@ -200,6 +217,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
   );
 };
 
+
 // --- REPLACED StyleSheet ---
 const styles = StyleSheet.create({
     // --- Basic styles (background, scroll, path...) ---
@@ -214,8 +232,22 @@ const styles = StyleSheet.create({
     nodeContainer: { position: 'absolute', width: '100%', height: 120, justifyContent: 'center' },
     
     // --- Cluster 1: Milestone on track ---
-    milestoneOnTrack: { position: 'absolute', width: 100, height: 100, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', zIndex: 5 },
+    milestoneOnTrack: {
+        position: 'absolute',
+        // Kích thước mặc định cho Gem (nhỏ hơn 30%)
+        width: 70, // 100 * 0.7
+        height: 70, // 100 * 0.7
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 5,
+    },
     milestoneImage: { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' },
+    // Style riêng cho Wing Heart để làm nó to hơn
+    specialMilestone: {
+        width: 120, // 100 * 1.2
+        height: 120, // 100 * 1.2
+    },
     milestoneText: { color: 'white', fontSize: 24, fontWeight: 'bold', textShadowColor: 'rgba(0, 0, 0, 0.7)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3 },
     glowEffect: { position: 'absolute', width: 150, height: 150 },
 
