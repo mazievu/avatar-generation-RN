@@ -15,10 +15,10 @@ import { CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT } from '../core/constants';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const baseWidth = 375; // Chiều rộng cơ sở để scale
 const scale = screenWidth / baseWidth;
-
 const responsiveFontSize = (size: number) => Math.round(size * scale);
 const responsiveSize = (size: number) => Math.round(size * scale);
 // --------------------------------
+ const contentMaxHeight = screenHeight * 0.85 - responsiveSize(150);
 
 interface CharacterDetailModalProps {
   character: Character | null;
@@ -115,7 +115,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
                 </Pressable>
             </View>
             
-            <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+            <ScrollView style={[{ maxHeight: contentMaxHeight }, styles.scrollView]} showsVerticalScrollIndicator={false}>
                 {activeTab === 'details' ? renderDetailTab() : renderEventsTab()}
             </ScrollView>
         </View>
