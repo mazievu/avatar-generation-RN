@@ -95,7 +95,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
 
     const mila: Character = {
         id: milaId, name: 'Mila', gender: Gender.Female, generation: 0,
-        birthDate: { day: 1, year: initialYear - 35 }, age: 35, isAlive: true, deathDate: null,
+        birthDate: { day: 1, year: initialYear - 31 }, age: 31, isAlive: true, deathDate: null,
         stats: { iq: 95, happiness: 85, eq: 90, health: 80, skill: 70 },
         phase: LifePhase.PostGraduation,
         education: 'University (major_business)', major: 'major_business', careerTrack: 'Business', careerLevel: 2,
@@ -116,7 +116,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
     };
     const max: Character = {
         id: maxId, name: 'Max', gender: Gender.Male, generation: 0,
-        birthDate: { day: 1, year: initialYear - 35 }, age: 35, isAlive: true, deathDate: null,
+        birthDate: { day: 1, year: initialYear - 31 }, age: 31, isAlive: true, deathDate: null,
         stats: { iq: 85, happiness: 95, eq: 85, health: 95, skill: 80 },
         phase: LifePhase.PostGraduation,
         education: 'University (major_technology)', major: 'major_technology', careerTrack: 'Technology', careerLevel: 2,

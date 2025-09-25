@@ -78,7 +78,7 @@ const App: React.FC = () => {
         handleAvatarSave,
         handleAvatarSaveNoCost,
         onSellBusiness,
-        handleAcknowledgeUnlock,
+        handleAcknowledgeUnlock: handleClearNewlyUnlockedFeature, // Rename for clarity
         stopGameLoop,
         
     } = useMemo(() => createGameLogicHandlers(setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest), [setGameState, language, timerRef, setView, setIsPaused, setLanguage]);
@@ -111,6 +111,24 @@ const App: React.FC = () => {
             return () => clearInterval(interval);
         }
     }, [view, isPaused, saveGame, gameState]);
+
+    const handleAcknowledgeUnlock = useCallback(() => {
+        setGameState(prevState => {
+            if (!prevState || !prevState.newlyUnlockedFeature) return prevState;
+
+            const featureId = prevState.newlyUnlockedFeature;
+            if (prevState.claimedFeatures.includes(featureId)) {
+                // If already claimed, just clear the notification
+                return { ...prevState, newlyUnlockedFeature: null };
+            }
+
+            return {
+                ...prevState,
+                claimedFeatures: [...prevState.claimedFeatures, featureId],
+                newlyUnlockedFeature: null,
+            };
+        });
+    }, []);
     
     // Save on unload - Removed web-specific window.addEventListener
     
@@ -281,8 +299,8 @@ const App: React.FC = () => {
                     } }
                     activeScene={activeScene}
                     onSetActiveScene={setActiveScene}
-                    onAcknowledgeUnlock={() => {}}
-                    onClearNewlyUnlockedFeature={handleAcknowledgeUnlock}
+                    onAcknowledgeUnlock={handleAcknowledgeUnlock}
+                    onClearNewlyUnlockedFeature={handleClearNewlyUnlockedFeature}
                     onClaimFeature={handleClaimFeature} // Pass the new handler
                     pendingStatBoost={pendingStatBoost} // New prop
                     onConfirmStatBoost={handleConfirmStatBoost} // New prop

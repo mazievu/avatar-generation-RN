@@ -91,7 +91,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].monthsUnemployed = 0;
             }
             initialState.totalChildrenBorn = 0; // Initialize for new game
-            initialState.unlockedFeatures = [];
+            initialState.claimedFeatures = [];
             initialState.newlyUnlockedFeature = null;
             setGameState(initialState);
         } else {
@@ -104,7 +104,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 initialState.familyMembers[charId].monthsUnemployed = 0;
             }
             initialState.totalChildrenBorn = 0; // Initialize for new game
-            initialState.unlockedFeatures = [];
+            initialState.claimedFeatures = [];
             initialState.newlyUnlockedFeature = null;
             setGameState(initialState);
         }
@@ -163,9 +163,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 }
                 if (savedState.totalChildrenBorn === undefined) {
                     savedState.totalChildrenBorn = 0;
-                }
-                if (savedState.unlockedFeatures === undefined) {
-                    savedState.unlockedFeatures = [];
                 }
                 if (savedState.newlyUnlockedFeature === undefined) {
                     savedState.newlyUnlockedFeature = null;
@@ -872,9 +869,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                     // Check for newly unlocked features
                     for (const feature of UNLOCKABLE_FEATURES) {
-                        const isAlreadyUnlocked = nextState.unlockedFeatures.includes(feature.id);
+                        const isAlreadyUnlocked = nextState.claimedFeatures.includes(feature.id);
                         if (!isAlreadyUnlocked && nextState.totalChildrenBorn >= feature.childrenRequired) {
-                            nextState.unlockedFeatures.push(feature.id);
                             nextState.newlyUnlockedFeature = feature.id;
                             nextState.gameLog.push({
                                 year: nextState.currentDate.year,

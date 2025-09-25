@@ -250,7 +250,6 @@ export interface GameState {
   contentVersion: number; // Added content version
   familyName: string;
   totalChildrenBorn: number; // New: Tracks total children born in the family
-  unlockedFeatures: string[];
   claimedFeatures: string[];
   newlyUnlockedFeature: string | null;
   avatarCustomizationCount: number; // New: Tracks how many times avatar has been customized

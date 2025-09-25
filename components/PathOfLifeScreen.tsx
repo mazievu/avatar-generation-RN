@@ -110,12 +110,22 @@ interface PathOfLifeScreenProps {
 // NEW LOGIC FOR FIXED SPACING
 export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, lang, onClaimFeature }) => {
   const [infoModalFeature, setInfoModalFeature] = useState<UnlockableFeature | null>(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [claimedNotification, setClaimedNotification] = useState<UnlockableFeature | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   
   const nodeSpacing = 400; // New: Fixed spacing between nodes
   const contentHeight = (PATH_NODES.length - 1) * nodeSpacing; // New: Height based on fixed spacing
 
   const currentProgress = gameState.totalChildrenBorn;
+
+  const handleClaim = (featureId: string) => {
+    onClaimFeature(featureId);
+    const feature = UNLOCKABLE_FEATURES.find(f => f.id === featureId);
+    if (feature) {
+        setClaimedNotification(feature);
+    }
+  };
 
   // New: Find the index of the last passed node for progress bar and scrolling
   const lastPassedNodeIndex = useMemo(() => {
@@ -161,7 +171,12 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
 
   return (
     <ImageBackground source={bgImage} style={styles.background} resizeMode="cover">
-      <Image source={titleBannerImage} style={styles.screenTitleBanner} resizeMode="contain" />
+        <View style={styles.titleContainer}>
+            <Image source={titleBannerImage} style={styles.screenTitleBanner} resizeMode="contain" />
+            <Pressable onPress={() => setShowInfoModal(true)} style={styles.bannerInfoIcon}>
+                <Text style={styles.bannerInfoIconText}>i</Text>
+            </Pressable>
+        </View>
 
       <ScrollView ref={scrollViewRef} style={styles.scrollContainer} contentContainerStyle={{ paddingTop: 50, paddingBottom: 120 }}>
         <View style={[styles.pathContainer, { height: contentHeight }]}>
@@ -189,7 +204,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
                 isClaimed={isClaimed}
                 isLocked={!isPassed}
                 positionStyle={positionStyle}
-                onClaim={onClaimFeature}
+                onClaim={handleClaim}
                 onShowInfo={setInfoModalFeature}
                 lang={lang}
               />
@@ -217,6 +232,48 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
           </View>
         </Modal>
       )}
+
+      {/* Modal for general info */}
+      {showInfoModal && (
+        <Modal
+          transparent={true}
+          animationType="fade"
+          visible={showInfoModal}
+          onRequestClose={() => setShowInfoModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>{t('path_of_life_info_title', lang)}</Text>
+              <Text style={styles.modalDescription}>{t('path_of_life_info_desc', lang)}</Text>
+              <Pressable style={styles.modalCloseButton} onPress={() => setShowInfoModal(false)}>
+                <Text style={styles.modalCloseButtonText}>{t('common.close', lang)}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Modal for claim notification */}
+      {claimedNotification && (
+        <Modal
+          transparent={true}
+          animationType="fade"
+          visible={!!claimedNotification}
+          onRequestClose={() => setClaimedNotification(null)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>{t('feature_unlocked', lang)}</Text>
+              <Text style={styles.modalDescription}>
+                {t('you_have_unlocked', lang)} {t(claimedNotification.nameKey, lang)}!
+              </Text>
+              <Pressable style={styles.modalCloseButton} onPress={() => setClaimedNotification(null)}>
+                <Text style={styles.modalCloseButtonText}>{t('common.close', lang)}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      )}
     </ImageBackground>
   );
 };
@@ -226,7 +283,39 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
 const styles = StyleSheet.create({
     // --- Basic styles (background, scroll, path...) ---
     background: { flex: 1, alignItems: 'center' },
-    screenTitleBanner: { width: '80%', height: 80, marginTop: 50, marginBottom: 10 },
+    titleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 50,
+        marginBottom: 10,
+        width: '90%',
+        position: 'relative',
+    },
+    screenTitleBanner: {
+        width: '80%',
+        height: 80,
+    },
+    bannerInfoIcon: {
+        position: 'absolute',
+        right: 0,
+        top: '50%',
+        transform: [{ translateY: -14 }],
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: '#FFAC33',
+        borderWidth: 2,
+        borderColor: '#000000',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10,
+    },
+    bannerInfoIconText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
     scrollContainer: { width: '100%' },
     pathContainer: { alignSelf: 'center', position: 'relative', width: 20 },
     pathTrack: { position: 'absolute', width: '100%', height: '100%' },

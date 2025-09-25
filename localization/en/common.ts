@@ -38,6 +38,10 @@ export default {
     close_button: 'Close',
     claim_button_text: 'Claim',
     claimed_text: 'Claimed',
+    path_of_life_info_title: 'Path of Life Information',
+    path_of_life_info_desc: 'Advance on the Path of Life by having more children! Each child born helps you unlock new features and milestones. Claim your rewards as you progress!',
+    feature_unlocked: 'Feature Unlocked!',
+    you_have_unlocked: 'You have unlocked',
     // Stats
     stat_iq: 'IQ',
     stat_happiness: 'Happiness',

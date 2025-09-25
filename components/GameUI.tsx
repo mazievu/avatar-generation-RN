@@ -167,9 +167,6 @@ export const GameUI: React.FC<GameUIProps> = ({
     const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false);
     const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
-    const handleAcknowledgeUnlock = useCallback(() => {
-        onClearNewlyUnlockedFeature();
-    }, [onClearNewlyUnlockedFeature]);
 
 
     const [familyNameInput, setFamilyNameInput] = useState<string>(
@@ -373,7 +370,7 @@ export const GameUI: React.FC<GameUIProps> = ({
             {gameState && (
                 <UnlockNotificationModal
                     newlyUnlockedFeatureId={gameState.newlyUnlockedFeature}
-                    onAcknowledge={handleAcknowledgeUnlock}
+                    onAcknowledge={onAcknowledgeUnlock}
                     lang={lang}
                 />
             )}
