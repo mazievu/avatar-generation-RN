@@ -61,7 +61,11 @@ const PathNodeItem: React.FC<PathNodeItemProps> = ({
         >
           {/* CONSTRAINT 3: Chest is fully inside */}
           <View style={styles.chestInsideBubble}>
-            <Image source={chestImage} style={styles.chestImage} resizeMode="contain" />
+            {feature.type === 'specific_feature' && feature.iconAsset ? (
+              <Image source={feature.iconAsset} style={styles.featureIcon} resizeMode="contain" />
+            ) : (
+              <Image source={chestImage} style={styles.chestImage} resizeMode="contain" />
+            )}
           </View>
         </ImageBackground>
 
@@ -275,8 +279,11 @@ const styles = StyleSheet.create({
     chestInsideBubble: {
         width: '70%',
         height: '70%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     chestImage: { width: '100%', height: '100%' },
+    featureIcon: { width: '90%', height: '90%' },
     
     // CONSTRAINT 3: Lock half-in, half-out
     lockOverlapping: {

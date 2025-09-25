@@ -564,6 +564,7 @@ export interface UnlockableFeature {
   descriptionKey: string;
   type: 'mystery_box' | 'specific_feature'; 
   childrenRequired: number;
+  iconAsset?: ImageSourcePropType;
 }
 
 export type PathNode = {

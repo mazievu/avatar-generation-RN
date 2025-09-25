@@ -1,4 +1,11 @@
 import { LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, CareerTrack, BusinessDefinition, AssetDefinition, AssetType, UnlockableFeature } from './types';
+import { ImageSourcePropType } from 'react-native';
+
+// Icon Assets
+const iconBusiness = require('../public/asset/icon_business.webp');
+const iconAvatarCustomization = require('../assets/icon_avatar_customization.webp');
+const iconTwinBirth = require('../assets/icon_twin_birth.webp');
+const iconTripletBirth = require('../assets/icon_triplet_birth.webp');
 
 // ==============================
 // GAME ECONOMY CORE
@@ -307,6 +314,7 @@ export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
     descriptionKey: 'unlock_business_desc',
     type: 'specific_feature',
     childrenRequired: BUSINESS_UNLOCK_CHILDREN_COUNT,
+    iconAsset: iconBusiness,
   },
   {
     id: 'custom_avatar',
@@ -314,6 +322,7 @@ export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
     descriptionKey: 'unlock_custom_avatar_desc',
     type: 'specific_feature',
     childrenRequired: CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT,
+    iconAsset: iconAvatarCustomization,
   },
   {
     id: 'twins',
@@ -321,6 +330,7 @@ export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
     descriptionKey: 'unlock_twins_desc',
     type: 'specific_feature',
     childrenRequired: TWIN_BIRTH_UNLOCK_CHILDREN_COUNT,
+    iconAsset: iconTwinBirth,
   },
   {
     id: 'triplets',
@@ -328,6 +338,7 @@ export const UNLOCKABLE_FEATURES: UnlockableFeature[] = [
     descriptionKey: 'unlock_triplets_desc',
     type: 'specific_feature',
     childrenRequired: TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT,
+    iconAsset: iconTripletBirth,
   },
 ];
 
