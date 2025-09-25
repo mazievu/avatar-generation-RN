@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay, Easing } from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 interface StarAnimationProps {
@@ -25,7 +25,7 @@ export const StarAnimation: React.FC<StarAnimationProps> = ({ shouldAnimate, col
     }
   }, [shouldAnimate, opacity, scale, translateY]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
     return {
       transform: [{ translateY: translateY.value }, { scale: scale.value }],
       opacity: opacity.value,

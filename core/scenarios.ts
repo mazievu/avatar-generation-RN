@@ -78,8 +78,7 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         contentVersion: 1,
         familyName: 'Family',
         totalChildrenBorn: 0,
-        unlockedFeatures: [],
-        claimedFeatures: [], // ADD THIS LINE
+        claimedFeatures: [],
         newlyUnlockedFeature: null,
         avatarCustomizationCount: 0,
     };
@@ -225,8 +224,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         contentVersion: 1,
         familyName: 'Mila Family',
         totalChildrenBorn: 3,
-        unlockedFeatures: [],
-        claimedFeatures: [], // ADD THIS LINE
+        claimedFeatures: [],
         newlyUnlockedFeature: null,
         avatarCustomizationCount: 0,
     };

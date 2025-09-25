@@ -3,3 +3,4 @@ dist-scripts/
 babel.config.js
 metro.config.js
 .eslintrc.js
+android/app/build/

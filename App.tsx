@@ -13,6 +13,8 @@ import { createGameLogicHandlers } from './core/game';
 import { SceneName } from './components/GameUI';
 import { reinitializeAllGameData } from './core/gameData';
 
+import { adService } from './services/adService';
+
 type GameView = 'menu' | 'playing' | 'gameover';
 
 const allAvatarUrls = new Set<string>();
@@ -199,7 +201,7 @@ const App: React.FC = () => {
                 return prevGameState;
             }
 
-            let nextGameState = { ...prevGameState };
+            const nextGameState = { ...prevGameState };
 
             // --- BẮT ĐẦU LOGIC NÂNG CẤP ---
 

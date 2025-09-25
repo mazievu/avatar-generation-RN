@@ -97,12 +97,13 @@ interface Props {
   style?: ViewStyle; // Added
 }
 
-export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, character, size, style }) => {
+export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, images, character, size, style }) => {
+    AgeAwareAvatarPreview.displayName = 'AgeAwareAvatarPreview';
+    const orderedLayers = useMemo(() => [...manifest].sort((a, b) => a.zIndex - b.zIndex), [manifest]);
     if (!character || !character.avatarState) {
         console.warn("AgeAwareAvatarPreview received undefined or null character or avatarState prop.");
         return null; 
     }
-    const orderedLayers = useMemo(() => [...manifest].sort((a, b) => a.zIndex - b.zIndex), [manifest]);
 
     // Handle static avatars for specific characters (e.g., Mila's family)
     if (character.staticAvatarUrl) {
@@ -167,7 +168,7 @@ export const AgeAwareAvatarPreview: React.FC<Props> = ({ manifest, images, chara
         })}
       </View>
   );
-};
+}));
 
 const ageAwareAvatarPreviewStyles = StyleSheet.create({
     container: {
