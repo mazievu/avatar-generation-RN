@@ -1,4 +1,4 @@
-import { LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, CareerTrack, BusinessDefinition, AssetDefinition, AssetType } from './types';
+import { LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, CareerTrack, BusinessDefinition, AssetDefinition, AssetType, UnlockableFeature } from './types';
 
 // ==============================
 // GAME ECONOMY CORE
@@ -337,7 +337,7 @@ export type PathNode = {
   alignment: 'left' | 'right';
 };
 
-export const PATH_NODES: PathNode[] = [
+export const RAW_PATH_NODES: PathNode[] = [
     { level: 1, featureId: 'custom_avatar', alignment: 'right' },
     { level: 2, featureId: 'twins', alignment: 'left' },
     { level: 3, featureId: 'triplets', alignment: 'right' },
@@ -361,7 +361,9 @@ export const PATH_NODES: PathNode[] = [
     { level: 90, featureId: 'mystery_box', alignment: 'right' },
     { level: 95, featureId: 'mystery_box', alignment: 'left' },
     { level: 100, featureId: 'mystery_box', alignment: 'right' },
-].filter(node => node.level > 0).sort((a, b) => a.level - b.level);
+];
+
+export const PATH_NODES: PathNode[] = RAW_PATH_NODES.filter(node => node.level > 0).sort((a, b) => a.level - b.level);
 
 export const PATH_NODES_SORTED: PathNode[] = [...PATH_NODES].sort((a, b) => a.level - b.level); // Luôn sắp xếp theo level
 

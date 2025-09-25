@@ -565,3 +565,9 @@ export interface UnlockableFeature {
   type: 'mystery_box' | 'specific_feature'; 
   childrenRequired: number;
 }
+
+export type PathNode = {
+  level: number;
+  featureId: string;
+  alignment: 'left' | 'right';
+};
