@@ -9,9 +9,6 @@ import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons'; 
 import { ComicPanelModal } from './ComicPanelModal';
 import { imageAssets } from './ImageAssets';
 
-
-
-
 interface AssetSlotProps {
     asset: AssetDefinition;
     isOwned: boolean;
@@ -138,9 +135,6 @@ const assetSlotStyles = StyleSheet.create({
     },
 });
 
-
-
-
 const assetDetailModalStyles = StyleSheet.create({
     actionButtonContainer: {
         alignItems: 'center', // text-center
@@ -242,7 +236,6 @@ const assetDetailModalStyles = StyleSheet.create({
     },
 });
 
-
 const familyAssetsPanelStyles = StyleSheet.create({
     assetGrid: {
         flexDirection: 'row',
@@ -292,7 +285,6 @@ const familyAssetsPanelStyles = StyleSheet.create({
         marginBottom: 16,
     },
 });
-
 
 const FamilyAssetsPanelInternal: React.FC<{
     purchasedAssets: Record<string, PurchasedAsset>;
