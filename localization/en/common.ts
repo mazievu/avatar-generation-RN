@@ -45,8 +45,10 @@ export default {
     stat_health: 'Health',
     stat_skill: 'Skill',
     // Character Details
+    character_age: '{age} years old',
     age_short: 'yo',
     deceased_at: 'Deceased at',
+    relationship_status_label: 'Status: {status}',
     relationship_label: 'Status',
     with_person: 'with',
     pet_label: 'Pet',
@@ -61,6 +63,9 @@ export default {
     education_high_school: 'High School Diploma',
     education_vocational_diploma: 'Vocational Diploma',
     education_university_display: 'University ({major_name})',
+    none: 'None',
+    customize_button: 'Customize',
+    no_events_for_character: 'No events for this character.',
     // Welcome Back & Start Menu
     welcome_back_title: 'Welcome Back!',
     welcome_back_subtitle: 'Your previous session has been saved.',

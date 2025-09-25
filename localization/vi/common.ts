@@ -42,8 +42,10 @@ export default {
     stat_health: 'Sức khỏe',
     stat_skill: 'Kỹ năng',
     // Character Details
+    character_age: '{age} tuổi',
     age_short: 'tuổi',
     deceased_at: 'Mất lúc',
+    relationship_status_label: 'Tình trạng: {status}',
     relationship_label: 'Tình trạng',
     with_person: 'với',
     pet_label: 'Thú cưng',
@@ -58,6 +60,9 @@ export default {
     education_high_school: 'Bằng tốt nghiệp cấp 3',
     education_vocational_diploma: 'Chứng chỉ nghề',
     education_university_display: 'Đại học ({major_name})',
+    none: 'Chưa có',
+    customize_button: 'Tùy chỉnh',
+    no_events_for_character: 'Chưa có sự kiện nào cho nhân vật này.',
     // Welcome Back & Start Menu
     welcome_back_title: 'Chào mừng trở lại!',
     welcome_back_subtitle: 'Lượt chơi trước của bạn đã được lưu.',

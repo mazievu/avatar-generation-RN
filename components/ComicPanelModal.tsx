@@ -1,4 +1,3 @@
-// src/components/ComicPanelModal.tsx
 import React from 'react';
 import { Modal, View, StyleSheet, Pressable, Dimensions } from 'react-native';
 
@@ -11,8 +10,9 @@ interface ComicPanelModalProps {
   children: React.ReactNode;
   flexContent?: boolean; 
   closeButtonComponent?: React.ReactNode;
-  disableDismissOnPressOutside?: boolean; // New prop
+  disableDismissOnPressOutside?: boolean;
   rotate?: string;
+  containerStyle?: object; // <-- PROP MỚI ĐÃ ĐƯỢC THÊM
 }
 
 export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
@@ -21,8 +21,9 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
   children,
   flexContent = false,
   closeButtonComponent,
-  disableDismissOnPressOutside = false, // Destructure new prop with default
+  disableDismissOnPressOutside = false,
   rotate = '0deg',
+  containerStyle, // <-- NHẬN PROP MỚI
 }) => {
   return (
     <Modal
@@ -40,8 +41,9 @@ export const ComicPanelModal: React.FC<ComicPanelModalProps> = ({
         <Pressable 
              style={[
                 styles.panelContainer, 
-                flexContent && styles.flexContainer, // Áp dụng flex: 1 nếu prop là true
+                flexContent && styles.flexContainer,
                 { transform: [{ rotate }] },
+                containerStyle, // <-- ÁP DỤNG STYLE TÙY CHỈNH TẠI ĐÂY
             ]} 
             onPress={() => { /* Ngăn click xuyên qua */ }}
         >
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Thêm một lớp nền mờ để modal nổi bật hơn
     flex: 1,
     justifyContent: 'center',
     padding: responsiveSize(24),

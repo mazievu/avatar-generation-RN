@@ -12,14 +12,18 @@ import mobileAds, {
 // Rewarded: ca-app-pub-3940256099942544/5224354917
 // Interstitial: ca-app-pub-3940256099942544/1033173712
 // App Open: ca-app-pub-3940256099942544/3419835294
-const rewardedAdUnitId = 'ca-app-pub-5890106170626370/6179367010'; // Rewarded Ad
-const interstitialAdUnitId = 'ca-app-pub-5890106170626370/4555842898'; // Interstitial Ad
-const appOpenAdUnitId = 'ca-app-pub-5890106170626370/2638759012'; // App Open Ad
+const rewardedAdUnitId = 'ca-app-pub-3940256099942544/5224354917'; // Rewarded Ad
+const interstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'; // Interstitial Ad
+const appOpenAdUnitId = 'ca-app-pub-3940256099942544/3419835294'; // App Open Ad
 
 let rewardedAd: RewardedAd | null = null;
 let interstitialAd: InterstitialAd | null = null;
 let appOpenAd: AppOpenAd | null = null;
 let onRewardCallback: (() => void) | null = null; // To store the callback for rewarded ads
+
+const AD_COOLDOWN_MS = 5000; // 5 seconds cooldown
+let lastInterstitialAdShownTime = 0;
+let lastRewardedAdShownTime = 0;
 
 const initializeAds = async () => {
   try {
@@ -105,9 +109,16 @@ const loadAppOpenAd = () => {
 
 
 const showRewardedAd = async (callback: () => void) => { // Accept a callback
+  const now = Date.now();
+  if (now - lastRewardedAdShownTime < AD_COOLDOWN_MS) {
+    console.log('Rewarded Ad is on cooldown. Skipping.');
+    return;
+  }
+
   onRewardCallback = callback; // Store the callback
-  if (rewardedAd && rewardedAd.isLoaded()) {
+  if (rewardedAd && rewardedAd.loaded) {
     rewardedAd.show();
+    lastRewardedAdShownTime = now;
   } else {
     console.log('Rewarded Ad not loaded yet. Attempting to load...');
     loadRewardedAd(); // Try to load if not loaded
@@ -115,8 +126,15 @@ const showRewardedAd = async (callback: () => void) => { // Accept a callback
 };
 
 const showInterstitialAd = async () => {
-  if (interstitialAd && interstitialAd.isLoaded()) {
+  const now = Date.now();
+  if (now - lastInterstitialAdShownTime < AD_COOLDOWN_MS) {
+    console.log('Interstitial Ad is on cooldown. Skipping.');
+    return;
+  }
+
+  if (interstitialAd && interstitialAd.loaded) {
     interstitialAd.show();
+    lastInterstitialAdShownTime = now;
   } else {
     console.log('Interstitial Ad not loaded yet. Attempting to load...');
     loadInterstitialAd(); // Try to load if not loaded
@@ -124,7 +142,7 @@ const showInterstitialAd = async () => {
 };
 
 const showAppOpenAd = async () => {
-  if (appOpenAd && appOpenAd.isLoaded()) {
+  if (appOpenAd && appOpenAd.loaded) {
     appOpenAd.show();
   } else {
     console.log('App Open Ad not loaded yet. Attempting to load...');
