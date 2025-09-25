@@ -89,8 +89,8 @@ const App: React.FC = () => {
 
         // Initialize AdMob and show App Open Ad
         const initAndShowAds = async () => {
-            // await adService.initializeAds(); // Commented out as adService is not defined
-            // adService.showAppOpenAd(); // Commented out as adService is not defined
+            await adService.initializeAds();
+            adService.showAppOpenAd();
         };
         initAndShowAds();
 
@@ -229,9 +229,9 @@ const App: React.FC = () => {
             onClose={() => setCustomizingCharacterId(null)}
             familyFund={gameState.familyFund}
             onWatchAd={() => {
-                // adService.showRewardedAd(() => { // Commented out as adService is not defined
+                adService.showRewardedAd(() => {
                     handleAvatarSaveNoCost(customizingCharacterId, characterToCustomize.avatarState);
-                // });
+                });
             }}
           />
         );
