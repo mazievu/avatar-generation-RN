@@ -1,15 +1,11 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { View, StyleSheet, Dimensions, ImageSourcePropType, Text, ViewStyle } from 'react-native';
 import {
-  PanGestureHandler,
-  PinchGestureHandler,
-  PanGestureHandlerGestureEvent,
-  PinchGestureHandlerGestureEvent,
+  Gesture, GestureDetector
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withTiming,
   runOnJS,
 } from 'react-native-reanimated';
@@ -142,16 +138,32 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
   return layouts;
 }
 
+// --- 5. STYLES (ĐÃ DI CHUYỂN LÊN TRÊN) ---
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#eeeeeeff',
+    flex: 1,
+    overflow: 'hidden',
+  },
+  nodeContainer: {
+    position: 'absolute',
+  },
+  treeContainer: {
+    width: '100%',
+    height: '100%',
+  },
+});
+
 // --- 4. MAIN FAMILY TREE COMPONENT (Interaction & Graphics) ---
-
-type AnimatedContext = { startX: number; startY: number; startScale: number; };
-
 export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
   const hasCenteredInitially = useRef(false);
 
   const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const savedTranslateX = useSharedValue(0);
+  const savedTranslateY = useSharedValue(0);
 
   const [renderScale, setRenderScale] = useState(1);
   const [renderTranslateX, setRenderTranslateX] = useState(0);
@@ -213,17 +225,29 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     }
   }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.familyMembers, onCharacterCenteredOnEvent, scale, translateX, translateY]);
 
-  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, AnimatedContext>({
-    onStart: (event, ctx) => { ctx.startX = translateX.value; ctx.startY = translateY.value; },
-    onActive: (event, ctx) => { translateX.value = ctx.startX + event.translationX; translateY.value = ctx.startY + event.translationY; },
-    onEnd: () => { runOnJS(setRenderTranslateX)(translateX.value); runOnJS(setRenderTranslateY)(translateY.value); }
-  });
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+        translateX.value = savedTranslateX.value + e.translationX;
+        translateY.value = savedTranslateY.value + e.translationY;
+    })
+    .onEnd(() => {
+        savedTranslateX.value = translateX.value;
+        savedTranslateY.value = translateY.value;
+        runOnJS(setRenderTranslateX)(translateX.value);
+        runOnJS(setRenderTranslateY)(translateY.value);
+    });
 
-  const pinchHandler = useAnimatedGestureHandler<PinchGestureHandlerGestureEvent, AnimatedContext>({
-    onStart: (event, ctx) => { ctx.startScale = scale.value; },
-    onActive: (event, ctx) => { const newScale = ctx.startScale * event.scale; scale.value = Math.max(0.5, Math.min(newScale, 3)); },
-    onEnd: () => { runOnJS(setRenderScale)(scale.value); }
-  });
+const pinchGesture = Gesture.Pinch()
+    .onUpdate((e) => {
+        const newScale = savedScale.value * e.scale;
+        scale.value = Math.max(0.5, Math.min(newScale, 3));
+    })
+    .onEnd(() => {
+        savedScale.value = scale.value;
+        runOnJS(setRenderScale)(scale.value);
+    });
+
+  const composedGesture = Gesture.Simultaneous(panGesture, pinchGesture);
 
   const animatedStyle = useAnimatedStyle(() => ({ transform: [ { translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value } ] as NonNullable<ViewStyle['transform']>, }));
 
@@ -290,80 +314,55 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
   }
 
   return (
-    <PanGestureHandler onGestureEvent={gestureHandler}>
-      <Animated.View style={styles.container}>
-        <PinchGestureHandler onGestureEvent={pinchHandler}>
-          <Animated.View style={styles.container}>
-            <Animated.View style={[styles.treeContainer, animatedStyle]}>
-              
-              {/* ======================================================================================= */}
-              {/* === SỬA LỖI QUAN TRỌNG NHẤT: Đưa SVG vào cùng thế giới với CharacterNode === */}
-              {/* ======================================================================================= */}
-              <Svg 
-                style={{
-                  position: 'absolute',
-                  left: treeBounds.minX,
-                  top: treeBounds.minY,
-                  width: treeBounds.width,
-                  height: treeBounds.height,
-                }}
-                pointerEvents="none"
-                viewBox={`${treeBounds.minX} ${treeBounds.minY} ${treeBounds.width} ${treeBounds.height}`}
-              >
-                {renderConnectors()}
-              </Svg>
-              
-              {visibleNodes.map(nodeLayout => {
-                const character = gameState.familyMembers[nodeLayout.id];
-                if (!character) return null;
-                return (
-                  <View
-                    key={character.id}
-                    style={[
-                      styles.nodeContainer,
-                      {
-                        left: nodeLayout.x,
-                        top: nodeLayout.y,
-                        width: NODE_WIDTH,
-                        height: NODE_HEIGHT
-                      }
-                    ]}
-                  >
-                    <CharacterNode
-                      character={character}
-                      onClick={() => onSelectCharacter(character)}
-                      lang={lang}
-                      manifest={manifest}
-                      images={images}
-                    />
-                    <IncomeAnimation
-                      netIncome={character.monthlyNetIncome}
-                      characterId={character.id}
-                      currentDate={gameState.currentDate}
-                    />
-                  </View>
-                );
-              })}
-            </Animated.View>
-          </Animated.View>
-        </PinchGestureHandler>
+    <GestureDetector gesture={composedGesture}>
+      <Animated.View style={[styles.treeContainer, animatedStyle]}>
+        
+        <Svg 
+          style={{
+            position: 'absolute',
+            left: treeBounds.minX,
+            top: treeBounds.minY,
+            width: treeBounds.width,
+            height: treeBounds.height,
+          }}
+          pointerEvents="none"
+          viewBox={`${treeBounds.minX} ${treeBounds.minY} ${treeBounds.width} ${treeBounds.height}`}
+        >
+          {renderConnectors()}
+        </Svg>
+        
+        {visibleNodes.map(nodeLayout => {
+          const character = gameState.familyMembers[nodeLayout.id];
+          if (!character) return null;
+          return (
+            <View
+              key={character.id}
+              style={[
+                styles.nodeContainer,
+                {
+                  left: nodeLayout.x,
+                  top: nodeLayout.y,
+                  width: NODE_WIDTH,
+                  height: NODE_HEIGHT
+                }
+              ]}
+            >
+              <CharacterNode
+                character={character}
+                onClick={() => onSelectCharacter(character)}
+                lang={lang}
+                manifest={manifest}
+                images={images}
+              />
+              <IncomeAnimation
+                netIncome={character.monthlyNetIncome}
+                characterId={character.id}
+                currentDate={gameState.currentDate}
+              />
+            </View>
+          );
+        })}
       </Animated.View>
-    </PanGestureHandler>
+  </GestureDetector>
   );
-};
-
-// --- 5. STYLES ---
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#eeeeeeff',
-    flex: 1,
-    overflow: 'hidden',
-  },
-  nodeContainer: {
-    position: 'absolute',
-  },
-  treeContainer: {
-    // Bỏ `absoluteFillObject` để nó có thể tự do thay đổi kích thước
-  },
-});
+}; 

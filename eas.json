@@ -11,13 +11,13 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "buildType": "apk"       // thêm dòng này để build ra APK
+        "buildType": "apk"      
       }
     },
     "production": {
       "autoIncrement": true,
       "android": {
-        "gradleCommand": ":app:bundleRelease"   // build ra AAB cho Play Store
+        "gradleCommand": ":app:bundleRelease"   
       }
     }
   },
