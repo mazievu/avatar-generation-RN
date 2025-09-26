@@ -30,9 +30,16 @@
       "eas": {
         "projectId": "5d934c39-ea06-405c-829d-254b1ae9e3af"
       }
-    }
-  },
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-5890106170626370~8022931728"
+    },
+    "plugins": [
+      "expo-audio",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-5890106170626370~8022931728",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ]
+    ]
   }
 }

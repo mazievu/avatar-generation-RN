@@ -20,7 +20,7 @@
     "@react-native-community/slider": "5.0.1",
     "@react-native-picker/picker": "2.11.1",
     "expo": "~54.0.10",
-    "expo-audio": "^1.0.13",
+    "expo-audio": "~1.0.13",
     "expo-crypto": "^15.0.7",
     "expo-dev-client": "^6.0.12",
     "expo-status-bar": "^3.0.8",
@@ -32,8 +32,7 @@
     "react-native-google-mobile-ads": "^15.7.0",
     "react-native-reanimated": "~4.1.1",
     "react-native-svg": "15.12.1",
-    "react-native-web": "^0.21.1",
-    "react-native-worklets": "0.5.1"
+    "react-native-web": "^0.21.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

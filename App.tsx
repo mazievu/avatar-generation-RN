@@ -29,11 +29,11 @@ Object.values(ASSET_DEFINITIONS).forEach((asset) => {
     }
 });
 
-allAvatarUrls.add('../public/asset/mila.png');
-allAvatarUrls.add('../public/asset/max.png');
-allAvatarUrls.add('../public/asset/alice.png');
-allAvatarUrls.add('../public/asset/lucas.png');
-allAvatarUrls.add('../public/asset/daisy.png');
+allAvatarUrls.add('../assets/mila.png');
+allAvatarUrls.add('../assets/max.png');
+allAvatarUrls.add('../assets/alice.png');
+allAvatarUrls.add('../assets/lucas.png');
+allAvatarUrls.add('../assets/daisy.png');
 
 import { imageAssets } from './components/ImageAssets';
 
