@@ -15,9 +15,6 @@ import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { RobotAvatarIcon } from './icons';
 import { ComicPanelModal } from './ComicPanelModal';
 
-
-
-
 // Modal for purchasing
 const BusinessPurchaseModal: React.FC<{
     businessKey: string;
@@ -224,9 +221,8 @@ export const BusinessMap: React.FC<{
     lang: Language;
     images: Record<string, ImageSourcePropType>;
     manifest: Manifest;
-    mainView: 'tree' | 'business';
     onBackToTree: () => void;
-}> = ({ gameState, onBuyBusiness, onManageBusiness, lang, images, manifest, mainView, onBackToTree }) => {
+}> = ({ gameState, onBuyBusiness, onManageBusiness, lang, images, manifest, onBackToTree }) => {
     const [selectedLocationKey, setSelectedLocationKey] = useState<string | null>(null);
     const [showManageModalForType, setShowManageModalForType] = useState<string | null>(null);
 
@@ -292,10 +288,7 @@ export const BusinessMap: React.FC<{
             </View>
             <GestureDetector gesture={composedGesture}>
                 <Animated.View
-                    style={[
-                        businessMapStyles.mapContainer,
-                        mainView === 'business' ? businessMapStyles.mapContainerFull : businessMapStyles.mapContainerPartial
-                    ]}
+                    style={businessMapStyles.mapContainer}
                 >
                     <Animated.View
                         style={[
@@ -403,7 +396,7 @@ export const BusinessMap: React.FC<{
                     ownedBusinesses={ownedBusinessesByType.get(showManageModalForType) || []}
                     onManage={(business) => {
                         onManageBusiness(business);
-                        setShowManageModalForType(null); // Close modal after managing
+                        setShowManageModalForType(null);
                     }}
                     onClose={() => setShowManageModalForType(null)}
                     lang={lang}
@@ -417,10 +410,10 @@ const businessMapStyles = StyleSheet.create({
     assignedWorkers: {
         alignItems: 'center',
         flexDirection: 'row',
-        gap: 4, // gap-1
+        gap: 4,
         justifyContent: 'center',
-        marginBottom: -4, // -mb-1
-        marginTop: 8, // mt-2
+        marginBottom: -4,
+        marginTop: 8,
     },
     businessHotspot: {
         alignItems: 'center',
@@ -435,13 +428,13 @@ const businessMapStyles = StyleSheet.create({
         shadowRadius: 4,
     },
     businessHotspotAvailable: {
-        backgroundColor: 'rgba(255, 255, 255, 0.8)', // bg-white/80
-        borderColor: '#fbbf24', // border-amber-400
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderColor: '#fbbf24',
         borderWidth: 2,
     },
     businessHotspotOwned: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)', // bg-white/90
-        borderColor: '#22c55e', // border-green-500
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderColor: '#22c55e',
         borderWidth: 2,
     },
     button: {
@@ -452,9 +445,9 @@ const businessMapStyles = StyleSheet.create({
         paddingVertical: 8,
     },
     buttonSlate: {
-        backgroundColor: '#64748b', // slate-500
+        backgroundColor: '#64748b',
         borderBottomWidth: 4,
-        borderColor: '#475569', // slate-600
+        borderColor: '#475569',
     },
     buttonText: {
         color: 'white',
@@ -466,39 +459,39 @@ const businessMapStyles = StyleSheet.create({
         flexDirection: 'column',
     },
     costText: {
-        color: '#f59e0b', // text-amber-500
-        fontSize: 14, // text-sm
+        color: '#f59e0b',
+        fontSize: 14,
         fontWeight: 'bold',
-        marginTop: 4, // mt-1
+        marginTop: 4,
     },
     header: {
         alignItems: 'center',
         flexDirection: 'row',
-        flexShrink: 0, // flex-shrink-0
+        flexShrink: 0,
         justifyContent: 'space-between',
-        marginBottom: 8, // mb-2
-        padding: 8, // p-2
+        marginBottom: 8,
+        padding: 8,
     },
     hotspotName: {
-        fontSize: 14, // text-sm
+        fontSize: 14,
         fontWeight: 'bold',
-        textShadowColor: 'rgba(0,0,0,0.1)', // drop-shadow-sm
+        textShadowColor: 'rgba(0,0,0,0.1)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 1,
     },
     manageButtonText: {
-        color: '#2563eb', // text-blue-600
-        fontSize: 12, // text-xs
+        color: '#2563eb',
+        fontSize: 12,
         fontWeight: 'bold',
-        marginTop: 8, // mt-2
+        marginTop: 8,
     },
     mapContainer: {
-        backgroundColor: '#e2e8f0', // bg-slate-200
-        borderColor: '#cbd5e1', // border-4 border-slate-300
-        borderRadius: 12, // rounded-xl
+        backgroundColor: '#e2e8f0',
+        borderColor: '#cbd5e1',
+        borderRadius: 12,
         borderWidth: 4,
         bottom: 0,
-        elevation: 1, // shadow-inner
+        elevation: 1,
         left: 0,
         overflow: 'hidden',
         position: 'absolute',
@@ -509,39 +502,29 @@ const businessMapStyles = StyleSheet.create({
         shadowRadius: 2,
         top: 0,
     },
-    mapContainerFull: {
-        height: '100%',
-        width: '100%',
-    },
-    mapContainerPartial: {
-        maxHeight: 600,
-        maxWidth: 800,
-    },
     mapContent: {
-        height: 3000, // Fixed size for the map content
+        height: 3000,
         position: 'relative',
-        width: 3000, // Fixed size for the map content
-        // transform handled by state
-        // transformOrigin: 'top left' is default for scale in RN
+        width: 3000,
     },
     mapWrapper: {
-        flexGrow: 1, // flex-grow
+        flexGrow: 1,
         position: 'relative',
     },
     netIncomeNegative: {
-        color: '#ef4444', // text-red-600
+        color: '#ef4444',
     },
     netIncomePositive: {
-        color: '#22c55e', // text-green-600
+        color: '#22c55e',
     },
     ownedBusinessDetails: {
         alignItems: 'center',
-        marginTop: 4, // mt-1
+        marginTop: 4,
         width: '100%',
     },
     ownedBusinessNetIncome: {
-        fontFamily: 'monospace', // font-mono
-        fontSize: 14, // text-sm
+        fontFamily: 'monospace',
+        fontSize: 14,
         fontWeight: 'bold',
     },
     robotAvatarIcon: {
@@ -549,49 +532,48 @@ const businessMapStyles = StyleSheet.create({
         width: '100%',
     },
     slider: {
-        height: 40, // Example height, adjust as needed
-        width: 128, // w-32
+        height: 40,
+        width: 128,
     },
     title: {
-        color: '#4f46e5', // indigo-500
-        fontSize: 24, // text-2xl
-        fontWeight: 'bold', // font-black
+        color: '#4f46e5',
+        fontSize: 24,
+        fontWeight: 'bold',
     },
     workerAvatar: {
-        backgroundColor: '#cbd5e1', // bg-slate-300
+        backgroundColor: '#cbd5e1',
         borderColor: 'white',
-        borderRadius: 16, // rounded-full
+        borderRadius: 16,
         borderWidth: 2,
-        elevation: 1, // shadow-sm
-        height: 32, // h-8
+        elevation: 1,
+        height: 32,
         overflow: 'hidden',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
-        width: 32, // w-8
+        width: 32,
     },
     zoomControl: {
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)', // bg-white/80
-        borderRadius: 8, // rounded-lg
-        bottom: 16, // bottom-4
-        elevation: 3, // shadow-md
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 8,
+        bottom: 16,
+        elevation: 3,
         flexDirection: 'row',
-        gap: 8, // gap-2
-        padding: 8, // p-2
+        gap: 8,
+        padding: 8,
         position: 'absolute',
-        right: 16, // right-4
+        right: 16,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
         zIndex: 20,
-        // backdrop-blur-sm is not directly supported
     },
     zoomIcon: {
-        color: '#475569', // text-slate-600
-        fontSize: 24, // h-6 w-6
+        color: '#475569',
+        fontSize: 24,
         fontWeight: 'bold',
     },
 });

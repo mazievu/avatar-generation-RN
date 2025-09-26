@@ -67,7 +67,7 @@ const BottomNav: React.FC<{
 
 interface GameUIProps {
     view: 'menu' | 'playing' | 'gameover' | 'welcome_back';
-    mainView: 'tree' | 'business';
+    // mainView prop đã được xóa
     gameState: GameState | null;
     isPaused: boolean;
     gameSpeed: number;
@@ -102,21 +102,21 @@ interface GameUIProps {
     onStartNewGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
     onSellBusiness: (businessId: string) => void;
-    onSetMainView: (view: 'tree' | 'business') => void;
+    // onSetMainView prop đã được xóa
     onSetFamilyName: (name: string) => void;
     activeScene: SceneName;
     onSetActiveScene: (scene: SceneName) => void;
     onAcknowledgeUnlock: () => void;
     onClearNewlyUnlockedFeature: () => void;
     onClaimFeature: (featureId: string) => void;
-    pendingStatBoost: { stat: keyof Character['stats'], amount: number, featureId: string } | null; // New prop
-    onConfirmStatBoost: (characterId: string) => void; // New prop
-    onCloseStatBoostModal: () => void; // New prop
+    pendingStatBoost: { stat: keyof Character['stats'], amount: number, featureId: string } | null;
+    onConfirmStatBoost: (characterId: string) => void;
+    onCloseStatBoostModal: () => void;
 }
 
 export const GameUI: React.FC<GameUIProps> = ({
     view,
-    mainView,
+    // mainView prop đã được xóa
     gameState,
     isPaused,
     gameSpeed,
@@ -151,16 +151,16 @@ export const GameUI: React.FC<GameUIProps> = ({
     onStartNewGame,
     onPurchaseAsset,
     onSellBusiness,
-    onSetMainView,
+    // onSetMainView prop đã được xóa
     onSetFamilyName,
     activeScene,
     onSetActiveScene,
     onAcknowledgeUnlock,
     onClearNewlyUnlockedFeature,
     onClaimFeature,
-    pendingStatBoost, // New prop
-    onConfirmStatBoost, // New prop
-    onCloseStatBoostModal, // New prop
+    pendingStatBoost,
+    onConfirmStatBoost,
+    onCloseStatBoostModal,
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null);
@@ -209,15 +209,10 @@ export const GameUI: React.FC<GameUIProps> = ({
         }
     }, [gameState?.familyBusinesses, editingBusiness]);
 
+    // HÀM NÀY ĐÃ ĐƯỢC DỌN DẸP
     const handleSceneChange = (scene: SceneName) => {
         onSetActiveScene(scene);
         onSetIsPaused(scene !== 'tree');
-
-        if (scene === 'business') {
-            onSetMainView('business');
-        } else if (mainView === 'business' && (scene === 'tree' || scene === 'log' || scene === 'assets' || scene === 'path')) {
-            onSetMainView('tree');
-        }
     };
 
     if (view === 'welcome_back') {
@@ -280,11 +275,11 @@ export const GameUI: React.FC<GameUIProps> = ({
                             lang={lang}
                             images={avatarImages}
                             manifest={exampleManifest}
-                            mainView={mainView}
+                            // prop mainView đã được xóa
                             onBackToTree={() => {
-                                onSetMainView('tree');
-                                onSetActiveScene('tree');
-                                onSetIsPaused(false);
+                                // Logic onBackToTree giờ nên được xử lý bởi BottomNav
+                                // Ví dụ: onSetActiveScene('tree');
+                                handleSceneChange('tree');
                             }}
                         />;
             default:

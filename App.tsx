@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { GameState, Character, Language } from './core/types';
 import { exampleManifest } from './core/types';
@@ -44,14 +43,15 @@ const App: React.FC = () => {
     const [isPaused, setIsPaused] = useState<boolean>(true);
     const [gameSpeed, setGameSpeed] = useState<number>(GAME_SPEED_MS);
     const [view, setView] = useState<GameView>('menu');
-    const [mainView, setMainView] = useState<'tree' | 'business'>('tree');
+    // BƯỚC 1: Xóa state 'mainView'
+    // const [mainView, setMainView] = useState<'tree' | 'business'>('tree');
     const [showInstructions, setShowInstructions] = useState<boolean>(false);
     const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
     const [language, setLanguage] = useState<Language>('en');
     const [customizingCharacterId, setCustomizingCharacterId] = useState<string | null>(null);
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
-    const [pendingStatBoost, setPendingStatBoost] = useState<{ stat: keyof Character['stats'], amount: number, featureId: string } | null>(null); // New state
+    const [pendingStatBoost, setPendingStatBoost] = useState<{ stat: keyof Character['stats'], amount: number, featureId: string } | null>(null);
     
     
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -80,7 +80,7 @@ const App: React.FC = () => {
         handleAvatarSave,
         handleAvatarSaveNoCost,
         onSellBusiness,
-        handleAcknowledgeUnlock: handleClearNewlyUnlockedFeature, // Rename for clarity
+        handleAcknowledgeUnlock: handleClearNewlyUnlockedFeature,
         stopGameLoop,
         
     } = useMemo(() => createGameLogicHandlers(setGameState, language, timerRef, setView, setIsPaused, setLanguage, exampleManifest), [setGameState, language, timerRef, setView, setIsPaused, setLanguage]);
@@ -89,7 +89,6 @@ const App: React.FC = () => {
         initGodMode(setGameState);
         setIsInitialized(true);
 
-        // Initialize AdMob and show App Open Ad
         const initAndShowAds = async () => {
             await adService.initializeAds();
             adService.showAppOpenAd();
@@ -102,14 +101,13 @@ const App: React.FC = () => {
         reinitializeAllGameData(language);
     }, [language]);
 
-    // Auto-save interval
     useEffect(() => {
         if (view === 'playing' && !isPaused) {
             const interval = setInterval(() => {
                 if (gameState) {
                     saveGame(gameState);
                 }
-            }, 60000); // 60 seconds
+            }, 60000);
             return () => clearInterval(interval);
         }
     }, [view, isPaused, saveGame, gameState]);
@@ -120,7 +118,6 @@ const App: React.FC = () => {
 
             const featureId = prevState.newlyUnlockedFeature;
             if (prevState.claimedFeatures.includes(featureId)) {
-                // If already claimed, just clear the notification
                 return { ...prevState, newlyUnlockedFeature: null };
             }
 
@@ -132,9 +129,8 @@ const App: React.FC = () => {
         });
     }, []);
     
-    // Save on unload - Removed web-specific window.addEventListener
-    
     useEffect(() => {
+        // BƯỚC 2: Cập nhật logic tạm dừng game
         const isModalOrSpecialViewActive = 
             !!gameState?.activeEvent ||
             (!!gameState?.pendingSchoolChoice && gameState.pendingSchoolChoice.length > 0) ||
@@ -146,15 +142,15 @@ const App: React.FC = () => {
             !!gameState?.pendingUnderqualifiedChoice ||
             !!gameState?.pendingClubChoice ||
             !!customizingCharacterId ||
-            mainView === 'business' ||
-            !!pendingStatBoost; // New condition
+            activeScene !== 'tree' || // Thay thế 'mainView' bằng 'activeScene'
+            !!pendingStatBoost;
 
         if (isModalOrSpecialViewActive) {
             setIsPaused(true);
         } else {
             setIsPaused(false);
         }
-    }, [gameState?.activeEvent, gameState?.pendingSchoolChoice, gameState?.pendingUniversityChoice, gameState?.pendingMajorChoice, gameState?.pendingCareerChoice, gameState?.pendingLoanChoice, gameState?.pendingPromotion, gameState?.pendingUnderqualifiedChoice, gameState?.pendingClubChoice, customizingCharacterId, mainView, pendingStatBoost]); // Add pendingStatBoost to dependencies
+    }, [gameState?.activeEvent, gameState?.pendingSchoolChoice, gameState?.pendingUniversityChoice, gameState?.pendingMajorChoice, gameState?.pendingCareerChoice, gameState?.pendingLoanChoice, gameState?.pendingPromotion, gameState?.pendingUnderqualifiedChoice, gameState?.pendingClubChoice, customizingCharacterId, activeScene, pendingStatBoost]); // Xóa 'mainView' khỏi dependencies
 
     useEffect(() => {
         stopGameLoop();
@@ -165,7 +161,6 @@ const App: React.FC = () => {
     }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState, stopGameLoop]);
 
     const handleSetSelectedCharacter = useCallback((character: Character | null) => {
-       
         setSelectedCharacter(character);
     }, []);
 
@@ -181,17 +176,14 @@ const App: React.FC = () => {
                 const currentStatValue = characterToBuff.stats[stat];
                 const maxStatValue = stat === 'iq' ? 200 : 100;
                 characterToBuff.stats[stat] = Math.min(maxStatValue, currentStatValue + amount);
-
-                // Mark the feature as claimed
                 nextGameState.claimedFeatures = [...nextGameState.claimedFeatures, featureId];
             }
 
             return nextGameState;
         });
-        setPendingStatBoost(null); // Clear the pending boost to close the modal
+        setPendingStatBoost(null);
     }, [pendingStatBoost]);
 
-    // New handler for claiming features
     const handleClaimFeature = useCallback((featureId: string) => {
         setGameState(prevGameState => {
             if (!prevGameState) return prevGameState;
@@ -203,34 +195,24 @@ const App: React.FC = () => {
 
             const nextGameState = { ...prevGameState };
 
-            // --- BẮT ĐẦU LOGIC NÂNG CẤP ---
-
             if (featureToClaim.type === 'mystery_box') {
-                // Random Family Fund
                 const randomFund = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
                 nextGameState.familyFund += randomFund;
 
-                // Random một chỉ số và số lượng để tăng
                 const stats: (keyof Character['stats'])[] = ['happiness', 'health', 'iq', 'eq', 'skill'];
                 const randomStat = stats[Math.floor(Math.random() * stats.length)];
-                const statIncrease = Math.floor(Math.random() * 6); // 0-5
+                const statIncrease = Math.floor(Math.random() * 6);
 
-                // Lưu vào pendingStatBoost thay vì áp dụng ngay
                 setPendingStatBoost({ stat: randomStat, amount: statIncrease, featureId: featureToClaim.id });
-                return nextGameState; // Do not claim the feature yet
+                return nextGameState;
             }
             
-            // For other feature types, claim immediately
             nextGameState.claimedFeatures = [...nextGameState.claimedFeatures, featureId];
-
-            // --- KẾT THÚC LOGIC NÂNG CẤP ---
-
             return nextGameState;
         });
     }, []);
 
     if (!isInitialized) {
-        // Simple loading screen
         return (
             <View style={appStyles.loadingContainer}>
                 <Text style={appStyles.loadingText}>Initializing...</Text>
@@ -258,9 +240,10 @@ const App: React.FC = () => {
     }
         return (
         <GestureHandlerRootView style={appStyles.rootView}>
+            {/* BƯỚC 3: Xóa các props không cần thiết */}
             <GameUI
                     view={view}
-                    mainView={mainView}
+                    // mainView={mainView} // Đã xóa
                     gameState={gameState}
                     isPaused={isPaused}
                     gameSpeed={gameSpeed}
@@ -295,7 +278,7 @@ const App: React.FC = () => {
                     onStartNewGame={handleStartNewGame}
                     onPurchaseAsset={handlePurchaseAsset}
                     onSellBusiness={onSellBusiness}
-                    onSetMainView={setMainView}
+                    // onSetMainView={setMainView} // Đã xóa
                     onSetFamilyName={function (): void {
                         throw new Error('Function not implemented.');
                     } }
@@ -303,10 +286,10 @@ const App: React.FC = () => {
                     onSetActiveScene={setActiveScene}
                     onAcknowledgeUnlock={handleAcknowledgeUnlock}
                     onClearNewlyUnlockedFeature={handleClearNewlyUnlockedFeature}
-                    onClaimFeature={handleClaimFeature} // Pass the new handler
-                    pendingStatBoost={pendingStatBoost} // New prop
-                    onConfirmStatBoost={handleConfirmStatBoost} // New prop
-                    onCloseStatBoostModal={() => setPendingStatBoost(null)} // New prop
+                    onClaimFeature={handleClaimFeature}
+                    pendingStatBoost={pendingStatBoost}
+                    onConfirmStatBoost={handleConfirmStatBoost}
+                    onCloseStatBoostModal={() => setPendingStatBoost(null)}
             />
         </GestureHandlerRootView>
     );
@@ -319,7 +302,7 @@ const appStyles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#f8fafc',
         flex: 1,
-        justifyContent: 'center', // slate-50
+        justifyContent: 'center',
     },
     loadingText: {
         color: '#333',

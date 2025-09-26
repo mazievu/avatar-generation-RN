@@ -101,7 +101,7 @@ Overall Purpose (UI/UX):
 Component BusinessMapSVG là một component đơn giản, có mục đích duy nhất: hiển thị hình ảnh nền tĩnh của bản đồ kinh doanh. Vai trò UI/UX của nó là nền tảng, cung cấp ngữ cảnh trực quan mà trên đó các yếu tố tương tác được phủ lên.
 Key UI/UX Elements and their Functions/Actions:
 BusinessMapSVG Component:
-Image component: Hiển thị hình ảnh bản đồ từ ../assets/business-map.webp.
+Image component: Hiển thị hình ảnh bản đồ từ ../public/asset/business-map.webp.
 style: Đảm bảo hình ảnh bao phủ toàn bộ container của nó.
 accessibilityLabel: Cung cấp nhãn khả năng tiếp cận cho trình đọc màn hình.
 Summary of UI/UX Strengths:
