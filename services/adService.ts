@@ -25,6 +25,14 @@ const AD_COOLDOWN_MS = 5000; // 5 seconds cooldown
 let lastInterstitialAdShownTime = 0;
 let lastRewardedAdShownTime = 0;
 
+let eventCounter = 0;
+const eventsBeforeAd = 10;
+
+const MAX_RETRY_COUNT = 3;
+let rewardedAdRetryCount = 0;
+let interstitialAdRetryCount = 0;
+let appOpenAdRetryCount = 0;
+
 const initializeAds = async () => {
   try {
     await mobileAds().initialize();
@@ -32,19 +40,24 @@ const initializeAds = async () => {
     // Preload ads if necessary
     loadRewardedAd();
     loadInterstitialAd();
-    loadAppOpenAd();
+    // loadAppOpenAd(); // Temporarily disabled
   } catch (error) {
     console.error('Failed to initialize AdMob:', error);
   }
 };
 
 const loadRewardedAd = () => {
+  if (rewardedAdRetryCount >= MAX_RETRY_COUNT) {
+    console.log('Max retry count reached for Rewarded Ad. Stopping further attempts.');
+    return;
+  }
   rewardedAd = RewardedAd.createForAdRequest(rewardedAdUnitId, {
     requestNonPersonalizedAdsOnly: true, // For testing, or based on user consent
   });
 
   rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
     console.log('Rewarded Ad loaded');
+    rewardedAdRetryCount = 0; // Reset retry count on successful load
   });
   rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, reward => {
     console.log('User earned reward of ', reward);
@@ -61,6 +74,7 @@ const loadRewardedAd = () => {
   rewardedAd.addAdEventListener(AdEventType.ERROR, error => {
     console.error('Rewarded Ad error:', error);
     onRewardCallback = null; // Clear callback on error
+    rewardedAdRetryCount++; // Increment retry count
     loadRewardedAd(); // Try to load again on error
   });
 
@@ -68,12 +82,17 @@ const loadRewardedAd = () => {
 };
 
 const loadInterstitialAd = () => {
+  if (interstitialAdRetryCount >= MAX_RETRY_COUNT) {
+    console.log('Max retry count reached for Interstitial Ad. Stopping further attempts.');
+    return;
+  }
   interstitialAd = InterstitialAd.createForAdRequest(interstitialAdUnitId, {
     requestNonPersonalizedAdsOnly: true, // For testing, or based on user consent
   });
 
   interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
     console.log('Interstitial Ad loaded');
+    interstitialAdRetryCount = 0; // Reset retry count on successful load
   });
   interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
     console.log('Interstitial Ad closed');
@@ -81,6 +100,7 @@ const loadInterstitialAd = () => {
   });
   interstitialAd.addAdEventListener(AdEventType.ERROR, error => {
     console.error('Interstitial Ad error:', error);
+    interstitialAdRetryCount++; // Increment retry count
     loadInterstitialAd(); // Try to load again on error
   });
 
@@ -88,12 +108,17 @@ const loadInterstitialAd = () => {
 };
 
 const loadAppOpenAd = () => {
+  if (appOpenAdRetryCount >= MAX_RETRY_COUNT) {
+    console.log('Max retry count reached for App Open Ad. Stopping further attempts.');
+    return;
+  }
   appOpenAd = AppOpenAd.createForAdRequest(appOpenAdUnitId, {
     requestNonPersonalizedAdsOnly: true, // For testing, or based on user consent
   });
 
   appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
     console.log('App Open Ad loaded');
+    appOpenAdRetryCount = 0; // Reset retry count on successful load
   });
   appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
     console.log('App Open Ad closed');
@@ -101,6 +126,7 @@ const loadAppOpenAd = () => {
   });
   appOpenAd.addAdEventListener(AdEventType.ERROR, error => {
     console.error('App Open Ad error:', error);
+    appOpenAdRetryCount++; // Increment retry count
     loadAppOpenAd(); // Try to load again on error
   });
 
@@ -141,13 +167,16 @@ const showInterstitialAd = async () => {
   }
 };
 
-const showAppOpenAd = async () => {
-  if (appOpenAd && appOpenAd.loaded) {
-    appOpenAd.show();
-  } else {
-    console.log('App Open Ad not loaded yet. Attempting to load...');
-    loadAppOpenAd(); // Try to load if not loaded
+const maybeShowInterstitialAd = () => {
+  eventCounter++;
+  if (eventCounter >= eventsBeforeAd) {
+    showInterstitialAd();
+    eventCounter = 0;
   }
+};
+
+const showAppOpenAd = async () => {
+  console.log('App Open Ad is temporarily disabled.');
 };
 
 // Placeholder for banner ad, not implemented with AdMob logic yet
@@ -161,5 +190,6 @@ export const adService = {
   showBannerAd,
   showInterstitialAd,
   showRewardedAd,
-  showAppOpenAd, // Export the new app open ad function
+  showAppOpenAd,
+  maybeShowInterstitialAd,
 };
