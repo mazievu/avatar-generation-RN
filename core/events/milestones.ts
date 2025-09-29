@@ -131,17 +131,32 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                         return {
                             statChanges: { happiness: -10 },
                             logKey: 'log_milestone_children_try_fail',
-                            triggers: []
+                            triggers: [{eventId: EventIdByKey.milestone_children_fail, chance: 1.0}]
                         }
                     }
                 }
             }},
-            { textKey: 'milestone_children_no', effect: { statChanges: { happiness: -10 }, logKey: 'log_milestone_children_no' }}
+            { textKey: 'milestone_children_no', effect: { statChanges: { happiness: -5 }, logKey: 'log_milestone_children_no' }}
         ]
     },
     {
+    id: 'milestone_children_fail',
+    isTriggerOnly: true, // Được kích hoạt bởi sự kiện 'try'
+    titleKey: 'milestone_children_fail_title',       // Ví dụ: "Thử lại lần sau"
+    descriptionKey: 'milestone_children_fail_desc', // Ví dụ: "Thật không may, lần này bạn đã không thể thụ thai."
+    phases: [LifePhase.PostGraduation],
+    choices: [
+        {
+            textKey: 'milestone_children_fail_ok', // Ví dụ: "OK"
+            effect: {
+                statChanges: { happiness: -10 },
+                logKey: 'log_milestone_children_try_fail' // Log chính xác được tạo ra ở đây
+            }
+        }
+            ]
+    },
+    {
         id: 'milestone_child_conceived',
-        isMilestone: true,
         isTriggerOnly: true,
         titleKey: 'milestone_child_conceived_title',
         descriptionKey: 'milestone_child_conceived_desc',

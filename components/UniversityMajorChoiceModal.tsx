@@ -1,57 +1,74 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+// *** THAY ĐỔI 1: Thêm ImageSourcePropType ***
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ImageSourcePropType } from 'react-native';
 
-import type { Character, UniversityMajor, Language } from '../core/types';
+// *** THAY ĐỔI 2: Thêm các type và component cần thiết ***
+import type { Character, UniversityMajor, Language, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 import { typography, colors, spacing } from './designSystem';
+import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
 const { width: screenWidth } = Dimensions.get('window');
-const baseWidth = 375; // A common base width for scaling
+const baseWidth = 375;
 const scale = screenWidth / baseWidth;
 
-// Hàm này nên được chuyển ra một tệp tiện ích chung
 const responsiveFontSize = (size: number, userScale: number = 1) => Math.round(size * scale * userScale);
 
-interface LocalizedProps {
-    lang: Language;
-    userFontScale?: number; // Prop để nhận tỷ lệ phông chữ của người dùng
-}
-
-interface UniversityMajorChoiceModalProps extends LocalizedProps {
+// *** THAY ĐỔI 3: Cập nhật interface để nhận props mới ***
+interface UniversityMajorChoiceModalProps {
     character: Character;
     majors: UniversityMajor[];
     onSelect: (major: UniversityMajor) => void;
     currentFunds: number;
     onAbandon: () => void;
+    lang: Language;
+    userFontScale?: number;
+    manifest: Manifest;
+    images: Record<string, ImageSourcePropType>;
 }
-export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProps> = ({ character, majors, onSelect, currentFunds, lang, onAbandon, userFontScale = 1 }) => {
+
+// *** THAY ĐỔI 4: Lấy props mới ***
+export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProps> = ({ character, majors, onSelect, currentFunds, lang, onAbandon, userFontScale = 1, manifest, images }) => {
     const allUnaffordable = majors.every(major => currentFunds < major.cost);
 
-    // Sử dụng onAbandon khi người dùng nhấn ra ngoài modal để hủy
     return (
         <ComicPanelModal visible={true} onClose={onAbandon} rotate="0deg">
-            <Text style={[universityMajorChoiceModalStyles.title, { fontSize: responsiveFontSize(typography.h2.fontSize, userFontScale) }]}>{t('modal_major_title', lang)}</Text>
-            <Text style={[universityMajorChoiceModalStyles.characterNameLabel, { fontSize: responsiveFontSize(14, userFontScale) }]}>
-                {t('for_char_label', lang)}: <Text style={universityMajorChoiceModalStyles.characterName}>{getCharacterDisplayName(character, lang)}</Text>
-            </Text>
-            <Text style={[universityMajorChoiceModalStyles.description, { fontSize: responsiveFontSize(typography.body.fontSize, userFontScale) }]}>{t('modal_major_desc', lang, { name: getCharacterDisplayName(character, lang) })}</Text>
+            {/* *** THAY ĐỔI 5: Tạo bố cục header với avatar *** */}
+            <View style={styles.header}>
+                <View style={styles.avatarContainer}>
+                    <AgeAwareAvatarPreview
+                        character={character}
+                        manifest={manifest}
+                        images={images}
+                        size={{ width: 80, height: 80 }}
+                    />
+                </View>
+                <View style={styles.headerTextContainer}>
+                    <Text style={[styles.title, { fontSize: responsiveFontSize(typography.h2.fontSize, userFontScale) }]}>{t('modal_major_title', lang)}</Text>
+                </View>
+            </View>
+            
+            {/* Bỏ dòng text "For character" cũ, di chuyển mô tả ra ngoài header */}
+            <Text style={[styles.description, { fontSize: responsiveFontSize(typography.body.fontSize, userFontScale) }]}>{t('modal_major_desc', lang, { name: getCharacterDisplayName(character, lang) })}</Text>
+            
+            {/* Phần còn lại không thay đổi */}
             {majors.map((major, index) => (
                 <ChoiceButton key={index} onClick={() => onSelect(major)} disabled={currentFunds < major.cost}>
-                    <View style={universityMajorChoiceModalStyles.choiceContent}>
-                        <Text style={universityMajorChoiceModalStyles.choiceName}>{t(major.nameKey, lang)}</Text>
-                        <Text style={[universityMajorChoiceModalStyles.choiceCost, currentFunds >= major.cost ? universityMajorChoiceModalStyles.costAffordable : universityMajorChoiceModalStyles.costUnaffordable]}>(-${major.cost.toLocaleString()})</Text>
+                    <View style={styles.choiceContent}>
+                        <Text style={styles.choiceName}>{t(major.nameKey, lang)}</Text>
+                        <Text style={[styles.choiceCost, currentFunds >= major.cost ? styles.costAffordable : styles.costUnaffordable]}>(-${major.cost.toLocaleString()})</Text>
                     </View>
-                    <Text style={universityMajorChoiceModalStyles.choiceDescription}>{t(major.descriptionKey, lang)}</Text>
+                    <Text style={styles.choiceDescription}>{t(major.descriptionKey, lang)}</Text>
                 </ChoiceButton>
             ))}
             {allUnaffordable && (
-                <View style={universityMajorChoiceModalStyles.unaffordableSection}>
-                    <Text style={[universityMajorChoiceModalStyles.unaffordableText, { fontSize: responsiveFontSize(14, userFontScale) }]}>{t('modal_major_no_money', lang)}</Text>
-                    <TouchableOpacity onPress={onAbandon} style={[universityMajorChoiceModalStyles.button, universityMajorChoiceModalStyles.buttonSlate]}>
-                        <Text style={[universityMajorChoiceModalStyles.buttonText, { fontSize: responsiveFontSize(typography.bodyBold.fontSize, userFontScale) }]}>
+                <View style={styles.unaffordableSection}>
+                    <Text style={[styles.unaffordableText, { fontSize: responsiveFontSize(14, userFontScale) }]}>{t('modal_major_no_money', lang)}</Text>
+                    <TouchableOpacity onPress={onAbandon} style={[styles.button, styles.buttonSlate]}>
+                        <Text style={[styles.buttonText, { fontSize: responsiveFontSize(typography.bodyBold.fontSize, userFontScale) }]}>
                             {t('university_choice_no', lang)}
                         </Text>
                     </TouchableOpacity>
@@ -61,7 +78,34 @@ export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProp
     );
 };
 
-const universityMajorChoiceModalStyles = StyleSheet.create({
+// *** THAY ĐỔI 6: Bổ sung và điều chỉnh styles ***
+const styles = StyleSheet.create({
+    // Styles mới
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    avatarContainer: {
+        marginRight: 12,
+    },
+    headerTextContainer: {
+        flex: 1,
+    },
+    // Styles cũ được điều chỉnh hoặc bỏ đi
+    title: {
+        ...typography.h2,
+        // Bỏ margin và textAlign
+    },
+    description: {
+        ...typography.body,
+        marginBottom: spacing.lg,
+    },
+    // Bỏ các style không còn dùng đến
+    // characterName: { ... },
+    // characterNameLabel: { ... },
+    
+    // Các style còn lại
     button: {
         alignItems: 'center',
         borderBottomWidth: 4,
@@ -77,15 +121,6 @@ const universityMajorChoiceModalStyles = StyleSheet.create({
     buttonText: {
         ...typography.bodyBold,
         color: colors.white,
-    },
-    characterName: {
-        fontWeight: 'bold',
-    },
-    characterNameLabel: {
-        ...typography.body,
-        fontSize: 14, // Giữ kích thước nhỏ hơn
-        marginBottom: spacing.xs,
-        textAlign: 'center',
     },
     choiceContent: {
         alignItems: 'baseline',
@@ -108,16 +143,6 @@ const universityMajorChoiceModalStyles = StyleSheet.create({
     },
     costUnaffordable: {
         color: colors.error,
-    },
-    description: {
-        ...typography.body,
-        marginBottom: spacing.lg,
-        textAlign: 'center',
-    },
-    title: {
-        ...typography.h2,
-        marginBottom: spacing.sm,
-        textAlign: 'center',
     },
     unaffordableSection: {
         alignItems: 'center',

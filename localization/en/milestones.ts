@@ -19,6 +19,10 @@ export default {
     milestone_child_conceived_desc: 'You are expecting a child! The baby will be born sometime this year.',
     milestone_child_conceived_ok: 'Wonderful!',
     log_milestone_child_conceived_ok: 'A beautiful baby was born!',
+    milestone_children_fail_title: 'Trying for a Baby',
+    milestone_children_fail_desc: 'Unfortunately, you were not successful in having a child this year. You can try again next year.',
+    milestone_children_fail_ok: 'Okay',
+    log_milestone_children_fail_ok: "We tried to have a child, but it wasn't successful this time.",
     // Death
     milestone_death_old_age_title: 'A Life Lived',
     milestone_death_old_age_desc: 'You have lived a long and full life. It is time to rest peacefully.',

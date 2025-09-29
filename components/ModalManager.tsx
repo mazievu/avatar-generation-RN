@@ -8,6 +8,7 @@ import { exampleManifest } from '../core/types'; // Assuming this is a placehold
 import { CLUBS } from '../core/clubsAndEventsData';
 import { t } from '../core/localization';
 
+
 import { EventModal } from './EventModal';
 import { SchoolChoiceModal } from './SchoolChoiceModal';
 import { ClubChoiceModal } from './ClubChoiceModal';
@@ -25,12 +26,12 @@ interface ModalManagerProps {
     selectedCharacter: Character | null;
     editingBusiness: Business | null;
     avatarImages: Record<string, ImageSourcePropType>;
-    isCenteringAnimationDone: boolean; // NEW PROP
+    isCenteringAnimationDone: boolean;
 
     // Callbacks
     onEventChoice: (choice: EventChoice) => void;
     onEventModalClose: () => void;
-    onEventHandled: (characterId: string) => void; // NEW PROP
+    onEventHandled: (characterId: string) => void;
     onSetSelectedCharacter: (character: Character | null) => void;
     onSchoolChoice: (option: SchoolOption) => void;
     onClubChoice: (clubId: string | null) => void;
@@ -55,7 +56,7 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     avatarImages,
     onEventChoice,
     onEventModalClose,
-    onEventHandled, // NEW
+    onEventHandled,
     onSetSelectedCharacter,
     onSchoolChoice,
     onClubChoice,
@@ -71,11 +72,9 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     onUpgradeBusiness,
     onSellBusiness,
     setEditingBusiness,
-    isCenteringAnimationDone, // NEW
+    isCenteringAnimationDone,
 }) => {
     const { lang, familyMembers } = gameState;
-
-    
 
     return (
         <>
@@ -88,7 +87,7 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
-                    onEventHandled={onEventHandled} // NEW
+                    onEventHandled={onEventHandled}
                 />
             )}
             {gameState.pendingSchoolChoice && gameState.pendingSchoolChoice.length > 0 && (
@@ -98,15 +97,20 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     onSelect={onSchoolChoice}
                     currentFunds={gameState.familyFund}
                     lang={lang}
+                    manifest={exampleManifest}
+                    images={avatarImages}
                 />
             )}
             {gameState.pendingClubChoice && (
+                // *** ĐÂY LÀ ĐOẠN CODE ĐÃ ĐƯỢC SỬA LỖI ***
                 <ClubChoiceModal
                     character={familyMembers[gameState.pendingClubChoice.characterId]}
                     clubs={gameState.pendingClubChoice.options}
                     onSelect={onClubChoice}
                     onSkip={() => onClubChoice(null)}
                     lang={lang}
+                    manifest={exampleManifest} // <-- Thêm prop còn thiếu
+                    images={avatarImages}      // <-- Thêm prop còn thiếu
                 />
             )}
              {gameState.pendingUniversityChoice && gameState.pendingUniversityChoice.length > 0 && (
@@ -114,6 +118,8 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     character={familyMembers[gameState.pendingUniversityChoice[0].characterId]}
                     onSelect={onUniversityChoice}
                     lang={lang}
+                    manifest={exampleManifest}
+                    images={avatarImages}
                 />
             )}
             {gameState.pendingMajorChoice && (
@@ -124,6 +130,8 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     currentFunds={gameState.familyFund}
                     lang={lang}
                     onAbandon={onAbandonUniversity}
+                    manifest={exampleManifest}
+                    images={avatarImages}
                 />
             )}
             {gameState.pendingCareerChoice && (
@@ -133,6 +141,8 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     onSelect={onCareerChoice}
                     currentFunds={gameState.familyFund}
                     lang={lang}
+                    manifest={exampleManifest}
+                    images={avatarImages}
                 />
             )}
             {gameState.pendingUnderqualifiedChoice && (
@@ -141,6 +151,8 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     careerTrackKey={gameState.pendingUnderqualifiedChoice.careerTrackKey}
                     onSelect={onUnderqualifiedChoice}
                     lang={lang}
+                    manifest={exampleManifest}
+                    images={avatarImages}
                 />
             )}
             {selectedCharacter && (

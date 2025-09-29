@@ -17,7 +17,7 @@ const chestImage = require('../assets/chest.webp');
 const lockImage = require('../assets/lock.webp');
 const claimButtonImage = require('../assets/claim_button.webp');
 
-// --- REPLACED PathNodeItem ---
+// --- PathNodeItem ---
 interface PathNodeItemProps {
   node: { level: number; featureId: string; alignment: 'left' | 'right' };
   feature: UnlockableFeature;
@@ -34,34 +34,29 @@ interface PathNodeItemProps {
 const PathNodeItem: React.FC<PathNodeItemProps> = ({
   node, feature, isGlowing, isClaimable, isClaimed, isLocked, positionStyle, onClaim, onShowInfo, lang
 }) => {
-  // CONSTRAINT 5: State for button press effect
   const [isPressed, setIsPressed] = useState(false);
-
   const isSpecialMilestone = node.level % 10 === 0 && node.level > 0;
   const markerImage = isSpecialMilestone ? wingedHeartImage : gemImage;
   const isAlignedRight = node.alignment === 'right';
 
   return (
     <View style={[styles.nodeContainer, positionStyle]}>
-      
-      {/* CONSTRAINT 1: Milestone is separate on the track */}
-      <View style={styles.milestoneOnTrack}>
+      <View style={[styles.milestoneOnTrack, isSpecialMilestone && styles.specialMilestone]}>
         {isGlowing && <Image source={glowEffectImage} style={styles.glowEffect} resizeMode="contain" />}
         <ImageBackground source={markerImage} style={styles.milestoneImage} resizeMode="contain">
           <Text style={styles.milestoneText}>{node.level}</Text>
         </ImageBackground>
       </View>
       
-      {/* CONSTRAINT 1: Reward is separate on the side */}
       <View style={[styles.rewardOnSide, isAlignedRight ? styles.rewardRight : styles.rewardLeft]}>
         <ImageBackground 
           source={bubbleImage} 
           style={[styles.rewardBubble, !isAlignedRight && styles.bubbleFlipped]}
           resizeMode="stretch"
         >
-          {/* CONSTRAINT 3: Chest is fully inside */}
           <View style={styles.chestInsideBubble}>
             {feature.type === 'specific_feature' && feature.iconAsset ? (
+              // *** ĐÂY LÀ DÒNG ĐÃ ĐƯỢC SỬA LỖI ***
               <Image source={feature.iconAsset} style={styles.featureIcon} resizeMode="contain" />
             ) : (
               <Image source={chestImage} style={styles.chestImage} resizeMode="contain" />
@@ -69,17 +64,14 @@ const PathNodeItem: React.FC<PathNodeItemProps> = ({
           </View>
         </ImageBackground>
 
-        {/* CONSTRAINT 3: Lock is overlapping */}
         {isLocked && (
           <Image source={lockImage} style={styles.lockOverlapping} resizeMode="contain" />
         )}
         
-        {/* CONSTRAINT 4: Info button is outside, styled correctly */}
         <Pressable onPress={() => onShowInfo(feature)} style={styles.infoButtonStyled}>
             <Text style={styles.infoButtonText}>i</Text>
         </Pressable>
 
-        {/* CONSTRAINT 5: Claim button has press effect */}
         {isClaimable && (
           <Pressable 
             onPress={() => onClaim(feature.id)}
@@ -100,22 +92,22 @@ const PathNodeItem: React.FC<PathNodeItemProps> = ({
 };
 
 
-// Main component remains the same
+// --- PathOfLifeScreen (Main Component) ---
 interface PathOfLifeScreenProps {
   gameState: GameState;
   lang: Language;
   onClaimFeature: (featureId: string) => void;
 }
 
-// NEW LOGIC FOR FIXED SPACING
 export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, lang, onClaimFeature }) => {
   const [infoModalFeature, setInfoModalFeature] = useState<UnlockableFeature | null>(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [claimedNotification, setClaimedNotification] = useState<UnlockableFeature | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
+  const initialScrollDone = useRef(false);
   
-  const nodeSpacing = 400; // New: Fixed spacing between nodes
-  const contentHeight = (PATH_NODES.length - 1) * nodeSpacing; // New: Height based on fixed spacing
+  const nodeSpacing = 200;
+  const contentHeight = (PATH_NODES.length - 1) * nodeSpacing;
 
   const currentProgress = gameState.totalChildrenBorn;
 
@@ -127,17 +119,29 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
     }
   };
 
-  // New: Find the index of the last passed node for progress bar and scrolling
   const lastPassedNodeIndex = useMemo(() => {
     for (let i = PATH_NODES.length - 1; i >= 0; i--) {
       if (currentProgress >= PATH_NODES[i].level) {
         return i;
       }
     }
-    return -1; // No nodes passed yet
+    return -1;
   }, [currentProgress]);
 
-  // New: Progress is now based on the index of the last passed node
+  const focusNodeIndex = useMemo(() => {
+    const firstClaimableIndex = PATH_NODES.findIndex(node => {
+        const isPassed = currentProgress >= node.level;
+        const isClaimed = gameState.claimedFeatures.includes(node.featureId);
+        return isPassed && !isClaimed;
+    });
+
+    if (firstClaimableIndex !== -1) {
+        return firstClaimableIndex;
+    }
+    
+    return lastPassedNodeIndex > -1 ? lastPassedNodeIndex : 0;
+  }, [currentProgress, gameState.claimedFeatures, lastPassedNodeIndex]);
+
   const overallProgress = lastPassedNodeIndex >= 0 ? lastPassedNodeIndex / (PATH_NODES.length - 1) : 0;
   const progressAnimation = useRef(new Animated.Value(0)).current;
 
@@ -147,7 +151,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
           duration: 500,
           useNativeDriver: false,
       }).start();
-  }, [overallProgress, progressAnimation]);
+  }, [overallProgress]);
 
   const animatedHeight = progressAnimation.interpolate({
       inputRange: [0, 1],
@@ -161,13 +165,15 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
       return lastUnlockableNode ? lastUnlockableNode.level : null;
   }, [currentProgress]);
 
-  // New: Scrolling logic updated for fixed spacing
   useEffect(() => {
-    if (scrollViewRef.current && lastPassedNodeIndex > -1) {
-      const scrollPosition = contentHeight - (lastPassedNodeIndex * nodeSpacing);
-      scrollViewRef.current.scrollTo({ y: scrollPosition, animated: true });
+    if (scrollViewRef.current && contentHeight > 0 && !initialScrollDone.current) {
+      const scrollPosition = (PATH_NODES.length - 1 - focusNodeIndex) * nodeSpacing;
+      
+      scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false });
+
+      initialScrollDone.current = true;
     }
-  }, [lastPassedNodeIndex, contentHeight, nodeSpacing]);
+  }, [focusNodeIndex, contentHeight, nodeSpacing]);
 
   return (
     <ImageBackground source={bgImage} style={styles.background} resizeMode="cover">
@@ -183,7 +189,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
           <Image source={pathTrackImage} style={styles.pathTrack} resizeMode="stretch" />
           <Animated.View style={[styles.pathFill, { height: animatedHeight }]} />
           
-          {PATH_NODES.map((node, index) => { // New: Get index from map
+          {PATH_NODES.map((node, index) => {
             const feature = UNLOCKABLE_FEATURES.find(f => f.id === node.featureId);
             if (!feature) return null;
 
@@ -191,7 +197,6 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
             const isClaimed = gameState.claimedFeatures.includes(node.featureId);
             const isClaimable = isPassed && !isClaimed;
             const isCurrentGlowTarget = node.level === currentGlowLevel;
-            // New: Position style based on index and fixed spacing
             const positionStyle = { bottom: index * nodeSpacing };
 
             return (
@@ -213,7 +218,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
         </View>
       </ScrollView>
 
-      {/* Modal to display detailed information */}
+      {/* Modals */}
       {infoModalFeature && (
         <Modal
           transparent={true}
@@ -233,7 +238,6 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
         </Modal>
       )}
 
-      {/* Modal for general info */}
       {showInfoModal && (
         <Modal
           transparent={true}
@@ -253,7 +257,6 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
         </Modal>
       )}
 
-      {/* Modal for claim notification */}
       {claimedNotification && (
         <Modal
           transparent={true}
@@ -279,9 +282,8 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
 };
 
 
-// --- REPLACED StyleSheet ---
+// --- StyleSheet ---
 const styles = StyleSheet.create({
-    // --- Basic styles (background, scroll, path...) ---
     background: { flex: 1, alignItems: 'center' },
     titleContainer: {
         flexDirection: 'row',
@@ -320,42 +322,32 @@ const styles = StyleSheet.create({
     pathContainer: { alignSelf: 'center', position: 'relative', width: 20 },
     pathTrack: { position: 'absolute', width: '100%', height: '100%' },
     pathFill: { position: 'absolute', width: '100%', backgroundColor: '#FF69B4', bottom: 0 },
-
-    // --- Container for each level (Invisible) ---
     nodeContainer: { position: 'absolute', width: '100%', height: 120, justifyContent: 'center' },
-    
-    // --- Cluster 1: Milestone on track ---
     milestoneOnTrack: {
         position: 'absolute',
-        // Kích thước mặc định cho Gem (nhỏ hơn 30%)
-        width: 70, // 100 * 0.7
-        height: 70, // 100 * 0.7
+        width: 70,
+        height: 70,
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 5,
     },
     milestoneImage: { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' },
-    // Style riêng cho Wing Heart để làm nó to hơn
     specialMilestone: {
-        width: 120, // 100 * 1.2
-        height: 120, // 100 * 1.2
+        width: 120,
+        height: 120,
     },
     milestoneText: { color: 'white', fontSize: 24, fontWeight: 'bold', textShadowColor: 'rgba(0, 0, 0, 0.7)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3 },
     glowEffect: { position: 'absolute', width: 150, height: 150 },
-
-    // --- Cluster 2: Reward on the side ---
     rewardOnSide: {
         position: 'absolute',
         width: 150,
         height: 150,
         alignItems: 'center',
-        justifyContent: 'center', // Center vertically
+        justifyContent: 'center',
     },
     rewardLeft: { right: '50%', marginRight: 30 },
     rewardRight: { left: '50%', marginLeft: 30 },
-    
-    // CONSTRAINT 2: Square, non-squashed bubble
     rewardBubble: {
         width: 120,
         height: 120,
@@ -363,8 +355,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     bubbleFlipped: { transform: [{ scaleX: -1 }] },
-    
-    // CONSTRAINT 3: Chest inside bubble
     chestInsideBubble: {
         width: '70%',
         height: '70%',
@@ -373,31 +363,25 @@ const styles = StyleSheet.create({
     },
     chestImage: { width: '100%', height: '100%' },
     featureIcon: { width: '90%', height: '90%' },
-    
-    // CONSTRAINT 3: Lock half-in, half-out
     lockOverlapping: {
         position: 'absolute',
         width: 50, 
         height: 50,
         bottom: 20, 
-        zIndex: 15, // On top of the bubble
+        zIndex: 15,
     },
-    
-    // Claim button and claimed status
     claimButtonContainer: {
         position: 'absolute',
         bottom: 25, 
-        zIndex: 20, // On top of the lock
+        zIndex: 20,
     },
     claimButton: { width: 120, height: 45, justifyContent: 'center', alignItems: 'center' },
     claimButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
     claimedText: { color: colors.success, fontWeight: 'bold', position: 'absolute', bottom: 35 },
-
-    // CONSTRAINT 4: Info button with orange bg and black border
     infoButtonStyled: {
         position: 'absolute',
-        top: 20, // Adjust position
-        right: 5, // Adjust position
+        top: 20,
+        right: 5,
         width: 28,
         height: 28,
         borderRadius: 14, 
@@ -409,8 +393,6 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     infoButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-
-    // --- Modal Styles (unchanged) ---
     modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.6)' },
     modalContainer: { width: '80%', padding: 20, backgroundColor: 'white', borderRadius: 15, alignItems: 'center' },
     modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },

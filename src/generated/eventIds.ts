@@ -152,6 +152,7 @@ export const EventIdByKey = {
   "middleschool_teased_by_friends_council": "ev_mkmF3d-OKFaTPgfJoMU-2",
   "middleschool_teased_by_friends_crush": "ev_lP5BJz2_Hq2xFnEv74XUB",
   "milestone_child_conceived": "ev_hYuR2SJJHmOyv27LqEek6",
+  "milestone_children_fail": "ev_hYuR2SJJHmOyv27LqEek5",
   "milestone_children": "ev_LRNbBbTBTm6E8aWeZ1LCN",
   "milestone_death_old_age": "ev_Lr5YlZLoglaNWZEv3qJh-",
   "milestone_marriage": "ev_pnqCKJrxIGh2GF43eEdnq",

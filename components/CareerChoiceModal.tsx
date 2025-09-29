@@ -1,31 +1,49 @@
 import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+// *** THAY ĐỔI 1: Thêm View và ImageSourcePropType ***
+import { View, Text, StyleSheet, ImageSourcePropType } from 'react-native';
 
-
-import type { Character, Language } from '../core/types';
+// *** THAY ĐỔI 2: Thêm các type và component cần thiết ***
+import type { Character, Language, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
 import { CAREER_LADDER, VOCATIONAL_TRAINING } from '../core/constants';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
+import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
 
-
-
-interface LocalizedProps {
-    lang: Language;
-}
-
-interface CareerChoiceModalProps extends LocalizedProps {
+// *** THAY ĐỔI 3: Cập nhật interface để nhận props mới ***
+interface CareerChoiceModalProps {
     character: Character;
     options: string[];
     onSelect: (careerTrackKey: string) => void;
     currentFunds: number;
+    lang: Language;
+    manifest: Manifest;
+    images: Record<string, ImageSourcePropType>;
 }
-export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character, options, onSelect, currentFunds, lang }) => (
+
+// *** THAY ĐỔI 4: Lấy props mới ***
+export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character, options, onSelect, currentFunds, lang, manifest, images }) => (
      <ComicPanelModal visible={true} onClose={() => {}} rotate="1deg">
-        <Text style={careerChoiceModalStyles.title}>{t('modal_career_title', lang)}</Text>
-        <Text style={careerChoiceModalStyles.description}>{t('modal_career_desc', lang, { name: getCharacterDisplayName(character, lang) })}</Text>
+        {/* *** THAY ĐỔI 5: Tạo bố cục header với avatar *** */}
+        <View style={styles.header}>
+            <View style={styles.avatarContainer}>
+                <AgeAwareAvatarPreview
+                    character={character}
+                    manifest={manifest}
+                    images={images}
+                    size={{ width: 80, height: 80 }}
+                />
+            </View>
+            <View style={styles.headerTextContainer}>
+                <Text style={styles.title}>{t('modal_career_title', lang)}</Text>
+            </View>
+        </View>
+
+        <Text style={styles.description}>{t('modal_career_desc', lang, { name: getCharacterDisplayName(character, lang) })}</Text>
+        
+        {/* Phần lựa chọn không thay đổi */}
         {options.map((optionKey, index) => {
              if (CAREER_LADDER[optionKey]) {
                 const track = CAREER_LADDER[optionKey];
@@ -44,14 +62,14 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
 
                 return (
                     <ChoiceButton key={index} onClick={() => onSelect(optionKey)}>
-                        <View style={careerChoiceModalStyles.choiceContent}>
-                             <View style={careerChoiceModalStyles.choiceNameContainer}>
-                                <Text style={careerChoiceModalStyles.choiceNameText}>{t(track.nameKey, lang)}</Text>
-                                {isMajorMatch && !isUnderqualified && <Text style={careerChoiceModalStyles.majorMatchIcon} accessibilityLabel={t('major_match_tooltip', lang)}>⭐</Text>}
-                                {isUnderqualified && <Text style={careerChoiceModalStyles.underqualifiedIcon} accessibilityLabel={tooltipText}>⚠️</Text>}
+                        <View style={styles.choiceContent}>
+                             <View style={styles.choiceNameContainer}>
+                                <Text style={styles.choiceNameText}>{t(track.nameKey, lang)}</Text>
+                                {isMajorMatch && !isUnderqualified && <Text style={styles.majorMatchIcon} accessibilityLabel={t('major_match_tooltip', lang)}>⭐</Text>}
+                                {isUnderqualified && <Text style={styles.underqualifiedIcon} accessibilityLabel={tooltipText}>⚠️</Text>}
                             </View>
                         </View>
-                        <Text style={careerChoiceModalStyles.choiceDescription}>{t(track.descriptionKey, lang)}</Text>
+                        <Text style={styles.choiceDescription}>{t(track.descriptionKey, lang)}</Text>
                     </ChoiceButton>
                 );
             } else if (optionKey === 'job' || optionKey === 'internship' || optionKey === 'vocational') {
@@ -61,15 +79,15 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
                 
                 return (
                     <ChoiceButton key={index} onClick={() => onSelect(optionKey)} disabled={currentFunds < cost}>
-                        <View style={careerChoiceModalStyles.choiceContent}>
-                            <Text style={careerChoiceModalStyles.choiceNameText}>{t(keyBase, lang)}</Text>
+                        <View style={styles.choiceContent}>
+                            <Text style={styles.choiceNameText}>{t(keyBase, lang)}</Text>
                              {cost > 0 && (
-                                <Text style={[careerChoiceModalStyles.choiceCost, currentFunds >= cost ? careerChoiceModalStyles.costAffordable : careerChoiceModalStyles.costUnaffordable]}>
+                                <Text style={[styles.choiceCost, currentFunds >= cost ? styles.costAffordable : styles.costUnaffordable]}>
                                     (-${cost.toLocaleString()})
                                 </Text>
                             )}
                         </View>
-                        <Text style={careerChoiceModalStyles.choiceDescription}>{t(descKey, lang)}</Text>
+                        <Text style={styles.choiceDescription}>{t(descKey, lang)}</Text>
                     </ChoiceButton>
                 );
             }
@@ -78,13 +96,38 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
     </ComicPanelModal>
 );
 
-const careerChoiceModalStyles = StyleSheet.create({
-  choiceContent: {
+// *** THAY ĐỔI 6: Bổ sung và điều chỉnh styles ***
+const styles = StyleSheet.create({
+    // Styles mới
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    avatarContainer: {
+        marginRight: 12,
+    },
+    headerTextContainer: {
+        flex: 1,
+    },
+    // Styles cũ
+    title: {
+        color: '#1e293b',
+        fontSize: 24,
+        fontWeight: '900',
+        // Bỏ margin bottom
+    },
+    description: {
+        color: '#475569',
+        fontSize: 16,
+        marginBottom: 24,
+    },
+    choiceContent: {
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-  choiceCost: {
+    choiceCost: {
         fontSize: 14,
     },
     choiceDescription: {
@@ -106,21 +149,10 @@ const careerChoiceModalStyles = StyleSheet.create({
     costUnaffordable: {
         color: '#ef4444', // red-500
     },
-        description: {
-        color: '#475569',
-        fontSize: 16,
-        marginBottom: 24,
-    },
     majorMatchIcon: {
         fontSize: 16,
         marginLeft: 8,
     },
-    title: {
-    color: '#1e293b',
-    fontSize: 24,
-    fontWeight: '900',
-    marginBottom: 8,
-  },
     underqualifiedIcon: {
         fontSize: 16,
         marginLeft: 8,

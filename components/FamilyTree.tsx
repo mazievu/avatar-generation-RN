@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { View, StyleSheet, Dimensions, ImageSourcePropType, Text, ViewStyle } from 'react-native';
 import {
   Gesture, GestureDetector
@@ -43,11 +43,27 @@ interface FamilyTreeProps {
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const NODE_WIDTH = (screenWidth - 32) / 3 - 16;
 const NODE_HEIGHT = NODE_WIDTH * 1.2;
-const HORIZONTAL_SPACING = 20;
+const HORIZONTAL_SPACING = 30;
 const VERTICAL_SPACING = 60;
 
-
 // --- 3. LAYOUT CALCULATION LOGIC ---
+
+function shiftSubtree(nodeId: string, offsetX: number, layouts: LayoutsMap, allMembers: Record<string, Character>, visited = new Set<string>()) {
+  if (visited.has(nodeId) || !layouts[nodeId]) return;
+  visited.add(nodeId);
+  layouts[nodeId].x += offsetX;
+
+  const character = allMembers[nodeId];
+  if (character?.childrenIds) {
+    for (const childId of character.childrenIds) {
+      shiftSubtree(childId, offsetX, layouts, allMembers, visited);
+      const child = allMembers[childId];
+      if (child?.partnerId && layouts[child.partnerId]) {
+         shiftSubtree(child.partnerId, offsetX, layouts, allMembers, visited);
+      }
+    }
+  }
+}
 
 function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap {
   const layouts: LayoutsMap = {};
@@ -60,15 +76,15 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
     }
     membersByGeneration[char.generation].push(char);
   });
-
-  const processedIds = new Set<string>();
+  
   let totalY = 0;
+  const generationLevels = Object.keys(membersByGeneration).sort((a, b) => Number(a) - Number(b)).map(Number);
 
-  Object.keys(membersByGeneration).sort((a, b) => Number(a) - Number(b)).forEach(genKey => {
-    const generation = Number(genKey);
+  generationLevels.forEach(generation => {
     const membersInGen = membersByGeneration[generation];
     let currentX = 0;
     const couples = new Map<string, Character[]>();
+    const processedIds = new Set<string>();
 
     membersInGen.forEach(char => {
       if (processedIds.has(char.id)) return;
@@ -86,59 +102,87 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
       }
     });
 
-    const generationWidth = couples.size * (NODE_WIDTH + HORIZONTAL_SPACING) - HORIZONTAL_SPACING;
+    const generationWidth = Array.from(couples.values()).reduce((acc, members) => {
+        return acc + (members.length * NODE_WIDTH) + HORIZONTAL_SPACING;
+    }, -HORIZONTAL_SPACING);
+    
     currentX = -generationWidth / 2;
 
     couples.forEach(members => {
-      if (members.length === 2) {
-        const [char1, char2] = members;
-        layouts[char1.id] = { id: char1.id, x: currentX, y: totalY, isPlayerCharacter: char1.isPlayerCharacter, parentsIds: char1.parentsIds || [], partnerId: char1.partnerId || null, childrenIds: char1.childrenIds || [], };
-        currentX += NODE_WIDTH + HORIZONTAL_SPACING;
-        layouts[char2.id] = { id: char2.id, x: currentX, y: totalY, isPlayerCharacter: char2.isPlayerCharacter, parentsIds: char2.parentsIds || [], partnerId: char2.partnerId || null, childrenIds: char2.childrenIds || [], };
-        currentX += NODE_WIDTH + HORIZONTAL_SPACING;
-      } else {
-        const [char] = members;
-        layouts[char.id] = { id: char.id, x: currentX, y: totalY, isPlayerCharacter: char.isPlayerCharacter, parentsIds: char.parentsIds || [], partnerId: char.partnerId || null, childrenIds: char.childrenIds || [], };
-        currentX += NODE_WIDTH + HORIZONTAL_SPACING;
-      }
+      members.forEach(char => {
+         layouts[char.id] = {
+           id: char.id, x: currentX, y: totalY, isPlayerCharacter: char.isPlayerCharacter, 
+           parentsIds: char.parentsIds || [], partnerId: char.partnerId || null, childrenIds: char.childrenIds || [],
+         };
+         currentX += NODE_WIDTH + HORIZONTAL_SPACING;
+      });
     });
     totalY += NODE_HEIGHT + VERTICAL_SPACING;
   });
 
-  Object.values(allMembers).forEach(parentChar => {
-    const parentLayout = layouts[parentChar.id];
-    if (!parentLayout || !parentChar.childrenIds || parentChar.childrenIds.length === 0) {
-      return;
-    }
-    const childrenXPositions = parentChar.childrenIds.map(childId => layouts[childId] ? layouts[childId].x + NODE_WIDTH / 2 : undefined).filter(x => x !== undefined) as number[];
-    if (childrenXPositions.length > 0) {
-      const minChildXCenter = Math.min(...childrenXPositions);
-      const maxChildXCenter = Math.max(...childrenXPositions);
-      const desiredParentXCenter = (minChildXCenter + maxChildXCenter) / 2;
-      let currentParentXCenter;
-      if (parentChar.partnerId && layouts[parentChar.partnerId]) {
-        const partnerLayout = layouts[parentChar.partnerId];
-        currentParentXCenter = (parentLayout.x + NODE_WIDTH / 2 + partnerLayout.x + NODE_WIDTH / 2) / 2;
-      } else {
-        currentParentXCenter = parentLayout.x + NODE_WIDTH / 2;
-      }
-      const offsetX = desiredParentXCenter - currentParentXCenter;
-      parentLayout.x += offsetX;
-      if (parentChar.partnerId && layouts[parentChar.partnerId]) {
-        layouts[parentChar.partnerId].x += offsetX;
-      }
-    }
-  });
+  for (let i = generationLevels.length - 2; i >= 0; i--) {
+    const generation = generationLevels[i];
+    const membersInGen = membersByGeneration[generation]
+      .filter(m => layouts[m.id])
+      .sort((a, b) => layouts[a.id].x - layouts[b.id].x);
 
-  Object.values(allMembers).forEach(char => {
-    if (!layouts[char.id]) {
-      layouts[char.id] = { id: char.id, x: 0, y: 0, isPlayerCharacter: char.isPlayerCharacter, parentsIds: char.parentsIds || [], partnerId: char.partnerId || null, childrenIds: char.childrenIds || [], };
+    membersInGen.forEach(parentChar => {
+      const parentLayout = layouts[parentChar.id];
+      if (!parentLayout || !parentChar.childrenIds || parentChar.childrenIds.length === 0) {
+        return;
+      }
+
+      const childrenLayouts = parentChar.childrenIds
+        .map(childId => layouts[childId])
+        .filter(Boolean);
+      
+      if (childrenLayouts.length > 0) {
+        const minChildX = Math.min(...childrenLayouts.map(l => l.x));
+        const maxChildX = Math.max(...childrenLayouts.map(l => l.x + NODE_WIDTH));
+        const desiredParentBlockXCenter = (minChildX + maxChildX) / 2;
+
+        let currentParentBlockXCenter;
+
+        if (parentChar.partnerId && layouts[parentChar.partnerId]) {
+            const partnerLayout = layouts[parentChar.partnerId];
+            if (parentLayout.x > partnerLayout.x) return;
+
+            currentParentBlockXCenter = (parentLayout.x + partnerLayout.x + NODE_WIDTH) / 2;
+        } else {
+            currentParentBlockXCenter = parentLayout.x + NODE_WIDTH / 2;
+        }
+
+        const offsetX = desiredParentBlockXCenter - currentParentBlockXCenter;
+        parentLayout.x += offsetX;
+        if (parentChar.partnerId && layouts[parentChar.partnerId]) {
+            layouts[parentChar.partnerId].x += offsetX;
+        }
+      }
+    });
+
+    for (let j = 1; j < membersInGen.length; j++) {
+      const currentMember = membersInGen[j];
+      const prevMember = membersInGen[j - 1];
+      const currentLayout = layouts[currentMember.id];
+      const prevLayout = layouts[prevMember.id];
+
+      if (!currentLayout || !prevLayout) continue;
+
+      const requiredX = prevLayout.x + NODE_WIDTH + HORIZONTAL_SPACING;
+      if (currentLayout.x < requiredX) {
+        const shiftAmount = requiredX - currentLayout.x;
+        shiftSubtree(currentMember.id, shiftAmount, layouts, allMembers);
+        if (currentMember.partnerId && layouts[currentMember.partnerId]) {
+           shiftSubtree(currentMember.partnerId, shiftAmount, layouts, allMembers);
+        }
+      }
     }
-  });
+  }
+
   return layouts;
 }
 
-// --- 5. STYLES (ĐÃ DI CHUYỂN LÊN TRÊN) ---
+// --- 5. STYLES ---
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#eeeeeeff',
@@ -154,20 +198,22 @@ const styles = StyleSheet.create({
   },
 });
 
-// --- 4. MAIN FAMILY TREE COMPONENT (Interaction & Graphics) ---
+// --- 4. MAIN FAMILY TREE COMPONENT ---
 export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
   const hasCenteredInitially = useRef(false);
 
+  // Animated values
   const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-  const savedTranslateX = useSharedValue(0);
-  const savedTranslateY = useSharedValue(0);
 
-  const [renderScale, setRenderScale] = useState(1);
-  const [renderTranslateX, setRenderTranslateX] = useState(0);
-  const [renderTranslateY, setRenderTranslateY] = useState(0);
+  // "Context" values to store the state at the beginning of a gesture
+  const startTranslateX = useSharedValue(0);
+  const startTranslateY = useSharedValue(0);
+  const startScale = useSharedValue(1);
+  
+  // React state to trigger re-render for culling
+  const [viewState, setViewState] = useState({ scale: 1, x: 0, y: 0 });
 
   const layouts = useMemo(() => calculateTreeLayout(gameState.familyMembers), [gameState.familyMembers]);
 
@@ -181,11 +227,17 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
       maxX = Math.max(maxX, node.x + NODE_WIDTH);
       maxY = Math.max(maxY, node.y + NODE_HEIGHT);
     });
-    const padding = 100;
-    const paddedMinX = minX - padding, paddedMinY = minY - padding;
-    const totalWidth = (maxX + padding) - paddedMinX, totalHeight = (maxY + padding) - paddedMinY;
+    const padding = 200;
+    const paddedMinX = minX - padding;
+    const paddedMinY = minY - padding;
+    const totalWidth = (maxX + padding) - paddedMinX;
+    const totalHeight = (maxY + padding) - paddedMinY;
     return { minX: paddedMinX, minY: paddedMinY, width: totalWidth, height: totalHeight };
   }, [layouts]);
+
+  const updateViewStateThrottled = useCallback((newScale: number, newX: number, newY: number) => {
+      setViewState({ scale: newScale, x: newX, y: newY });
+  }, []);
 
   useEffect(() => {
     let characterToCenter: Character | null = null;
@@ -210,56 +262,67 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
       const centerY = screenHeight / 2;
       const newTranslateX = centerX - (layout.x + NODE_WIDTH / 2) * targetScale;
       const newTranslateY = centerY - (layout.y + NODE_HEIGHT / 2) * targetScale;
+      
       scale.value = withTiming(targetScale, { duration: 500 });
       translateX.value = withTiming(newTranslateX, { duration: 500 });
       translateY.value = withTiming(newTranslateY, { duration: 500 }, (finished) => {
         if (finished) {
-          runOnJS(setRenderScale)(targetScale);
-          runOnJS(setRenderTranslateX)(newTranslateX);
-          runOnJS(setRenderTranslateY)(newTranslateY);
+          runOnJS(setViewState)({ scale: targetScale, x: newTranslateX, y: newTranslateY });
           if (characterIdToCenterOnEvent && onCharacterCenteredOnEvent) {
             runOnJS(onCharacterCenteredOnEvent)();
           }
         }
       });
     }
-  }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.familyMembers, onCharacterCenteredOnEvent, scale, translateX, translateY]);
+  }, [selectedCharacter, characterIdToCenterOnEvent, layouts]);
 
   const panGesture = Gesture.Pan()
-    .onUpdate((e) => {
-        translateX.value = savedTranslateX.value + e.translationX;
-        translateY.value = savedTranslateY.value + e.translationY;
+    .onStart(() => {
+        startTranslateX.value = translateX.value;
+        startTranslateY.value = translateY.value;
+    })
+    .onUpdate((event) => {
+        translateX.value = startTranslateX.value + event.translationX;
+        translateY.value = startTranslateY.value + event.translationY;
+        runOnJS(updateViewStateThrottled)(scale.value, translateX.value, translateY.value);
     })
     .onEnd(() => {
-        savedTranslateX.value = translateX.value;
-        savedTranslateY.value = translateY.value;
-        runOnJS(setRenderTranslateX)(translateX.value);
-        runOnJS(setRenderTranslateY)(translateY.value);
+        runOnJS(updateViewStateThrottled)(scale.value, translateX.value, translateY.value);
     });
 
-const pinchGesture = Gesture.Pinch()
-    .onUpdate((e) => {
-        const newScale = savedScale.value * e.scale;
-        scale.value = Math.max(0.5, Math.min(newScale, 3));
+  const pinchGesture = Gesture.Pinch()
+    .onStart(() => {
+        startScale.value = scale.value;
+    })
+    .onUpdate((event) => {
+        const newScale = startScale.value * event.scale;
+        scale.value = Math.max(0.3, Math.min(newScale, 3));
+        runOnJS(updateViewStateThrottled)(scale.value, translateX.value, translateY.value);
     })
     .onEnd(() => {
-        savedScale.value = scale.value;
-        runOnJS(setRenderScale)(scale.value);
+        runOnJS(updateViewStateThrottled)(scale.value, translateX.value, translateY.value);
     });
 
   const composedGesture = Gesture.Simultaneous(panGesture, pinchGesture);
 
-  const animatedStyle = useAnimatedStyle(() => ({ transform: [ { translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value } ] as NonNullable<ViewStyle['transform']>, }));
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value }
+    ] as NonNullable<ViewStyle['transform']>,
+  }));
 
   const renderConnectors = () => {
     const paths = [];
     const drawnFamilyUnits = new Set<string>();
     Object.values(layouts).forEach(nodeLayout => {
-      if (!nodeLayout.childrenIds || nodeLayout.childrenIds.length === 0) { return; }
+      if (!nodeLayout.childrenIds || nodeLayout.childrenIds.length === 0) return;
       const primaryParentId = (nodeLayout.partnerId && nodeLayout.id > nodeLayout.partnerId) ? nodeLayout.partnerId : nodeLayout.id;
       const familyUnitId = `${primaryParentId}-${nodeLayout.childrenIds.sort().join(',')}`;
-      if (drawnFamilyUnits.has(familyUnitId)) { return; }
+      if (drawnFamilyUnits.has(familyUnitId)) return;
       drawnFamilyUnits.add(familyUnitId);
+      
       let p0x: number;
       const p0y = nodeLayout.y + NODE_HEIGHT;
       if (nodeLayout.partnerId && layouts[nodeLayout.partnerId]) {
@@ -278,36 +341,48 @@ const pinchGesture = Gesture.Pinch()
           const cp2x = p3x;
           const cp2y = p3y - VERTICAL_SPACING / 2;
           const curvePath = `M ${p0x} ${p0y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p3x} ${p3y}`;
-          paths.push( <Path key={`${familyUnitId}-${childId}-curve`} d={curvePath} stroke="#3b82f6" strokeWidth="2.5" fill="none" /> );
+          paths.push(<Path key={`${familyUnitId}-${childId}-curve`} d={curvePath} stroke="#3b82f6" strokeWidth="2.5" fill="none" />);
         }
       });
     });
     return paths;
   };
-
-  const getVisibleNodes = () => {
-    const visibleNodes = [];
-    const currentScale = renderScale;
-    const currentX = renderTranslateX;
-    const currentY = renderTranslateY;
+  
+  const getVisibleNodes = (
+    layoutsMap: LayoutsMap, 
+    currentScale: number, 
+    currentX: number, 
+    currentY: number
+  ): NodeLayout[] => {
+    const visibleNodes: NodeLayout[] = [];
     const viewPortX = -currentX / currentScale;
     const viewPortY = -currentY / currentScale;
     const viewPortWidth = screenWidth / currentScale;
     const viewPortHeight = screenHeight / currentScale;
-    const bufferX = viewPortWidth * 0.5;
-    const bufferY = viewPortHeight * 0.5;
-    for (const id in layouts) {
-      const node = layouts[id];
+
+    const bufferX = viewPortWidth * 1.0;
+    const bufferY = viewPortHeight * 1.0;
+
+    for (const id in layoutsMap) {
+      const node = layoutsMap[id];
       const nodeRight = node.x + NODE_WIDTH;
       const nodeBottom = node.y + NODE_HEIGHT;
-      if ( nodeRight >= viewPortX - bufferX && node.x <= viewPortX + viewPortWidth + bufferX && nodeBottom >= viewPortY - bufferY && node.y <= viewPortY + viewPortHeight + bufferY ) {
+      if (
+        nodeRight >= viewPortX - bufferX &&
+        node.x <= viewPortX + viewPortWidth + bufferX &&
+        nodeBottom >= viewPortY - bufferY &&
+        node.y <= viewPortY + viewPortHeight + bufferY
+      ) {
         visibleNodes.push(node);
       }
     }
     return visibleNodes;
   };
 
-  const visibleNodes = useMemo(getVisibleNodes, [layouts, renderScale, renderTranslateX, renderTranslateY]);
+  const visibleNodes = useMemo(() => 
+    getVisibleNodes(layouts, viewState.scale, viewState.x, viewState.y),
+    [layouts, viewState]
+  );
 
   if (Object.keys(layouts).length === 0) {
     return <View style={styles.container}><Text>No family members to display.</Text></View>;
@@ -315,54 +390,55 @@ const pinchGesture = Gesture.Pinch()
 
   return (
     <GestureDetector gesture={composedGesture}>
-      <Animated.View style={[styles.treeContainer, animatedStyle]}>
-        
-        <Svg 
-          style={{
-            position: 'absolute',
-            left: treeBounds.minX,
-            top: treeBounds.minY,
-            width: treeBounds.width,
-            height: treeBounds.height,
-          }}
-          pointerEvents="none"
-          viewBox={`${treeBounds.minX} ${treeBounds.minY} ${treeBounds.width} ${treeBounds.height}`}
-        >
-          {renderConnectors()}
-        </Svg>
-        
-        {visibleNodes.map(nodeLayout => {
-          const character = gameState.familyMembers[nodeLayout.id];
-          if (!character) return null;
-          return (
-            <View
-              key={character.id}
-              style={[
-                styles.nodeContainer,
-                {
-                  left: nodeLayout.x,
-                  top: nodeLayout.y,
-                  width: NODE_WIDTH,
-                  height: NODE_HEIGHT
-                }
-              ]}
-            >
-              <CharacterNode
-                character={character}
-                onClick={() => onSelectCharacter(character)}
-                lang={lang}
-                manifest={manifest}
-                images={images}
-              />
-              <IncomeAnimation
-                netIncome={character.monthlyNetIncome}
-                characterId={character.id}
-                currentDate={gameState.currentDate}
-              />
-            </View>
-          );
-        })}
+      <Animated.View style={styles.container}>
+        <Animated.View style={[styles.treeContainer, animatedStyle]}>
+          <Svg 
+            style={{
+              position: 'absolute',
+              left: treeBounds.minX,
+              top: treeBounds.minY,
+              width: treeBounds.width,
+              height: treeBounds.height,
+            }}
+            pointerEvents="none"
+            viewBox={`${treeBounds.minX} ${treeBounds.minY} ${treeBounds.width} ${treeBounds.height}`}
+          >
+            {renderConnectors()}
+          </Svg>
+          
+          {visibleNodes.map(nodeLayout => {
+            const character = gameState.familyMembers[nodeLayout.id];
+            if (!character) return null;
+            return (
+              <View
+                key={character.id}
+                style={[
+                  styles.nodeContainer,
+                  {
+                    left: nodeLayout.x,
+                    top: nodeLayout.y,
+                    width: NODE_WIDTH,
+                    height: NODE_HEIGHT
+                  }
+                ]}
+              >
+                <CharacterNode
+                  character={character}
+                  onClick={() => onSelectCharacter(character)}
+                  lang={lang}
+                  manifest={manifest}
+                  images={images}
+                />
+                <IncomeAnimation
+                  netIncome={character.monthlyNetIncome}
+                  characterId={character.id}
+                  currentDate={gameState.currentDate}
+                />
+              </View>
+            );
+          })}
+        </Animated.View>
       </Animated.View>
-  </GestureDetector>
+    </GestureDetector>
   );
-}; 
+};
