@@ -113,8 +113,7 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                    char.gender === Gender.Female &&
                    char.age >= 23 &&
                    char.age <= 45 &&
-                   (char.childrenIds?.length || 0) < 6 &&
-                   Math.random() < 0.8;
+                   (char.childrenIds?.length || 0) < 6;
         },
         choices: [
             { textKey: 'milestone_children_yes', effect: { 

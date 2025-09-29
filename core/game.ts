@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeAllGameData, getAllEvents } from './gameData';
 import { applyMigrations } from './migrations';
 import { adService } from '../services'; // Import adService
+import { Alert } from 'react-native';
 
 
 const SAVE_KEY = 'generations_savegame';
@@ -175,6 +176,11 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             }
         } catch (error) {
             console.error("Failed to load game:", error);
+            Alert.alert(
+                t('load_game_error_title', language),
+                t('load_game_error_message', language),
+                [{ text: 'OK' }]
+            );
             await AsyncStorage.removeItem(SAVE_KEY);
             setView('menu');
         }
@@ -867,20 +873,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     // Tăng tổng số trẻ em đã sinh ra khi có trẻ mới
                     nextState.totalChildrenBorn = (nextState.totalChildrenBorn || 0) + 1;
 
-                    // Check for newly unlocked features
-                    for (const feature of UNLOCKABLE_FEATURES) {
-                        const isAlreadyUnlocked = nextState.claimedFeatures.includes(feature.id);
-                        if (!isAlreadyUnlocked && nextState.totalChildrenBorn >= feature.childrenRequired) {
-                            nextState.newlyUnlockedFeature = feature.id;
-                            nextState.gameLog.push({
-                                year: nextState.currentDate.year,
-                                messageKey: 'log_feature_unlocked',
-                                replacements: { featureName: t(feature.nameKey, language) },
-                                eventTitleKey: 'event_feature_unlocked_title',
-                            });
-                            break; // Only unlock one feature at a time
-                        }
-                    }
+                    // The logic for unlocking features has been moved to PathOfLifeScreen to allow manual claiming.
                 }
             }
     
@@ -929,11 +922,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     
             // 2. Update one-time event list or cooldowns
             const character = nextState.familyMembers[characterId];
-            if (event.id === 'milestone_children') {
-                const cooldownYears = childrenEventSuccess ? 2 : 1; // 2 years for success, 1 year for failure
-                character.childrenEventCooldownUntil = addDays(nextState.currentDate, cooldownYears * DAYS_IN_YEAR);
-            } 
-            else if (ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) {
+            if ((ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) && event.id !== 'milestone_children') {
                 character.completedOneTimeEvents = [...(character.completedOneTimeEvents || []), event.id];
             }
     
@@ -1827,6 +1816,23 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
       });
     };
 
+    const handleClaimFeature = (featureId: string) => {
+        setGameState(prevState => {
+            if (!prevState || prevState.claimedFeatures.includes(featureId)) {
+                return prevState;
+            }
+            const feature = UNLOCKABLE_FEATURES.find(f => f.id === featureId);
+            if (!feature || prevState.totalChildrenBorn < feature.childrenRequired) {
+                return prevState; // Cannot claim if not eligible
+            }
+
+            return {
+                ...prevState,
+                claimedFeatures: [...prevState.claimedFeatures, featureId],
+            };
+        });
+    };
+
     return {
         saveGame,
         initializeGame,
@@ -1854,6 +1860,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         handleAvatarSaveNoCost,
         onSellBusiness,
         handleAcknowledgeUnlock,
+        handleClaimFeature,
         ONE_TIME_EVENT_IDS,
         SAVE_KEY,
         stopGameLoop,

@@ -446,4 +446,6 @@ export default {
     log_customize_avatar: "{name} đã chi {amount} để tùy chỉnh ngoại hình.",
     log_customize_avatar_ad: "{name} đã tùy chỉnh ngoại hình miễn phí bằng cách xem quảng cáo.",
     event_customize_avatar_title: "Ngoại hình đã được tùy chỉnh",
+    load_game_error_title: "Lỗi Tải Game",
+    load_game_error_message: "Không thể tải game đã lưu. Tệp có thể bị hỏng hoặc từ phiên bản cũ hơn. Dữ liệu đã lưu đã bị xóa.",
 };

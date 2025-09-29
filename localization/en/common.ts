@@ -74,7 +74,7 @@ export default {
     welcome_back_title: 'Welcome Back!',
     welcome_back_subtitle: 'Your previous session has been saved.',
     continue_game_button: 'Continue Game',
-    start_new_game_button: 'Start New Game',
+    start_new_game_button: 'Start Game',
     start_game_button: 'Start', // New key
     story_button: 'Story', // New key
     choose_story_mode: 'Choose a Story Mode', // New key
@@ -453,4 +453,6 @@ export default {
     log_customize_avatar: "{name} spent {amount} to customize their avatar.",
     log_customize_avatar_ad: "{name} customized their avatar for free by watching an ad.",
     event_customize_avatar_title: "Avatar Customized",
+    load_game_error_title: "Load Game Error",
+    load_game_error_message: "Could not load saved game. The file may be corrupt or from an older version. The saved data has been deleted.",
 };
