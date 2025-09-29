@@ -165,7 +165,13 @@ export interface Character {
   lowHealthYears: number; // New: Tracks years health is below threshold
   monthsInCurrentJobLevel: number; // New: Tracks months in current job level
   monthsUnemployed: number;
+  
+  // ===================================================================
+  // <-- ADDED: Thuộc tính mới bắt buộc để sửa lỗi và chạy logic
+  // ===================================================================
+  hadChildrenDecisionEventThisYear?: boolean;
 }
+
 export enum AssetType {
     Housing = 'Housing',
     Vehicle = 'Vehicle',

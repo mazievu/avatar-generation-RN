@@ -93,22 +93,17 @@ export const MILESTONE_EVENTS: EventDraft[] = [
             { textKey: 'milestone_marriage_no', effect: { statChanges: { happiness: -10 }, logKey: 'log_milestone_marriage_no' }}
         ]
     },
+    // ===================================================================
+    // START: MODIFIED CHILDREN EVENT
+    // ===================================================================
     {
-        id: 'milestone_children',
-        isMilestone: true,
+        id: 'decision_children', // <-- CHANGED
+        isMilestone: false, // <-- CHANGED
         titleKey: 'milestone_children_title',
         descriptionKey: 'milestone_children_desc',
         phases: [LifePhase.PostGraduation],
         condition: (state, char) => {
-            if (char.childrenEventCooldownUntil) {
-                if (state.currentDate.year < char.childrenEventCooldownUntil.year) {
-                    return false;
-                }
-                if (state.currentDate.year === char.childrenEventCooldownUntil.year && state.currentDate.day < char.childrenEventCooldownUntil.day) {
-                    return false;
-                }
-            }
-            
+            // <-- CHANGED: Simplified condition, removed cooldown check
             return char.relationshipStatus === RelationshipStatus.Married &&
                    char.gender === Gender.Female &&
                    char.age >= 23 &&
@@ -117,9 +112,9 @@ export const MILESTONE_EVENTS: EventDraft[] = [
         },
         choices: [
             { textKey: 'milestone_children_yes', effect: { 
-                logKey: 'log_milestone_children_decision', // Placeholder for outcome modal
+                logKey: 'log_milestone_children_decision',
                 getDynamicEffect: () => {
-                    const randomValue = Math.random(); // Capture random value
+                    const randomValue = Math.random();
                     const success = randomValue < 0.7;
                     if (success) {
                         return {
@@ -139,21 +134,24 @@ export const MILESTONE_EVENTS: EventDraft[] = [
             { textKey: 'milestone_children_no', effect: { statChanges: { happiness: -5 }, logKey: 'log_milestone_children_no' }}
         ]
     },
+    // ===================================================================
+    // END: MODIFIED CHILDREN EVENT
+    // ===================================================================
     {
-    id: 'milestone_children_fail',
-    isTriggerOnly: true, // Được kích hoạt bởi sự kiện 'try'
-    titleKey: 'milestone_children_fail_title',       // Ví dụ: "Thử lại lần sau"
-    descriptionKey: 'milestone_children_fail_desc', // Ví dụ: "Thật không may, lần này bạn đã không thể thụ thai."
-    phases: [LifePhase.PostGraduation],
-    choices: [
-        {
-            textKey: 'milestone_children_fail_ok', // Ví dụ: "OK"
-            effect: {
-                statChanges: { happiness: -10 },
-                logKey: 'log_milestone_children_try_fail' // Log chính xác được tạo ra ở đây
+        id: 'milestone_children_fail',
+        isTriggerOnly: true,
+        titleKey: 'milestone_children_fail_title',
+        descriptionKey: 'milestone_children_fail_desc',
+        phases: [LifePhase.PostGraduation],
+        choices: [
+            {
+                textKey: 'milestone_children_fail_ok',
+                effect: {
+                    statChanges: { happiness: -10 },
+                    logKey: 'log_milestone_children_try_fail'
+                }
             }
-        }
-            ]
+        ]
     },
     {
         id: 'milestone_child_conceived',
@@ -172,7 +170,6 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                     const roll = Math.random();
                     let numberOfChildren = 1;
 
-                    // Conditional twin/triplet chance based on totalChildrenBorn
                     if (state.totalChildrenBorn >= TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.10) {
                         numberOfChildren = 3;
                     } else if (state.totalChildrenBorn >= TWIN_BIRTH_UNLOCK_CHILDREN_COUNT && roll < 0.40) {
@@ -228,7 +225,7 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                         familyMembers: newFamilyMembers,
                         totalMembers: state.totalMembers + numberOfChildren,
                         gameLog: [...state.gameLog, logMessage],
-                        totalChildrenBorn: state.totalChildrenBorn + numberOfChildren, // Increment totalChildrenBorn
+                        totalChildrenBorn: state.totalChildrenBorn + numberOfChildren,
                     };
                 }
             }}
