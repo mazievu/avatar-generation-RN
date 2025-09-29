@@ -610,6 +610,47 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 nextFamilyMembers[id] = { ...nextFamilyMembers[id], ...memberUpdates[id] };
             }
 
+            // ===================================================================
+            // START: PRIORITY CHILDREN EVENT LOGIC (runs daily, ignores cooldown)
+            // ===================================================================
+            // <-- ADDED: This entire block is new
+            const noModalsAreOpen = !newState.activeEvent && prevState.eventQueue.length === 0 && (!newState.pendingSchoolChoice || newState.pendingSchoolChoice.length === 0) && (!newState.pendingUniversityChoice || newState.pendingUniversityChoice.length === 0) && !newState.pendingCareerChoice && !newState.pendingUnderqualifiedChoice;
+
+            if (noModalsAreOpen) {
+                const childrenEvent = getAllEvents().find(e => e.id === 'decision_children');
+                if (childrenEvent) {
+                    const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
+
+                    const eligibleCharacters = Object.values(nextFamilyMembers).filter(char =>
+                        char.isAlive &&
+                        !char.hadChildrenDecisionEventThisYear && // Must NOT have had the event this year
+                        childrenEvent.condition &&
+                        childrenEvent.condition(stateForConditionCheck, char)
+                    );
+
+                    for (const char of eligibleCharacters) {
+                        // Give each eligible character a small chance to trigger the event each day.
+                        // 1/180 gives a high probability of it happening at least once over 365 days.
+                        if (Math.random() < 1 / 180) {
+                            // Trigger found! Queue the event.
+                            newState.eventQueue.push({ characterId: char.id, event: childrenEvent });
+                            
+                            // Immediately mark the character so they aren't checked again this year.
+                            // Use memberUpdates to ensure changes are applied correctly at the end of the loop.
+                            const existingUpdates = memberUpdates[char.id] || {};
+                            memberUpdates[char.id] = { ...existingUpdates, hadChildrenDecisionEventThisYear: true };
+
+                            // We only trigger one priority event per day to avoid multiple pop-ups.
+                            // The loop will continue for other characters tomorrow.
+                            break; 
+                        }
+                    }
+                }
+            }
+            // ===================================================================
+            // END: PRIORITY CHILDREN EVENT LOGIC
+            // ===================================================================
+
             if (isNewYear) {
                 const anyModalPending = !!(
                     newState.pendingSchoolChoice?.length || 
@@ -628,6 +669,9 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                         let char = nextFamilyMembers[id];
                         const displayName = getCharacterDisplayName(char, language);
                         const charUpdate: Partial<Character> = {};
+                        
+                        // <-- ADDED: Reset the children event flag for the new year
+                        charUpdate.hadChildrenDecisionEventThisYear = false;
 
                         // Update low stats counters
                         if (char.stats.happiness < 10) {
@@ -785,7 +829,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             // --- EVENT TRIGGER LOGIC ---
             const isGlobalCooldownActive = newState.eventCooldownUntil && isBefore(newState.currentDate, newState.eventCooldownUntil);
             
-            if (!isGlobalCooldownActive && !newState.activeEvent && prevState.eventQueue.length === 0 && (!newState.pendingSchoolChoice || newState.pendingSchoolChoice.length === 0) && (!newState.pendingUniversityChoice || newState.pendingUniversityChoice.length === 0) && !newState.pendingCareerChoice && !newState.pendingUnderqualifiedChoice) {
+            // <-- CHANGED: Re-used noModalsAreOpen variable
+            if (!isGlobalCooldownActive && noModalsAreOpen) {
                 const eligibleCharacters = Object.values(nextFamilyMembers).filter(c =>
                     c.isAlive &&
                     (c.eventsThisYear || 0) < 2
@@ -799,6 +844,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                     const possibleEvents = getAllEvents().filter(e =>
                         !e.isMilestone &&
+                        e.id !== 'decision_children' && // <-- CHANGED: Exclude the children event
                         e.phases.includes(chosenCharacter.phase) &&
                         !e.isTriggerOnly &&
                         (!e.allowedRelationshipStatuses || e.allowedRelationshipStatuses.includes(chosenCharacter.relationshipStatus)) &&
@@ -867,8 +913,9 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     ...(effect.statChanges || {}), // Ensure it's an object even if undefined
                     ...(dynamicResult.statChanges || {}) // Ensure it's an object even if undefined
                 };
-
-                if (event.id === 'milestone_children' && dynamicResult.logKey === 'log_milestone_children_try_success') {
+                
+                // <-- CHANGED: updated event id
+                if (event.id === 'decision_children' && dynamicResult.logKey === 'log_milestone_children_try_success') {
                     childrenEventSuccess = true;
                     // Tăng tổng số trẻ em đã sinh ra khi có trẻ mới
                     nextState.totalChildrenBorn = (nextState.totalChildrenBorn || 0) + 1;
@@ -922,7 +969,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     
             // 2. Update one-time event list or cooldowns
             const character = nextState.familyMembers[characterId];
-            if ((ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) && event.id !== 'milestone_children') {
+            // <-- CHANGED: updated event id
+            if ((ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) && event.id !== 'decision_children') {
                 character.completedOneTimeEvents = [...(character.completedOneTimeEvents || []), event.id];
             }
     
