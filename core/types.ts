@@ -259,6 +259,8 @@ export interface GameState {
   claimedFeatures: string[];
   newlyUnlockedFeature: string | null;
   avatarCustomizationCount: number; // New: Tracks how many times avatar has been customized
+  isIncomeDoubled?: boolean;
+  areAdsRemoved?: boolean;
 }
 
 export type StatChanges = Partial<Stats>;
@@ -304,6 +306,7 @@ export type EventDraft = {
   allowedRelationshipStatuses?: RelationshipStatus[];
   applyEffectToAll?: boolean;
   condition?: (state: GameState, char: Character) => boolean;
+  showJourneyAnimation?: boolean;
 };
 
 // Choice hoàn chỉnh để runtime dùng.

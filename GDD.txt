@@ -1,0 +1,200 @@
+# Tài liệu Thiết kế Game (GDD) - Generations: A Life Simulator (Bản đầy đủ)
+
+## 1. Tổng quan Game
+
+**Tên game:** Generations: A Life Simulator (Tạm dịch: Các Thế Hệ: Giả Lập Cuộc Sống)
+
+**Thể loại:** Giả lập cuộc sống, chiến lược, quản lý.
+
+**Concept cốt lõi:** Người chơi sẽ bắt đầu với một nhân vật, điều khiển cuộc sống của họ từ khi sinh ra cho đến khi qua đời, đưa ra các quyết định quan trọng về học tập, sự nghiệp, gia đình và tài chính. Mục tiêu chính là xây dựng và duy trì một gia tộc thịnh vượng qua nhiều thế hệ, đạt đến một cột mốc nhất định (ví dụ: thế hệ thứ 6) để giành chiến thắng.
+
+**Nền tảng mục tiêu:** Mobile (iOS, Android), xây dựng lại bằng C#.
+
+## 2. Vòng lặp Gameplay Cốt lõi (Core Gameplay Loop)
+
+1.  **Bắt đầu:** Người chơi chọn một kịch bản khởi đầu (ví dụ: gia đình trung lưu, gia đình nghèo khó) để tạo ra nhân vật đầu tiên.
+2.  **Sống và Phát triển:**
+    *   Thời gian trong game trôi qua theo ngày/tháng/năm.
+    *   Nhân vật sẽ tự động già đi. Tại các cột mốc tuổi quan trọng, game sẽ dừng lại và yêu cầu người chơi đưa ra quyết định (chọn trường, chọn nghề, v.v.).
+    *   Các sự kiện ngẫu nhiên sẽ xảy ra, yêu cầu người chơi lựa chọn và đối mặt với kết quả.
+3.  **Quản lý:**
+    *   **Cá nhân:** Theo dõi và cải thiện các chỉ số của nhân vật (Sức khỏe, Hạnh phúc, IQ, EQ, Kỹ năng).
+    *   **Tài chính:** Quản lý thu nhập, chi tiêu, đầu tư, mua tài sản, và vay nợ.
+    *   **Sự nghiệp/Kinh doanh:** Chọn con đường sự nghiệp hoặc tự kinh doanh, quản lý nhân sự (là các thành viên trong gia đình) và phát triển doanh nghiệp.
+4.  **Kế thừa:**
+    *   Nhân vật sẽ kết hôn và sinh con (thông qua các sự kiện lựa chọn).
+    *   Khi nhân vật chính qua đời, người chơi sẽ chọn một trong những người con để tiếp tục chơi.
+    *   Tài sản và di sản của thế hệ trước sẽ được truyền lại.
+5.  **Kết thúc:**
+    *   **Thắng:** Đạt được mục tiêu cuối cùng (ví dụ: sinh ra thế hệ thứ 6).
+    *   **Thua:** Gia đình phá sản và không thể trả nợ, hoặc không có người thừa kế để tiếp tục dòng dõi.
+
+## 3. Các Tính năng Chi tiết
+
+### 3.1. Hệ thống Nhân vật
+
+*   **Chỉ số chính:**
+    *   **Health (Sức khỏe):** Giảm dần theo tuổi tác hoặc do các sự kiện tiêu cực. Về 0 có thể dẫn đến qua đời.
+    *   **Happiness (Hạnh phúc):** Bị ảnh hưởng bởi các sự kiện trong đời, tình trạng tài chính, mối quan hệ, và thành công trong sự nghiệp. Hạnh phúc thấp kéo dài có thể gây ra bệnh tật hoặc chết.
+    *   **IQ (Trí tuệ):** Ảnh hưởng đến thành tích học tập và tốc độ tăng kỹ năng trong một số ngành nghề. Có thể tăng qua học tập và các hoạt động nhất định.
+    *   **EQ (Trí tuệ cảm xúc):** Ảnh hưởng đến các mối quan hệ và thành công trong các ngành nghề đòi hỏi giao tiếp.
+    *   **Skill (Kỹ năng):** Chỉ số chung cho kinh nghiệm làm việc. Tăng lên khi làm việc, và là điều kiện để được thăng chức.
+
+*   **Tùy chỉnh Avatar (Chi tiết):**
+    *   **Điều kiện mở khóa:** Tính năng này được mở khóa sau khi gia tộc có tổng cộng 1 đứa con được sinh ra.
+    *   **Chi phí:** Mỗi lần tùy chỉnh tốn `10,000` tiền trong game, hoặc có thể miễn phí nếu người chơi xem một video quảng cáo.
+    *   **Cấu trúc Layer và Thứ tự Vẽ:** Avatar được ghép lại từ nhiều lớp hình ảnh. Thứ tự vẽ từ dưới lên trên (zIndex thấp được vẽ trước) là cực kỳ quan trọng để đảm bảo hiển thị đúng.
+        1.  `background` (Nền) - `zIndex: 0`
+        2.  `backHair` (Tóc sau) - `zIndex: 1`
+        3.  `features` (Đặc điểm mặt: sẹo, tàn nhang, má hồng, nếp nhăn) - `zIndex: 2`
+        4.  `eyes` (Mắt) - `zIndex: 3`
+        5.  `eyebrows` (Lông mày) - `zIndex: 4`
+        6.  `beard` (Râu - chỉ dành cho nam) - `zIndex: 5`
+        7.  `mouth` (Miệng) - `zIndex: 6`
+        8.  `frontHair` (Tóc trước) - `zIndex: 7`
+    *   **Giao diện tùy chỉnh:**
+        *   Người chơi sẽ thấy một danh sách các tab tương ứng với mỗi layer có thể tùy chỉnh (Tóc, Mắt, Miệng, v.v.).
+        *   Trong mỗi tab, sẽ có một danh sách các hình ảnh (items) để lựa chọn.
+        *   Một số layer như `backHair`, `frontHair`, `eyebrows`, `beard` có thể chọn "không có" (allowNone: true).
+        *   Các layer `background`, `eyes`, `mouth` là bắt buộc (required: true).
+    *   **Lọc theo độ tuổi:** Các tùy chọn hình ảnh có thể được phân loại theo `ageCategory` ('baby', 'normal', 'old'). Giao diện sẽ chỉ hiển thị các tùy chọn phù hợp với độ tuổi hiện tại của nhân vật.
+    *   **Tô màu:** Các layer như tóc, lông mày, râu có thể được tô màu lại bằng cách áp dụng một bộ lọc màu (CSS filter).
+
+*   **Giai đoạn sống (Life Phases):**
+    *   Mỗi giai đoạn sẽ mở khóa các sự kiện và lựa chọn mới.
+    *   Các giai đoạn bao gồm: Sơ sinh (0-5), Tiểu học (6-11), Trung học (12-15), Phổ thông (16-18), Đại học (19-22), Đi làm (23-59), và Nghỉ hưu (60+).
+
+### 3.2. Hệ thống Giáo dục và Sự nghiệp
+
+*   **Giáo dục:**
+    *   Tại các mốc tuổi (6, 12, 16), game sẽ dừng lại và yêu cầu người chơi chọn trường cho nhân vật. Các lựa chọn bao gồm trường công (miễn phí), trường tư (chi phí cao), và trường hoàng gia (chi phí rất cao). Mỗi lựa chọn ảnh hưởng trực tiếp đến chi phí và mức độ tăng chỉ số IQ, EQ.
+    *   Ở tuổi trung học, có thể tham gia các câu lạc bộ để tăng thêm chỉ số.
+    *   Sau khi tốt nghiệp phổ thông (18-19 tuổi), người chơi phải đưa ra quyết định lớn: đi làm ngay, học nghề, thực tập, hoặc vào đại học.
+    *   Vào đại học yêu cầu chọn chuyên ngành từ một danh sách ngẫu nhiên. Chuyên ngành này (ví dụ: Kinh doanh, Công nghệ, Y khoa) rất quan trọng và ảnh hưởng lớn đến con đường sự nghiệp sau này.
+*   **Sự nghiệp:**
+    *   Có nhiều con đường sự nghiệp khác nhau (ví dụ: Y tế, Kinh doanh, Công nghệ, Lao động phổ thông), mỗi con đường có 4 cấp bậc.
+    *   Mỗi cấp bậc có một mức lương và yêu cầu một mức `Skill` nhất định để được thăng chức.
+    *   **Logic Thăng tiến:**
+        *   Làm việc trong một ngành sẽ tăng chỉ số `Skill` hàng tháng. Tốc độ tăng `Skill` phụ thuộc vào IQ và EQ.
+        *   Nếu làm trái ngành (chuyên ngành đại học không khớp với yêu cầu của nghề), tốc độ tăng `Skill` và khả năng thăng tiến sẽ bị phạt (giảm 50%).
+        *   Nếu không có bằng cấp cao (Đại học, Cao đẳng nghề), yêu cầu `Skill` để thăng tiến sẽ cao hơn 50%.
+    *   **Trainee (Thực tập sinh):** Nếu nhân vật không đủ chỉ số IQ/EQ cho một ngành nghề, họ có thể chọn làm "Trainee". Trong giai đoạn này, họ nhận lương thấp nhưng được tăng các chỉ số còn thiếu cho đến khi đủ điều kiện vào làm chính thức.
+
+### 3.3. Hệ thống Kinh tế và Tài chính
+
+*   **Tài chính Gia đình (Family Fund):**
+    *   Là một quỹ chung cho cả gia đình.
+    *   Thu nhập hàng tháng đến từ lương của các thành viên và lợi nhuận kinh doanh.
+    *   Chi phí hàng tháng bao gồm chi phí sinh hoạt cho mỗi người (tăng theo giai đoạn sống, dao động từ 100-400/tháng) và các chi phí khác như chi phí vật nuôi.
+*   **Vay nợ (Loans):**
+    *   Khi tài chính gia đình bị âm, game sẽ kích hoạt một lựa chọn cho phép người chơi vay một khoản tiền với kỳ hạn trả nợ nhất định.
+    *   Nếu đến hạn mà không trả được nợ, game sẽ kết thúc (Game Over).
+*   **Tài sản (Assets):**
+    *   Người chơi có thể dùng tiền để mua các tài sản (ví dụ: nhà cửa, xe cộ, đồ điện tử, tác phẩm nghệ thuật, trang sức). Mỗi tài sản có 3 cấp bậc.
+    *   Mỗi tài sản sẽ mang lại một lợi ích vĩnh viễn, thường là tăng một vài phần trăm cho các chỉ số cốt lõi của nhân vật (ví dụ: mua thư viện tăng IQ, mua phòng gym tăng Health).
+
+### 3.4. Hệ thống Sự kiện (Event System) - CHI TIẾT
+
+Hệ thống sự kiện là linh hồn của game, tạo ra các tình huống và lựa chọn định hình cuộc đời nhân vật. Logic hoạt động của nó như sau:
+
+*   **Cơ chế Kích hoạt Sự kiện (Event Triggering):**
+    1.  **Điều kiện cơ bản:** Game chỉ cố gắng kích hoạt sự kiện khi không có bất kỳ cửa sổ lựa chọn nào đang mở (chọn trường, chọn nghề, sự kiện khác, v.v.).
+    2.  **Thời gian chờ (Cooldown):** Sau khi một sự kiện xảy ra, game sẽ bắt đầu một "thời gian chờ" toàn cục (khoảng 120-180 ngày). Trong thời gian này, không có sự kiện ngẫu nhiên nào khác được kích hoạt. Điều này tránh làm người chơi bị quá tải.
+    3.  **Giới hạn mỗi nhân vật:** Mỗi nhân vật chỉ có thể gặp tối đa 2 sự kiện ngẫu nhiên mỗi năm.
+    4.  **Lựa chọn Nhân vật:** Game sẽ chọn một nhân vật ngẫu nhiên trong số các thành viên còn sống và đủ điều kiện để làm đối tượng cho sự kiện.
+    5.  **Lọc Sự kiện:** Dựa trên nhân vật đã chọn, game sẽ lọc ra một danh sách các sự kiện tiềm năng dựa trên các điều kiện:
+        *   **Giai đoạn sống:** Sự kiện phải phù hợp với giai đoạn sống hiện tại của nhân vật (ví dụ: sự kiện về vũ hội tốt nghiệp chỉ xảy ra ở tuổi teen).
+        *   **Tình trạng mối quan hệ:** Một số sự kiện chỉ xảy ra khi nhân vật độc thân, đã kết hôn, v.v.
+        *   **Điều kiện tùy chỉnh (Condition Function):** Mỗi sự kiện có thể có một hàm điều kiện riêng để kiểm tra các trạng thái phức tạp hơn của game (ví dụ: kiểm tra xem gia đình có đang nợ nần không, hoặc một nhân vật khác có đang bị bệnh không).
+        *   **Sự kiện một lần:** Các sự kiện quan trọng (ví dụ: nụ hôn đầu) được đánh dấu là chỉ xảy ra một lần trong đời và sẽ không được chọn lại.
+    6.  **Kích hoạt:** Nếu có bất kỳ sự kiện nào vượt qua bộ lọc, game sẽ chọn ngẫu nhiên một trong số chúng và hiển thị cho người chơi.
+
+*   **Các loại sự kiện:**
+    *   **Sự kiện Ngẫu nhiên (Random Events):** Chiếm đa số, bao gồm các tình huống hàng ngày như được mời đi chơi, có cơ hội đầu tư nhỏ, bị bệnh nhẹ, v.v.
+    *   **Sự kiện Cột mốc (Milestone Events):** Các sự kiện quan trọng, được ưu tiên kích hoạt khi đủ điều kiện. Ví dụ: Tốt nghiệp, Nghỉ hưu, Qua đời vì tuổi già.
+    *   **Sự kiện Ưu tiên (Priority Events):** Một số sự kiện rất quan trọng, như "Quyết định có con", có logic kích hoạt riêng và được kiểm tra hàng ngày với một tỷ lệ nhỏ, bỏ qua các giới hạn thông thường để đảm bảo chúng sẽ xảy ra khi nhân vật ở trong độ tuổi phù hợp.
+    *   **Hàng đợi Sự kiện (Event Queue):** Khi một lựa chọn của người chơi kích hoạt một sự kiện khác, sự kiện mới này sẽ không hiển thị ngay lập tức mà được đưa vào một hàng đợi. Game sẽ xử lý và hiển thị các sự kiện trong hàng đợi này sau khi sự kiện hiện tại kết thúc.
+
+*   **Lựa chọn và Kết quả (Choices and Effects):**
+    *   Mỗi sự kiện có từ 2-3 lựa chọn.
+    *   Mỗi lựa chọn dẫn đến một `effect` (kết quả) được định nghĩa trước, bao gồm:
+        *   **Thay đổi chỉ số (Stat Changes):** Tăng hoặc giảm Health, Happiness, IQ, EQ.
+        *   **Thay đổi tài chính (Fund Change):** Cộng hoặc trừ tiền từ `familyFund`.
+        *   **Kích hoạt sự kiện khác (Triggers):** Có một tỷ lệ phần trăm để kích hoạt một sự kiện Folge (hệ quả) trong tương lai.
+        *   **Hành động phức tạp (Actions):** Một số lựa chọn có thể kích hoạt các hành động phức tạp, như sinh con, nhận nuôi thú cưng, bắt đầu một mối quan hệ, hoặc thay đổi trạng thái của nhân vật (ví dụ: trở nên thất nghiệp).
+    *   Tất cả các kết quả đều được ghi lại trong **Nhật ký (Game Log)**.
+
+### 3.5. Hệ thống Kinh doanh (Business) - CHI TIẾT (Không dùng bảng)
+
+*   **Điều kiện mở khóa:** Tính năng này chỉ được mở khóa sau khi gia tộc có tổng cộng **10 đứa con** đã được sinh ra.
+
+*   **Luồng Quản lý:**
+    1.  **Mua Doanh nghiệp:** Người chơi truy cập vào "Bản đồ Kinh doanh" (Business Map) và chọn một tòa nhà để mua. Mỗi doanh nghiệp có một chi phí mua ban đầu.
+    2.  **Quản lý Nhân sự:**
+        *   Sau khi mua, người chơi có thể vào màn hình "Quản lý Kinh doanh".
+        *   Màn hình này hiển thị các "slot" (vị trí) nhân viên của doanh nghiệp.
+        *   Nhấp vào một slot sẽ mở ra một danh sách các thành viên gia đình đủ điều kiện (18-60 tuổi, không nghỉ hưu).
+        *   **Giao diện Giao việc:** Danh sách này sẽ làm nổi bật những nhân viên có chuyên ngành phù hợp với yêu cầu của vị trí (đánh dấu sao `⭐`). Nó cũng hiển thị chỉ số `Skill` và mức lương dự kiến của họ.
+        *   Người chơi có thể giao việc cho một thành viên, để trống, hoặc **Thuê Robot** với chi phí `700/tháng`. Robot có chỉ số `Skill` cố định và thấp (ví dụ: 30).
+    3.  **Nâng cấp:**
+        *   Doanh nghiệp cấp 1 có thể được nâng cấp lên cấp 2. Không thể nâng cấp lên cấp 3; doanh nghiệp cấp 3 phải được mua mới.
+        *   **Chi phí nâng cấp:** `75%` giá mua ban đầu của doanh nghiệp cấp 1.
+        *   **Lợi ích:** Nâng cấp sẽ thêm các slot nhân viên mới và thường là cao cấp hơn.
+    4.  **Bán Doanh nghiệp:** Người chơi có thể bán doanh nghiệp bất cứ lúc nào với giá bằng `50%` giá mua ban đầu. Khi bán, tất cả nhân viên đang làm việc tại đó sẽ bị sa thải và trở thành "Thất nghiệp".
+
+*   **Logic Kinh tế (Cập nhật hàng tháng):**
+    *   **Lương Nhân viên:** Công thức là `Lương tháng = 500 + (Skill * 15)`, nhưng không vượt quá `800`.
+    *   **Doanh thu (Gross Revenue):** Công thức là `Doanh thu = Doanh thu cơ bản * (Số nhân viên / Tổng số slot) * (1 + Skill trung bình / 200)`.
+    *   **Chi phí (Total Expenses):** Tổng chi phí bao gồm `Giá vốn hàng bán` (một tỷ lệ % của doanh thu), `Chi phí cố định` hàng tháng, `Lương nhân viên`, `Chi phí thuê robot`, và `Chi phí quản lý` (`250 * Số lượng nhân viên`).
+    *   **Lợi nhuận ròng (Net Profit):** Là `Doanh thu - Tổng chi phí`, được cộng vào quỹ gia đình hàng tháng. Lợi nhuận từ một doanh nghiệp không được vượt quá `800/tháng`.
+
+*   **Mô tả chi tiết các loại hình kinh doanh:**
+
+    **Ngành Y tế:**
+    - **Phòng khám (Cấp 1):** Giá mua 150,000. Doanh thu cơ bản 15,000/tháng. Tỷ lệ COGS 30%. Chi phí cố định 5,000/tháng. Có 2 vị trí: một Y tá (không yêu cầu chuyên ngành) và một Bác sĩ (yêu cầu chuyên ngành Y khoa).
+    - **Bệnh viện nhỏ (Cấp 2):** Giá mua 500,000. Doanh thu cơ bản 50,000/tháng. Tỷ lệ COGS 35%. Chi phí cố định 15,000/tháng. Có 4 vị trí: Y tá trưởng (không yêu cầu), Bác sĩ (Y khoa), Bác sĩ phẫu thuật (Y khoa), và Nhân viên hành chính (không yêu cầu).
+    - **Bệnh viện lớn (Cấp 3):** Giá mua 2,000,000. Doanh thu cơ bản 200,000/tháng. Tỷ lệ COGS 40%. Chi phí cố định 50,000/tháng. Có 5 vị trí: Trưởng khoa (Y khoa), Trưởng khoa phẫu thuật (Y khoa), Nhà nghiên cứu (Y khoa), Quản lý (Kinh doanh), và Nhân viên hành chính (không yêu cầu).
+
+    **Ngành Tài chính:**
+    - **Công ty tài chính (Cấp 1):** Giá mua 200,000. Doanh thu cơ bản 20,000/tháng. Tỷ lệ COGS 10%. Chi phí cố định 8,000/tháng. Có 2 vị trí: Giao dịch viên (không yêu cầu) và Chuyên viên tín dụng (yêu cầu chuyên ngành Tài chính).
+    - **Ngân hàng đầu tư (Cấp 2):** Giá mua 700,000. Doanh thu cơ bản 70,000/tháng. Tỷ lệ COGS 10%. Chi phí cố định 25,000/tháng. Có 4 vị trí: Chuyên viên phân tích (Tài chính), Chuyên viên đầu tư (Tài chính), Quản lý (Kinh doanh), và IT (Công nghệ).
+    - **Tập đoàn tài chính (Cấp 3):** Giá mua 2,500,000. Doanh thu cơ bản 250,000/tháng. Tỷ lệ COGS 10%. Chi phí cố định 80,000/tháng. Có 4 vị trí: Quản lý cấp cao (Kinh doanh), Kế toán trưởng (Tài chính), Giám đốc (Kinh doanh), và Trưởng nhóm Lập trình (Công nghệ).
+
+    **Ngành Marketing:**
+    - **Agency nhỏ (Cấp 1):** Giá mua 100,000. Doanh thu cơ bản 12,000/tháng. Tỷ lệ COGS 20%. Chi phí cố định 3,000/tháng. Có 2 vị trí: Copywriter (yêu cầu chuyên ngành Nghệ thuật) và Designer (Nghệ thuật).
+    - **Agency vừa (Cấp 2):** Giá mua 400,000. Doanh thu cơ bản 45,000/tháng. Tỷ lệ COGS 20%. Chi phí cố định 12,000/tháng. Có 3 vị trí: Quản lý khách hàng (Marketing), Media Planner (Marketing), và Art Director (Nghệ thuật).
+    - **Agency lớn (Cấp 3):** Giá mua 1,500,000. Doanh thu cơ bản 180,000/tháng. Tỷ lệ COGS 20%. Chi phí cố định 40,000/tháng. Có 4 vị trí: Trưởng phòng Marketing (Marketing), Quản lý PR (Marketing), Giám đốc (Kinh doanh), và Biên tập viên cao cấp (Nghệ thuật).
+
+    *(Và các ngành khác như Công nghệ, Kỹ thuật, Ẩm thực, Nông nghiệp, Logistics với cấu trúc tương tự...)*
+
+### 3.6. Hệ thống Mở khóa (Unlockables)
+
+*   Một số tính năng cao cấp sẽ bị khóa lúc đầu.
+*   Người chơi cần đạt được các cột mốc nhất định (dựa trên tổng số con đã sinh ra trong gia tộc) để mở khóa chúng.
+    *   **1 con:** Mở khóa Tùy chỉnh Avatar.
+    *   **2 con:** Mở khóa khả năng sinh đôi.
+    *   **3 con:** Mở khóa khả năng sinh ba.
+    *   **10 con:** Mở khóa tính năng Kinh doanh.
+*   Sau khi mở khóa, người chơi có thể phải "nhận" (claim) phần thưởng hoặc tính năng đó từ một màn hình riêng gọi là "Con đường cuộc sống" (Path of Life).
+
+## 4. Luồng Chơi Mẫu (Sample Gameplay Flow)
+
+1.  **Khởi đầu:** Người chơi bắt đầu với nhân vật "Minh", 24 tuổi, vừa tốt nghiệp đại học chuyên ngành "Công nghệ thông tin". Tài sản khởi đầu: 50,000.
+2.  **Năm 1:**
+    *   Game hiển thị lựa chọn nghề nghiệp. "Minh" chọn làm "Lập trình viên" tại một công ty công nghệ. Lựa chọn này khớp với chuyên ngành nên `skill` sẽ tăng nhanh.
+    *   Hàng tháng, "Minh" nhận lương, trừ đi chi phí sinh hoạt. Tài sản tăng lên.
+3.  **Năm 3:**
+    *   Một sự kiện ngẫu nhiên xảy ra: "Bạn gặp được một người đặc biệt". "Minh" chọn "Bắt đầu một mối quan hệ". Chỉ số Hạnh phúc tăng.
+4.  **Năm 5:**
+    *   `Skill` của "Minh" đạt đủ yêu cầu. Game hiển thị lựa chọn "Thăng chức lên Lập trình viên cao cấp". "Minh" chấp nhận, lương tăng.
+5.  **Năm 7:**
+    *   Sự kiện ưu tiên "Quyết định có con" xuất hiện. "Minh" chọn "Có", và một đứa trẻ được sinh ra. Tổng số con của gia tộc tăng lên 1. Tính năng "Tùy chỉnh Avatar" được mở khóa.
+6.  **Năm 10:**
+    *   Gia đình đã có 10 người con qua nhiều thế hệ. Tính năng "Kinh doanh" được mở khóa.
+    *   "Minh" đã tích lũy được một số vốn. Anh vào Bản đồ Kinh doanh và quyết định mua một "Startup" (Công nghệ Cấp 1).
+    *   "Minh" nghỉ việc ở công ty và tự chỉ định mình vào làm "IT Support" trong startup của mình.
+7.  **Năm 25:**
+    *   Con của "Minh" đã 18 tuổi. Người chơi phải đưa ra lựa chọn học vấn cho người con này.
+8.  **Năm 40:**
+    *   "Minh" qua đời vì tuổi già. Game hiển thị màn hình tổng kết cuộc đời của "Minh".
+9.  **Kế thừa:** Người chơi chọn điều khiển người con (nay đã 22 tuổi) và tiếp tục vòng lặp, với tài sản và doanh nghiệp do "Minh" để lại.

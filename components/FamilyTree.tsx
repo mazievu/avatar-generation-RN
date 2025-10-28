@@ -13,6 +13,7 @@ import Svg, { Path } from 'react-native-svg';
 import { CharacterNode } from './CharacterNode';
 import type { Character, GameState, Language, Manifest } from '../core/types';
 import IncomeAnimation from './IncomeAnimation';
+import { SchoolJourneyAnimation } from './SchoolJourneyAnimation';
 
 // --- 1. TYPES AND INTERFACES ---
 
@@ -212,10 +213,18 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
   const startTranslateY = useSharedValue(0);
   const startScale = useSharedValue(1);
   
-  // React state to trigger re-render for culling
+  // React state to trigger re-render for culling and animations
   const [viewState, setViewState] = useState({ scale: 1, x: 0, y: 0 });
+  const [showJourneyAnimation, setShowJourneyAnimation] = useState(false);
 
   const layouts = useMemo(() => calculateTreeLayout(gameState.familyMembers), [gameState.familyMembers]);
+
+  const handleJourneyAnimationFinish = useCallback(() => {
+    setShowJourneyAnimation(false);
+    if (characterIdToCenterOnEvent && onCharacterCenteredOnEvent) {
+        onCharacterCenteredOnEvent();
+    }
+  }, [characterIdToCenterOnEvent, onCharacterCenteredOnEvent]);
 
   const treeBounds = useMemo(() => {
     const layoutValues = Object.values(layouts);
@@ -268,13 +277,18 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
       translateY.value = withTiming(newTranslateY, { duration: 500 }, (finished) => {
         if (finished) {
           runOnJS(setViewState)({ scale: targetScale, x: newTranslateX, y: newTranslateY });
-          if (characterIdToCenterOnEvent && onCharacterCenteredOnEvent) {
-            runOnJS(onCharacterCenteredOnEvent)();
+          if (characterIdToCenterOnEvent) {
+            const shouldShowJourney = gameState.activeEvent?.event.showJourneyAnimation;
+            if (shouldShowJourney) {
+              runOnJS(setShowJourneyAnimation)(true);
+            } else {
+              runOnJS(onCharacterCenteredOnEvent)();
+            }
           }
         }
       });
     }
-  }, [selectedCharacter, characterIdToCenterOnEvent, layouts]);
+  }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.activeEvent]);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -384,6 +398,8 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     [layouts, viewState]
   );
 
+  const characterForAnimation = characterIdToCenterOnEvent ? gameState.familyMembers[characterIdToCenterOnEvent] : null;
+
   if (Object.keys(layouts).length === 0) {
     return <View style={styles.container}><Text>No family members to display.</Text></View>;
   }
@@ -438,6 +454,15 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
             );
           })}
         </Animated.View>
+        {showJourneyAnimation && characterForAnimation && (
+            <SchoolJourneyAnimation
+                onAnimationComplete={handleJourneyAnimationFinish}
+                character={characterForAnimation}
+                images={images}
+                lang={lang}
+                manifest={manifest}
+            />
+        )}
       </Animated.View>
     </GestureDetector>
   );

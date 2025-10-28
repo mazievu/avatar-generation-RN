@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-// Picker đã được xóa khỏi import
 import ModalBase from './ModalBase';
 import { Language } from '../core/types';
 import { t } from '../core/localization';
@@ -21,12 +20,12 @@ interface SettingsModalProps {
     onSetIsPaused: (paused: boolean) => void;
 }
 
-// BƯỚC 1: Tạo mảng dữ liệu cho các tùy chọn tốc độ
+// Updated speed options as per user request
 const speedOptions = [
-    { labelKey: 'speed_slow', value: 200 },
-    { labelKey: 'speed_normal', value: 100 },
-    { labelKey: 'speed_fast', value: 50 },
-    { labelKey: 'speed_very_fast', value: 10 },
+    { label: 'Chậm (0.5x)', value: 100 },
+    { label: 'Bình thường (1x)', value: 50 },
+    { label: 'Nhanh (2x)', value: 25 },
+    { label: 'Rất nhanh (4x)', value: 13 },
 ];
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -47,7 +46,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         <ModalBase isVisible={isVisible} onClose={onClose} title={t('settings_modal_title', lang)}>
             <View style={styles.container}>
                 
-                {/* Game Speed - ĐÃ ĐƯỢC THAY THẾ */}
                 <View style={styles.settingRow}>
                     <Text style={styles.settingLabel}>{t('game_speed_label', lang) || 'Game Speed'}:</Text>
                     <View style={styles.speedControlContainer}>
@@ -56,9 +54,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 key={option.value}
                                 style={[
                                     styles.speedButton,
-                                    gameSpeed === option.value && styles.speedButtonActive, // Style có điều kiện
+                                    gameSpeed === option.value && styles.speedButtonActive,
                                 ]}
-                                onPress={() => onSetGameSpeed(option.value)} // Xử lý sự kiện onPress
+                                onPress={() => onSetGameSpeed(option.value)}
                             >
                                 <Text
                                     style={[
@@ -66,7 +64,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                         gameSpeed === option.value && styles.speedButtonTextActive,
                                     ]}
                                 >
-                                    {t(option.labelKey, lang)}
+                                    {option.label}
                                 </Text>
                             </TouchableOpacity>
                         ))}
@@ -87,12 +85,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     );
 };
 
-// ĐỔI TÊN STYLE VÀ THÊM STYLE MỚI
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 10, // Giảm padding dọc một chút
+        paddingVertical: 10,
         width: '100%',
     },
     pauseResumeButton: {
@@ -112,7 +109,7 @@ const styles = StyleSheet.create({
     quitButton: {
         backgroundColor: '#ef4444', // red-500
         borderRadius: 8,
-        marginTop: 12, // Giảm margin
+        marginTop: 12,
         paddingHorizontal: 20,
         paddingVertical: 12,
         width: '100%',
@@ -131,12 +128,11 @@ const styles = StyleSheet.create({
     },
     settingRow: {
         alignItems: 'center',
-        flexDirection: 'column', // Chuyển sang cột để dễ nhìn hơn
+        flexDirection: 'column',
         justifyContent: 'center',
         marginBottom: 20,
         width: '100%',
     },
-    // STYLE MỚI CHO SEGMENTED CONTROL
     speedControlContainer: {
         flexDirection: 'row',
         backgroundColor: '#e5e7eb', // gray-200

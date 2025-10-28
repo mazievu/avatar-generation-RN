@@ -9,6 +9,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         descriptionKey: 'event_elementary_first_day_desc',
         phases: [LifePhase.Elementary],
         condition: (state, char) => char.age === 6,
+        showJourneyAnimation: true, // Use the new boolean flag
         choices: [
             { textKey: 'choice_elementary_first_day_1', effect: { statChanges: { iq: 2, eq: 4, happiness: -3 }, logKey: 'log_elementary_first_day_1' } },
             { textKey: 'choice_elementary_first_day_2', effect: { statChanges: { happiness: 3, eq: -4 }, logKey: 'log_elementary_first_day_2', triggers: [{ eventId: EventIdByKey.elementary_teacher_reprimand_opening, chance: 0.4 }] } },
