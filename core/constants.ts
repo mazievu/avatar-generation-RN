@@ -349,11 +349,11 @@ export type PathNode = {
 };
 
 export const RAW_PATH_NODES: PathNode[] = [
-    { level: 1, featureId: 'custom_avatar', alignment: 'right' },
+    { level: 10, featureId: 'custom_avatar', alignment: 'right' },
     { level: 2, featureId: 'twins', alignment: 'left' },
     { level: 3, featureId: 'triplets', alignment: 'right' },
     { level: 5, featureId: 'mystery_box', alignment: 'left' },
-    { level: 10, featureId: 'business', alignment: 'right' },
+    { level: 1, featureId: 'business', alignment: 'right' },
     { level: 15, featureId: 'mystery_box', alignment: 'left' },
     { level: 20, featureId: 'mystery_box', alignment: 'right' },
     { level: 25, featureId: 'mystery_box', alignment: 'left' },

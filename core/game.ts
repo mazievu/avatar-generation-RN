@@ -53,18 +53,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
     let eventCounter = 0; // Initialize event counter for interstitial ads
 
-    // Pre-process events by phase for faster lookup
-    const eventsByPhase = new Map<LifePhase, GameEvent[]>();
-    getAllEvents().forEach(event => {
-        if (event.isMilestone || event.id === 'decision_children') return; // Exclude special events
-        event.phases.forEach(phase => {
-            const lifePhase = phase as LifePhase;
-            if (!eventsByPhase.has(lifePhase)) {
-                eventsByPhase.set(lifePhase, []);
-            }
-            eventsByPhase.get(lifePhase)!.push(event);
-        });
-    });
+    // Event processing is now done inside the game loop to ensure events are loaded.
 
     const stopGameLoop = () => {
         if (timerRef.current) {
@@ -853,6 +842,18 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
 
                     let event: GameEvent | undefined;
+
+                    const eventsByPhase = new Map<LifePhase, GameEvent[]>();
+                    getAllEvents().forEach(event => {
+                        if (event.isMilestone || event.id === 'decision_children') return; // Exclude special events
+                        event.phases.forEach(phase => {
+                            const lifePhase = phase as LifePhase;
+                            if (!eventsByPhase.has(lifePhase)) {
+                                eventsByPhase.set(lifePhase, []);
+                            }
+                            eventsByPhase.get(lifePhase)!.push(event);
+                        });
+                    });
 
                     const phaseEvents = eventsByPhase.get(chosenCharacter.phase) || [];
                     const possibleEvents = phaseEvents.filter(e =>

@@ -10,6 +10,7 @@ import { loadAvatarAssets } from './components/ImageAssets';
 import { exampleManifest } from './core/types';
 import { soundManager } from './services';
 import { SceneName } from './components/GameUI';
+import { reinitializeAllGameData } from './core/gameData';
 
 export default function App() {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -24,6 +25,10 @@ export default function App() {
 
     const appState = useRef(AppState.currentState);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        reinitializeAllGameData(lang);
+    }, [lang]);
 
     useEffect(() => {
         const subscription = AppState.addEventListener('change', nextAppState => {
