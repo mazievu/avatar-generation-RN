@@ -293,7 +293,7 @@ export const ASSET_DEFINITIONS: Record<string, AssetDefinition> = {
 // ==============================
 // UNLOCK THRESHOLDS
 // ==============================
-export const BUSINESS_UNLOCK_CHILDREN_COUNT = 10;
+export const BUSINESS_UNLOCK_CHILDREN_COUNT = 0;
 export const CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT = 1;
 export const TWIN_BIRTH_UNLOCK_CHILDREN_COUNT = 2;
 export const TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT = 3;

@@ -53,10 +53,18 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
     let eventCounter = 0; // Initialize event counter for interstitial ads
 
-    // Initialize game data (build events, etc.)
-    if (typeof initializeAllGameData === 'function') {
-      initializeAllGameData(language);
-    }
+    // Pre-process events by phase for faster lookup
+    const eventsByPhase = new Map<LifePhase, GameEvent[]>();
+    getAllEvents().forEach(event => {
+        if (event.isMilestone || event.id === 'decision_children') return; // Exclude special events
+        event.phases.forEach(phase => {
+            const lifePhase = phase as LifePhase;
+            if (!eventsByPhase.has(lifePhase)) {
+                eventsByPhase.set(lifePhase, []);
+            }
+            eventsByPhase.get(lifePhase)!.push(event);
+        });
+    });
 
     const stopGameLoop = () => {
         if (timerRef.current) {
@@ -535,6 +543,10 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                     if(Object.keys(statsUpdate).length > 0) charUpdate.stats = { ...char.stats, ...statsUpdate };
 
+                    if (newState.isIncomeDoubled) {
+                        personalIncome *= 2;
+                    }
+
                     totalPersonalIncome += personalIncome;
                     memberUpdates[char.id] = { ...(memberUpdates[char.id] || {}), ...charUpdate };
                 });
@@ -842,10 +854,8 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
 
                     let event: GameEvent | undefined;
 
-                    const possibleEvents = getAllEvents().filter(e =>
-                        !e.isMilestone &&
-                        e.id !== 'decision_children' && // <-- CHANGED: Exclude the children event
-                        e.phases.includes(chosenCharacter.phase) &&
+                    const phaseEvents = eventsByPhase.get(chosenCharacter.phase) || [];
+                    const possibleEvents = phaseEvents.filter(e =>
                         !e.isTriggerOnly &&
                         (!e.allowedRelationshipStatuses || e.allowedRelationshipStatuses.includes(chosenCharacter.relationshipStatus)) &&
                         !(chosenCharacter.completedOneTimeEvents || []).includes(e.id) &&
@@ -890,10 +900,16 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         setGameState(prevState => {
             if (!prevState || !prevState.activeEvent) return prevState;
     
-            const nextState: GameState = JSON.parse(JSON.stringify(prevState));
-    
             const { characterId, event, replacements } = prevState.activeEvent;
             const { effect } = choice;
+
+            // Create a more optimized shallow copy
+            const nextState: GameState = {
+                ...prevState,
+                familyMembers: { ...prevState.familyMembers },
+                gameLog: [...prevState.gameLog],
+                eventQueue: [...prevState.eventQueue],
+            };
 
             // Defensive check: Ensure effect is not undefined
             if (!effect) {
@@ -1020,7 +1036,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     
             // Increment event counter and show interstitial ad
             eventCounter++;
-            if (eventCounter >= 10) {
+            if (eventCounter >= 10 && !nextState.areAdsRemoved) {
                 adService.showInterstitialAd();
                 eventCounter = 0; // Reset counter
             }
@@ -1318,71 +1334,84 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const { characterId } = prevState.pendingCareerChoice;
             const character = prevState.familyMembers[characterId];
             const displayName = getCharacterDisplayName(character, language);
-            const nextState = JSON.parse(JSON.stringify(prevState));
-            
+
             if (choiceKey === 'job') {
                 const careerOptions = generateCareerChoices(character);
-                nextState.pendingCareerChoice = { characterId: characterId, options: careerOptions };
-                return nextState;
+                return {
+                    ...prevState,
+                    pendingCareerChoice: { characterId: characterId, options: careerOptions }
+                };
             }
 
-            nextState.pendingCareerChoice = null;
-
             if (choiceKey === 'internship' || choiceKey === 'vocational') {
-                 if (choiceKey === 'internship') {
-                    const updatedCharacter: Character = {
+                let updatedCharacter: Character;
+                let logEntry: GameLogEntry;
+                let familyFund = prevState.familyFund;
+
+                if (choiceKey === 'internship') {
+                    updatedCharacter = {
                         ...character,
                         status: CharacterStatus.Internship,
                         statusEndYear: prevState.currentDate.year + INTERNSHIP.duration,
                     };
-                    nextState.familyMembers[characterId] = updatedCharacter;
-                    nextState.gameLog.push({ 
-                        year: prevState.currentDate.year, 
-                        messageKey: 'log_started_internship', 
-                        replacements: {name: displayName},
+                    logEntry = {
+                        year: prevState.currentDate.year,
+                        messageKey: 'log_started_internship',
+                        replacements: { name: displayName },
                         characterId: characterId,
                         eventTitleKey: 'event_career_choice_title',
-                    });
+                    };
                 } else { // vocational
-                    const updatedCharacter: Character = {
+                    updatedCharacter = {
                         ...character,
                         status: CharacterStatus.VocationalTraining,
                         statusEndYear: prevState.currentDate.year + VOCATIONAL_TRAINING.duration,
                         education: 'education_vocational_diploma',
                     };
-                    nextState.familyFund -= VOCATIONAL_TRAINING.cost;
-                    nextState.familyMembers[characterId] = updatedCharacter;
-                    nextState.gameLog.push({ 
-                        year: prevState.currentDate.year, 
-                        messageKey: 'log_enrolled_vocational', 
-                        replacements: {name: displayName},
+                    familyFund -= VOCATIONAL_TRAINING.cost;
+                    logEntry = {
+                        year: prevState.currentDate.year,
+                        messageKey: 'log_enrolled_vocational',
+                        replacements: { name: displayName },
                         characterId: characterId,
                         eventTitleKey: 'event_career_choice_title',
-                    });
+                    };
                 }
                 setIsPaused(false);
-                return nextState;
+                return {
+                    ...prevState,
+                    familyFund,
+                    familyMembers: {
+                        ...prevState.familyMembers,
+                        [characterId]: updatedCharacter,
+                    },
+                    gameLog: [...prevState.gameLog, logEntry],
+                    pendingCareerChoice: null,
+                };
             }
-            
+
             const trackDetails = CAREER_LADDER[choiceKey];
-            if (!trackDetails) return prevState; 
+            if (!trackDetails) return prevState;
 
             const isMajorMatch = trackDetails.requiredMajor && character.major === trackDetails.requiredMajor;
             const noMajorRequired = !trackDetails.requiredMajor;
             const hasDegree = !!character.major;
-            
+
             const iqReq = trackDetails.iqRequired || 0;
             const eqReq = trackDetails.eqRequired || 0;
             const isStatQualified = character.stats.iq >= iqReq && character.stats.eq >= eqReq;
 
-            let updatedCharacter: Partial<Character> = {};
-            let logEntry: GameLogEntry | null = null; // FIX: Changed from GameLogEntry to GameLogEntry | null
-
             // THIS IS THE ONLY CASE FOR THE TRAINEE/PENALIZED MODAL
             if (isMajorMatch && !isStatQualified) {
-                nextState.pendingUnderqualifiedChoice = { characterId, careerTrackKey: choiceKey };
-                return nextState;
+                return {
+                    ...prevState,
+                    pendingCareerChoice: null,
+                    pendingUnderqualifiedChoice: { characterId, careerTrackKey: choiceKey },
+                };
             }
+
+            let updatedCharacter: Partial<Character> = {};
+            let logEntry: GameLogEntry | null = null;
 
             // All other cases get an immediate job assignment
             if ((isMajorMatch || noMajorRequired) && isStatQualified) {
@@ -1403,11 +1432,11 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             } else { // Underqualified for other reasons (mismatched major + low stats, or no degree + low stats)
                 const iqDeficit = Math.max(0, iqReq - character.stats.iq);
                 const eqDeficit = Math.max(0, eqReq - character.stats.eq);
-                const iqPenalty = iqReq > 0 ? iqDeficit / iqReq : 0; // Use iqReq
-                const eqPenalty = eqReq > 0 ? eqDeficit / eqReq : 0; // Use eqReq
+                const iqPenalty = iqReq > 0 ? iqDeficit / iqReq : 0;
+                const eqPenalty = eqReq > 0 ? eqDeficit / eqReq : 0;
                 const numDeficits = (iqDeficit > 0 ? 1 : 0) + (eqDeficit > 0 ? 1 : 0);
                 const lowStatPenalty = numDeficits > 0 ? (iqPenalty + eqPenalty) / numDeficits : 0;
-                
+
                 const mismatchPenalty = (trackDetails.requiredMajor && !isMajorMatch) ? 0.30 : 0;
                 const combinedPenalty = Math.min(0.9, mismatchPenalty + lowStatPenalty);
 
@@ -1420,14 +1449,21 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 const messageKey = mismatchPenalty > 0 ? 'log_accepted_severely_underqualified_job' : 'log_accepted_penalized_job';
                 logEntry = { year: prevState.currentDate.year, messageKey, replacements: { name: displayName, title: trackDetails.levels[0].titleKey }, characterId, eventTitleKey: 'event_career_choice_title' };
             }
-            
+
             if (logEntry) {
-                nextState.familyMembers[characterId] = { ...character, ...updatedCharacter };
-                nextState.gameLog.push(logEntry);
+                setIsPaused(false);
+                return {
+                    ...prevState,
+                    familyMembers: {
+                        ...prevState.familyMembers,
+                        [characterId]: { ...character, ...updatedCharacter }
+                    },
+                    gameLog: [...prevState.gameLog, logEntry],
+                    pendingCareerChoice: null,
+                };
             }
-            
-            setIsPaused(false);
-            return nextState;
+
+            return { ...prevState, pendingCareerChoice: null };
         });
     };
 
@@ -1561,67 +1597,95 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             if (!prevState) return null;
             const business = prevState.familyBusinesses[businessId];
             if (!business) return prevState;
-    
-            const nextState: GameState = JSON.parse(JSON.stringify(prevState));
-            const businessToUpdate = nextState.familyBusinesses[businessId];
-            const oldCharacterId = businessToUpdate.slots[slotIndex].assignedCharacterId;
-    
+
+            let nextFamilyMembers = { ...prevState.familyMembers };
+            let nextFamilyBusinesses = { ...prevState.familyBusinesses };
+            let nextGameLog = [...prevState.gameLog];
+
+            const oldCharacterId = business.slots[slotIndex].assignedCharacterId;
+
             // Step 1: Unassign the character who was previously in THIS slot.
-            if (oldCharacterId && oldCharacterId !== 'robot' && nextState.familyMembers[oldCharacterId]) {
-                const oldChar = nextState.familyMembers[oldCharacterId];
-                oldChar.status = CharacterStatus.Unemployed;
-                oldChar.monthlyNetIncome = 0;
-            }
-    
-            // Step 2: If we are assigning a new character, unassign them from ANY OTHER slot they might be in.
-            if (newCharacterId && newCharacterId !== 'robot' && nextState.familyMembers[newCharacterId]) {
-                // Find and clear any existing assignment for the new character across all businesses
-                for (const bId in nextState.familyBusinesses) {
-                    const b = nextState.familyBusinesses[bId];
-                    for (const s of b.slots) {
-                        if (s.assignedCharacterId === newCharacterId) {
-                            s.assignedCharacterId = null;
-                        }
+            if (oldCharacterId && oldCharacterId !== 'robot' && nextFamilyMembers[oldCharacterId]) {
+                nextFamilyMembers = {
+                    ...nextFamilyMembers,
+                    [oldCharacterId]: {
+                        ...nextFamilyMembers[oldCharacterId],
+                        status: CharacterStatus.Unemployed,
+                        monthlyNetIncome: 0,
                     }
-                }
-    
+                };
+            }
+
+            // Step 2: If we are assigning a new character, unassign them from ANY OTHER slot they might be in.
+            if (newCharacterId && newCharacterId !== 'robot' && nextFamilyMembers[newCharacterId]) {
+                let charToAssign = { ...nextFamilyMembers[newCharacterId] };
+                
+                nextFamilyBusinesses = Object.entries(nextFamilyBusinesses).reduce((acc, [bId, b]) => {
+                    const newSlots = b.slots.map(s => {
+                        if (s.assignedCharacterId === newCharacterId) {
+                            return { ...s, assignedCharacterId: null };
+                        }
+                        return s;
+                    });
+                    return { ...acc, [bId]: { ...b, slots: newSlots } };
+                }, {});
+
                 // Step 3: Update the new character's status and log the change.
-                const char = nextState.familyMembers[newCharacterId];
                 const businessDef = BUSINESS_DEFINITIONS[business.type];
-                if (char.status === CharacterStatus.Working && char.careerTrack) {
-                    const oldJob = t(CAREER_LADDER[char.careerTrack].levels[char.careerLevel].titleKey, language);
-                    nextState.gameLog.push({
-                        year: nextState.currentDate.year,
+                if (charToAssign.status === CharacterStatus.Working && charToAssign.careerTrack) {
+                    const oldJob = t(CAREER_LADDER[charToAssign.careerTrack].levels[charToAssign.careerLevel].titleKey, language);
+                    nextGameLog.push({
+                        year: prevState.currentDate.year,
                         messageKey: 'log_quit_job_for_business',
-                        replacements: { name: char.name, oldJob: oldJob, businessName: t(businessDef.nameKey, language) },
-                        characterId: char.id,
+                        replacements: { name: charToAssign.name, oldJob: oldJob, businessName: t(businessDef.nameKey, language) },
+                        characterId: charToAssign.id,
                         eventTitleKey: 'event_business_assignment_title',
                     });
                 } else {
-                    nextState.gameLog.push({
-                        year: nextState.currentDate.year,
+                    nextGameLog.push({
+                        year: prevState.currentDate.year,
                         messageKey: 'log_started_at_business',
-                        replacements: { name: char.name, businessName: t(businessDef.nameKey, language) },
-                        characterId: char.id,
+                        replacements: { name: charToAssign.name, businessName: t(businessDef.nameKey, language) },
+                        characterId: charToAssign.id,
                         eventTitleKey: 'event_business_assignment_title',
                     });
                 }
-                char.status = CharacterStatus.Working;
-                char.careerTrack = null;
-                char.careerLevel = 0;
-                char.monthsInCurrentJobLevel = 0;
-    
+
+                charToAssign = {
+                    ...charToAssign,
+                    status: CharacterStatus.Working,
+                    careerTrack: null,
+                    careerLevel: 0,
+                    monthsInCurrentJobLevel: 0,
+                };
+
                 // Only reset skill if the new role requires a different major
-                const slot = businessToUpdate.slots[slotIndex];
-                if (slot.requiredMajor !== 'Unskilled' && char.major !== slot.requiredMajor) {
-                    char.stats.skill = 0;
+                const slot = business.slots[slotIndex];
+                if (slot.requiredMajor !== 'Unskilled' && charToAssign.major !== slot.requiredMajor) {
+                    charToAssign = {
+                        ...charToAssign,
+                        stats: {
+                            ...charToAssign.stats,
+                            skill: 0,
+                        }
+                    };
                 }
+                nextFamilyMembers = { ...nextFamilyMembers, [newCharacterId]: charToAssign };
             }
-    
+
             // Step 4: Assign the new character to the target slot.
-            businessToUpdate.slots[slotIndex].assignedCharacterId = newCharacterId;
-    
-            return nextState;
+            const businessToUpdate = { ...nextFamilyBusinesses[businessId] };
+            const slotsToUpdate = [...businessToUpdate.slots];
+            slotsToUpdate[slotIndex] = { ...slotsToUpdate[slotIndex], assignedCharacterId: newCharacterId };
+            businessToUpdate.slots = slotsToUpdate;
+            nextFamilyBusinesses = { ...nextFamilyBusinesses, [businessId]: businessToUpdate };
+
+            return {
+                ...prevState,
+                familyMembers: nextFamilyMembers,
+                familyBusinesses: nextFamilyBusinesses,
+                gameLog: nextGameLog,
+            };
         });
     };
     
@@ -1769,33 +1833,44 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             const sellPrice = definition.cost * 0.5;
             const actor = Object.values(prevState.familyMembers).find(c => c.isAlive);
 
-            const nextState: GameState = JSON.parse(JSON.stringify(prevState));
+            const familyMembersToUpdate = { ...prevState.familyMembers };
+            let wasMutated = false;
 
             // Unassign all characters from the business
             for (const slot of business.slots) {
                 if (slot.assignedCharacterId && slot.assignedCharacterId !== 'robot') {
-                    const char = nextState.familyMembers[slot.assignedCharacterId];
+                    const char = familyMembersToUpdate[slot.assignedCharacterId];
                     if (char) {
-                        char.status = CharacterStatus.Unemployed;
-                        char.monthlyNetIncome = 0;
-                        char.careerTrack = null;
-                        char.careerLevel = 0;
+                        familyMembersToUpdate[slot.assignedCharacterId] = {
+                            ...char,
+                            status: CharacterStatus.Unemployed,
+                            monthlyNetIncome: 0,
+                            careerTrack: null,
+                            careerLevel: 0,
+                        };
+                        wasMutated = true;
                     }
                 }
             }
 
-            delete nextState.familyBusinesses[businessId];
-            nextState.familyFund += sellPrice;
+            const { [businessId]: deletedBusiness, ...remainingBusinesses } = prevState.familyBusinesses;
 
-            nextState.gameLog.push({
-                year: nextState.currentDate.year,
-                messageKey: 'log_business_sold',
-                replacements: { businessName: t(definition.nameKey, nextState.lang), amount: sellPrice.toLocaleString() },
-                characterId: actor?.id,
-                eventTitleKey: 'event_business_sold_title',
-            });
-
-            return nextState;
+            return {
+                ...prevState,
+                familyFund: prevState.familyFund + sellPrice,
+                familyMembers: wasMutated ? familyMembersToUpdate : prevState.familyMembers,
+                familyBusinesses: remainingBusinesses,
+                gameLog: [
+                    ...prevState.gameLog,
+                    {
+                        year: prevState.currentDate.year,
+                        messageKey: 'log_business_sold',
+                        replacements: { businessName: t(definition.nameKey, prevState.lang), amount: sellPrice.toLocaleString() },
+                        characterId: actor?.id,
+                        eventTitleKey: 'event_business_sold_title',
+                    }
+                ]
+            };
         });
     };
 
@@ -1881,6 +1956,20 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         });
     };
 
+    const handlePurchaseSuccess = (productId: string) => {
+        setGameState(prevState => {
+            if (!prevState) return prevState;
+
+            if (productId.includes('income')) {
+                return { ...prevState, isIncomeDoubled: true };
+            } else if (productId.includes('ads')) {
+                return { ...prevState, areAdsRemoved: true };
+            }
+
+            return prevState;
+        });
+    };
+
     return {
         saveGame,
         initializeGame,
@@ -1909,6 +1998,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         onSellBusiness,
         handleAcknowledgeUnlock,
         handleClaimFeature,
+        handlePurchaseSuccess,
         ONE_TIME_EVENT_IDS,
         SAVE_KEY,
         stopGameLoop,

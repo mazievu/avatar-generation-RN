@@ -11,7 +11,7 @@ const ROOT_DIR = process.cwd();
 const CORE_DIR = path.join(ROOT_DIR, 'core'); // Đường dẫn tới thư mục core
 const LOCKFILE_DIR = path.join(ROOT_DIR, 'game_content', 'locks');
 const EVENTS_LOCKFILE = path.join(LOCKFILE_DIR, 'events-lock.json');
-const GENERATED_DIR = path.join(ROOT_DIR, 'src', 'generated');
+const GENERATED_DIR = path.join(ROOT_DIR, 'core', 'generated');
 const EVENT_IDS_FILE = path.join(GENERATED_DIR, 'eventIds.ts');
 const STAT_KEYS_FILE = path.join(GENERATED_DIR, 'statKeys.ts');
 

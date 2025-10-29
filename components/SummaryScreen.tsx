@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 
-import type { GameState, Character, Language } from '../core/types';
+import type { GameState, Character, Language, PurchasedAsset } from '../core/types';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { t } from '../core/localization';
 
@@ -14,19 +14,37 @@ interface LocalizedProps {
 }
 
 interface SummaryScreenProps extends LocalizedProps {
-  gameState: GameState;
+  familyMembers: Record<string, Character>;
+  gameOverReason: string | null;
+  totalMembers: number;
+  highestEducation: string;
+  highestCareer: string;
+  familyFund: number;
+  purchasedAssets: Record<string, PurchasedAsset>;
+  currentDate: { day: number; year: number };
   onRestart: () => void;
 }
 
-export const SummaryScreen: React.FC<SummaryScreenProps> = ({ gameState, onRestart, lang }) => {
-  const livingMembers = Object.values(gameState.familyMembers).filter((m: Character) => m.isAlive).length;
-  const deceasedMembers = Object.values(gameState.familyMembers).filter((m: Character) => !m.isAlive).length;
-  const isVictory = gameState.gameOverReason === 'victory';
+export const SummaryScreen: React.FC<SummaryScreenProps> = React.memo(({
+  familyMembers,
+  gameOverReason,
+  totalMembers,
+  highestEducation,
+  highestCareer,
+  familyFund,
+  purchasedAssets,
+  currentDate,
+  onRestart,
+  lang,
+}) => {
+  const livingMembers = Object.values(familyMembers).filter((m: Character) => m.isAlive).length;
+  const deceasedMembers = Object.values(familyMembers).filter((m: Character) => !m.isAlive).length;
+  const isVictory = gameOverReason === 'victory';
   
   let descriptionKey = 'summary_gameover_desc';
   if (isVictory) {
       descriptionKey = 'summary_victory_desc';
-  } else if (gameState.gameOverReason === 'debt') {
+  } else if (gameOverReason === 'debt') {
       descriptionKey = 'summary_gameover_desc_debt';
   }
 
@@ -40,15 +58,15 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({ gameState, onResta
             </Text>
             
             <View style={summaryScreenStyles.statsContainer}>
-              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_total_generations', lang)}:</Text> {isVictory ? '6' : Object.values(gameState.familyMembers).reduce((max, m: Character) => Math.max(max, m.generation), 0)}</Text>
-              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_total_members', lang)}:</Text> {gameState.totalMembers}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_total_generations', lang)}:</Text> {isVictory ? '6' : Object.values(familyMembers).reduce((max, m: Character) => Math.max(max, m.generation), 0)}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_total_members', lang)}:</Text> {totalMembers}</Text>
               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_living_members', lang)}:</Text> {livingMembers}</Text>
               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_deceased_members', lang)}:</Text> {deceasedMembers}</Text>
-              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_education', lang)}:</Text> {gameState.highestEducation}</Text>
-              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_career', lang)}:</Text> {gameState.highestCareer}</Text>
-              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_final_funds', lang)}:</Text> ${gameState.familyFund.toLocaleString()}</Text>
-               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_asset_value', lang)}:</Text> ${Object.values(gameState.purchasedAssets).reduce((sum, a) => sum + (ASSET_DEFINITIONS[a.id]?.cost || 0), 0).toLocaleString()}</Text>
-              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_ending_year', lang)}:</Text> {gameState.currentDate.year}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_education', lang)}:</Text> {highestEducation}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_highest_career', lang)}:</Text> {highestCareer}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_final_funds', lang)}:</Text> ${familyFund.toLocaleString()}</Text>
+               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_asset_value', lang)}:</Text> ${Object.values(purchasedAssets).reduce((sum, a) => sum + (ASSET_DEFINITIONS[a.id]?.cost || 0), 0).toLocaleString()}</Text>
+              <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_ending_year', lang)}:</Text> {currentDate.year}</Text>
             </View>
 
             <TouchableOpacity onPress={onRestart} style={summaryScreenStyles.restartButton}>
@@ -60,7 +78,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({ gameState, onResta
       </View>
     </View>
   );
-};
+});
 
 const summaryScreenStyles = StyleSheet.create({
     container: {

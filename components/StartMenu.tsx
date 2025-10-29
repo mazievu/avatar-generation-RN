@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 
 
 import type { Language } from '../core/types';
@@ -39,6 +39,15 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstruction
             </Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+            onPress={() => Linking.openURL('https://www.youtube.com/@Milamioavatar')}
+            style={startMenuStyles.youtubeButton}
+        >
+            <Text style={startMenuStyles.youtubeButtonText}>
+                YouTube Channel
+            </Text>
+        </TouchableOpacity>
+
         
     {/* Language Selection */}
         <View style={startMenuStyles.languageButtonsContainer}>
@@ -73,8 +82,20 @@ const startMenuStyles = StyleSheet.create({
         borderRadius: 8,
         paddingHorizontal: 24,
         paddingVertical: 12,
+        marginBottom: 16,
     },
     howToPlayButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    youtubeButton: {
+        backgroundColor: '#ff0000', // YouTube Red
+        borderRadius: 8,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+    },
+    youtubeButtonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
@@ -107,7 +128,7 @@ const startMenuStyles = StyleSheet.create({
     startButton: {
         backgroundColor: '#2563eb', // blue-700
         borderRadius: 8,
-        marginBottom: 24,
+        marginBottom: 16,
         paddingHorizontal: 32,
         paddingVertical: 16,
     },

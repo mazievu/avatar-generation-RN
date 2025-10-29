@@ -94,12 +94,18 @@ const PathNodeItem: React.FC<PathNodeItemProps> = ({
 
 // --- PathOfLifeScreen (Main Component) ---
 interface PathOfLifeScreenProps {
-  gameState: GameState;
+  totalChildrenBorn: number;
+  claimedFeatures: string[];
   lang: Language;
   onClaimFeature: (featureId: string) => void;
 }
 
-export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, lang, onClaimFeature }) => {
+export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = React.memo(({
+  totalChildrenBorn,
+  claimedFeatures,
+  lang,
+  onClaimFeature,
+}) => {
   const [infoModalFeature, setInfoModalFeature] = useState<UnlockableFeature | null>(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [claimedNotification, setClaimedNotification] = useState<UnlockableFeature | null>(null);
@@ -109,7 +115,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
   const nodeSpacing = 200;
   const contentHeight = (PATH_NODES.length - 1) * nodeSpacing;
 
-  const currentProgress = gameState.totalChildrenBorn;
+  const currentProgress = totalChildrenBorn;
 
   const handleClaim = (featureId: string) => {
     onClaimFeature(featureId);
@@ -131,7 +137,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
   const focusNodeIndex = useMemo(() => {
     const firstClaimableIndex = PATH_NODES.findIndex(node => {
         const isPassed = currentProgress >= node.level;
-        const isClaimed = gameState.claimedFeatures.includes(node.featureId);
+        const isClaimed = claimedFeatures.includes(node.featureId);
         return isPassed && !isClaimed;
     });
 
@@ -140,7 +146,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
     }
     
     return lastPassedNodeIndex > -1 ? lastPassedNodeIndex : 0;
-  }, [currentProgress, gameState.claimedFeatures, lastPassedNodeIndex]);
+  }, [currentProgress, claimedFeatures, lastPassedNodeIndex]);
 
   const overallProgress = lastPassedNodeIndex >= 0 ? lastPassedNodeIndex / (PATH_NODES.length - 1) : 0;
   const progressAnimation = useRef(new Animated.Value(0)).current;
@@ -194,7 +200,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
             if (!feature) return null;
 
             const isPassed = currentProgress >= node.level;
-            const isClaimed = gameState.claimedFeatures.includes(node.featureId);
+            const isClaimed = claimedFeatures.includes(node.featureId);
             const isClaimable = isPassed && !isClaimed;
             const isCurrentGlowTarget = node.level === currentGlowLevel;
             const positionStyle = { bottom: index * nodeSpacing };
@@ -279,7 +285,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = ({ gameState, l
       )}
     </ImageBackground>
   );
-};
+});
 
 
 // --- StyleSheet ---

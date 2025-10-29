@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, TouchableOpacity, Dimensions, ImageSourcePropType } from 'react-native';
 
 import { ComicPanelModal } from './ComicPanelModal';
-import type { Character, GameState, Language, Manifest, Club } from '../core/types'; 
+import type { Character, GameState, Language, Manifest, Club, GameLogEntry } from '../core/types'; 
 import { LogEntry } from './GameLog';
 import { t } from '../core/localization';
 import { getEducationDisplay } from '../core/utils';
@@ -21,21 +21,36 @@ const responsiveSize = (size: number) => Math.round(size * scale);
  const contentMaxHeight = screenHeight * 0.85 - responsiveSize(150);
 
 interface CharacterDetailModalProps {
-  character: Character | null;
-  gameState: GameState;
-  onClose: () => void;
-  onCustomize: (characterId: string) => void;
-  lang: Language;
-  manifest: Manifest;
-  images: Record<string, ImageSourcePropType>;
-  clubs: Club[];
+    character: Character;
+    familyMembers: Record<string, Character>;
+    gameLog: GameLogEntry[];
+    totalChildrenBorn: number;
+    currentDate: { day: number; year: number };
+    lang: Language;
+    onClose: () => void;
+    onCustomize: (characterId: string) => void;
+    images: Record<string, ImageSourcePropType>;
+    manifest: Manifest;
+    clubs: Club[];
 }
 
-export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ character, gameState, onClose, onCustomize, lang, manifest, images }) => {
+export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = React.memo(({
+    character,
+    familyMembers,
+    gameLog,
+    totalChildrenBorn,
+    currentDate,
+    lang,
+    onClose,
+    onCustomize,
+    images,
+    manifest,
+    clubs,
+}) => {
   const [activeTab, setActiveTab] = useState('details');
   if (!character) { return null; }
 
-  const isCustomizationUnlocked = gameState.totalChildrenBorn >= CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT;
+  const isCustomizationUnlocked = totalChildrenBorn >= CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT;
 
   const renderDetailTab = () => {
     return (
@@ -87,8 +102,8 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
   };
 
   const renderEventsTab = () => {
-    const logEntries = [...gameState.gameLog].filter(entry => entry.characterId === character.id).reverse();
-    return ( <View style={styles.eventsTabContainer}>{logEntries.length > 0 ? (logEntries.map((entry, index) => (<LogEntry key={entry.id || `${entry.year}-${index}`} entry={entry} lang={gameState.lang} familyMembers={gameState.familyMembers} />))) : (<Text style={styles.emptyListText}>{t('no_events_for_character', lang)}</Text>)}</View>);
+    const logEntries = [...gameLog].filter(entry => entry.characterId === character.id).reverse();
+    return ( <View style={styles.eventsTabContainer}>{logEntries.length > 0 ? (logEntries.map((entry, index) => (<LogEntry key={entry.id || `${entry.year}-${index}`} entry={entry} lang={lang} familyMembers={familyMembers} />))) : (<Text style={styles.emptyListText}>{t('no_events_for_character', lang)}</Text>)}</View>);
   };
   
   return (
@@ -121,7 +136,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = ({ char
         </View>
     </ComicPanelModal>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -3,7 +3,7 @@ import { handleBirth, generateName, assignNpcCareer, generateRandomAvatar, getCh
 import { randomUUID } from 'expo-crypto';
 
 import { t } from '../localization';
-import { EventIdByKey } from '../../src/generated/eventIds';
+import { EventIdByKey } from '../generated/eventIds';
 import { TWIN_BIRTH_UNLOCK_CHILDREN_COUNT, TRIPLET_BIRTH_UNLOCK_CHILDREN_COUNT } from '../constants'; // Import constants
 
 export const MILESTONE_EVENTS: EventDraft[] = [

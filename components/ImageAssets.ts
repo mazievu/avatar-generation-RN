@@ -1,5 +1,8 @@
 /* eslint-disable */
 /* tslint:disable */
+import { ImageSourcePropType } from 'react-native';
+import type { Manifest } from '../core/types';
+
 export const imageAssets: Record<string, any> = {
   '../assets/vehicle_3.webp': require('../assets/vehicle_3.webp'),
   '../assets/vehicle_2.webp': require('../assets/vehicle_2.webp'),
@@ -160,4 +163,15 @@ export const imageAssets: Record<string, any> = {
   '../assets/lucas.webp': require('../assets/lucas.webp'),
   '../assets/max.webp': require('../assets/max.webp'),
   '../assets/mila.webp': require('../assets/mila.webp'),
+};
+
+/**
+ * Loads all image assets defined in ImageAssets.ts.
+ * The manifest parameter is currently unused but is kept for future API compatibility
+ * where we might want to selectively load assets based on a manifest.
+ */
+export const loadAvatarAssets = async (manifest: Manifest): Promise<Record<string, ImageSourcePropType>> => {
+  // The 'manifest' argument is ignored for now. We just load all pre-required assets.
+  // This is a simple way to provide the assets to the app while keeping the async structure.
+  return Promise.resolve(imageAssets);
 };

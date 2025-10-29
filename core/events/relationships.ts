@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase, RelationshipStatus } from '../types';
-import { EventIdByKey } from '../../src/generated/eventIds';
+import { EventIdByKey } from '../generated/eventIds';
 export const RELATIONSHIP_EVENTS: EventDraft[] = [
     // 10 MAIN EVENTS
     {

@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase, CharacterStatus } from '../types';
-import { EventIdByKey } from '../../src/generated/eventIds';
+import { EventIdByKey } from '../generated/eventIds';
 
 export const LIFE_EVENTS: EventDraft[] = [
     {

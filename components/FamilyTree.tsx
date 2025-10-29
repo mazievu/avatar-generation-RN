@@ -30,7 +30,9 @@ type NodeLayout = {
 type LayoutsMap = Record<string, NodeLayout>;
 
 interface FamilyTreeProps {
-  gameState: GameState;
+  familyMembers: Record<string, Character>;
+  activeEvent: GameState['activeEvent'];
+  currentDate: GameState['currentDate'];
   lang: Language;
   manifest: Manifest;
   images: Record<string, ImageSourcePropType>;
@@ -200,7 +202,7 @@ const styles = StyleSheet.create({
 });
 
 // --- 4. MAIN FAMILY TREE COMPONENT ---
-export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
+export const FamilyTree: React.FC<FamilyTreeProps> = React.memo(({ familyMembers, activeEvent, currentDate, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
   const hasCenteredInitially = useRef(false);
 
   // Animated values
@@ -217,7 +219,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
   const [viewState, setViewState] = useState({ scale: 1, x: 0, y: 0 });
   const [showJourneyAnimation, setShowJourneyAnimation] = useState(false);
 
-  const layouts = useMemo(() => calculateTreeLayout(gameState.familyMembers), [gameState.familyMembers]);
+  const layouts = useMemo(() => calculateTreeLayout(familyMembers), [familyMembers]);
 
   const handleJourneyAnimationFinish = useCallback(() => {
     setShowJourneyAnimation(false);
@@ -253,11 +255,11 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     if (selectedCharacter && layouts[selectedCharacter.id]) {
       characterToCenter = selectedCharacter;
     }
-    else if (characterIdToCenterOnEvent && gameState.familyMembers[characterIdToCenterOnEvent] && layouts[characterIdToCenterOnEvent]) {
-      characterToCenter = gameState.familyMembers[characterIdToCenterOnEvent];
+    else if (characterIdToCenterOnEvent && familyMembers[characterIdToCenterOnEvent] && layouts[characterIdToCenterOnEvent]) {
+      characterToCenter = familyMembers[characterIdToCenterOnEvent];
     }
     else if (!hasCenteredInitially.current && Object.keys(layouts).length > 0) {
-      const playerCharacter = Object.values(gameState.familyMembers).find(char => char.isPlayerCharacter);
+      const playerCharacter = Object.values(familyMembers).find(char => char.isPlayerCharacter);
       if (playerCharacter && layouts[playerCharacter.id]) {
         characterToCenter = playerCharacter;
         hasCenteredInitially.current = true;
@@ -278,7 +280,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
         if (finished) {
           runOnJS(setViewState)({ scale: targetScale, x: newTranslateX, y: newTranslateY });
           if (characterIdToCenterOnEvent) {
-            const shouldShowJourney = gameState.activeEvent?.event.showJourneyAnimation;
+            const shouldShowJourney = activeEvent?.event.showJourneyAnimation;
             if (shouldShowJourney) {
               runOnJS(setShowJourneyAnimation)(true);
             } else {
@@ -288,7 +290,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
         }
       });
     }
-  }, [selectedCharacter, characterIdToCenterOnEvent, layouts, gameState.activeEvent]);
+  }, [selectedCharacter, characterIdToCenterOnEvent, layouts, activeEvent]);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -398,7 +400,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
     [layouts, viewState]
   );
 
-  const characterForAnimation = characterIdToCenterOnEvent ? gameState.familyMembers[characterIdToCenterOnEvent] : null;
+  const characterForAnimation = characterIdToCenterOnEvent ? familyMembers[characterIdToCenterOnEvent] : null;
 
   if (Object.keys(layouts).length === 0) {
     return <View style={styles.container}><Text>No family members to display.</Text></View>;
@@ -423,7 +425,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
           </Svg>
           
           {visibleNodes.map(nodeLayout => {
-            const character = gameState.familyMembers[nodeLayout.id];
+            const character = familyMembers[nodeLayout.id];
             if (!character) return null;
             return (
               <View
@@ -448,7 +450,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
                 <IncomeAnimation
                   netIncome={character.monthlyNetIncome}
                   characterId={character.id}
-                  currentDate={gameState.currentDate}
+                  currentDate={currentDate}
                 />
               </View>
             );
@@ -466,4 +468,4 @@ export const FamilyTree: React.FC<FamilyTreeProps> = ({ gameState, lang, manifes
       </Animated.View>
     </GestureDetector>
   );
-};
+});

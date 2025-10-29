@@ -1,5 +1,5 @@
 import { EventDraft, LifePhase } from '../types';
-import { EventIdByKey } from '../../src/generated/eventIds';
+import { EventIdByKey } from '../generated/eventIds';
 export const HIGH_SCHOOL_EVENTS: EventDraft[] = [
     // 10 Main Events (with triggers)
     {

@@ -85,7 +85,9 @@ const AssignmentModal: React.FC<{
 interface BusinessManagementModalProps {
     lang: Language;
     business: Business;
-    gameState: GameState;
+    familyFund: number;
+    familyMembers: Record<string, Character>;
+    familyBusinesses: Record<string, Business>;
     onAssignToBusiness: (businessId: string, slotIndex: number, characterId: string | null) => void;
     onUpgradeBusiness: (businessId: string) => void;
     onSellBusiness: (businessId: string) => void;
@@ -94,9 +96,11 @@ interface BusinessManagementModalProps {
     manifest: Manifest;
 }
 
-export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = ({
+export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = React.memo(({
     business,
-    gameState,
+    familyFund,
+    familyMembers,
+    familyBusinesses,
     onAssignToBusiness,
     onUpgradeBusiness,
     onSellBusiness,
@@ -112,9 +116,9 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
     if (!businessDef) return null;
 
     const upgradeCost = businessDef.cost * 0.75;
-    const canUpgrade = business.level < 2 && gameState.familyFund >= upgradeCost;
+    const canUpgrade = business.level < 2 && familyFund >= upgradeCost;
 
-    const availableMembers = Object.values(gameState.familyMembers).filter(char => {
+    const availableMembers = Object.values(familyMembers).filter(char => {
         if (!char.isAlive || char.age < 18 || char.phase === LifePhase.Retired) return false;
         
         const isCurrentlyAssignedHere = business.slots.some(slot => slot.assignedCharacterId === char.id);
@@ -122,7 +126,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
         
         const isAvailableForWork = [CharacterStatus.Unemployed, CharacterStatus.Idle, CharacterStatus.Working].includes(char.status);
         
-        const isWorkingInAnotherBusiness = Object.values(gameState.familyBusinesses).some(b => 
+        const isWorkingInAnotherBusiness = Object.values(familyBusinesses).some(b => 
             b.id !== business.id && b.slots.some(s => s.assignedCharacterId === char.id)
         );
 
@@ -148,7 +152,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
                 <ScrollView style={businessManagementModalStyles.slotsContainer}>
                     <Text style={businessManagementModalStyles.sectionTitle}>{localization.t('employee_slots_label', lang)}</Text>
                     {business.slots.map((slot, index) => {
-                            const assignedCharacter = slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? gameState.familyMembers[slot.assignedCharacterId] : null;
+                            const assignedCharacter = slot.assignedCharacterId && slot.assignedCharacterId !== 'robot' ? familyMembers[slot.assignedCharacterId] : null;
                             const isRobot = slot.assignedCharacterId === 'robot';
                             const salary = assignedCharacter ? calculateEmployeeSalary(assignedCharacter) : 0;
 
@@ -234,7 +238,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = (
             )}
         </>
     )
-};
+});
 
 const businessManagementModalStyles = StyleSheet.create({
     avatarContainer: {

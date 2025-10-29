@@ -1,7 +1,7 @@
 import { EventDraft, LifePhase, Pet, PetType, Stats, Character, GameState } from '../types';
 import { PET_DATA } from '../constants';
 import { randomUUID } from 'expo-crypto';
-import { EventIdByKey } from '../../src/generated/eventIds';
+import { EventIdByKey } from '../generated/eventIds';
 // Helper for pet name generation
 const PET_NAMES: Record<PetType, string[]> = {
     [PetType.Dog]: ['Buddy', 'Lucy', 'Max', 'Bella', 'Charlie', 'Daisy'],

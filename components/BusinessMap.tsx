@@ -6,7 +6,7 @@ import Animated, {
     useAnimatedStyle,
 } from 'react-native-reanimated';
 
-import type { GameState, BusinessDefinition, Business, Manifest, Language } from '../core/types';
+import type { GameState, BusinessDefinition, Business, Manifest, Language, Character } from '../core/types';
 import { t } from '../core/localization';
 import { BUSINESS_DEFINITIONS, BUSINESS_MAP_LOCATIONS } from '../core/constants';
 import { BusinessMapSVG } from './BusinessMapSVG';
@@ -215,14 +215,16 @@ const businessManageSelectionModalStyles = StyleSheet.create({
 });
 
 export const BusinessMap: React.FC<{
-    gameState: GameState;
+    familyBusinesses: Record<string, Business>;
+    familyMembers: Record<string, Character>;
+    familyFund: number;
     onBuyBusiness: (businessType: string) => void;
     onManageBusiness: (business: Business) => void;
     lang: Language;
     images: Record<string, ImageSourcePropType>;
     manifest: Manifest;
     onBackToTree: () => void;
-}> = ({ gameState, onBuyBusiness, onManageBusiness, lang, images, manifest, onBackToTree }) => {
+}> = React.memo(({ familyBusinesses, familyMembers, familyFund, onBuyBusiness, onManageBusiness, lang, images, manifest, onBackToTree }) => {
     const [selectedLocationKey, setSelectedLocationKey] = useState<string | null>(null);
     const [showManageModalForType, setShowManageModalForType] = useState<string | null>(null);
 
@@ -264,14 +266,14 @@ export const BusinessMap: React.FC<{
 
     const ownedBusinessesByType = useMemo(() => {
         const map = new Map<string, Business[]>();
-        Object.values(gameState.familyBusinesses).forEach(b => {
+        Object.values(familyBusinesses).forEach(b => {
             if (!map.has(b.type)) {
                 map.set(b.type, []);
             }
             map.get(b.type)?.push(b);
         });
         return map;
-    }, [gameState.familyBusinesses]);
+    }, [familyBusinesses]);
 
     const handleBuy = (key: string) => {
         onBuyBusiness(key);
@@ -342,8 +344,8 @@ export const BusinessMap: React.FC<{
                                         {businessToManage ?
                                         (
                                             <View style={businessMapStyles.ownedBusinessDetails}>
-                                                <Text style={[businessMapStyles.ownedBusinessNetIncome, calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? businessMapStyles.netIncomePositive : businessMapStyles.netIncomeNegative]}>
-                                                    {calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers) >= 0 ? '+' : ''}${Math.round(calculateBusinessMonthlyNetIncome(businessToManage, gameState.familyMembers)).toLocaleString()}/mo
+                                                <Text style={[businessMapStyles.ownedBusinessNetIncome, calculateBusinessMonthlyNetIncome(businessToManage, familyMembers) >= 0 ? businessMapStyles.netIncomePositive : businessMapStyles.netIncomeNegative]}>
+                                                    {calculateBusinessMonthlyNetIncome(businessToManage, familyMembers) >= 0 ? '+' : ''}${Math.round(calculateBusinessMonthlyNetIncome(businessToManage, familyMembers)).toLocaleString()}/mo
                                                 </Text>
                                                 <View style={businessMapStyles.assignedWorkers}>
                                                         {businessToManage.slots.map((slot, i) => {
@@ -357,7 +359,7 @@ export const BusinessMap: React.FC<{
                                                                 );
                                                             }
 
-                                                            const char = gameState.familyMembers[slot.assignedCharacterId];
+                                                            const char = familyMembers[slot.assignedCharacterId];
                                                             if (!char) return null;
 
                                                             return (
@@ -383,7 +385,7 @@ export const BusinessMap: React.FC<{
                 <BusinessPurchaseModal 
                     businessKey={selectedLocationKey}
                     businessDef={businessDefForModal}
-                    familyFund={gameState.familyFund}
+                    familyFund={familyFund}
                     onBuy={handleBuy}
                     onClose={() => setSelectedLocationKey(null)}
                     lang={lang}
@@ -404,7 +406,7 @@ export const BusinessMap: React.FC<{
             )}
         </View>
     );
-};
+});
 
 const businessMapStyles = StyleSheet.create({
     assignedWorkers: {

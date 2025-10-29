@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageSourcePropType } from 'react-native';
 
-import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Business } from '../core/types';
+import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Business, Language, GameLogEntry } from '../core/types';
 import { getCharacterDisplayName } from '../core/utils';
 import { SCHOOL_OPTIONS } from '../core/constants';
 import { exampleManifest } from '../core/types'; // Assuming this is a placeholder/default
@@ -22,7 +22,25 @@ import { PromotionModal } from './PromotionModal';
 import { BusinessManagementModal } from './BusinessManagementModal';
 
 interface ModalManagerProps {
-    gameState: GameState;
+    // From gameState
+    lang: Language;
+    familyMembers: Record<string, Character>;
+    familyBusinesses: Record<string, Business>;
+    gameLog: GameLogEntry[];
+    totalChildrenBorn: number;
+    currentDate: { day: number; year: number };
+    activeEvent: GameState['activeEvent'];
+    pendingSchoolChoice: GameState['pendingSchoolChoice'];
+    familyFund: number;
+    pendingClubChoice: GameState['pendingClubChoice'];
+    pendingUniversityChoice: GameState['pendingUniversityChoice'];
+    pendingMajorChoice: GameState['pendingMajorChoice'];
+    pendingCareerChoice: GameState['pendingCareerChoice'];
+    pendingUnderqualifiedChoice: GameState['pendingUnderqualifiedChoice'];
+    pendingLoanChoice: GameState['pendingLoanChoice'];
+    pendingPromotion: GameState['pendingPromotion'];
+    
+    // Other props
     selectedCharacter: Character | null;
     editingBusiness: Business | null;
     avatarImages: Record<string, ImageSourcePropType>;
@@ -49,8 +67,23 @@ interface ModalManagerProps {
     setEditingBusiness: (business: Business | null) => void;
 }
 
-export const ModalManager: React.FC<ModalManagerProps> = ({
-    gameState,
+export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
+    lang,
+    familyMembers,
+    familyBusinesses,
+    gameLog,
+    totalChildrenBorn,
+    currentDate,
+    activeEvent,
+    pendingSchoolChoice,
+    familyFund,
+    pendingClubChoice,
+    pendingUniversityChoice,
+    pendingMajorChoice,
+    pendingCareerChoice,
+    pendingUnderqualifiedChoice,
+    pendingLoanChoice,
+    pendingPromotion,
     selectedCharacter,
     editingBusiness,
     avatarImages,
@@ -74,14 +107,13 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
     setEditingBusiness,
     isCenteringAnimationDone,
 }) => {
-    const { lang, familyMembers } = gameState;
 
     return (
         <>
-            {gameState.activeEvent && isCenteringAnimationDone && (
+            {activeEvent && isCenteringAnimationDone && (
                 <EventModal
-                    eventData={gameState.activeEvent}
-                    character={familyMembers[gameState.activeEvent.characterId]}
+                    eventData={activeEvent}
+                    character={familyMembers[activeEvent.characterId]}
                     onChoice={onEventChoice}
                     onClose={onEventModalClose}
                     lang={lang}
@@ -90,22 +122,22 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     onEventHandled={onEventHandled}
                 />
             )}
-            {gameState.pendingSchoolChoice && gameState.pendingSchoolChoice.length > 0 && (
+            {pendingSchoolChoice && pendingSchoolChoice.length > 0 && (
                 <SchoolChoiceModal
-                    character={familyMembers[gameState.pendingSchoolChoice[0].characterId]}
-                    schoolOptions={SCHOOL_OPTIONS[gameState.pendingSchoolChoice[0].newPhase]}
+                    character={familyMembers[pendingSchoolChoice[0].characterId]}
+                    schoolOptions={SCHOOL_OPTIONS[pendingSchoolChoice[0].newPhase]}
                     onSelect={onSchoolChoice}
-                    currentFunds={gameState.familyFund}
+                    currentFunds={familyFund}
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
                 />
             )}
-            {gameState.pendingClubChoice && (
+            {pendingClubChoice && (
                 // *** ĐÂY LÀ ĐOẠN CODE ĐÃ ĐƯỢC SỬA LỖI ***
                 <ClubChoiceModal
-                    character={familyMembers[gameState.pendingClubChoice.characterId]}
-                    clubs={gameState.pendingClubChoice.options}
+                    character={familyMembers[pendingClubChoice.characterId]}
+                    clubs={pendingClubChoice.options}
                     onSelect={onClubChoice}
                     onSkip={() => onClubChoice(null)}
                     lang={lang}
@@ -113,42 +145,42 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     images={avatarImages}      // <-- Thêm prop còn thiếu
                 />
             )}
-             {gameState.pendingUniversityChoice && gameState.pendingUniversityChoice.length > 0 && (
+             {pendingUniversityChoice && pendingUniversityChoice.length > 0 && (
                 <UniversityChoiceModal
-                    character={familyMembers[gameState.pendingUniversityChoice[0].characterId]}
+                    character={familyMembers[pendingUniversityChoice[0].characterId]}
                     onSelect={onUniversityChoice}
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
                 />
             )}
-            {gameState.pendingMajorChoice && (
+            {pendingMajorChoice && (
                 <UniversityMajorChoiceModal
-                    character={familyMembers[gameState.pendingMajorChoice.characterId]}
-                    majors={gameState.pendingMajorChoice.options}
+                    character={familyMembers[pendingMajorChoice.characterId]}
+                    majors={pendingMajorChoice.options}
                     onSelect={onMajorChoice}
-                    currentFunds={gameState.familyFund}
+                    currentFunds={familyFund}
                     lang={lang}
                     onAbandon={onAbandonUniversity}
                     manifest={exampleManifest}
                     images={avatarImages}
                 />
             )}
-            {gameState.pendingCareerChoice && (
+            {pendingCareerChoice && (
                  <CareerChoiceModal
-                    character={familyMembers[gameState.pendingCareerChoice.characterId]}
-                    options={gameState.pendingCareerChoice.options}
+                    character={familyMembers[pendingCareerChoice.characterId]}
+                    options={pendingCareerChoice.options}
                     onSelect={onCareerChoice}
-                    currentFunds={gameState.familyFund}
+                    currentFunds={familyFund}
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
                 />
             )}
-            {gameState.pendingUnderqualifiedChoice && (
+            {pendingUnderqualifiedChoice && (
                 <UnderqualifiedChoiceModal
-                    character={familyMembers[gameState.pendingUnderqualifiedChoice.characterId]}
-                    careerTrackKey={gameState.pendingUnderqualifiedChoice.careerTrackKey}
+                    character={familyMembers[pendingUnderqualifiedChoice.characterId]}
+                    careerTrackKey={pendingUnderqualifiedChoice.careerTrackKey}
                     onSelect={onUnderqualifiedChoice}
                     lang={lang}
                     manifest={exampleManifest}
@@ -158,7 +190,10 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
             {selectedCharacter && (
                 <CharacterDetailModal 
                     character={selectedCharacter}
-                    gameState={gameState}
+                    familyMembers={familyMembers}
+                    gameLog={gameLog}
+                    totalChildrenBorn={totalChildrenBorn}
+                    currentDate={currentDate}
                     onClose={() => onSetSelectedCharacter(null)}
                     lang={lang}
                     onCustomize={onOpenAvatarBuilder}
@@ -167,13 +202,13 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
                     clubs={CLUBS}
                 />
             )}
-             {gameState.pendingLoanChoice && (
+             {pendingLoanChoice && (
                 <LoanModal onLoanChoice={onLoanChoice} lang={lang} />
             )}
-            {gameState.pendingPromotion && (
+            {pendingPromotion && (
                 <PromotionModal 
-                    characterName={getCharacterDisplayName(familyMembers[gameState.pendingPromotion.characterId], lang)}
-                    newTitle={t(gameState.pendingPromotion.newTitleKey, lang)}
+                    characterName={getCharacterDisplayName(familyMembers[pendingPromotion.characterId], lang)}
+                    newTitle={t(pendingPromotion.newTitleKey, lang)}
                     onAccept={onPromotionAccept}
                     lang={lang}
                 />
@@ -181,7 +216,9 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
             {editingBusiness && (
                 <BusinessManagementModal
                     business={editingBusiness}
-                    gameState={gameState}
+                    familyFund={familyFund}
+                    familyMembers={familyMembers}
+                    familyBusinesses={familyBusinesses}
                     onAssignToBusiness={onAssignToBusiness}
                     onUpgradeBusiness={onUpgradeBusiness}
                     onSellBusiness={onSellBusiness}
@@ -193,4 +230,4 @@ export const ModalManager: React.FC<ModalManagerProps> = ({
             )}
         </>
     );
-};
+});

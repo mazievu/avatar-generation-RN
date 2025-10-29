@@ -16,6 +16,7 @@ import { BusinessMap } from './BusinessMap';
 import { FamilyAssetsPanel } from './FamilyAssetsPanel';
 import { ModalManager } from './ModalManager';
 import SettingsModal from './SettingsModal';
+import PremiumShop from './premium/PremiumShop';
 import { UnlockNotificationModal } from './UnlockNotificationModal';
 import { PathOfLifeScreen } from './PathOfLifeScreen'; // Corrected import path
 import { colors } from './designSystem';
@@ -31,9 +32,8 @@ import { BUSINESS_UNLOCK_CHILDREN_COUNT } from '../core/constants';
 const BottomNav: React.FC<{
   activeScene: SceneName;
   onSceneChange: (scene: SceneName) => void;
-  gameState: GameState;
-}> = ({ activeScene, onSceneChange, gameState }) => {
-  const isBusinessUnlocked = gameState.totalChildrenBorn >= BUSINESS_UNLOCK_CHILDREN_COUNT;
+  isBusinessUnlocked: boolean;
+}> = React.memo(({ activeScene, onSceneChange, isBusinessUnlocked }) => {
 
   return (
     <View style={gameUIStyles.bottomNavContainer}>
@@ -62,12 +62,11 @@ const BottomNav: React.FC<{
       </TouchableOpacity>
     </View>
   );
-};
+});
 
 
 interface GameUIProps {
     view: 'menu' | 'playing' | 'gameover' | 'welcome_back';
-    // mainView prop đã được xóa
     gameState: GameState | null;
     isPaused: boolean;
     gameSpeed: number;
@@ -102,7 +101,6 @@ interface GameUIProps {
     onStartNewGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
     onSellBusiness: (businessId: string) => void;
-    // onSetMainView prop đã được xóa
     onSetFamilyName: (name: string) => void;
     activeScene: SceneName;
     onSetActiveScene: (scene: SceneName) => void;
@@ -112,11 +110,11 @@ interface GameUIProps {
     pendingStatBoost: { stat: keyof Character['stats'], amount: number, featureId: string } | null;
     onConfirmStatBoost: (characterId: string) => void;
     onCloseStatBoostModal: () => void;
+    onPurchaseSuccess: (productId: string) => void;
 }
 
-export const GameUI: React.FC<GameUIProps> = ({
+export const GameUI: React.FC<GameUIProps> = React.memo(({
     view,
-    // mainView prop đã được xóa
     gameState,
     isPaused,
     gameSpeed,
@@ -151,7 +149,6 @@ export const GameUI: React.FC<GameUIProps> = ({
     onStartNewGame,
     onPurchaseAsset,
     onSellBusiness,
-    // onSetMainView prop đã được xóa
     onSetFamilyName,
     activeScene,
     onSetActiveScene,
@@ -161,13 +158,14 @@ export const GameUI: React.FC<GameUIProps> = ({
     pendingStatBoost,
     onConfirmStatBoost,
     onCloseStatBoostModal,
+    onPurchaseSuccess,
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null);
     const [isCenteringAnimationDone, setIsCenteringAnimationDone] = useState(false);
     const [showStoryChoiceModal, setShowStoryChoiceModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
-
+    const [showPremiumShop, setShowPremiumShop] = useState(false); // New state
 
     const [familyNameInput, setFamilyNameInput] = useState<string>(
         gameState?.familyName || (gameState?.familyMembers && Object.keys(gameState.familyMembers).length > 0
@@ -209,7 +207,6 @@ export const GameUI: React.FC<GameUIProps> = ({
         }
     }, [gameState?.familyBusinesses, editingBusiness]);
 
-    // HÀM NÀY ĐÃ ĐƯỢC DỌN DẸP
     const handleSceneChange = (scene: SceneName) => {
         onSetActiveScene(scene);
         onSetIsPaused(scene !== 'tree');
@@ -239,7 +236,9 @@ export const GameUI: React.FC<GameUIProps> = ({
                     <View style={gameUIStyles.sceneContainer}>
                         <View style={gameUIStyles.familyTreeContainer}>
                             <FamilyTree
-                                gameState={gameState}
+                                familyMembers={gameState.familyMembers}
+                                activeEvent={gameState.activeEvent}
+                                currentDate={gameState.currentDate}
                                 onSelectCharacter={onSetSelectedCharacter}
                                 lang={lang}
                                 images={avatarImages}
@@ -269,16 +268,15 @@ export const GameUI: React.FC<GameUIProps> = ({
                         />;
             case 'business':
                 return <BusinessMap
-                            gameState={gameState}
+                            familyBusinesses={gameState.familyBusinesses}
+                            familyMembers={gameState.familyMembers}
+                            familyFund={gameState.familyFund}
                             onBuyBusiness={onBuyBusiness}
                             onManageBusiness={(business) => setEditingBusiness(business)}
                             lang={lang}
                             images={avatarImages}
                             manifest={exampleManifest}
-                            // prop mainView đã được xóa
                             onBackToTree={() => {
-                                // Logic onBackToTree giờ nên được xử lý bởi BottomNav
-                                // Ví dụ: onSetActiveScene('tree');
                                 handleSceneChange('tree');
                             }}
                         />;
@@ -291,11 +289,12 @@ export const GameUI: React.FC<GameUIProps> = ({
         return (
             <View style={gameUIStyles.mainContainer}>
                 <PathOfLifeScreen
-                    gameState={gameState}
+                    totalChildrenBorn={gameState.totalChildrenBorn}
+                    claimedFeatures={gameState.claimedFeatures}
                     lang={lang}
                     onClaimFeature={onClaimFeature}
                 />
-                <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} gameState={gameState} />
+                <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} isBusinessUnlocked={gameState.totalChildrenBorn >= BUSINESS_UNLOCK_CHILDREN_COUNT} />
             </View>
         );
     }
@@ -313,10 +312,36 @@ export const GameUI: React.FC<GameUIProps> = ({
                 lang={lang}
             />
 
-            {view === 'gameover' && gameState.gameOverReason && <SummaryScreen gameState={gameState} onRestart={onStartNewGame} lang={lang}/>}
+                        {view === 'gameover' && gameState.gameOverReason && <SummaryScreen 
+                familyMembers={gameState.familyMembers}
+                gameOverReason={gameState.gameOverReason}
+                totalMembers={gameState.totalMembers}
+                highestEducation={gameState.highestEducation}
+                highestCareer={gameState.highestCareer}
+                familyFund={gameState.familyFund}
+                purchasedAssets={gameState.purchasedAssets}
+                currentDate={gameState.currentDate}
+                onRestart={onStartNewGame} 
+                lang={lang}
+            />}
 
             <ModalManager
-                gameState={gameState}
+                lang={gameState.lang}
+                familyMembers={gameState.familyMembers}
+                familyBusinesses={gameState.familyBusinesses}
+                gameLog={gameState.gameLog}
+                totalChildrenBorn={gameState.totalChildrenBorn}
+                currentDate={gameState.currentDate}
+                activeEvent={gameState.activeEvent}
+                pendingSchoolChoice={gameState.pendingSchoolChoice}
+                familyFund={gameState.familyFund}
+                pendingClubChoice={gameState.pendingClubChoice}
+                pendingUniversityChoice={gameState.pendingUniversityChoice}
+                pendingMajorChoice={gameState.pendingMajorChoice}
+                pendingCareerChoice={gameState.pendingCareerChoice}
+                pendingUnderqualifiedChoice={gameState.pendingUnderqualifiedChoice}
+                pendingLoanChoice={gameState.pendingLoanChoice}
+                pendingPromotion={gameState.pendingPromotion}
                 selectedCharacter={selectedCharacter}
                 editingBusiness={editingBusiness}
                 avatarImages={avatarImages}
@@ -351,6 +376,11 @@ export const GameUI: React.FC<GameUIProps> = ({
                 <Text style={gameUIStyles.settingsButtonText}>{t('settings_button', lang)}</Text>
             </TouchableOpacity>
 
+            {/* New Premium Shop Button */}
+            <TouchableOpacity onPress={() => setShowPremiumShop(true)} style={gameUIStyles.premiumShopButton}>
+                <Text style={gameUIStyles.premiumShopButtonText}>★</Text>
+            </TouchableOpacity>
+
             <SettingsModal
                 isVisible={showSettingsModal}
                 onClose={() => setShowSettingsModal(false)}
@@ -361,6 +391,17 @@ export const GameUI: React.FC<GameUIProps> = ({
                 isPaused={isPaused}
                 onSetIsPaused={onSetIsPaused}
             />
+
+            {gameState && (
+                <PremiumShop
+                    isVisible={showPremiumShop}
+                    onClose={() => setShowPremiumShop(false)}
+                    lang={lang}
+                    isIncomeDoubled={gameState.isIncomeDoubled}
+                    areAdsRemoved={gameState.areAdsRemoved}
+                    onPurchaseSuccess={onPurchaseSuccess}
+                />
+            )}
 
             {gameState && (
                 <UnlockNotificationModal
@@ -404,10 +445,10 @@ export const GameUI: React.FC<GameUIProps> = ({
                     {renderScene()}
                 </View>
             </View>
-            <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} gameState={gameState} />
+            <BottomNav activeScene={activeScene} onSceneChange={handleSceneChange} isBusinessUnlocked={gameState.totalChildrenBorn >= BUSINESS_UNLOCK_CHILDREN_COUNT} />
         </View>
     );
-};
+});
 
 const gameUIStyles = StyleSheet.create({
     bottomNavButton: {
@@ -519,12 +560,27 @@ const gameUIStyles = StyleSheet.create({
         paddingVertical: 8,
         position: 'absolute',
         right: 16,
-        top: 140,
+        top: 90, // Adjusted position
         zIndex: 10,
     },
     settingsButtonText: {
         color: colors.white,
         fontWeight: 'bold',
+    },
+    premiumShopButton: { // New style
+        backgroundColor: '#f59e0b', // amber-500
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        position: 'absolute',
+        right: 16,
+        top: 140, // Positioned below settings
+        zIndex: 10,
+    },
+    premiumShopButtonText: { // New style
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 18,
     },
     speedPicker: { height: 44, width: responsiveSize(120) },
     speedPickerItem: { height: 44 },
@@ -535,7 +591,7 @@ const gameUIStyles = StyleSheet.create({
         paddingVertical: 8,
         position: 'absolute',
         right: 16,
-        top: 90,
+        top: 40, // Adjusted position
         zIndex: 10,
     },
     storyButtonText: {

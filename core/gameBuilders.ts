@@ -1,5 +1,5 @@
 import { EventDraft, GameEvent, EventChoice, EventEffect, ClubEventDraft, ClubEvent, Language } from './types';
-import { EventIdByKey, ChoiceIdByKey } from '../src/generated/eventIds';
+import { EventIdByKey, ChoiceIdByKey } from './generated/eventIds';
 import { t } from './localization';
 
 // Helper to ensure effect is properly typed
