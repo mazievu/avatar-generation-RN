@@ -574,9 +574,22 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     if (newPhase !== character.phase) {
                         charUpdate.phase = newPhase;
                         if (!character.staticAvatarUrl) {
-                             charUpdate.avatarState = generateRandomAvatar(exampleManifest, charUpdate.age, character.gender);
+                            charUpdate.avatarState = generateRandomAvatar(exampleManifest, charUpdate.age, character.gender);
                         }
-                        nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_new_phase_title', messageKey: 'log_new_phase', replacements: { name: displayName, phase: t(newPhase, language) } });
+
+                        // Find the phase change event
+                        const phaseChangeEvent = getAllEvents().find(e => e.id === 'milestone_phase_change');
+                        if (phaseChangeEvent) {
+                            // Prepend the event to the queue to show it before other events
+                            newState.eventQueue.unshift({
+                                characterId: id,
+                                event: phaseChangeEvent,
+                                replacements: { name: displayName, phase: t(newPhase, language) }
+                            });
+                        } else {
+                            // Fallback to old logging if event is not found
+                            nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_new_phase_title', messageKey: 'log_new_phase', replacements: { name: displayName, phase: t(newPhase, language) } });
+                        }
                     }
                 }
                 
@@ -828,58 +841,66 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             }
             
             // --- EVENT TRIGGER LOGIC ---
-            const isGlobalCooldownActive = newState.eventCooldownUntil && isBefore(newState.currentDate, newState.eventCooldownUntil);
-            
-            // <-- CHANGED: Re-used noModalsAreOpen variable
-            if (!isGlobalCooldownActive && noModalsAreOpen) {
-                const eligibleCharacters = Object.values(nextFamilyMembers).filter(c =>
-                    c.isAlive &&
-                    (c.eventsThisYear || 0) < 2
-                );
+const isGlobalCooldownActive = newState.eventCooldownUntil && isBefore(newState.currentDate, newState.eventCooldownUntil);
 
-                if (eligibleCharacters.length > 0) {
-                    const chosenCharacter = eligibleCharacters[Math.floor(Math.random() * eligibleCharacters.length)];
-                    const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
+// <-- CHANGED: Re-used noModalsAreOpen variable
+if (!isGlobalCooldownActive && noModalsAreOpen) {
+    const eligibleCharacters = Object.values(nextFamilyMembers).filter(c =>
+        c.isAlive &&
+        (c.eventsThisYear || 0) < 2
+    );
 
-                    let event: GameEvent | undefined;
+    if (eligibleCharacters.length > 0) {
+        const chosenCharacter = eligibleCharacters[Math.floor(Math.random() * eligibleCharacters.length)];
+        const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
 
-                    const eventsByPhase = new Map<LifePhase, GameEvent[]>();
-                    getAllEvents().forEach(event => {
-                        if (event.isMilestone || event.id === 'decision_children') return; // Exclude special events
-                        event.phases.forEach(phase => {
-                            const lifePhase = phase as LifePhase;
-                            if (!eventsByPhase.has(lifePhase)) {
-                                eventsByPhase.set(lifePhase, []);
-                            }
-                            eventsByPhase.get(lifePhase)!.push(event);
-                        });
-                    });
+        let event: GameEvent | undefined;
 
-                    const phaseEvents = eventsByPhase.get(chosenCharacter.phase) || [];
-                    const possibleEvents = phaseEvents.filter(e =>
-                        !e.isTriggerOnly &&
-                        (!e.allowedRelationshipStatuses || e.allowedRelationshipStatuses.includes(chosenCharacter.relationshipStatus)) &&
-                        !(chosenCharacter.completedOneTimeEvents || []).includes(e.id) &&
-                        (!e.condition || e.condition(stateForConditionCheck, chosenCharacter))
-                    );
-
-                    if (possibleEvents.length > 0) {
-                        event = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
-                    }
-
-                    if (event) {
-                        newState.activeEvent = { characterId: chosenCharacter.id, event: event };
-
-                        const livingMembersCount = Object.values(nextFamilyMembers).filter(c => c.isAlive).length;
-                        const cooldownDays = livingMembersCount <= 3 ? 120 : 180;
-                        newState.eventCooldownUntil = addDays(newState.currentDate, cooldownDays);
-
-                        const charToUpdate = { ...nextFamilyMembers[chosenCharacter.id] };
-                        charToUpdate.eventsThisYear = (charToUpdate.eventsThisYear || 0) + 1;
-                        nextFamilyMembers[chosenCharacter.id] = charToUpdate;
-                    }
+        const eventsByPhase = new Map<LifePhase, GameEvent[]>();
+        getAllEvents().forEach(event => {
+            if (event.isMilestone || event.id === 'decision_children') return; // Exclude special events
+            event.phases.forEach(phase => {
+                const lifePhase = phase as LifePhase;
+                if (!eventsByPhase.has(lifePhase)) {
+                    eventsByPhase.set(lifePhase, []);
                 }
-            }
+                eventsByPhase.get(lifePhase)!.push(event);
+            });
+        });
+
+        const phaseEvents = eventsByPhase.get(chosenCharacter.phase) || [];
+        const possibleEvents = phaseEvents.filter(e =>
+            !e.isTriggerOnly &&
+            (!e.allowedRelationshipStatuses || e.allowedRelationshipStatuses.includes(chosenCharacter.relationshipStatus)) &&
+            !(chosenCharacter.completedOneTimeEvents || []).includes(e.id) &&
+            (!e.condition || e.condition(stateForConditionCheck, chosenCharacter))
+        );
+
+        if (possibleEvents.length > 0) {
+            event = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+        }
+
+        if (event) {
+            // NEW: Create a new event object with the animation flag.
+            // This dynamically adds the property without modifying the original event definitions.
+            const eventWithAnimation = {
+                ...event,
+                showJourneyAnimation: true 
+            };
+
+            // Use the new object when setting the active event.
+            newState.activeEvent = { characterId: chosenCharacter.id, event: eventWithAnimation };
+
+            const livingMembersCount = Object.values(nextFamilyMembers).filter(c => c.isAlive).length;
+            const cooldownDays = livingMembersCount <= 3 ? 120 : 180;
+            newState.eventCooldownUntil = addDays(newState.currentDate, cooldownDays);
+
+            const charToUpdate = { ...nextFamilyMembers[chosenCharacter.id] };
+            charToUpdate.eventsThisYear = (charToUpdate.eventsThisYear || 0) + 1;
+            nextFamilyMembers[chosenCharacter.id] = charToUpdate;
+        }
+    }
+}
 
             if (!newState.activeEvent && prevState.eventQueue.length > 0) {
                  newState.activeEvent = prevState.eventQueue[0];

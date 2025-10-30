@@ -38,4 +38,9 @@ export default {
     death_cause_low_happiness: 'trầm cảm',
     death_cause_low_health: 'bệnh tật',
     death_cause_low_happiness_and_health: 'trầm cảm và bệnh tật',
+
+    // Phase Change
+    event_new_phase_title: "Một chương mới",
+    event_new_phase_desc: "{name} đang bước vào một giai đoạn mới của cuộc đời: {phase}.",
+    log_new_phase: "{name} đã bước vào một giai đoạn mới của cuộc đời: {phase}."
 };

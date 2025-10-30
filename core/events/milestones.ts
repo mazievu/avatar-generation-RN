@@ -304,5 +304,29 @@ export const MILESTONE_EVENTS: EventDraft[] = [
                 }
             }}
         ]
+    },
+    {
+        id: 'milestone_phase_change',
+        isMilestone: true,
+        isTriggerOnly: true,
+        showJourneyAnimation: true,
+        titleKey: 'event_new_phase_title',
+        descriptionKey: 'event_new_phase_desc',
+        phases: [
+            LifePhase.Newborn,
+            LifePhase.Elementary,
+            LifePhase.MiddleSchool,
+            LifePhase.HighSchool,
+            LifePhase.PostGraduation,
+            LifePhase.Retired
+        ],
+        choices: [
+            {
+                textKey: 'common_ok',
+                effect: {
+                    logKey: 'log_new_phase',
+                }
+            }
+        ]
     }
 ];

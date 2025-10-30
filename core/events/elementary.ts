@@ -8,6 +8,7 @@ export const ELEMENTARY_SCHOOL_EVENTS: EventDraft[] = [
         titleKey: 'event_elementary_first_day_title',
         descriptionKey: 'event_elementary_first_day_desc',
         phases: [LifePhase.Elementary],
+        isMilestone: true,
         condition: (state, char) => char.age === 6,
         showJourneyAnimation: true, // Use the new boolean flag
         choices: [

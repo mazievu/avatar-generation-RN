@@ -13,7 +13,7 @@ import Svg, { Path } from 'react-native-svg';
 import { CharacterNode } from './CharacterNode';
 import type { Character, GameState, Language, Manifest } from '../core/types';
 import IncomeAnimation from './IncomeAnimation';
-import { SchoolJourneyAnimation } from './SchoolJourneyAnimation';
+import { JourneyAnimation } from './JourneyAnimation';
 
 // --- 1. TYPES AND INTERFACES ---
 
@@ -457,7 +457,7 @@ export const FamilyTree: React.FC<FamilyTreeProps> = React.memo(({ familyMembers
           })}
         </Animated.View>
         {showJourneyAnimation && characterForAnimation && (
-            <SchoolJourneyAnimation
+            <JourneyAnimation
                 onAnimationComplete={handleJourneyAnimationFinish}
                 character={characterForAnimation}
                 images={images}

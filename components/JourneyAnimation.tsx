@@ -22,7 +22,7 @@ const MAP_WIDTH = PANEL_WIDTH * 3;
 
 // --- MAIN ANIMATION COMPONENT ---
 
-interface SchoolJourneyAnimationProps {
+interface JourneyAnimationProps {
   onAnimationComplete: () => void;
   character: Character;
   images: Record<string, ImageSourcePropType>;
@@ -30,7 +30,7 @@ interface SchoolJourneyAnimationProps {
   manifest: Manifest;
 }
 
-export const SchoolJourneyAnimation: React.FC<SchoolJourneyAnimationProps> = ({ 
+export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({ 
     onAnimationComplete, 
     character, 
     images, 
@@ -78,7 +78,7 @@ export const SchoolJourneyAnimation: React.FC<SchoolJourneyAnimationProps> = ({
     transform: [
       { translateY: nodeTranslateY.value },
       { scale: nodeScale.value },
-    ],
+    ] as const,
     opacity: nodeOpacity.value,
   }));
 

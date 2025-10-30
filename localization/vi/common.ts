@@ -35,6 +35,7 @@ export default {
     cost_label: 'Chi phí',
     cancel_button: 'Hủy',
     back_button: 'Quay lại',
+    common_ok: 'Đồng ý',
     // Stats
     stat_iq: 'IQ',
     stat_happiness: 'Hạnh phúc',

@@ -41,5 +41,10 @@ export default {
     death_cause_old_age: 'old age',
     death_cause_low_happiness: 'depression',
     death_cause_low_health: 'illness',
-    death_cause_low_happiness_and_health: 'depression and illness'
+    death_cause_low_happiness_and_health: 'depression and illness',
+
+    // Phase Change
+    event_new_phase_title: "A New Chapter",
+    event_new_phase_desc: "{name} is entering a new phase of life: {phase}.",
+    log_new_phase: "{name} has entered a new phase of life: {phase}."
 };
