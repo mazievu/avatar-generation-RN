@@ -46,23 +46,23 @@ export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({
 
   useEffect(() => {
     mapTranslateX.value = withTiming(-MAP_WIDTH, {
-      duration: 1000,
+      duration: 2000,
       easing: Easing.linear,
     });
 
     nodeTranslateY.value = withRepeat(
       withSequence(
-        withTiming(-15, { duration: 200, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 200, easing: Easing.inOut(Easing.ease) }),
-        withTiming(-15, { duration: 200, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 200, easing: Easing.inOut(Easing.ease) })
+        withTiming(-15, { duration: 400, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 400, easing: Easing.inOut(Easing.ease) }),
+        withTiming(-15, { duration: 400, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 400, easing: Easing.inOut(Easing.ease) })
       ),
       2,
       false
     );
 
-    nodeScale.value = withDelay(800, withTiming(0, { duration: 200, easing: Easing.in(Easing.quad) }));
-    nodeOpacity.value = withDelay(800, withTiming(0, { duration: 200, easing: Easing.in(Easing.quad) }, (finished) => {
+    nodeScale.value = withDelay(1600, withTiming(0, { duration: 400, easing: Easing.in(Easing.quad) }));
+    nodeOpacity.value = withDelay(1600, withTiming(0, { duration: 400, easing: Easing.in(Easing.quad) }, (finished) => {
         if (finished) {
           runOnJS(onAnimationComplete)();
         }

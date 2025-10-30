@@ -187,6 +187,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
 
     useEffect(() => {
         if (gameState?.activeEvent?.characterId) {
+            onSetIsPaused(true);
             setCharacterIdToCenterOnEvent(gameState.activeEvent.characterId);
             setIsCenteringAnimationDone(false);
         } else {
