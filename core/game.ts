@@ -1,5 +1,5 @@
-import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, PurchasedAsset, Business, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, Language, Manifest } from './types';
-import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT, BUSINESS_REVENUE_SCALE, BUSINESS_FIXED_COST_SCALE, BUSINESS_COGS_MAX, BUSINESS_WORKER_WAGE_CAP_MONTHLY, BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY, BUSINESS_OWNER_PROFIT_CAP_MONTHLY, CUSTOM_AVATAR_COST } from './constants';
+import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, PurchasedAsset, Business, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, Language, Manifest, EventQueueItem, ScheduledEvent } from './types';
+import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT, BUSINESS_REVENUE_SCALE, BUSINESS_FIXED_COST_SCALE, BUSINESS_COGS_MAX, BUSINESS_WORKER_WAGE_CAP_MONTHLY, BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY, BUSINESS_OWNER_PROFIT_CAP_MONTHLY, CUSTOM_AVATAR_COST, EVENT_SCHEDULER_ENABLED } from './constants';
 import { CLUBS } from './clubsAndEventsData';
 import { SCENARIOS } from './scenarios';
 import { getLifePhase, addDays, isBefore, getCharacterDisplayName, calculateNewAdjectiveKey, generateRandomAvatar } from './utils';
@@ -9,6 +9,8 @@ import { initializeAllGameData, getAllEvents } from './gameData';
 import { applyMigrations } from './migrations';
 import { adService } from '../services'; // Import adService
 import { Alert } from 'react-native';
+import { EventScheduler } from './EventScheduler';
+import { EventIdByKey } from './generated/eventIds';
 
 
 const SAVE_KEY = 'generations_savegame';
@@ -52,6 +54,7 @@ const ONE_TIME_EVENT_IDS = [
 export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: Manifest) => {
 
     let eventCounter = 0; // Initialize event counter for interstitial ads
+    let eventScheduler: EventScheduler | null = null;
 
     // Event processing is now done inside the game loop to ensure events are loaded.
 
@@ -65,7 +68,12 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     const saveGame = async (gameState: GameState) => {
         if (gameState) {
             try {
-                const stateToSave = { ...gameState, lang: language, contentVersion: CONTENT_VERSION };
+                const stateToSave: GameState = { 
+                    ...gameState, 
+                    lang: language, 
+                    contentVersion: CONTENT_VERSION,
+                    scheduler: eventScheduler ? eventScheduler.serialize() : null,
+                };
                 await AsyncStorage.setItem(SAVE_KEY, JSON.stringify(stateToSave));
             } catch (error) {
                 console.error("Failed to save game:", error);
@@ -104,6 +112,14 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             initialState.totalChildrenBorn = 0; // Initialize for new game
             initialState.claimedFeatures = [];
             initialState.newlyUnlockedFeature = null;
+
+            if (EVENT_SCHEDULER_ENABLED) {
+                initialState.familySizeStatic = Object.keys(initialState.familyMembers).length;
+                eventScheduler = new EventScheduler();
+                eventScheduler.buildYearPlan(initialState);
+                initialState.scheduler = eventScheduler.serialize();
+            }
+
             setGameState(initialState);
         }
         
@@ -115,7 +131,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
         try {
             const savedGame = await AsyncStorage.getItem(SAVE_KEY);
             if (savedGame) {
-                let savedState = JSON.parse(savedGame);
+                let savedState: GameState = JSON.parse(savedGame);
 
                 // Apply migrations
                 savedState = applyMigrations(savedState);
@@ -166,7 +182,20 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     savedState.newlyUnlockedFeature = null;
                 }
 
-                                setLanguage(savedState.lang || 'en');
+                if (EVENT_SCHEDULER_ENABLED) {
+                    // Migration for Event Scheduler
+                    if (!savedState.familySizeStatic) {
+                        savedState.familySizeStatic = Object.keys(savedState.familyMembers).length;
+                    }
+                    eventScheduler = new EventScheduler(savedState.scheduler || undefined);
+                    // If starting mid-year with a new scheduler, plan for the rest of the year
+                    if (!savedState.scheduler) {
+                        eventScheduler.buildYearPlan(savedState);
+                    }
+                    savedState.scheduler = eventScheduler.serialize();
+                }
+
+                setLanguage(savedState.lang || 'en');
                 setGameState(savedState);
                 setView('playing');
                 setIsPaused(true); 
@@ -624,70 +653,124 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                 nextFamilyMembers[id] = { ...nextFamilyMembers[id], ...memberUpdates[id] };
             }
 
-            // ===================================================================
-            // START: PRIORITY CHILDREN EVENT LOGIC (runs daily, ignores cooldown)
-            // ===================================================================
-            // <-- ADDED: This entire block is new
-            const noModalsAreOpen = !newState.activeEvent && prevState.eventQueue.length === 0 && (!newState.pendingSchoolChoice || newState.pendingSchoolChoice.length === 0) && (!newState.pendingUniversityChoice || newState.pendingUniversityChoice.length === 0) && !newState.pendingCareerChoice && !newState.pendingUnderqualifiedChoice;
+            if (EVENT_SCHEDULER_ENABLED) {
+                if (isNewYear) {
+                    eventScheduler?.buildYearPlan({ ...newState, familyMembers: nextFamilyMembers });
+                }
 
-            if (noModalsAreOpen) {
-                const childrenEvent = getAllEvents().find(e => e.id === 'decision_children');
-                if (childrenEvent) {
-                    const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
+                const todaysEvents = eventScheduler?.popToday({ ...newState, familyMembers: nextFamilyMembers });
+                if (todaysEvents) {
+                    for (const se of todaysEvents) {
+                        const ev = getAllEvents().find(e => e.id === se.eventId);
+                        if (ev) {
+                            const eventWithAnimation = { ...ev, showJourneyAnimation: se.priority === 'regular' };
+                            const queueItem: EventQueueItem = { 
+                                characterId: se.characterId, 
+                                event: eventWithAnimation, 
+                                scheduledEvent: se 
+                            };
+                            newState.eventQueue.push(queueItem);
+                        }
+                    }
+                }
 
-                    const eligibleCharacters = Object.values(nextFamilyMembers).filter(char =>
-                        char.isAlive &&
-                        !char.hadChildrenDecisionEventThisYear && // Must NOT have had the event this year
-                        childrenEvent.condition &&
-                        childrenEvent.condition(stateForConditionCheck, char)
-                    );
+            } else {
+                // ===================================================================
+                // START: [LEGACY] PRIORITY CHILDREN EVENT LOGIC (runs daily, ignores cooldown)
+                // ===================================================================
+                const noModalsAreOpen = !newState.activeEvent && prevState.eventQueue.length === 0 && (!newState.pendingSchoolChoice || newState.pendingSchoolChoice.length === 0) && (!newState.pendingUniversityChoice || newState.pendingUniversityChoice.length === 0) && !newState.pendingCareerChoice && !newState.pendingUnderqualifiedChoice;
 
-                    for (const char of eligibleCharacters) {
-                        // Give each eligible character a small chance to trigger the event each day.
-                        // 1/180 gives a high probability of it happening at least once over 365 days.
-                        if (Math.random() < 1 / 180) {
-                            // Trigger found! Queue the event.
-                            newState.eventQueue.push({ characterId: char.id, event: childrenEvent });
-                            
-                            // Immediately mark the character so they aren't checked again this year.
-                            // Use memberUpdates to ensure changes are applied correctly at the end of the loop.
-                            const existingUpdates = memberUpdates[char.id] || {};
-                            memberUpdates[char.id] = { ...existingUpdates, hadChildrenDecisionEventThisYear: true };
+                if (noModalsAreOpen) {
+                    const childrenEvent = getAllEvents().find(e => e.id === EventIdByKey.decision_children);
+                    if (childrenEvent) {
+                        const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
 
-                            // We only trigger one priority event per day to avoid multiple pop-ups.
-                            // The loop will continue for other characters tomorrow.
-                            break; 
+                        const eligibleCharacters = Object.values(nextFamilyMembers).filter(char =>
+                            char.isAlive &&
+                            !char.hadChildrenDecisionEventThisYear && // Must NOT have had the event this year
+                            childrenEvent.condition &&
+                            childrenEvent.condition(stateForConditionCheck, char)
+                        );
+
+                        for (const char of eligibleCharacters) {
+                            if (Math.random() < 1 / 180) {
+                                newState.eventQueue.push({ characterId: char.id, event: childrenEvent });
+                                const existingUpdates = memberUpdates[char.id] || {};
+                                memberUpdates[char.id] = { ...existingUpdates, hadChildrenDecisionEventThisYear: true };
+                                break; 
+                            }
+                        }
+                    }
+                }
+                // ===================================================================
+                // END: [LEGACY] PRIORITY CHILDREN EVENT LOGIC
+                // ===================================================================
+
+                if (isNewYear) {
+                    for (const id of livingMemberIds) {
+                        let char = nextFamilyMembers[id];
+                        const charUpdate: Partial<Character> = {};
+                        charUpdate.hadChildrenDecisionEventThisYear = false;
+                        if (Object.keys(charUpdate).length > 0) {
+                            char = { ...char, ...charUpdate };
+                            nextFamilyMembers[id] = char;
+                        }
+                    }
+                }
+
+                // --- [LEGACY] EVENT TRIGGER LOGIC ---
+                const isGlobalCooldownActive = newState.eventCooldownUntil && isBefore(newState.currentDate, newState.eventCooldownUntil);
+                if (!isGlobalCooldownActive && noModalsAreOpen) {
+                    const eligibleCharacters = Object.values(nextFamilyMembers).filter(c => c.isAlive && (c.eventsThisYear || 0) < 2);
+                    if (eligibleCharacters.length > 0) {
+                        const chosenCharacter = eligibleCharacters[Math.floor(Math.random() * eligibleCharacters.length)];
+                        const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
+                        let event: GameEvent | undefined;
+                        const eventsByPhase = new Map<LifePhase, GameEvent[]>();
+                        getAllEvents().forEach(event => {
+                            if (event.isMilestone || event.id === EventIdByKey.decision_children) return;
+                            event.phases.forEach(phase => {
+                                const lifePhase = phase as LifePhase;
+                                if (!eventsByPhase.has(lifePhase)) {
+                                    eventsByPhase.set(lifePhase, []);
+                                }
+                                eventsByPhase.get(lifePhase)!.push(event);
+                            });
+                        });
+                        const phaseEvents = eventsByPhase.get(chosenCharacter.phase) || [];
+                        const possibleEvents = phaseEvents.filter(e =>
+                            !e.isTriggerOnly &&
+                            (!e.allowedRelationshipStatuses || e.allowedRelationshipStatuses.includes(chosenCharacter.relationshipStatus)) &&
+                            !(chosenCharacter.completedOneTimeEvents || []).includes(e.id) &&
+                            (!e.condition || e.condition(stateForConditionCheck, chosenCharacter))
+                        );
+                        if (possibleEvents.length > 0) {
+                            event = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+                        }
+                        if (event) {
+                            const eventWithAnimation = { ...event, showJourneyAnimation: true };
+                            newState.activeEvent = { characterId: chosenCharacter.id, event: eventWithAnimation };
+                            const livingMembersCount = Object.values(nextFamilyMembers).filter(c => c.isAlive).length;
+                            const cooldownDays = livingMembersCount <= 3 ? 120 : 180;
+                            newState.eventCooldownUntil = addDays(newState.currentDate, cooldownDays);
+                            const charToUpdate = { ...nextFamilyMembers[chosenCharacter.id] };
+                            charToUpdate.eventsThisYear = (charToUpdate.eventsThisYear || 0) + 1;
+                            nextFamilyMembers[chosenCharacter.id] = charToUpdate;
                         }
                     }
                 }
             }
-            // ===================================================================
-            // END: PRIORITY CHILDREN EVENT LOGIC
-            // ===================================================================
 
             if (isNewYear) {
-                const anyModalPending = !!(
-                    newState.pendingSchoolChoice?.length || 
-                    newState.pendingUniversityChoice?.length || 
-                    newState.pendingCareerChoice || 
-                    newState.pendingUnderqualifiedChoice ||
-                    newState.activeEvent
-                );
-
+                const anyModalPending = !!(newState.pendingSchoolChoice?.length || newState.pendingUniversityChoice?.length || newState.pendingCareerChoice || newState.pendingUnderqualifiedChoice || newState.activeEvent);
                 if (!anyModalPending) {
                     const newSchoolChoices: { characterId: string; newPhase: LifePhase }[] = [];
                     const newUniversityChoices: { characterId: string }[] = [];
                     let careerChoiceSet = false;
-
                     for (const id of livingMemberIds) {
                         let char = nextFamilyMembers[id];
                         const displayName = getCharacterDisplayName(char, language);
                         const charUpdate: Partial<Character> = {};
-                        
-                        // <-- ADDED: Reset the children event flag for the new year
-                        charUpdate.hadChildrenDecisionEventThisYear = false;
-
-                        // Update low stats counters
                         if (char.stats.happiness < 10) {
                             charUpdate.lowHappinessYears = (char.lowHappinessYears || 0) + 1;
                         } else {
@@ -698,8 +781,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                         } else {
                             charUpdate.lowHealthYears = 0;
                         }
-
-                        // Check for death due to prolonged low stats
                         if (char.isAlive && ((charUpdate.lowHappinessYears || 0) >= 2 || (charUpdate.lowHealthYears || 0) >= 2)) {
                             charUpdate.isAlive = false;
                             charUpdate.deathDate = newState.currentDate;
@@ -715,34 +796,18 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                                 deathMessageKey = 'log_death_low_health';
                                 causeOfDeathKey = 'death_cause_low_health';
                             }
-                            nextGameLog.push({
-                                year: newState.currentDate.year,
-                                characterId: id,
-                                eventTitleKey: 'event_death_title',
-                                messageKey: deathMessageKey,
-                                replacements: { name: displayName },
-                            });
-
+                            nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_death_title', messageKey: deathMessageKey, replacements: { name: displayName } });
                             const mourningEvent = getAllEvents().find(e => e.id === 'milestone_mourning');
                             if (mourningEvent) {
                                 const livingMembers = Object.values(nextFamilyMembers).filter(m => m.isAlive && m.id !== id);
-                                const newEventQueue = livingMembers.map(member => ({
-                                    characterId: member.id,
-                                    event: mourningEvent,
-                                    replacements: {
-                                        deceasedName: displayName,
-                                        causeOfDeath: t(causeOfDeathKey, language)
-                                    }
-                                }));
+                                const newEventQueue = livingMembers.map(member => ({ characterId: member.id, event: mourningEvent, replacements: { deceasedName: displayName, causeOfDeath: t(causeOfDeathKey, language) } }));
                                 newState.eventQueue.push(...newEventQueue);
                             }
                         }
-
                         if (Object.keys(charUpdate).length > 0) {
                             char = { ...char, ...charUpdate };
                             nextFamilyMembers[id] = char;
                         }
-
                         if (char.isAlive && char.age === 6 && char.status === CharacterStatus.Idle) {
                             newSchoolChoices.push({ characterId: id, newPhase: LifePhase.Elementary });
                         } else if (char.isAlive && char.age === 12 && char.status === CharacterStatus.InEducation) {
@@ -751,19 +816,16 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                             newSchoolChoices.push({ characterId: id, newPhase: LifePhase.HighSchool });
                         }
                     }
-
                     if (newSchoolChoices.length > 0) {
                         newState.pendingSchoolChoice = newSchoolChoices;
                     } else {
                         for (const id of livingMemberIds) {
                             const char = nextFamilyMembers[id];
-                            
                             if (char.statusEndYear !== null && year >= char.statusEndYear) {
                                 const charUpdate: Partial<Character> = { status: CharacterStatus.Idle, statusEndYear: null };
                                 const updatedChar = { ...char, ...charUpdate };
                                 nextFamilyMembers[id] = updatedChar;
-                                
-                                if (updatedChar.age === 19) { // Changed from 18 to 19
+                                if (updatedChar.age === 19) {
                                     newUniversityChoices.push({ characterId: id });
                                 } else { 
                                     if (!careerChoiceSet) {
@@ -772,20 +834,10 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                                         careerChoiceSet = true;
                                     }
                                 }
-                            } 
-                            // Handle characters who are already Idle and turn 19
-                            else if (char.age === 19 && char.status === CharacterStatus.Idle) { // This condition is correct for characters turning 19 and being idle
+                            } else if (char.age === 19 && char.status === CharacterStatus.Idle) {
                                 newUniversityChoices.push({ characterId: id });
-                            } 
-                            else if (char.age === 60 && char.status !== CharacterStatus.Retired) {
-                                const charUpdate: Partial<Character> = { 
-                                    status: CharacterStatus.Retired, 
-                                    careerTrack: null, 
-                                    careerLevel: 0,
-                                    monthlyNetIncome: 0
-                                };
-
-                                // Unassign from any business
+                            } else if (char.age === 60 && char.status !== CharacterStatus.Retired) {
+                                const charUpdate: Partial<Character> = { status: CharacterStatus.Retired, careerTrack: null, careerLevel: 0, monthlyNetIncome: 0 };
                                 for (const businessId in newState.familyBusinesses) {
                                     const business = newState.familyBusinesses[businessId];
                                     const slotIndex = business.slots.findIndex(slot => slot.assignedCharacterId === char.id);
@@ -793,22 +845,18 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                                         business.slots[slotIndex].assignedCharacterId = null;
                                     }
                                 }
-                                
                                 nextFamilyMembers[id] = { ...char, ...charUpdate };
                                 const displayName = getCharacterDisplayName(char, language);
                                 nextGameLog.push({ year: newState.currentDate.year, characterId: id, eventTitleKey: 'event_retirement_title', messageKey: 'log_retired', replacements: { name: displayName } });
                             }
                         }
-
                         if (newUniversityChoices.length > 0) {
                             newState.pendingUniversityChoice = newUniversityChoices;
                         }
                     }
                 }
-                
                 const dueLoans = newState.activeLoans.filter(loan => newState.currentDate.year >= loan.dueDate.year);
                 let stillActiveLoans = [...newState.activeLoans];
-
                 for (const loan of dueLoans) {
                     nextGameLog = [...nextGameLog, { year: newState.currentDate.year, messageKey: 'log_loan_repayment_due', replacements: { amount: loan.amount.toLocaleString() } }];
                     if (newState.familyFund >= loan.amount) {
@@ -823,11 +871,9 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                  if (newState.gameOverReason !== 'debt') {
                     newState.activeLoans = stillActiveLoans;
                 }
-
                 if (!((newState.pendingSchoolChoice && newState.pendingSchoolChoice.length > 0) || (newState.pendingUniversityChoice && newState.pendingUniversityChoice.length > 0) || newState.pendingCareerChoice || newState.pendingUnderqualifiedChoice)) {
                     const MILESTONE_EVENTS = getAllEvents().filter(e => e.isMilestone);
                     const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers, gameLog: nextGameLog };
-
                     for (const event of MILESTONE_EVENTS) {
                         for (const id of livingMemberIds) {
                             const character = nextFamilyMembers[id];
@@ -839,68 +885,6 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
                     }
                 }
             }
-            
-            // --- EVENT TRIGGER LOGIC ---
-const isGlobalCooldownActive = newState.eventCooldownUntil && isBefore(newState.currentDate, newState.eventCooldownUntil);
-
-// <-- CHANGED: Re-used noModalsAreOpen variable
-if (!isGlobalCooldownActive && noModalsAreOpen) {
-    const eligibleCharacters = Object.values(nextFamilyMembers).filter(c =>
-        c.isAlive &&
-        (c.eventsThisYear || 0) < 2
-    );
-
-    if (eligibleCharacters.length > 0) {
-        const chosenCharacter = eligibleCharacters[Math.floor(Math.random() * eligibleCharacters.length)];
-        const stateForConditionCheck: GameState = { ...newState, familyMembers: nextFamilyMembers };
-
-        let event: GameEvent | undefined;
-
-        const eventsByPhase = new Map<LifePhase, GameEvent[]>();
-        getAllEvents().forEach(event => {
-            if (event.isMilestone || event.id === 'decision_children') return; // Exclude special events
-            event.phases.forEach(phase => {
-                const lifePhase = phase as LifePhase;
-                if (!eventsByPhase.has(lifePhase)) {
-                    eventsByPhase.set(lifePhase, []);
-                }
-                eventsByPhase.get(lifePhase)!.push(event);
-            });
-        });
-
-        const phaseEvents = eventsByPhase.get(chosenCharacter.phase) || [];
-        const possibleEvents = phaseEvents.filter(e =>
-            !e.isTriggerOnly &&
-            (!e.allowedRelationshipStatuses || e.allowedRelationshipStatuses.includes(chosenCharacter.relationshipStatus)) &&
-            !(chosenCharacter.completedOneTimeEvents || []).includes(e.id) &&
-            (!e.condition || e.condition(stateForConditionCheck, chosenCharacter))
-        );
-
-        if (possibleEvents.length > 0) {
-            event = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
-        }
-
-        if (event) {
-            // NEW: Create a new event object with the animation flag.
-            // This dynamically adds the property without modifying the original event definitions.
-            const eventWithAnimation = {
-                ...event,
-                showJourneyAnimation: true 
-            };
-
-            // Use the new object when setting the active event.
-            newState.activeEvent = { characterId: chosenCharacter.id, event: eventWithAnimation };
-
-            const livingMembersCount = Object.values(nextFamilyMembers).filter(c => c.isAlive).length;
-            const cooldownDays = livingMembersCount <= 3 ? 120 : 180;
-            newState.eventCooldownUntil = addDays(newState.currentDate, cooldownDays);
-
-            const charToUpdate = { ...nextFamilyMembers[chosenCharacter.id] };
-            charToUpdate.eventsThisYear = (charToUpdate.eventsThisYear || 0) + 1;
-            nextFamilyMembers[chosenCharacter.id] = charToUpdate;
-        }
-    }
-}
 
             if (!newState.activeEvent && prevState.eventQueue.length > 0) {
                  newState.activeEvent = prevState.eventQueue[0];
@@ -922,7 +906,7 @@ if (!isGlobalCooldownActive && noModalsAreOpen) {
         setGameState(prevState => {
             if (!prevState || !prevState.activeEvent) return prevState;
     
-            const { characterId, event, replacements } = prevState.activeEvent;
+            const { characterId, event, replacements, scheduledEvent } = prevState.activeEvent;
             const { effect } = choice;
 
             // Create a more optimized shallow copy
@@ -940,25 +924,16 @@ if (!isGlobalCooldownActive && noModalsAreOpen) {
             }
 
             const finalEffect = { ...effect }; // Start with a copy of effect
-            let childrenEventSuccess = false;
+            let familySizeStaticIncreased = false;
 
             if (effect.getDynamicEffect) {
                 const dynamicResult = effect.getDynamicEffect();
-                // Merge dynamicResult into finalEffect
                 Object.assign(finalEffect, dynamicResult);
-                // Merge statChanges specifically to handle potential undefined statChanges in either
-                finalEffect.statChanges = {
-                    ...(effect.statChanges || {}), // Ensure it's an object even if undefined
-                    ...(dynamicResult.statChanges || {}) // Ensure it's an object even if undefined
-                };
+                finalEffect.statChanges = { ...(effect.statChanges || {}), ...(dynamicResult.statChanges || {}) };
                 
-                // <-- CHANGED: updated event id
-                if (event.id === 'decision_children' && dynamicResult.logKey === 'log_milestone_children_try_success') {
-                    childrenEventSuccess = true;
-                    // Tăng tổng số trẻ em đã sinh ra khi có trẻ mới
+                if (event.id === EventIdByKey.decision_children && dynamicResult.logKey === 'log_milestone_children_try_success') {
                     nextState.totalChildrenBorn = (nextState.totalChildrenBorn || 0) + 1;
-
-                    // The logic for unlocking features has been moved to PathOfLifeScreen to allow manual claiming.
+                    familySizeStaticIncreased = true;
                 }
             }
     
@@ -1007,8 +982,7 @@ if (!isGlobalCooldownActive && noModalsAreOpen) {
     
             // 2. Update one-time event list or cooldowns
             const character = nextState.familyMembers[characterId];
-            // <-- CHANGED: updated event id
-            if ((ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) && event.id !== 'decision_children') {
+            if ((ONE_TIME_EVENT_IDS.includes(event.id) || event.isMilestone) && event.id !== EventIdByKey.decision_children) {
                 character.completedOneTimeEvents = [...(character.completedOneTimeEvents || []), event.id];
             }
     
@@ -1016,6 +990,9 @@ if (!isGlobalCooldownActive && noModalsAreOpen) {
             if (finalEffect.action) {
                 const updates = finalEffect.action(nextState, characterId, exampleManifest);
                 Object.assign(nextState, updates);
+                if (updates.familyMembers && Object.keys(updates.familyMembers).length > Object.keys(prevState.familyMembers).length) {
+                    familySizeStaticIncreased = true;
+                }
             }
     
             // 4. Determine the next event (trigger or null)
@@ -1063,9 +1040,16 @@ if (!isGlobalCooldownActive && noModalsAreOpen) {
                 eventCounter = 0; // Reset counter
             }
 
-            // If an event was NOT triggered, we leave the activeEvent as is.
-            // The modal is responsible for closing itself by calling onEventModalClose.
-            
+            if (EVENT_SCHEDULER_ENABLED && eventScheduler) {
+                if (scheduledEvent) {
+                    eventScheduler.markExecuted(scheduledEvent);
+                }
+                if (familySizeStaticIncreased) {
+                    nextState.familySizeStatic = Object.keys(nextState.familyMembers).length;
+                    eventScheduler.replanFromTomorrow(nextState);
+                }
+            }
+
             // 6. Check for victory condition
             const childBorn = Object.values(nextState.familyMembers).find((c: Character) => c.generation >= 6);
             if(childBorn) {
@@ -1998,7 +1982,6 @@ if (!isGlobalCooldownActive && noModalsAreOpen) {
         handleContinueGame,
         handleStartNewGame,
         handleStartGame,
-        generateCareerChoices,
         gameLoop,
         handleEventChoice,
         handleCloseEventModal,
@@ -2014,15 +1997,13 @@ if (!isGlobalCooldownActive && noModalsAreOpen) {
         handleAssignToBusiness,
         handleUpgradeBusiness,
         handleBuyBusiness,
+        onSellBusiness,
         handlePurchaseAsset,
         handleAvatarSave,
         handleAvatarSaveNoCost,
-        onSellBusiness,
         handleAcknowledgeUnlock,
         handleClaimFeature,
         handlePurchaseSuccess,
-        ONE_TIME_EVENT_IDS,
-        SAVE_KEY,
         stopGameLoop,
     };
 };

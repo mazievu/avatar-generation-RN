@@ -18,6 +18,11 @@ export const PENSION_AMOUNT = 4200; // Per year (~$50/mo savings)
 
 export const CONTENT_VERSION = 1; // Added content version
 
+// ==============================
+// FEATURE FLAGS
+// ==============================
+export const EVENT_SCHEDULER_ENABLED = true; // Enables the new annual event scheduler
+
 // Trần lương tuyệt đối
 export const SALARY_CAP_MONTHLY = 800;
 export const SALARY_CAP_ANNUAL = SALARY_CAP_MONTHLY * 12; // 9,600

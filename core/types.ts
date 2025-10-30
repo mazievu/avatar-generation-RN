@@ -166,9 +166,7 @@ export interface Character {
   monthsInCurrentJobLevel: number; // New: Tracks months in current job level
   monthsUnemployed: number;
   
-  // ===================================================================
-  // <-- ADDED: Thuộc tính mới bắt buộc để sửa lỗi và chạy logic
-  // ===================================================================
+  /** @deprecated Replaced by the new EventScheduler logic. */
   hadChildrenDecisionEventThisYear?: boolean;
 }
 
@@ -227,6 +225,20 @@ export interface Loan {
     dueDate: { day: number; year: number };
 }
 
+export type ScheduledEvent = {
+    dayOfYear: number;
+    characterId: string;
+    eventId: string;
+    priority: 'fixed-jan1' | 'milestone' | 'children' | 'regular';
+};
+
+export type EventQueueItem = {
+    characterId: string;
+    event: GameEvent;
+    replacements?: Record<string, string | number>;
+    scheduledEvent?: ScheduledEvent; // Link back to the scheduler
+};
+
 export interface GameState {
   familyMembers: Record<string, Character>;
   familyFund: number;
@@ -236,7 +248,7 @@ export interface GameState {
   currentDate: { day: number, year: number };
   gameLog: GameLogEntry[];
   gameOverReason: 'victory' | 'bankruptcy' | 'debt' | null;
-  activeEvent: { characterId: string, event: GameEvent, replacements?: Record<string, string | number> } | null;
+  activeEvent: EventQueueItem | null;
   pendingSchoolChoice: { characterId: string; newPhase: LifePhase }[] | null;
   pendingUniversityChoice: { characterId: string }[] | null;
   pendingMajorChoice: { characterId: string; options: UniversityMajor[] } | null;
@@ -245,12 +257,13 @@ export interface GameState {
   pendingUnderqualifiedChoice?: { characterId: string; careerTrackKey: string; } | null;
   pendingLoanChoice: boolean | null;
   pendingPromotion: { characterId: string; newLevel: number; newTitleKey: string } | null;
-  eventQueue: { characterId: string, event: GameEvent, replacements?: Record<string, string | number> }[];
+  eventQueue: EventQueueItem[];
   activeLoans: Loan[];
   highestEducation: string;
   highestCareer: string;
   totalMembers: number;
   monthlyNetChange: number;
+  /** @deprecated Replaced by the new EventScheduler logic. */
   eventCooldownUntil: { day: number, year: number } | null;
   lang: Language;
   contentVersion: number; // Added content version
@@ -261,6 +274,13 @@ export interface GameState {
   avatarCustomizationCount: number; // New: Tracks how many times avatar has been customized
   isIncomeDoubled?: boolean;
   areAdsRemoved?: boolean;
+
+  // New fields for the Event Scheduler system
+  familySizeStatic: number;
+  scheduler: { 
+    yearPlan: Record<string, any[]>; // Serialized ScheduledEvent
+    meta: any; // Serialized SchedulerMeta
+  } | null;
 }
 
 export type StatChanges = Partial<Stats>;
