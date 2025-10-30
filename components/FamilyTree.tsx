@@ -47,6 +47,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const NODE_WIDTH = (screenWidth - 32) / 3 - 16;
 const NODE_HEIGHT = NODE_WIDTH * 1.2;
 const HORIZONTAL_SPACING = 30;
+const COUPLE_SPACING = 10;
 const VERTICAL_SPACING = 60;
 
 // --- 3. LAYOUT CALCULATION LOGIC ---
@@ -112,12 +113,13 @@ function calculateTreeLayout(allMembers: Record<string, Character>): LayoutsMap 
     currentX = -generationWidth / 2;
 
     couples.forEach(members => {
-      members.forEach(char => {
+      members.forEach((char, index) => {
          layouts[char.id] = {
            id: char.id, x: currentX, y: totalY, isPlayerCharacter: char.isPlayerCharacter, 
            parentsIds: char.parentsIds || [], partnerId: char.partnerId || null, childrenIds: char.childrenIds || [],
          };
-         currentX += NODE_WIDTH + HORIZONTAL_SPACING;
+         const spacing = (members.length === 2 && index === 0) ? COUPLE_SPACING : HORIZONTAL_SPACING;
+         currentX += NODE_WIDTH + spacing;
       });
     });
     totalY += NODE_HEIGHT + VERTICAL_SPACING;
