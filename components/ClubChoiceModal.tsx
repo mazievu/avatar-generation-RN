@@ -1,14 +1,11 @@
 import React from 'react';
-// *** THAY ĐỔI 1: Thêm ImageSourcePropType để sử dụng trong props ***
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageSourcePropType } from 'react-native';
 
-// *** THAY ĐỔI 2: Thêm các type và component cần thiết ***
 import type { Club, Language, Character, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
-// *** THAY ĐỔI 3: Cập nhật interface để nhận manifest và images ***
 interface ClubChoiceModalProps {
   character: Character;
   clubs: Club[];
@@ -17,33 +14,31 @@ interface ClubChoiceModalProps {
   lang: Language;
   manifest: Manifest;
   images: Record<string, ImageSourcePropType>;
+  onOpenCharacterDetails: (character: Character) => void;
 }
 
-// *** THAY ĐỔI 4: Lấy manifest và images từ props ***
-export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clubs, onSelect, onSkip, lang, manifest, images }) => {
+export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clubs, onSelect, onSkip, lang, manifest, images, onOpenCharacterDetails }) => {
   return (
     <ComicPanelModal 
       visible={true}
       onClose={() => {}} // onClose should be passed from parent
       rotate="-1deg"
     >
-      {/* *** THAY ĐỔI 5: Tạo bố cục header mới giống EventModal *** */}
       <View style={styles.header}>
-        <View style={styles.avatarContainer}>
+        <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
           <AgeAwareAvatarPreview
             character={character}
             manifest={manifest}
             images={images}
             size={{ width: 80, height: 80 }}
           />
-        </View>
+        </TouchableOpacity>
         <View style={styles.headerTextContainer}>
           <Text style={styles.title}>{t('modal_club_choice_title', lang)}</Text>
           <Text style={styles.description}>{t('modal_club_choice_desc', lang, { name: character.name })}</Text>
         </View>
       </View>
       
-      {/* Phần còn lại của modal không thay đổi */}
       <ScrollView style={styles.choicesContainer} showsVerticalScrollIndicator={false}>
         {clubs.map((club) => (
           <TouchableOpacity 
@@ -67,9 +62,7 @@ export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clu
   );
 };
 
-// *** THAY ĐỔI 6: Bổ sung các style cần thiết cho header mới ***
 const styles = StyleSheet.create({
-  // Style mới cho header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -81,17 +74,15 @@ const styles = StyleSheet.create({
   headerTextContainer: {
     flex: 1,
   },
-  // Style cũ đã được điều chỉnh
   title: {
     color: '#1e293b',
     fontSize: 24,
     fontWeight: '900',
-    marginBottom: 4, // Giảm margin bottom một chút
+    marginBottom: 4,
   },
   description: {
     color: '#475569',
     fontSize: 16,
-    // Bỏ margin bottom ở đây vì đã có ở header
   },
   choicesContainer: {
     maxHeight: 300, 

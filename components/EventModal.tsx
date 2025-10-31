@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ImageSourcePropType, Dimensio
 
 
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import type { Character, GameEvent, EventChoice, EventEffect, Manifest, Language, Stats } from '../core/types';
+import type { Character, GameEvent, EventChoice, EventEffect, Manifest, Language, Stats, GameState } from '../core/types';
 import { getAllEvents } from '../core/gameData';
 import { t } from '../core/localization';
 import { getCharacterDisplayName } from '../core/utils';
@@ -21,16 +21,17 @@ const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface EventModalProps {
   lang: Language;
-  eventData: { characterId: string; event: GameEvent; replacements?: Record<string, string | number> };
+  eventData: { characterId: string; event: GameEvent & { potentialSpouse?: Character }; replacements?: Record<string, string | number> };
   character: Character;
   onChoice: (choice: EventChoice) => void;
   onClose: () => void;
   images: Record<string, ImageSourcePropType>;
   manifest: Manifest;
   onEventHandled: (characterId: string) => void; // NEW PROP
+  onOpenCharacterDetails: (character: Character) => void;
 }
 
-export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest, onEventHandled }) => {
+export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest, onEventHandled, onOpenCharacterDetails }) => {
   const [initialCharacterState, setInitialCharacterState] = React.useState(character);
   const [displayEventData, setDisplayEventData] = React.useState(eventData);
   const [outcome, setOutcome] = React.useState<EventEffect | null>(null);
@@ -101,17 +102,19 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
     skill: t('stat_skill', lang),
   }
 
+  const potentialSpouse = displayEventData.event.potentialSpouse;
+
   return (
     <ComicPanelModal visible={true} onClose={onClose} rotate="0deg" disableDismissOnPressOutside={true}>
                <View style={eventModalStyles.header}>
-                <View style={eventModalStyles.avatarButton}>
+                <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={eventModalStyles.avatarButton}>
                     <AgeAwareAvatarPreview
                         manifest={manifest}
                         character={character}
                         images={images}
                         size={{ width: responsiveSize(80), height: responsiveSize(80) }}
                     />
-                </View>
+                </TouchableOpacity>
                 <View style={eventModalStyles.headerTextContainer}>
                     <Text style={eventModalStyles.title}>{displayEventData.event.title}</Text>
                     <Text style={eventModalStyles.subtitle}>{t('event_for', lang)}: <Text style={eventModalStyles.characterName}>{characterDisplayName}</Text></Text>
@@ -120,6 +123,32 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
 
             <Text style={eventModalStyles.description}>{String(t(displayEventData.event.descriptionKey, lang, displayEventData.replacements))}</Text>
             
+            {potentialSpouse && (
+                <View style={eventModalStyles.spouseContainer}>
+                    <TouchableOpacity onPress={() => onOpenCharacterDetails(potentialSpouse)} style={eventModalStyles.spouseAvatar}>
+                        <AgeAwareAvatarPreview
+                            manifest={manifest}
+                            character={potentialSpouse}
+                            images={images}
+                            size={{ width: responsiveSize(100), height: responsiveSize(100) }}
+                        />
+                    </TouchableOpacity>
+                    <View style={eventModalStyles.spouseStats}>
+                        <Text style={eventModalStyles.spouseName}>{getCharacterDisplayName(potentialSpouse, lang)}</Text>
+                        {Object.keys(potentialSpouse.stats).map(stat => (
+                            <StatBar
+                                key={stat}
+                                Icon={statIcons[stat]}
+                                label={statLabels[stat]}
+                                value={potentialSpouse.stats[stat as keyof Stats]}
+                                max={stat === 'iq' ? 200 : 100}
+                                color={'#cbd5e1'}
+                            />
+                        ))}
+                    </View>
+                </View>
+            )}
+
             {!outcome ? (
                 <View style={eventModalStyles.choicesContainer}>
                   {displayEventData.event.choices.map((choice, index) => (
@@ -155,7 +184,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                         {outcome.fundChange && (
                             <View style={eventModalStyles.fundChangeDetail}>
                                 <MoneyIcon />
-                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{`${t('family_fund_label', lang)}: ${outcome.fundChange > 0 ? '+' : ''}$${outcome.fundChange.toLocaleString()}`}</Text>
+                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : outcome.fundChangeNegative]}>{`${t('family_fund_label', lang)}: ${outcome.fundChange > 0 ? '+' : ''}$${outcome.fundChange.toLocaleString()}`}</Text>
                             </View>
                         )}
                         {outcome.statChanges && Object.entries(outcome.statChanges).map(([stat, change]) => {
@@ -296,6 +325,22 @@ const eventModalStyles = StyleSheet.create({
         fontSize: responsiveFontSize(16),
         fontStyle: 'italic',
         marginBottom: 16,
+    },
+    spouseContainer: {
+        flexDirection: 'row',
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    spouseAvatar: {
+        marginRight: 12,
+    },
+    spouseName: {
+        fontSize: responsiveFontSize(18),
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    spouseStats: {
+        flex: 1,
     },
     subtitle: {
         color: '#475569',

@@ -1,8 +1,6 @@
 import React from 'react';
-// *** THAY ĐỔI 1: Thêm View và ImageSourcePropType ***
-import { View, Text, StyleSheet, ImageSourcePropType } from 'react-native';
+import { View, Text, StyleSheet, ImageSourcePropType, TouchableOpacity } from 'react-native';
 
-// *** THAY ĐỔI 2: Thêm các type và component cần thiết ***
 import type { SchoolOption, Language, Stats, Character, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
@@ -10,7 +8,6 @@ import { t } from '../core/localization';
 import { colors } from './designSystem';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
-// *** THAY ĐỔI 3: Cập nhật interface để nhận props mới ***
 interface SchoolChoiceModalProps {
     character: Character;
     schoolOptions: SchoolOption[];
@@ -19,21 +16,20 @@ interface SchoolChoiceModalProps {
     lang: Language;
     manifest: Manifest;
     images: Record<string, ImageSourcePropType>;
+    onOpenCharacterDetails: (character: Character) => void;
 }
 
-// *** THAY ĐỔI 4: Lấy props mới ***
-export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOptions, onSelect, currentFunds, lang, character, manifest, images }) => (
+export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOptions, onSelect, currentFunds, lang, character, manifest, images, onOpenCharacterDetails }) => (
     <ComicPanelModal visible={true} onClose={() => {}} rotate="2deg">
-      {/* *** THAY ĐỔI 5: Tạo bố cục header với avatar *** */}
       <View style={styles.header}>
-        <View style={styles.avatarContainer}>
+        <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
             <AgeAwareAvatarPreview
                 character={character}
                 manifest={manifest}
                 images={images}
                 size={{ width: 80, height: 80 }}
             />
-        </View>
+        </TouchableOpacity>
         <View style={styles.headerTextContainer}>
             <Text style={styles.title}>{t('modal_school_title', lang)}</Text>
         </View>
@@ -41,7 +37,6 @@ export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOpti
 
       <Text style={styles.description}>{t('modal_school_desc', lang, { name: character.name })}</Text>
       
-      {/* Phần lựa chọn không thay đổi */}
       {schoolOptions.map((option, index) => (
           <ChoiceButton key={index} onClick={() => onSelect(option)} disabled={currentFunds < option.cost}>
               <View style={styles.choiceContent}>
@@ -56,9 +51,7 @@ export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOpti
     </ComicPanelModal>
 );
 
-// *** THAY ĐỔI 6: Bổ sung và điều chỉnh styles ***
 const styles = StyleSheet.create({
-    // Styles mới
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -70,12 +63,10 @@ const styles = StyleSheet.create({
     headerTextContainer: {
         flex: 1,
     },
-    // Styles cũ được điều chỉnh
     title: {
         color: '#1e2b3b',
         fontSize: 24,
         fontWeight: '900',
-        // Bỏ margin bottom
     },
     description: {
         color: '#475569',

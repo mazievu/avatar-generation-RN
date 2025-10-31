@@ -29,6 +29,7 @@ function getVariantSrc(
     optionId: string | null | undefined,
     layerKey: LayerKey,
     stage: AgeStage,
+    colorName: string | undefined, // Added colorName
     manifest: Manifest,
     images: Record<string, ImageSourcePropType>
 ): { src: ImageSourcePropType | undefined, name: string | undefined } {
@@ -42,10 +43,22 @@ function getVariantSrc(
     const baseSrc = option.previewSrc || option.src;
     if (!baseSrc) return { src: undefined, name: option.name };
 
-    const ageVariantSrc = createVariantSrc(baseSrc, stage);
-    if (images[ageVariantSrc]) {
-        return { src: images[ageVariantSrc], name: option.name };
+    // 1. Try with both age and color variant (e.g., hair__adult__Blonde.png)
+    if (colorName) {
+        const ageAndColorVariantSrc = createVariantSrc(createVariantSrc(baseSrc, stage), colorName);
+        if (images[ageAndColorVariantSrc]) {
+            return { src: images[ageAndColorVariantSrc], name: option.name };
+        }
+        // 2. Try with just color variant (e.g., hair__Blonde.png)
+        const colorVariantSrc = createVariantSrc(baseSrc, colorName);
+        if (images[colorVariantSrc]) {
+            return { src: images[colorVariantSrc], name: option.name };
+        }
     }
+    // 3. Try with just age variant (e.g., hair__adult.png)
+    const ageVariantSrc = createVariantSrc(baseSrc, stage);
+    if (images[ageVariantSrc]) return { src: images[ageVariantSrc], name: option.name };
+    // 4. Fallback to base source
     if (images[baseSrc]) {
         return { src: images[baseSrc], name: option.name };
     }
@@ -142,7 +155,8 @@ export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, i
             if (!optionId && !layer.required) return null;
             if (optionId === null) return null;
 
-            const { src: displaySrc, name: optionName } = getVariantSrc(optionId, layer.key, stage, manifest, images);
+            const colorName = state[`${layer.key}Color` as keyof typeof state] as string | undefined;
+            const { src: displaySrc, name: optionName } = getVariantSrc(optionId, layer.key, stage, colorName, manifest, images);
 
             // BƯỚC 1: XÓA DÒNG `if` GÂY LỖI BÊN DƯỚI
             // if (!displaySrc) return null; 

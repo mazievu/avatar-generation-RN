@@ -1,7 +1,7 @@
 export default {
     // Marriage
     milestone_marriage_title: 'Marriage Proposal',
-    milestone_marriage_desc: 'You have met someone special and are considering marriage. What will you do?',
+    milestone_marriage_desc: 'You have met someone special named {potentialSpouseName} and are considering marriage. What will you do?',
     milestone_marriage_yes: 'Propose to them.',
     log_milestone_marriage_yes: 'I proposed, and they said yes! A new chapter begins.',
     milestone_marriage_no: 'Remain single for now.',

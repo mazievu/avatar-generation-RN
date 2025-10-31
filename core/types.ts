@@ -302,7 +302,7 @@ export interface EventEffect {
   fundChange?: number;
   logKey: string;
   triggers?: TriggeredEvent[];
-  action?: (state: GameState, charId: string, manifest: Manifest) => Partial<GameState>;
+  action?: (state: GameState, charId: string, manifest: Manifest, event: GameEvent) => Partial<GameState>;
   getDynamicEffect?: () => DynamicEffectResult;
 }
 
@@ -327,6 +327,7 @@ export type EventDraft = {
   applyEffectToAll?: boolean;
   condition?: (state: GameState, char: Character) => boolean;
   showJourneyAnimation?: boolean;
+  getDynamicProps?: (state: GameState, char: Character) => { replacements?: Record<string, string | number>; [key: string]: any; };
 };
 
 // Choice hoàn chỉnh để runtime dùng.

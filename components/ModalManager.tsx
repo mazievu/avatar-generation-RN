@@ -120,6 +120,7 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                     manifest={exampleManifest}
                     images={avatarImages}
                     onEventHandled={onEventHandled}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
                 />
             )}
             {pendingSchoolChoice && pendingSchoolChoice.length > 0 && (
@@ -131,6 +132,7 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
                 />
             )}
             {pendingClubChoice && (
@@ -141,8 +143,9 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                     onSelect={onClubChoice}
                     onSkip={() => onClubChoice(null)}
                     lang={lang}
-                    manifest={exampleManifest} // <-- Thêm prop còn thiếu
-                    images={avatarImages}      // <-- Thêm prop còn thiếu
+                    manifest={exampleManifest}
+                    images={avatarImages}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
                 />
             )}
              {pendingUniversityChoice && pendingUniversityChoice.length > 0 && (
@@ -152,6 +155,7 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
                 />
             )}
             {pendingMajorChoice && (
@@ -164,6 +168,7 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                     onAbandon={onAbandonUniversity}
                     manifest={exampleManifest}
                     images={avatarImages}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
                 />
             )}
             {pendingCareerChoice && (
@@ -175,6 +180,7 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
                 />
             )}
             {pendingUnderqualifiedChoice && (
@@ -185,6 +191,7 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                     lang={lang}
                     manifest={exampleManifest}
                     images={avatarImages}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
                 />
             )}
             {selectedCharacter && (
@@ -206,11 +213,14 @@ export const ModalManager: React.FC<ModalManagerProps> = React.memo(({
                 <LoanModal onLoanChoice={onLoanChoice} lang={lang} />
             )}
             {pendingPromotion && (
-                <PromotionModal 
-                    characterName={getCharacterDisplayName(familyMembers[pendingPromotion.characterId], lang)}
+                <PromotionModal
+                    character={familyMembers[pendingPromotion.characterId]}
                     newTitle={t(pendingPromotion.newTitleKey, lang)}
                     onAccept={onPromotionAccept}
                     lang={lang}
+                    onOpenCharacterDetails={onSetSelectedCharacter}
+                    manifest={exampleManifest}
+                    images={avatarImages}
                 />
             )}
             {editingBusiness && (

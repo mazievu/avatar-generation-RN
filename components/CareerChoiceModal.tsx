@@ -1,8 +1,6 @@
 import * as React from 'react';
-// *** THAY ĐỔI 1: Thêm View và ImageSourcePropType ***
-import { View, Text, StyleSheet, ImageSourcePropType } from 'react-native';
+import { View, Text, StyleSheet, ImageSourcePropType, TouchableOpacity } from 'react-native';
 
-// *** THAY ĐỔI 2: Thêm các type và component cần thiết ***
 import type { Character, Language, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
@@ -11,8 +9,6 @@ import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 
-
-// *** THAY ĐỔI 3: Cập nhật interface để nhận props mới ***
 interface CareerChoiceModalProps {
     character: Character;
     options: string[];
@@ -21,21 +17,20 @@ interface CareerChoiceModalProps {
     lang: Language;
     manifest: Manifest;
     images: Record<string, ImageSourcePropType>;
+    onOpenCharacterDetails: (character: Character) => void;
 }
 
-// *** THAY ĐỔI 4: Lấy props mới ***
-export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character, options, onSelect, currentFunds, lang, manifest, images }) => (
+export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character, options, onSelect, currentFunds, lang, manifest, images, onOpenCharacterDetails }) => (
      <ComicPanelModal visible={true} onClose={() => {}} rotate="1deg">
-        {/* *** THAY ĐỔI 5: Tạo bố cục header với avatar *** */}
         <View style={styles.header}>
-            <View style={styles.avatarContainer}>
+            <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
                 <AgeAwareAvatarPreview
                     character={character}
                     manifest={manifest}
                     images={images}
                     size={{ width: 80, height: 80 }}
                 />
-            </View>
+            </TouchableOpacity>
             <View style={styles.headerTextContainer}>
                 <Text style={styles.title}>{t('modal_career_title', lang)}</Text>
             </View>
@@ -43,7 +38,6 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
 
         <Text style={styles.description}>{t('modal_career_desc', lang, { name: getCharacterDisplayName(character, lang) })}</Text>
         
-        {/* Phần lựa chọn không thay đổi */}
         {options.map((optionKey, index) => {
              if (CAREER_LADDER[optionKey]) {
                 const track = CAREER_LADDER[optionKey];
@@ -96,9 +90,7 @@ export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character,
     </ComicPanelModal>
 );
 
-// *** THAY ĐỔI 6: Bổ sung và điều chỉnh styles ***
 const styles = StyleSheet.create({
-    // Styles mới
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -110,12 +102,10 @@ const styles = StyleSheet.create({
     headerTextContainer: {
         flex: 1,
     },
-    // Styles cũ
     title: {
         color: '#1e293b',
         fontSize: 24,
         fontWeight: '900',
-        // Bỏ margin bottom
     },
     description: {
         color: '#475569',

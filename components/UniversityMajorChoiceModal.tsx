@@ -1,8 +1,6 @@
 import * as React from 'react';
-// *** THAY ĐỔI 1: Thêm ImageSourcePropType ***
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ImageSourcePropType } from 'react-native';
 
-// *** THAY ĐỔI 2: Thêm các type và component cần thiết ***
 import type { Character, UniversityMajor, Language, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { ChoiceButton } from './ChoiceButton';
@@ -17,7 +15,6 @@ const scale = screenWidth / baseWidth;
 
 const responsiveFontSize = (size: number, userScale: number = 1) => Math.round(size * scale * userScale);
 
-// *** THAY ĐỔI 3: Cập nhật interface để nhận props mới ***
 interface UniversityMajorChoiceModalProps {
     character: Character;
     majors: UniversityMajor[];
@@ -28,33 +25,30 @@ interface UniversityMajorChoiceModalProps {
     userFontScale?: number;
     manifest: Manifest;
     images: Record<string, ImageSourcePropType>;
+    onOpenCharacterDetails: (character: Character) => void;
 }
 
-// *** THAY ĐỔI 4: Lấy props mới ***
-export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProps> = ({ character, majors, onSelect, currentFunds, lang, onAbandon, userFontScale = 1, manifest, images }) => {
+export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProps> = ({ character, majors, onSelect, currentFunds, lang, onAbandon, userFontScale = 1, manifest, images, onOpenCharacterDetails }) => {
     const allUnaffordable = majors.every(major => currentFunds < major.cost);
 
     return (
         <ComicPanelModal visible={true} onClose={onAbandon} rotate="0deg">
-            {/* *** THAY ĐỔI 5: Tạo bố cục header với avatar *** */}
             <View style={styles.header}>
-                <View style={styles.avatarContainer}>
+                <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
                     <AgeAwareAvatarPreview
                         character={character}
                         manifest={manifest}
                         images={images}
                         size={{ width: 80, height: 80 }}
                     />
-                </View>
+                </TouchableOpacity>
                 <View style={styles.headerTextContainer}>
                     <Text style={[styles.title, { fontSize: responsiveFontSize(typography.h2.fontSize, userFontScale) }]}>{t('modal_major_title', lang)}</Text>
                 </View>
             </View>
             
-            {/* Bỏ dòng text "For character" cũ, di chuyển mô tả ra ngoài header */}
             <Text style={[styles.description, { fontSize: responsiveFontSize(typography.body.fontSize, userFontScale) }]}>{t('modal_major_desc', lang, { name: getCharacterDisplayName(character, lang) })}</Text>
             
-            {/* Phần còn lại không thay đổi */}
             {majors.map((major, index) => (
                 <ChoiceButton key={index} onClick={() => onSelect(major)} disabled={currentFunds < major.cost}>
                     <View style={styles.choiceContent}>
@@ -78,9 +72,7 @@ export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProp
     );
 };
 
-// *** THAY ĐỔI 6: Bổ sung và điều chỉnh styles ***
 const styles = StyleSheet.create({
-    // Styles mới
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -92,20 +84,13 @@ const styles = StyleSheet.create({
     headerTextContainer: {
         flex: 1,
     },
-    // Styles cũ được điều chỉnh hoặc bỏ đi
     title: {
         ...typography.h2,
-        // Bỏ margin và textAlign
     },
     description: {
         ...typography.body,
         marginBottom: spacing.lg,
     },
-    // Bỏ các style không còn dùng đến
-    // characterName: { ... },
-    // characterNameLabel: { ... },
-    
-    // Các style còn lại
     button: {
         alignItems: 'center',
         borderBottomWidth: 4,
