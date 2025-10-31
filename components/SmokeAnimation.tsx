@@ -36,7 +36,7 @@ export const SmokeAnimation: React.FC<SmokeAnimationProps> = ({ shouldAnimate, c
 
   const animatedStyle1 = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY1.value }, { scale: scale1.value }],
+      transform: [{ translateY: translateY1.value }, { scale: scale1.value }] as const,
       opacity: opacity1.value,
       backgroundColor: color,
       left: '50%', // Center horizontally
@@ -48,7 +48,7 @@ export const SmokeAnimation: React.FC<SmokeAnimationProps> = ({ shouldAnimate, c
 
   const animatedStyle2 = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY2.value }, { scale: scale2.value }],
+      transform: [{ translateY: translateY2.value }, { scale: scale2.value }] as const,
       opacity: opacity2.value,
       backgroundColor: color,
       left: '50%', // Center horizontally

@@ -38,13 +38,13 @@ const BottomNav: React.FC<{
   return (
     <View style={gameUIStyles.bottomNavContainer}>
       <TouchableOpacity onPress={() => onSceneChange('log')} style={[gameUIStyles.bottomNavButton, activeScene === 'log' && gameUIStyles.bottomNavButtonActive]}>
-        <View><Image source={require('../assets/icon_log.webp')} style={gameUIStyles.bottomNavIcon} /></View>
+        <View><Image source={require('../assets/icon_log.png')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('assets')} style={[gameUIStyles.bottomNavButton, activeScene === 'assets' && gameUIStyles.bottomNavButtonActive]}>
-        <View><Image source={require('../assets/icon_assets.webp')} style={gameUIStyles.bottomNavIcon} /></View>
+        <View><Image source={require('../assets/icon_assets.png')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('tree')} style={[gameUIStyles.bottomNavButton, activeScene === 'tree' && gameUIStyles.bottomNavButtonActive]}>
-        <View><Image source={require('../assets/icon_family_tree.webp')} style={gameUIStyles.bottomNavIcon} /></View>
+        <View><Image source={require('../assets/icon_family_tree.png')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => onSceneChange('business')}
@@ -55,10 +55,10 @@ const BottomNav: React.FC<{
         ]}
         disabled={!isBusinessUnlocked}
       >
-        <View><Image source={require('../assets/icon_business.webp')} style={gameUIStyles.bottomNavIcon} /></View>
+        <View><Image source={require('../assets/icon_business.png')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onSceneChange('path')} style={[gameUIStyles.bottomNavButton, activeScene === 'path' && gameUIStyles.bottomNavButtonActive]}>
-        <View><Image source={require('../assets/icon_path.webp')} style={gameUIStyles.bottomNavIcon} /></View>
+        <View><Image source={require('../assets/icon_path.png')} style={gameUIStyles.bottomNavIcon} /></View>
       </TouchableOpacity>
     </View>
   );
@@ -66,7 +66,7 @@ const BottomNav: React.FC<{
 
 
 interface GameUIProps {
-    view: 'menu' | 'playing' | 'gameover' | 'welcome_back';
+    view: 'menu' | 'playing' | 'gameover' | 'welcome_back' | 'loading';
     gameState: GameState | null;
     isPaused: boolean;
     gameSpeed: number;

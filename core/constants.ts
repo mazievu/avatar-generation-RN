@@ -2,10 +2,10 @@ import { LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, Caree
 import { ImageSourcePropType } from 'react-native';
 
 // Icon Assets
-const iconBusiness = require('../assets/icon_business.webp');
-const iconAvatarCustomization = require('../assets/icon_avatar_customization.webp');
-const iconTwinBirth = require('../assets/icon_twin_birth.webp');
-const iconTripletBirth = require('../assets/icon_triplet_birth.webp');
+const iconBusiness = require('../assets/icon_business.png');
+const iconAvatarCustomization = require('../assets/icon_avatar_customization.png');
+const iconTwinBirth = require('../assets/icon_twin_birth.png');
+const iconTripletBirth = require('../assets/icon_triplet_birth.png');
 
 // ==============================
 // GAME ECONOMY CORE
@@ -254,45 +254,45 @@ export const ASSET_DEFINITIONS: Record<string, AssetDefinition> = {
     // NOTE: Add actual image paths for these assets in assets/assets/
     // For now, using a placeholder image.
     // Housing
-    'housing_1': { id: 'housing_1', type: AssetType.Housing, tier: 1, nameKey: 'asset_housing_1_name', descriptionKey: 'asset_housing_1_desc', cost: 100000, effects: { happiness: 0.01 }, imageSrc: '../assets/housing_1.webp' },
-    'housing_2': { id: 'housing_2', type: AssetType.Housing, tier: 2, nameKey: 'asset_housing_2_name', descriptionKey: 'asset_housing_2_desc', cost: 300000, effects: { happiness: 0.02 }, imageSrc: '../assets/housing_2.webp' },
-    'housing_3': { id: 'housing_3', type: AssetType.Housing, tier: 3, nameKey: 'asset_housing_3_name', descriptionKey: 'asset_housing_3_desc', cost: 1000000, effects: { happiness: 0.03 }, imageSrc: '../assets/housing_3.webp' },
+    'housing_1': { id: 'housing_1', type: AssetType.Housing, tier: 1, nameKey: 'asset_housing_1_name', descriptionKey: 'asset_housing_1_desc', cost: 100000, effects: { happiness: 0.01 }, imageSrc: '../assets/asset_items/housing_1.png' },
+    'housing_2': { id: 'housing_2', type: AssetType.Housing, tier: 2, nameKey: 'asset_housing_2_name', descriptionKey: 'asset_housing_2_desc', cost: 300000, effects: { happiness: 0.02 }, imageSrc: '../assets/asset_items/housing_2.png' },
+    'housing_3': { id: 'housing_3', type: AssetType.Housing, tier: 3, nameKey: 'asset_housing_3_name', descriptionKey: 'asset_housing_3_desc', cost: 1000000, effects: { happiness: 0.03 }, imageSrc: '../assets/asset_items/housing_3.png' },
     // Vehicle
-    'vehicle_1': { id: 'vehicle_1', type: AssetType.Vehicle, tier: 1, nameKey: 'asset_vehicle_1_name', descriptionKey: 'asset_vehicle_1_desc', cost: 20000, effects: { happiness: 0.01 }, imageSrc: '../assets/vehicle_1.webp' },
-    'vehicle_2': { id: 'vehicle_2', type: AssetType.Vehicle, tier: 2, nameKey: 'asset_vehicle_2_name', descriptionKey: 'asset_vehicle_2_desc', cost: 80000, effects: { eq: 0.01 }, imageSrc: '../assets/vehicle_2.webp' },
-    'vehicle_3': { id: 'vehicle_3', type: AssetType.Vehicle, tier: 3, nameKey: 'asset_vehicle_3_name', descriptionKey: 'asset_vehicle_3_desc', cost: 250000, effects: { eq: 0.02 }, imageSrc: '../assets/vehicle_3.webp' },
+    'vehicle_1': { id: 'vehicle_1', type: AssetType.Vehicle, tier: 1, nameKey: 'asset_vehicle_1_name', descriptionKey: 'asset_vehicle_1_desc', cost: 20000, effects: { happiness: 0.01 }, imageSrc: '../assets/asset_items/vehicle_1.png' },
+    'vehicle_2': { id: 'vehicle_2', type: AssetType.Vehicle, tier: 2, nameKey: 'asset_vehicle_2_name', descriptionKey: 'asset_vehicle_2_desc', cost: 80000, effects: { eq: 0.01 }, imageSrc: '../assets/asset_items/vehicle_2.png' },
+    'vehicle_3': { id: 'vehicle_3', type: AssetType.Vehicle, tier: 3, nameKey: 'asset_vehicle_3_name', descriptionKey: 'asset_vehicle_3_desc', cost: 250000, effects: { eq: 0.02 }, imageSrc: '../assets/asset_items/vehicle_3.png' },
     // Electronics
-    'electronics_1': { id: 'electronics_1', type: AssetType.Electronics, tier: 1, nameKey: 'asset_electronics_1_name', descriptionKey: 'asset_electronics_1_desc', cost: 1000, effects: { iq: 0.01 }, imageSrc: '../assets/electronics_1.webp' },
-    'electronics_2': { id: 'electronics_2', type: AssetType.Electronics, tier: 2, nameKey: 'asset_electronics_2_name', descriptionKey: 'asset_electronics_2_desc', cost: 5000, effects: { happiness: 0.01 }, imageSrc: '../assets/electronics_2.webp' },
-    'electronics_3': { id: 'electronics_3', type: AssetType.Electronics, tier: 3, nameKey: 'asset_electronics_3_name', descriptionKey: 'asset_electronics_3_desc', cost: 15000, effects: { happiness: 0.02 }, imageSrc: '../assets/electronics_3.webp' },
+    'electronics_1': { id: 'electronics_1', type: AssetType.Electronics, tier: 1, nameKey: 'asset_electronics_1_name', descriptionKey: 'asset_electronics_1_desc', cost: 1000, effects: { iq: 0.01 }, imageSrc: '../assets/asset_items/electronics_1.png' },
+    'electronics_2': { id: 'electronics_2', type: AssetType.Electronics, tier: 2, nameKey: 'asset_electronics_2_name', descriptionKey: 'asset_electronics_2_desc', cost: 5000, effects: { happiness: 0.01 }, imageSrc: '../assets/asset_items/electronics_2.png' },
+    'electronics_3': { id: 'electronics_3', type: AssetType.Electronics, tier: 3, nameKey: 'asset_electronics_3_name', descriptionKey: 'asset_electronics_3_desc', cost: 15000, effects: { happiness: 0.02 }, imageSrc: '../assets/asset_items/electronics_3.png' },
     // Art
-    'art_1': { id: 'art_1', type: AssetType.Art, tier: 1, nameKey: 'asset_art_1_name', descriptionKey: 'asset_art_1_desc', cost: 5000, effects: { iq: 0.01 }, imageSrc: '../assets/art_1.webp' },
-    'art_2': { id: 'art_2', type: AssetType.Art, tier: 2, nameKey: 'asset_art_2_name', descriptionKey: 'asset_art_2_desc', cost: 50000, effects: { iq: 0.02 }, imageSrc: '../assets/art_2.webp' },
-    'art_3': { id: 'art_3', type: AssetType.Art, tier: 3, nameKey: 'asset_art_3_name', descriptionKey: 'asset_art_3_desc', cost: 200000, effects: { iq: 0.03 }, imageSrc: '../assets/art_3.webp' },
+    'art_1': { id: 'art_1', type: AssetType.Art, tier: 1, nameKey: 'asset_art_1_name', descriptionKey: 'asset_art_1_desc', cost: 5000, effects: { iq: 0.01 }, imageSrc: '../assets/asset_items/art_1.png' },
+    'art_2': { id: 'art_2', type: AssetType.Art, tier: 2, nameKey: 'asset_art_2_name', descriptionKey: 'asset_art_2_desc', cost: 50000, effects: { iq: 0.02 }, imageSrc: '../assets/asset_items/art_2.png' },
+    'art_3': { id: 'art_3', type: AssetType.Art, tier: 3, nameKey: 'asset_art_3_name', descriptionKey: 'asset_art_3_desc', cost: 200000, effects: { iq: 0.03 }, imageSrc: '../assets/asset_items/art_3.png' },
     // Jewelry
-    'jewelry_1': { id: 'jewelry_1', type: AssetType.Jewelry, tier: 1, nameKey: 'asset_jewelry_1_name', descriptionKey: 'asset_jewelry_1_desc', cost: 2000, effects: { eq: 0.01 }, imageSrc: '../assets/jewelry_1.webp' },
-    'jewelry_2': { id: 'jewelry_2', type: AssetType.Jewelry, tier: 2, nameKey: 'asset_jewelry_2_name', descriptionKey: 'asset_jewelry_2_desc', cost: 25000, effects: { eq: 0.02 }, imageSrc: '../assets/jewelry_2.webp' },
-    'jewelry_3': { id: 'jewelry_3', type: AssetType.Jewelry, tier: 3, nameKey: 'asset_jewelry_3_name', descriptionKey: 'asset_jewelry_3_desc', cost: 100000, effects: { eq: 0.03 }, imageSrc: '../assets/jewelry_3.webp' },
+    'jewelry_1': { id: 'jewelry_1', type: AssetType.Jewelry, tier: 1, nameKey: 'asset_jewelry_1_name', descriptionKey: 'asset_jewelry_1_desc', cost: 2000, effects: { eq: 0.01 }, imageSrc: '../assets/asset_items/jewelry_1.png' },
+    'jewelry_2': { id: 'jewelry_2', type: AssetType.Jewelry, tier: 2, nameKey: 'asset_jewelry_2_name', descriptionKey: 'asset_jewelry_2_desc', cost: 25000, effects: { eq: 0.02 }, imageSrc: '../assets/asset_items/jewelry_2.png' },
+    'jewelry_3': { id: 'jewelry_3', type: AssetType.Jewelry, tier: 3, nameKey: 'asset_jewelry_3_name', descriptionKey: 'asset_jewelry_3_desc', cost: 100000, effects: { eq: 0.03 }, imageSrc: '../assets/asset_items/jewelry_3.png' },
     // Furniture
-    'furniture_1': { id: 'furniture_1', type: AssetType.Furniture, tier: 1, nameKey: 'asset_furniture_1_name', descriptionKey: 'asset_furniture_1_desc', cost: 10000, effects: { happiness: 0.01 }, imageSrc: '../assets/furniture_1.webp' },
-    'furniture_2': { id: 'furniture_2', type: AssetType.Furniture, tier: 2, nameKey: 'asset_furniture_2_name', descriptionKey: 'asset_furniture_2_desc', cost: 40000, effects: { happiness: 0.02 }, imageSrc: '../assets/furniture_2.webp' },
-    'furniture_3': { id: 'furniture_3', type: AssetType.Furniture, tier: 3, nameKey: 'asset_furniture_3_name', descriptionKey: 'asset_furniture_3_desc', cost: 150000, effects: { happiness: 0.03 }, imageSrc: '../assets/furniture_3.webp' },
+    'furniture_1': { id: 'furniture_1', type: AssetType.Furniture, tier: 1, nameKey: 'asset_furniture_1_name', descriptionKey: 'asset_furniture_1_desc', cost: 10000, effects: { happiness: 0.01 }, imageSrc: '../assets/asset_items/furniture_1.png' },
+    'furniture_2': { id: 'furniture_2', type: AssetType.Furniture, tier: 2, nameKey: 'asset_furniture_2_name', descriptionKey: 'asset_furniture_2_desc', cost: 40000, effects: { happiness: 0.02 }, imageSrc: '../assets/asset_items/furniture_2.png' },
+    'furniture_3': { id: 'furniture_3', type: AssetType.Furniture, tier: 3, nameKey: 'asset_furniture_3_name', descriptionKey: 'asset_furniture_3_desc', cost: 150000, effects: { happiness: 0.03 }, imageSrc: '../assets/asset_items/furniture_3.png' },
     // Library
-    'library_1': { id: 'library_1', type: AssetType.Library, tier: 1, nameKey: 'asset_library_1_name', descriptionKey: 'asset_library_1_desc', cost: 3000, effects: { iq: 0.01 }, imageSrc: '../assets/library_1.webp' },
-    'library_2': { id: 'library_2', type: AssetType.Library, tier: 2, nameKey: 'asset_library_2_name', descriptionKey: 'asset_library_2_desc', cost: 20000, effects: { iq: 0.02 }, imageSrc: '../assets/library_2.webp' },
-    'library_3': { id: 'library_3', type: AssetType.Library, tier: 3, nameKey: 'asset_library_3_name', descriptionKey: 'asset_library_3_desc', cost: 80000, effects: { iq: 0.03 }, imageSrc: '../assets/library_3.webp' },
+    'library_1': { id: 'library_1', type: AssetType.Library, tier: 1, nameKey: 'asset_library_1_name', descriptionKey: 'asset_library_1_desc', cost: 3000, effects: { iq: 0.01 }, imageSrc: '../assets/asset_items/library_1.png' },
+    'library_2': { id: 'library_2', type: AssetType.Library, tier: 2, nameKey: 'asset_library_2_name', descriptionKey: 'asset_library_2_desc', cost: 20000, effects: { iq: 0.02 }, imageSrc: '../assets/asset_items/library_2.png' },
+    'library_3': { id: 'library_3', type: AssetType.Library, tier: 3, nameKey: 'asset_library_3_name', descriptionKey: 'asset_library_3_desc', cost: 80000, effects: { iq: 0.03 }, imageSrc: '../assets/asset_items/library_3.png' },
     // Gym
-    'gym_1': { id: 'gym_1', type: AssetType.Gym, tier: 1, nameKey: 'asset_gym_1_name', descriptionKey: 'asset_gym_1_desc', cost: 1500, effects: { health: 0.01 }, imageSrc: '../assets/gym_1.webp' },
-    'gym_2': { id: 'gym_2', type: AssetType.Gym, tier: 2, nameKey: 'asset_gym_2_name', descriptionKey: 'asset_gym_2_desc', cost: 8000, effects: { health: 0.02 }, imageSrc: '../assets/gym_2.webp' },
-    'gym_3': { id: 'gym_3', type: AssetType.Gym, tier: 3, nameKey: 'asset_gym_3_name', descriptionKey: 'asset_gym_3_desc', cost: 30000, effects: { health: 0.03 }, imageSrc: '../assets/gym_3.webp' },
+    'gym_1': { id: 'gym_1', type: AssetType.Gym, tier: 1, nameKey: 'asset_gym_1_name', descriptionKey: 'asset_gym_1_desc', cost: 1500, effects: { health: 0.01 }, imageSrc: '../assets/asset_items/gym_1.png' },
+    'gym_2': { id: 'gym_2', type: AssetType.Gym, tier: 2, nameKey: 'asset_gym_2_name', descriptionKey: 'asset_gym_2_desc', cost: 8000, effects: { health: 0.02 }, imageSrc: '../assets/asset_items/gym_2.png' },
+    'gym_3': { id: 'gym_3', type: AssetType.Gym, tier: 3, nameKey: 'asset_gym_3_name', descriptionKey: 'asset_gym_3_desc', cost: 30000, effects: { health: 0.03 }, imageSrc: '../assets/asset_items/gym_3.png' },
     // Music
-    'music_1': { id: 'music_1', type: AssetType.Music, tier: 1, nameKey: 'asset_music_1_name', descriptionKey: 'asset_music_1_desc', cost: 500, effects: { happiness: 0.01 }, imageSrc: '../assets/music_1.webp' },
-    'music_2': { id: 'music_2', type: AssetType.Music, tier: 2, nameKey: 'asset_music_2_name', descriptionKey: 'asset_music_2_desc', cost: 10000, effects: { happiness: 0.02 }, imageSrc: '../assets/music_2.webp' },
-    'music_3': { id: 'music_3', type: AssetType.Music, tier: 3, nameKey: 'asset_music_3_name', descriptionKey: 'asset_music_3_desc', cost: 50000, effects: { happiness: 0.03 }, imageSrc: '../assets/music_3.webp' },
+    'music_1': { id: 'music_1', type: AssetType.Music, tier: 1, nameKey: 'asset_music_1_name', descriptionKey: 'asset_music_1_desc', cost: 500, effects: { happiness: 0.01 }, imageSrc: '../assets/asset_items/music_1.png' },
+    'music_2': { id: 'music_2', type: AssetType.Music, tier: 2, nameKey: 'asset_music_2_name', descriptionKey: 'asset_music_2_desc', cost: 10000, effects: { happiness: 0.02 }, imageSrc: '../assets/asset_items/music_2.png' },
+    'music_3': { id: 'music_3', type: AssetType.Music, tier: 3, nameKey: 'asset_music_3_name', descriptionKey: 'asset_music_3_desc', cost: 50000, effects: { happiness: 0.03 }, imageSrc: '../assets/asset_items/music_3.png' },
     // Vacation
-    'vacation_1': { id: 'vacation_1', type: AssetType.Vacation, tier: 1, nameKey: 'asset_vacation_1_name', descriptionKey: 'asset_vacation_1_desc', cost: 120000, effects: { happiness: 0.01 }, imageSrc: '../assets/vacation_1.webp' },
-    'vacation_2': { id: 'vacation_2', type: AssetType.Vacation, tier: 2, nameKey: 'asset_vacation_2_name', descriptionKey: 'asset_vacation_2_desc', cost: 400000, effects: { happiness: 0.02 }, imageSrc: '../assets/vacation_2.webp' },
-    'vacation_3': { id: 'vacation_3', type: AssetType.Vacation, tier: 3, nameKey: 'asset_vacation_3_name', descriptionKey: 'asset_vacation_3_desc', cost: 2500000, effects: { happiness: 0.03 }, imageSrc: '../assets/vacation_3.webp' },
+    'vacation_1': { id: 'vacation_1', type: AssetType.Vacation, tier: 1, nameKey: 'asset_vacation_1_name', descriptionKey: 'asset_vacation_1_desc', cost: 120000, effects: { happiness: 0.01 }, imageSrc: '../assets/asset_items/vacation_1.png' },
+    'vacation_2': { id: 'vacation_2', type: AssetType.Vacation, tier: 2, nameKey: 'asset_vacation_2_name', descriptionKey: 'asset_vacation_2_desc', cost: 400000, effects: { happiness: 0.02 }, imageSrc: '../assets/asset_items/vacation_2.png' },
+    'vacation_3': { id: 'vacation_3', type: AssetType.Vacation, tier: 3, nameKey: 'asset_vacation_3_name', descriptionKey: 'asset_vacation_3_desc', cost: 2500000, effects: { happiness: 0.03 }, imageSrc: '../assets/asset_items/vacation_3.png' },
 };
 
 // ==============================

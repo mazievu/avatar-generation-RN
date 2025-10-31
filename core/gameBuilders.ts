@@ -2,6 +2,8 @@ import { EventDraft, GameEvent, EventChoice, EventEffect, ClubEventDraft, ClubEv
 import { EventIdByKey, ChoiceIdByKey } from './generated/eventIds';
 import { t } from './localization';
 import { exampleManifest } from './types';
+import { generateRandomAvatar as utilGenerateRandomAvatar, generateName } from './utils';
+import { randomUUID } from 'expo-crypto';
 
 // Helper to ensure effect is properly typed
 function ensureEventEffect(effect: unknown): EventEffect {
@@ -99,27 +101,14 @@ export function buildClubEvent(draft: ClubEventDraft, lang: Language): ClubEvent
     };
 }
 
-export function generateRandomAvatar(manifest: Manifest, gender: Gender): AvatarState {
-    const avatarState: AvatarState = {};
-    manifest.forEach(layer => {
-        if (layer.required) {
-            const options = layer.options.filter(o => !o.ageCategory || o.ageCategory === 'normal');
-            if (options.length > 0) {
-                avatarState[layer.key] = options[Math.floor(Math.random() * options.length)].id;
-            }
-        }
-    });
-    return avatarState;
-}
-
-export const createSpouse = (char: Character, currentYear: number): Character => {
+export const createSpouse = (char: Character, currentYear: number, lang: Language): Character => {
     const spouseGender = char.gender === Gender.Male ? Gender.Female : Gender.Male;
     const age = 18 + Math.floor(Math.random() * (char.age - 17));
     const birthYear = currentYear - age;
 
     const spouse: Character = {
-        id: `spouse-${char.id}-${currentYear}`,
-        name: spouseGender === Gender.Female ? 'Random Woman' : 'Random Man', // Placeholder name
+        id: randomUUID(),
+        name: generateName(spouseGender, lang),
         gender: spouseGender,
         generation: char.generation,
         birthDate: { day: 1, year: birthYear },
@@ -153,7 +142,7 @@ export const createSpouse = (char: Character, currentYear: number): Character =>
         currentClubs: [],
         completedClubEvents: [],
         displayAdjective: null,
-        avatarState: generateRandomAvatar(exampleManifest, spouseGender),
+        avatarState: utilGenerateRandomAvatar(exampleManifest, age, spouseGender),
         progressionPenalty: 0,
         lowHappinessYears: 0,
         lowHealthYears: 0,

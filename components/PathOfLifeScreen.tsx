@@ -6,16 +6,16 @@ import { t } from '../core/localization';
 import { colors } from './designSystem';
 
 // Import assets
-const bgImage = require('../assets/path_of_life_bg.webp');
-const titleBannerImage = require('../assets/path_of_life_banner.webp');
+const bgImage = require('../assets/path_of_life_bg.png');
+const titleBannerImage = require('../assets/path_of_life_banner.png');
 const pathTrackImage = require('../assets/path_background.png');
-const wingedHeartImage = require('../assets/winged_heart.webp');
-const gemImage = require('../assets/gem.webp');
-const glowEffectImage = require('../assets/glow_effect.webp');
-const bubbleImage = require('../assets/bubble.webp');
-const chestImage = require('../assets/chest.webp');
-const lockImage = require('../assets/lock.webp');
-const claimButtonImage = require('../assets/claim_button.webp');
+const wingedHeartImage = require('../assets/winged_heart.png');
+const gemImage = require('../assets/gem.png');
+const glowEffectImage = require('../assets/glow_effect.png');
+const bubbleImage = require('../assets/bubble.png');
+const chestImage = require('../assets/chest.png');
+const lockImage = require('../assets/lock.png');
+const claimButtonImage = require('../assets/claim_button.png');
 
 // --- PathNodeItem ---
 interface PathNodeItemProps {

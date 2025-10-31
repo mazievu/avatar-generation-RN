@@ -10,7 +10,7 @@ export const milestone_marriage: EventDraft = {
     isMilestone: true,
     allowedRelationshipStatuses: [RelationshipStatus.Single],
     getDynamicProps: (state: GameState, char: Character) => {
-        const potentialSpouse = createSpouse(char, state.currentDate.year);
+        const potentialSpouse = createSpouse(char, state.currentDate.year, state.lang);
         return {
             replacements: {
                 potentialSpouseName: potentialSpouse.name,
@@ -55,3 +55,55 @@ export const milestone_marriage: EventDraft = {
         return char.age >= 25 && char.age <= 40 && !char.partnerId;
     }
 };
+
+export const milestone_death_old_age: EventDraft = {
+    id: 'milestone_death_old_age',
+    titleKey: 'milestone_death_old_age_title',
+    descriptionKey: 'milestone_death_old_age_desc',
+    phases: Object.values(LifePhase),
+    isMilestone: true,
+    choices: [
+        { textKey: 'ok', effect: { logKey: 'log_milestone_death_old_age' } }
+    ]
+};
+
+export const milestone_phase_change: EventDraft = {
+    id: 'milestone_phase_change',
+    titleKey: 'milestone_phase_change_title',
+    descriptionKey: 'milestone_phase_change_desc',
+    phases: Object.values(LifePhase),
+    isMilestone: true,
+    choices: [
+        { textKey: 'ok', effect: { logKey: 'log_milestone_phase_change' } }
+    ]
+};
+
+export const milestone_mourning: EventDraft = {
+    id: 'milestone_mourning',
+    titleKey: 'milestone_mourning_title',
+    descriptionKey: 'milestone_mourning_desc',
+    phases: Object.values(LifePhase),
+    isMilestone: true,
+    choices: [
+        { textKey: 'ok', effect: { logKey: 'log_milestone_mourning' } }
+    ]
+};
+
+export const milestone_child_conceived: EventDraft = {
+    id: 'milestone_child_conceived',
+    titleKey: 'milestone_child_conceived_title',
+    descriptionKey: 'milestone_child_conceived_desc',
+    phases: Object.values(LifePhase),
+    isMilestone: true,
+    choices: [
+        { textKey: 'ok', effect: { logKey: 'log_milestone_child_conceived' } }
+    ]
+};
+
+export const MILESTONE_EVENTS: EventDraft[] = [
+    milestone_marriage,
+    milestone_death_old_age,
+    milestone_phase_change,
+    milestone_mourning,
+    milestone_child_conceived,
+];

@@ -11,10 +11,11 @@ import { exampleManifest } from './core/types';
 import { soundManager } from './services';
 import { SceneName } from './components/GameUI';
 import { reinitializeAllGameData } from './core/gameData';
+import LoadingScreen from './components/LoadingScreen';
 
 export default function App() {
     const [gameState, setGameState] = useState<GameState | null>(null);
-    const [view, setView] = useState<'menu' | 'playing' | 'gameover' | 'welcome_back'>('menu');
+    const [view, setView] = useState<'menu' | 'playing' | 'gameover' | 'welcome_back' | 'loading'>('menu');
     const [isPaused, setIsPaused] = useState(true);
     const [showInstructions, setShowInstructions] = useState(false);
     const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
@@ -22,9 +23,11 @@ export default function App() {
     const [avatarImages, setAvatarImages] = useState<Record<string, ImageSourcePropType>>({});
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
     const [pendingStatBoost, setPendingStatBoost] = useState<{ stat: keyof Character['stats'], amount: number, featureId: string } | null>(null);
+    const [charactersToBake, setCharactersToBake] = useState<Character[] | null>(null);
 
     const appState = useRef(AppState.currentState);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const wasPlayingRef = useRef(false);
 
     useEffect(() => {
         reinitializeAllGameData(lang);
@@ -61,6 +64,17 @@ export default function App() {
     }, []);
 
     useEffect(() => {
+        if (view === 'playing' && !wasPlayingRef.current && gameState) {
+            wasPlayingRef.current = true;
+            setIsPaused(true);
+            setView('loading');
+            setCharactersToBake(Object.values(gameState.familyMembers));
+        } else if (view === 'menu' || view === 'gameover') {
+            wasPlayingRef.current = false;
+        }
+    }, [view, gameState]);
+
+    useEffect(() => {
         if (view === 'playing' && !isPaused && !gameState?.gameOverReason) {
             if (timerRef.current) clearInterval(timerRef.current);
             timerRef.current = setInterval(gameLoop, gameSpeed);
@@ -89,8 +103,6 @@ export default function App() {
 
     const handleContinueGame = () => {
         gameLogic.handleContinueGame();
-        setView('playing');
-        setIsPaused(false);
     };
 
     const handleStartNewGame = () => {
@@ -143,6 +155,21 @@ export default function App() {
         }
         setPendingStatBoost(null);
     };
+
+    if (view === 'loading' && charactersToBake) {
+        return (
+            <LoadingScreen
+                manifest={exampleManifest}
+                characters={charactersToBake}
+                images={avatarImages}
+                onReady={() => {
+                    setCharactersToBake(null);
+                    setView('playing');
+                    setIsPaused(false);
+                }}
+            />
+        );
+    }
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>

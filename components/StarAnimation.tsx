@@ -27,7 +27,7 @@ export const StarAnimation: React.FC<StarAnimationProps> = ({ shouldAnimate, col
 
   const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
     return {
-      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+      transform: [{ translateY: translateY.value }, { scale: scale.value }] as const,
       opacity: opacity.value,
       left: '50%', // Center horizontally
       marginLeft: -10, // Half of width (20) to truly center

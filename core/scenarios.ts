@@ -81,6 +81,8 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         claimedFeatures: [],
         newlyUnlockedFeature: null,
         avatarCustomizationCount: 0,
+        familySizeStatic: 1,
+        scheduler: null,
     };
 };
 
@@ -105,7 +107,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: require('../assets/mila.webp'),
+        staticAvatarUrl: require('../assets/mila.png'),
         currentClubs: [],
         completedClubEvents: [],
         lowHappinessYears: 0,
@@ -126,7 +128,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: require('../assets/max.webp'),
+        staticAvatarUrl: require('../assets/max.png'),
         currentClubs: [],
         completedClubEvents: [],
         lowHappinessYears: 0,
@@ -147,7 +149,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: require('../assets/alice.webp'),
+        staticAvatarUrl: require('../assets/alice.png'),
         currentClubs: [],
         completedClubEvents: [],
         lowHappinessYears: 0,
@@ -168,7 +170,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: require('../assets/lucas.webp'),
+        staticAvatarUrl: require('../assets/lucas.png'),
         currentClubs: [],
         completedClubEvents: [],
         lowHappinessYears: 0,
@@ -189,7 +191,7 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         completedOneTimeEvents: [],
         displayAdjective: null,
         avatarState: {},
-        staticAvatarUrl: require('../assets/daisy.webp'),
+        staticAvatarUrl: require('../assets/daisy.png'),
         currentClubs: [],
         completedClubEvents: [],
         lowHappinessYears: 0,
@@ -227,6 +229,8 @@ const createMilaFamilyState = (initialYear: number, lang: Language): GameState =
         claimedFeatures: [],
         newlyUnlockedFeature: null,
         avatarCustomizationCount: 0,
+        familySizeStatic: 5,
+        scheduler: null,
     };
 };
 

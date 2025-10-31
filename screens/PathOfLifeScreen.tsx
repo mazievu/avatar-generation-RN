@@ -17,15 +17,15 @@ import { PATH_NODES, UNLOCKABLE_FEATURES } from '../core/constants';
 import { t } from '../core/localization';
 
 // --- Asset Imports ---
-const bgImage = require('../assets/path_of_life_bg.webp');
+const bgImage = require('../assets/path_of_life_bg.png');
 const pathTrackImage = require('../assets/path_background.png');
-const gemImage = require('../assets/gem.webp');
-const wingedHeartImage = require('../assets/winged_heart.webp');
-const chestImage = require('../assets/chest.webp');
-const bubbleImage = require('../assets/bubble.webp');
-const lockImage = require('../assets/lock.webp');
-const claimButtonImage = require('../assets/claim_button.webp');
-const glowEffectImage = require('../assets/glow_effect.webp');
+const gemImage = require('../assets/gem.png');
+const wingedHeartImage = require('../assets/winged_heart.png');
+const chestImage = require('../assets/chest.png');
+const bubbleImage = require('../assets/bubble.png');
+const lockImage = require('../assets/lock.png');
+const claimButtonImage = require('../assets/claim_button.png');
+const glowEffectImage = require('../assets/glow_effect.png');
 
 // --- Interfaces ---
 interface PathOfLifeScreenProps {

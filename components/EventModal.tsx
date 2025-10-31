@@ -141,6 +141,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                                 Icon={statIcons[stat]}
                                 label={statLabels[stat]}
                                 value={potentialSpouse.stats[stat as keyof Stats]}
+                                initialValue={potentialSpouse.stats[stat as keyof Stats]}
                                 max={stat === 'iq' ? 200 : 100}
                                 color={'#cbd5e1'}
                             />
@@ -184,7 +185,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                         {outcome.fundChange && (
                             <View style={eventModalStyles.fundChangeDetail}>
                                 <MoneyIcon />
-                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : outcome.fundChangeNegative]}>{`${t('family_fund_label', lang)}: ${outcome.fundChange > 0 ? '+' : ''}$${outcome.fundChange.toLocaleString()}`}</Text>
+                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{`${t('family_fund_label', lang)}: ${outcome.fundChange > 0 ? '+' : ''}$${outcome.fundChange.toLocaleString()}`}</Text>
                             </View>
                         )}
                         {outcome.statChanges && Object.entries(outcome.statChanges).map(([stat, change]) => {

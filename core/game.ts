@@ -988,7 +988,7 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
     
             // 3. Process actions, which return partial state updates
             if (finalEffect.action) {
-                const updates = finalEffect.action(nextState, characterId, exampleManifest);
+                const updates = finalEffect.action(nextState, characterId, exampleManifest, event);
                 Object.assign(nextState, updates);
                 if (updates.familyMembers && Object.keys(updates.familyMembers).length > Object.keys(prevState.familyMembers).length) {
                     familySizeStaticIncreased = true;

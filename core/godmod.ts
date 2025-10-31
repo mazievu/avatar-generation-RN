@@ -1,5 +1,11 @@
 import { GameState } from './types';
 
+declare global {
+    interface Window {
+        god: any;
+    }
+}
+
 type SetGameState = React.Dispatch<React.SetStateAction<GameState | null>>;
 
 export const initGodMode = (setGameState: SetGameState) => {
@@ -8,7 +14,7 @@ export const initGodMode = (setGameState: SetGameState) => {
         const god = {
             activate: () => {
 
-                (window as Window).god.set = {
+                window.god.set = {
                     money: (amount: number) => {
                         setGameState(prevState => {
                             if (!prevState) return prevState;
@@ -31,7 +37,7 @@ export const initGodMode = (setGameState: SetGameState) => {
                     },
                 };
 
-                (window as Window).god.get = {
+                window.god.get = {
                     characterIds: () => {
                         setGameState(prevState => {
                             if (!prevState) {
@@ -52,6 +58,6 @@ export const initGodMode = (setGameState: SetGameState) => {
             }
         };
 
-        (window as Window).god = god;
+        window.god = god;
     }
 };
