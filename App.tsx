@@ -12,6 +12,7 @@ import { soundManager } from './services';
 import { SceneName } from './components/GameUI';
 import { reinitializeAllGameData } from './core/gameData';
 import LoadingScreen from './components/LoadingScreen';
+import { startBackgroundBaking } from './services/BackgroundBaker';
 
 export default function App() {
     const [gameState, setGameState] = useState<GameState | null>(null);
@@ -166,6 +167,7 @@ export default function App() {
                     setCharactersToBake(null);
                     setView('playing');
                     setIsPaused(false);
+                    startBackgroundBaking();
                 }}
             />
         );

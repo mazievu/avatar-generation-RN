@@ -1,4 +1,4 @@
-// services/ColorBaker.expo.ts (SDK 51 style)
+// services/ColorBaker.expo.ts (Final Patch - Alpha Masking Fix)
 import { Skia, BlendMode, ImageFormat } from "@shopify/react-native-skia";
 import { File, Directory, Paths } from "expo-file-system";
 import { Asset } from "expo-asset";
@@ -7,15 +7,15 @@ import * as Crypto from "expo-crypto";
 const CACHE_DIR = new Directory(Paths.cache, "avatar_variants");
 
 function cacheKey(baseModuleId: number, colorHex: string, version = "v1") {
-  return `${baseModuleId}|${colorHex}|${version}`;
+  // Tăng phiên bản cache để bake lại toàn bộ với logic đúng
+  return `${baseModuleId}|${colorHex}|${version}-v4-alphamask`;
 }
 
-async function cachePathFor(key: string) {
+async function cachePathFor(key: string): Promise<File> {
   const hash = await Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.SHA256,
     key
   );
-  // Tạo File trỏ tới cache file .png
   return new File(CACHE_DIR, `${hash}.png`);
 }
 
@@ -24,51 +24,70 @@ export async function getOrBakeVariantFromModule(
   colorHex: string,
   version = "v1"
 ): Promise<string> {
-  // Tạo thư mục cache nếu cần
-  try { if (!CACHE_DIR.exists) CACHE_DIR.create(); } catch {}
+  if (!CACHE_DIR.exists) {
+    CACHE_DIR.create();
+  }
 
   const outFile = await cachePathFor(cacheKey(baseModuleId, colorHex, version));
-  if (outFile.exists) return outFile.uri;
+  
+  if (outFile.exists) {
+    return outFile.uri;
+  }
 
-  // 1) resolve asset → localUri
   const asset = Asset.fromModule(baseModuleId);
   if (!asset.downloaded) await asset.downloadAsync();
-  const localUri = asset.localUri!;
-
-  // 2) đọc bytes ảnh gốc (API mới: File implements Blob)
-  //    Lưu ý: constructor File chấp nhận object từ picker/asset; với uri ta làm như sau:
-  const src = new File(localUri as any); // SDK 51 cho phép tạo File từ uri/object
-  const bytes = await src.bytes();       // Uint8Array
+  
+  const srcFile = new File(asset.localUri!); 
+  const bytes = await srcFile.bytes();
 
   const img = Skia.Image.MakeImageFromEncoded(Skia.Data.fromBytes(bytes));
   if (!img) throw new Error("Skia: cannot decode base image");
 
-  // 3) render offscreen + tô màu
   const w = img.width(), h = img.height();
   const surface = Skia.Surface.MakeOffscreen(w, h);
   const canvas = surface.getCanvas();
-  // @ts-ignore
+  
   canvas.clear(Skia.Color("transparent"));
-  canvas.drawImage(img, 0, 0);
-  const paint = Skia.Paint();
-  paint.setBlendMode(BlendMode.Color);
-  // @ts-ignore
-  paint.setColor(Skia.Color(colorHex));
-  canvas.drawRect(Skia.XYWHRect(0, 0, w, h), paint);
 
-  // 4) encode PNG → ghi bằng API mới
-  // Ưu tiên bytes; fallback base64 nếu project bạn đang dùng Skia cũ.
+  // --- LOGIC RENDER 2 BƯỚC ĐÚNG CHUẨN ---
+
+  // BƯỚC 1: Tô màu cho ảnh gốc.
+  // Kết quả của bước này là ảnh có màu đúng, chi tiết đúng, nhưng nền bị đặc.
+  const colorPaint = Skia.Paint();
+  colorPaint.setColorFilter(
+    Skia.ColorFilter.MakeBlend(Skia.Color(colorHex), BlendMode.Color)
+  );
+  canvas.drawImage(img, 0, 0, colorPaint);
+
+  // BƯỚC 2: Áp dụng mặt nạ alpha từ ảnh gốc.
+  // Vẽ lại ảnh gốc lên trên với BlendMode.DstIn.
+  // Thao tác này sẽ chỉ giữ lại kết quả của Bước 1 ở những nơi ảnh gốc có pixel.
+  const maskPaint = Skia.Paint();
+  maskPaint.setBlendMode(BlendMode.DstIn);
+  canvas.drawImage(img, 0, 0, maskPaint);
+
+  // --- KẾT THÚC LOGIC RENDER ---
+  
+  const imageSnapshot = surface.makeImageSnapshot();
   // @ts-ignore
-  const pngBytes: Uint8Array | null = surface.makeImageSnapshot().encodeToBytes?.(ImageFormat.PNG) ?? null;
+  const pngBytes: Uint8Array | null = imageSnapshot.encodeToBytes?.(ImageFormat.PNG) ?? null;
+  
   if (pngBytes) {
-    outFile.write(pngBytes);          // ghi nhị phân
+    outFile.write(pngBytes);
   } else {
-    const pngB64 = surface.makeImageSnapshot().encodeToBase64(ImageFormat.PNG);
-    outFile.write(pngB64 as any);     // ghi chuỗi; (lúc này coi như text base64)
+    const pngB64 = imageSnapshot.encodeToBase64(ImageFormat.PNG, 100);
+    outFile.write(pngB64);
   }
+
   return outFile.uri;
 }
 
 export async function clearAllBaked() {
-  try { CACHE_DIR.delete(); } catch {}
+  try {
+    if (CACHE_DIR.exists) {
+      CACHE_DIR.delete();
+    }
+  } catch (e) {
+    console.error("Failed to clear avatar cache:", e);
+  }
 }

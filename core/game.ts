@@ -1,3 +1,4 @@
+
 import { GameState, Character, EventChoice, SchoolOption, UniversityMajor, PurchasedAsset, Business, GameEvent, Loan, AvatarState, Stats, GameLogEntry, Club, LifePhase, CharacterStatus, Language, Manifest, EventQueueItem, ScheduledEvent } from './types';
 import { DAYS_IN_YEAR, UNIVERSITY_MAJORS, CAREER_LADDER, VOCATIONAL_TRAINING, INTERNSHIP, PENSION_AMOUNT, getCostOfLiving, UNLOCKABLE_FEATURES, BUSINESS_DEFINITIONS, ROBOT_HIRE_COST, PET_DATA, BUSINESS_WORKER_BASE_SALARY_MONTHLY, BUSINESS_WORKER_SKILL_MULTIPLIER, ASSET_DEFINITIONS, TRAINEE_SALARY, CONTENT_VERSION, BUSINESS_UNLOCK_CHILDREN_COUNT, CUSTOM_AVATAR_UNLOCK_CHILDREN_COUNT, BUSINESS_REVENUE_SCALE, BUSINESS_FIXED_COST_SCALE, BUSINESS_COGS_MAX, BUSINESS_WORKER_WAGE_CAP_MONTHLY, BUSINESS_PER_EMPLOYEE_OVERHEAD_MONTHLY, BUSINESS_OWNER_PROFIT_CAP_MONTHLY, CUSTOM_AVATAR_COST, EVENT_SCHEDULER_ENABLED } from './constants';
 import { CLUBS } from './clubsAndEventsData';
@@ -887,7 +888,22 @@ export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetSt
             }
 
             if (!newState.activeEvent && prevState.eventQueue.length > 0) {
-                 newState.activeEvent = prevState.eventQueue[0];
+                 const nextEventInQueue = prevState.eventQueue[0];
+                 const { event, characterId } = nextEventInQueue;
+
+                 let finalEvent = { ...nextEventInQueue };
+
+                 if (event.getDynamicProps) {
+                     const character = nextFamilyMembers[characterId];
+                     const dynamicProps = event.getDynamicProps(newState, character);
+                     finalEvent = {
+                         ...finalEvent,
+                         ...dynamicProps,
+                         event: { ...event, ...dynamicProps }
+                     };
+                 }
+
+                 newState.activeEvent = finalEvent;
                  newState.eventQueue = prevState.eventQueue.slice(1);
             }
             
