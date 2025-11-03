@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions, ImageSourcePropType, Text } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, ImageSourcePropType, Text, Image } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,14 +11,12 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { CharacterNode } from './CharacterNode';
-import type { Character, Language, Manifest, LifePhase } from '../core/types';
-import { journeyMaps } from './journeyMaps';
+import type { Character, Language, Manifest, PurchasedAsset, GameEvent } from '../core/types';
+import { getJourneyMapImage } from './journeyMapLogic';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-const PANEL_WIDTH = screenWidth * 0.9;
-const PANEL_HEIGHT = screenHeight * 0.4;
-const MAP_WIDTH = PANEL_WIDTH * 3;
+const MAP_WIDTH = 2942;
+const PANEL_HEIGHT = 400;
+const PANEL_WIDTH = MAP_WIDTH / 3;
 
 // --- MAIN ANIMATION COMPONENT ---
 
@@ -28,6 +26,8 @@ interface JourneyAnimationProps {
   images: Record<string, ImageSourcePropType>;
   lang: Language;
   manifest: Manifest;
+  purchasedAssets: Record<string, PurchasedAsset>;
+  event: GameEvent | null;
 }
 
 export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({ 
@@ -36,16 +36,21 @@ export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({
     images, 
     lang, 
     manifest, 
+    purchasedAssets,
+    event,
 }) => {
-  const mapTranslateX = useSharedValue(PANEL_WIDTH);
+  const mapTranslateX = useSharedValue(0);
   const nodeTranslateY = useSharedValue(0);
   const nodeScale = useSharedValue(1);
   const nodeOpacity = useSharedValue(1);
 
-  const mapBackground = journeyMaps[character.phase] || '#d3d3d3';
+  const onAnimationCompleteRef = useRef(onAnimationComplete);
+  onAnimationCompleteRef.current = onAnimationComplete;
+
+  const mapBackground = getJourneyMapImage(character, purchasedAssets, event);
 
   useEffect(() => {
-    mapTranslateX.value = withTiming(-MAP_WIDTH, {
+    mapTranslateX.value = withTiming(PANEL_WIDTH - MAP_WIDTH, {
       duration: 2000,
       easing: Easing.linear,
     });
@@ -64,11 +69,11 @@ export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({
     nodeScale.value = withDelay(1600, withTiming(0, { duration: 400, easing: Easing.in(Easing.quad) }));
     nodeOpacity.value = withDelay(1600, withTiming(0, { duration: 400, easing: Easing.in(Easing.quad) }, (finished) => {
         if (finished) {
-          runOnJS(onAnimationComplete)();
+          runOnJS(onAnimationCompleteRef.current)();
         }
     }));
 
-  }, []);
+  }, [mapTranslateX, nodeOpacity, nodeScale, nodeTranslateY]);
 
   const mapAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: mapTranslateX.value }],
@@ -82,22 +87,17 @@ export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({
     opacity: nodeOpacity.value,
   }));
 
+  const isMapImage = typeof mapBackground !== 'string';
+
   return (
     <View style={styles.overlayContainer} pointerEvents="none">
-      <View style={[styles.comicPanel, { backgroundColor: mapBackground }]}>
-        {/* 
-          WHEN YOU HAVE REAL MAPS, REPLACE THE CONTENT OF THIS VIEW 
-          WITH YOUR <Image /> COMPONENT. FOR EXAMPLE:
-          <Animated.View style={[styles.mapContainer, mapAnimatedStyle]}>
-            <Image source={journeyMaps[character.phase]} style={{ width: MAP_WIDTH, height: PANEL_HEIGHT }} />
-          </Animated.View>
-        */}
+      <View style={[styles.comicPanel, { backgroundColor: isMapImage ? '#fff' : mapBackground }]}>
         <Animated.View style={[styles.mapContainer, mapAnimatedStyle]}>
-            <Text style={styles.mapLabel}>{character.phase.toUpperCase()}</Text>
-            <View style={[styles.building, { left: 100, height: 100, backgroundColor: 'rgba(0,0,0,0.1)' }]} />
-            <View style={[styles.building, { left: 300, height: 150, backgroundColor: 'rgba(0,0,0,0.15)' }]} />
-            <View style={[styles.building, { left: 600, height: 120, backgroundColor: 'rgba(0,0,0,0.1)' }]} />
-            <View style={[styles.building, { left: 900, height: 200, backgroundColor: 'rgba(0,0,0,0.15)' }]} />
+            {isMapImage ? (
+              <Image source={mapBackground} style={{ width: MAP_WIDTH, height: PANEL_HEIGHT }} resizeMode="cover" />
+            ) : (
+              <Text style={styles.mapLabel}>{character.phase.toUpperCase()}</Text>
+            )}
         </Animated.View>
 
         <Animated.View style={[styles.nodeContainer, nodeAnimatedStyle]}>

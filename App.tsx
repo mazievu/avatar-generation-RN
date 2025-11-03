@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, AppState, AppStateStatus, Image, ImageSourcePropType } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createGameLogicHandlers } from './core/game';
 import { GameState, Character, Language, Manifest } from './core/types';
 import { GAME_SPEED_MS, ASSET_DEFINITIONS, UNLOCKABLE_FEATURES } from './core/constants';
@@ -14,9 +15,12 @@ import { reinitializeAllGameData } from './core/gameData';
 import LoadingScreen from './components/LoadingScreen';
 import { startBackgroundBaking } from './services/BackgroundBaker';
 
+const SAVE_KEY = 'generations_savegame';
+
 export default function App() {
     const [gameState, setGameState] = useState<GameState | null>(null);
-    const [view, setView] = useState<'menu' | 'playing' | 'gameover' | 'welcome_back' | 'loading'>('menu');
+    const [view, setView] = useState<'menu' | 'playing' | 'gameover' | 'loading'>('menu');
+    const [hasSavedGame, setHasSavedGame] = useState(false);
     const [isPaused, setIsPaused] = useState(true);
     const [showInstructions, setShowInstructions] = useState(false);
     const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
@@ -31,6 +35,19 @@ export default function App() {
     const wasPlayingRef = useRef(false);
 
     useEffect(() => {
+        const checkSavedGame = async () => {
+            try {
+                const savedGame = await AsyncStorage.getItem(SAVE_KEY);
+                setHasSavedGame(savedGame !== null);
+            } catch (e) {
+                console.error("Failed to check for saved game.", e);
+                setHasSavedGame(false);
+            }
+        };
+        checkSavedGame();
+    }, []);
+
+    useEffect(() => {
         reinitializeAllGameData(lang);
     }, [lang]);
 
@@ -38,7 +55,7 @@ export default function App() {
         const subscription = AppState.addEventListener('change', nextAppState => {
             if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
                 if (view === 'playing') {
-                    setView('welcome_back');
+                    setView('menu');
                     setIsPaused(true);
                 }
             }
@@ -90,6 +107,7 @@ export default function App() {
     useEffect(() => {
         if (gameState) {
             gameLogic.saveGame(gameState);
+            setHasSavedGame(true);
         }
     }, [gameState, gameLogic]);
 
@@ -104,11 +122,13 @@ export default function App() {
 
     const handleContinueGame = () => {
         gameLogic.handleContinueGame();
+        setHasSavedGame(true);
     };
 
     const handleStartNewGame = () => {
         gameLogic.handleStartNewGame();
         setView('menu');
+        setHasSavedGame(false);
     };
 
     const handleQuitGame = () => {
@@ -186,6 +206,7 @@ export default function App() {
                     selectedCharacter={selectedCharacter}
                     lang={lang}
                     avatarImages={avatarImages}
+                    hasSavedGame={hasSavedGame}
                     onSetLang={handleSetLang}
                     onStartGame={handleStartGame}
                     onShowInstructions={() => setShowInstructions(true)}

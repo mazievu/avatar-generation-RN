@@ -8,7 +8,6 @@ import { GameLog } from './GameLog';
 import { SummaryScreen } from './SummaryScreen';
 import { StartMenu } from './StartMenu';
 import { InstructionsModal } from './InstructionsModal';
-import { WelcomeBackMenu } from './WelcomeBackMenu';
 import { StoryChoiceModal } from './StoryChoiceModal';
 import { t } from '../core/localization';
 import { exampleManifest } from '../core/types';
@@ -66,7 +65,7 @@ const BottomNav: React.FC<{
 
 
 interface GameUIProps {
-    view: 'menu' | 'playing' | 'gameover' | 'welcome_back' | 'loading';
+    view: 'menu' | 'playing' | 'gameover' | 'loading';
     gameState: GameState | null;
     isPaused: boolean;
     gameSpeed: number;
@@ -74,6 +73,7 @@ interface GameUIProps {
     selectedCharacter: Character | null;
     lang: Language;
     avatarImages: Record<string, ImageSourcePropType>;
+    hasSavedGame: boolean;
     onSetLang: (lang: Language) => void;
     onStartGame: (mode: string) => void;
     onShowInstructions: () => void;
@@ -122,6 +122,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
     selectedCharacter,
     lang,
     avatarImages,
+    hasSavedGame,
     onSetLang,
     onStartGame,
     onShowInstructions,
@@ -213,14 +214,17 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
         onSetIsPaused(scene !== 'tree');
     };
 
-    if (view === 'welcome_back') {
-        return <WelcomeBackMenu onContinue={onContinueGame} onStartNew={onStartNewGame} lang={lang} />;
-    }
-
     if (view === 'menu') {
         return (
             <>
-                <StartMenu onStart={() => onStartGame('classic')} onShowInstructions={onShowInstructions} lang={lang} onSetLang={onSetLang} />
+                <StartMenu 
+                    hasSavedGame={hasSavedGame}
+                    onContinue={onContinueGame}
+                    onStartNew={onStartNewGame}
+                    onShowInstructions={onShowInstructions} 
+                    lang={lang} 
+                    onSetLang={onSetLang} 
+                />
                 {showInstructions && <InstructionsModal onClose={onCloseInstructions} lang={lang} />}
             </>
         );
@@ -247,6 +251,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
                                 selectedCharacter={selectedCharacter}
                                 characterIdToCenterOnEvent={characterIdToCenterOnEvent}
                                 onCharacterCenteredOnEvent={onCharacterCenteredOnEvent}
+                                purchasedAssets={gameState.purchasedAssets}
                             />
                         </View>
                         <TextInput
@@ -589,7 +594,7 @@ const gameUIStyles = StyleSheet.create({
         backgroundColor: colors.primary,
         borderRadius: 8,
         paddingHorizontal: 12,
-        paddingVertical: 8,
+        paddingVertical: 18,
         position: 'absolute',
         right: 16,
         top: 40, // Adjusted position

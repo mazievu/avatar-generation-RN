@@ -52,7 +52,7 @@ const ONE_TIME_EVENT_IDS = [
 ];
 
 // This function will encapsulate all game logic handlers
-export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'welcome_back'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: Manifest) => {
+export const createGameLogicHandlers = (setGameState: React.Dispatch<React.SetStateAction<GameState | null>>, language: Language, timerRef: React.MutableRefObject<NodeJS.Timeout | null>, setView: React.Dispatch<React.SetStateAction<'menu' | 'playing' | 'gameover' | 'loading'>>, setIsPaused: React.Dispatch<React.SetStateAction<boolean>>, setLanguage: React.Dispatch<React.SetStateAction<Language>>, exampleManifest: Manifest) => {
 
     let eventCounter = 0; // Initialize event counter for interstitial ads
     let eventScheduler: EventScheduler | null = null;

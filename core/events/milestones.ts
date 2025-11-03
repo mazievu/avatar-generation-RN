@@ -205,12 +205,12 @@ export const milestone_death_old_age: EventDraft = {
 
 export const milestone_phase_change: EventDraft = {
     id: 'milestone_phase_change',
-    titleKey: 'milestone_phase_change_title',
-    descriptionKey: 'milestone_phase_change_desc',
+    titleKey: 'event_new_phase_title',
+    descriptionKey: 'event_new_phase_desc',
     phases: Object.values(LifePhase),
     isMilestone: true,
     choices: [
-        { textKey: 'ok', effect: { logKey: 'log_milestone_phase_change' } }
+        { textKey: 'ok', effect: { logKey: 'log_new_phase' } }
     ]
 };
 

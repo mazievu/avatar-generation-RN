@@ -1,104 +1,127 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
-
+import { View, Text, StyleSheet, TouchableOpacity, Linking, ImageBackground, Image } from 'react-native';
 
 import type { Language } from '../core/types';
 import { t } from '../core/localization';
 
-
-
+const bgImage = require('../assets/start_scence.png');
+const playButtonImage = require('../assets/play_button.png');
+// Using play_button for continue as well, can be changed later.
+const continueButtonImage = require('../assets/play_button.png'); 
+const instructionsButtonImage = require('../assets/instructionsButtonImage.png');
+const youtubeButtonImage = require('../assets/youtubeButtonImage.png');
 
 interface LocalizedProps {
   lang: Language;
 }
 
 interface StartMenuProps extends LocalizedProps {
-  onStart: () => void;
+  hasSavedGame: boolean;
+  onStartNew: () => void;
+  onContinue: () => void;
   onShowInstructions: () => void;
-  onSetLang: (lang: Language) => void; // New prop
+  onSetLang: (lang: Language) => void;
 }
 
-export const StartMenu: React.FC<StartMenuProps> = ({ onStart, onShowInstructions, lang, onSetLang }) => (
-    <View style={startMenuStyles.startMenuContainer}>
-        
-        <Text style={startMenuStyles.gameSubtitle}>{t('game_subtitle', lang)}</Text>
+export const StartMenu: React.FC<StartMenuProps> = ({
+  hasSavedGame,
+  onStartNew,
+  onContinue,
+  onShowInstructions,
+  lang,
+  onSetLang,
+}) => {
+  const isReturningPlayer = hasSavedGame;
+  const playAction = isReturningPlayer ? onContinue : onStartNew;
+  const buttonImage = isReturningPlayer ? continueButtonImage : playButtonImage;
+  // We can also add text over the button if needed, e.g., "Continue"
+  // For now, just the action and potentially the image will change.
+
+  return (
+    <ImageBackground source={bgImage} style={startMenuStyles.startMenuContainer} resizeMode="cover">
+      <TouchableOpacity
+        onPress={playAction}
+        style={startMenuStyles.playButton}
+      >
+        <Image source={buttonImage} style={startMenuStyles.buttonImage} resizeMode="contain" />
+        {isReturningPlayer && (
+            <Text style={startMenuStyles.continueText}>{t('continue_game_button', lang)}</Text>
+        )}
+      </TouchableOpacity>
+
+      <View style={startMenuStyles.bottomButtonsContainer}>
         <TouchableOpacity
-            onPress={onStart}
-            style={startMenuStyles.startButton}
+          onPress={onShowInstructions}
+          style={startMenuStyles.bottomButton}
         >
-            <Text style={startMenuStyles.startButtonText}>
-                {t('start_new_game_button', lang)}
-            </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            onPress={onShowInstructions}
-            style={startMenuStyles.howToPlayButton}
-        >
-            <Text style={startMenuStyles.howToPlayButtonText}>
-                {t('how_to_play_button', lang)}
-            </Text>
+          <Image source={instructionsButtonImage} style={startMenuStyles.buttonImage} resizeMode="contain" />
         </TouchableOpacity>
 
         <TouchableOpacity
-            onPress={() => Linking.openURL('https://www.youtube.com/@Milamioavatar')}
-            style={startMenuStyles.youtubeButton}
+          onPress={() => Linking.openURL('https://www.youtube.com/@Milamioavatar')}
+          style={startMenuStyles.bottomButton}
         >
-            <Text style={startMenuStyles.youtubeButtonText}>
-                YouTube Channel
-            </Text>
+          <Image source={youtubeButtonImage} style={startMenuStyles.buttonImage} resizeMode="contain" />
         </TouchableOpacity>
+      </View>
 
-        
-    {/* Language Selection */}
-        <View style={startMenuStyles.languageButtonsContainer}>
-            <TouchableOpacity
-                onPress={() => onSetLang('en')}
-                style={[startMenuStyles.languageButton, lang === 'en' && startMenuStyles.languageButtonActive]}
-            >
-                <Text style={[startMenuStyles.languageButtonText, lang === 'en' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>
-                    EN
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={() => onSetLang('vi')}
-                style={[startMenuStyles.languageButton, lang === 'vi' && startMenuStyles.languageButtonActive]}
-            >
-                <Text style={[startMenuStyles.languageButtonText, lang === 'vi' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>
-                    VI
-                </Text>
-            </TouchableOpacity>
-        </View>
-    </View>
-);
+      {/* Language Selection */}
+      <View style={startMenuStyles.languageButtonsContainer}>
+        <TouchableOpacity
+          onPress={() => onSetLang('en')}
+          style={[startMenuStyles.languageButton, lang === 'en' && startMenuStyles.languageButtonActive]}
+        >
+          <Text style={[startMenuStyles.languageButtonText, lang === 'en' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>
+            EN
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => onSetLang('vi')}
+          style={[startMenuStyles.languageButton, lang === 'vi' && startMenuStyles.languageButtonActive]}
+        >
+          <Text style={[startMenuStyles.languageButtonText, lang === 'vi' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>
+            VI
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
+  );
+};
 
 const startMenuStyles = StyleSheet.create({
-    gameSubtitle: {
-        color: '#4b5563', // slate-600
-        fontSize: 18,
-        marginBottom: 32,
-    },
-    howToPlayButton: {
-        backgroundColor: '#60a5fa', // blue-400
-        borderRadius: 8,
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        marginBottom: 16,
-    },
-    howToPlayButtonText: {
+    continueText: {
+        position: 'absolute',
+        bottom: -30, // Adjust as needed
+        alignSelf: 'center',
         color: 'white',
-        fontSize: 16,
+        fontSize: 24,
         fontWeight: 'bold',
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: { width: -1, height: 1 },
+        textShadowRadius: 10
     },
-    youtubeButton: {
-        backgroundColor: '#ff0000', // YouTube Red
-        borderRadius: 8,
-        paddingHorizontal: 24,
-        paddingVertical: 12,
+    playButton: {
+        position: 'absolute',
+        top: '60%',
+        alignSelf: 'center',
+        width: 150,
+        height: 150,
     },
-    youtubeButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
+    bottomButtonsContainer: {
+        position: 'absolute',
+        bottom: 50,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '80%',
+        alignSelf: 'center',
+    },
+    bottomButton: {
+        width: 80,
+        height: 80,
+    },
+    buttonImage: {
+        width: '100%',
+        height: '100%',
     },
     languageButton: {
         borderRadius: 6,
@@ -119,28 +142,17 @@ const startMenuStyles = StyleSheet.create({
         color: '#4b5563', // slate-600
     },
     languageButtonsContainer: {
+        position: 'absolute',
+        bottom: 150,
+        alignSelf: 'center',
         backgroundColor: '#f1f5f9', // slate-100
         borderRadius: 8,
         flexDirection: 'row',
-        marginTop: 24,
         padding: 4,
     },
-    startButton: {
-        backgroundColor: '#2563eb', // blue-700
-        borderRadius: 8,
-        marginBottom: 16,
-        paddingHorizontal: 32,
-        paddingVertical: 16,
-    },
-    startButtonText: {
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
     startMenuContainer: {
-        alignItems: 'center',
         flex: 1,
-        justifyContent: 'center',
         padding: 16,
+        alignItems: 'center',
     },
 });

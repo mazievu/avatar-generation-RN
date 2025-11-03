@@ -1,7 +1,7 @@
 export default {
     // UI
     game_title: 'Generations',
-    game_subtitle: 'A Life Simulation VN',
+  
     family_fund_label: 'Family Fund',
     family_log_title: 'Family Log',
     year_label: 'Year',

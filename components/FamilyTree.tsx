@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { CharacterNode } from './CharacterNode';
-import type { Character, GameState, Language, Manifest } from '../core/types';
+import type { Character, GameState, Language, Manifest, PurchasedAsset } from '../core/types';
 import IncomeAnimation from './IncomeAnimation';
 import { JourneyAnimation } from './JourneyAnimation';
 
@@ -40,6 +40,7 @@ interface FamilyTreeProps {
   selectedCharacter: Character | null;
   characterIdToCenterOnEvent: string | null;
   onCharacterCenteredOnEvent: () => void;
+  purchasedAssets: Record<string, PurchasedAsset>;
 }
 
 // --- 2. HELPER CONSTANTS ---
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
 });
 
 // --- 4. MAIN FAMILY TREE COMPONENT ---
-export const FamilyTree: React.FC<FamilyTreeProps> = React.memo(({ familyMembers, activeEvent, currentDate, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent }) => {
+export const FamilyTree: React.FC<FamilyTreeProps> = React.memo(({ familyMembers, activeEvent, currentDate, lang, manifest, images, onSelectCharacter, selectedCharacter, characterIdToCenterOnEvent, onCharacterCenteredOnEvent, purchasedAssets }) => {
   const hasCenteredInitially = useRef(false);
 
   // Animated values
@@ -465,6 +466,8 @@ export const FamilyTree: React.FC<FamilyTreeProps> = React.memo(({ familyMembers
                 images={images}
                 lang={lang}
                 manifest={manifest}
+                purchasedAssets={purchasedAssets}
+                event={activeEvent ? activeEvent.event : null}
             />
         )}
       </Animated.View>

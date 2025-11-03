@@ -1,7 +1,7 @@
 export default {
     // UI
     game_title: 'Các Thế Hệ',
-    game_subtitle: 'Một Tiểu Thuyết Trực Quan Về Cuộc Sống',
+  
     family_fund_label: 'Ngân quỹ gia đình',
     family_log_title: 'Nhật ký gia đình',
     year_label: 'Năm',

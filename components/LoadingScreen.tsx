@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Platform, ImageSourcePropType } from "react-native";
+import { View, Text, Platform, ImageSourcePropType, ImageBackground, StyleSheet } from "react-native";
 import { preheatVariants, BakeTask } from "../services/AvatarPreheater";
 import { hexFromColorName } from "../utils/colors";
 import { Manifest, Character } from "../core/types";
+
+const bgImage = require('../assets/loading_scence.png');
 
 // KHỚP QUY ƯỚC TÊN BIẾN THỂ
 function createVariantSrc(baseSrc: string, variant: string) {
@@ -103,11 +105,37 @@ export default function LoadingScreen({
   }, [manifest, characters, images, onReady]);
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Preparing avatar colors… {Math.round(progress * 100)}%</Text>
-      <View style={{ width: 240, height: 6, backgroundColor: "#e5e7eb", borderRadius: 3, marginTop: 8 }}>
-        <View style={{ width: `${progress * 100}%`, height: 6, backgroundColor: "#3b82f6", borderRadius: 3 }} />
+    <ImageBackground source={bgImage} style={styles.container} resizeMode="cover">
+      <View style={styles.progressContainer}>
+        <Text style={styles.progressText}>Preparing avatar colors… {Math.round(progress * 100)}%</Text>
+        <View style={styles.progressBar}>
+          <View style={{ width: `${progress * 100}%`, height: 12, backgroundColor: "#3b82f6", borderRadius: 6 }} />
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  progressContainer: {
+    width: '80%',
+    marginBottom: 50,
+    alignItems: 'center',
+  },
+  progressText: {
+    color: 'white',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  progressBar: {
+    width: '100%',
+    height: 12,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 6,
+  },
+});

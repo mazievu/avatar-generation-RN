@@ -260,7 +260,7 @@ export const imageAssets: Record<string, any> = {
   '../assets/avatar-face/mouth/8.png': require('../assets/avatar-face/mouth/8.png'),
   '../assets/avatar-face/mouth/9.png': require('../assets/avatar-face/mouth/9.png'),
   '../assets/bubble.png': require('../assets/bubble.png'),
-  '../assets/business-map.png': require('../assets/business-map.png'),
+  '../assets/business-map.webp': require('../assets/business-map.webp'),
   '../assets/chest.png': require('../assets/chest.png'),
   '../assets/claim_button.png': require('../assets/claim_button.png'),
   '../assets/daisy.png': require('../assets/daisy.png'),
