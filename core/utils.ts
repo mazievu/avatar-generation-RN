@@ -67,18 +67,16 @@ export function generateRandomAvatar(manifest: Manifest, age: number, gender: Ge
       next[layer.key] = picked ?? null;
     }
 
-    // Assign random colors individually
+        // Assign a unified random color
     const safeColorPalette = AVATAR_COLOR_PALETTE.filter(c => c.name !== 'White');
-    const hairColor = pickRandom(rng, safeColorPalette)?.name || 'Natural Gray';
-    if (next.backHair) next.backHairColor = hairColor;
-    if (next.frontHair) next.frontHairColor = hairColor;
+    const unifiedColor = pickRandom(rng, safeColorPalette)?.name || 'Natural Gray';
 
-    if (next.eyebrows) {
-        next.eyebrowsColor = pickRandom(rng, safeColorPalette)?.name || 'Natural Gray';
-    }
-    if (next.beard) {
-        next.beardColor = pickRandom(rng, safeColorPalette)?.name || 'Natural Gray';
-    }
+    if (next.backHair) next.backHairColor = unifiedColor;
+    if (next.frontHair) next.frontHairColor = unifiedColor;
+    if (next.eyebrows) next.eyebrowsColor = unifiedColor;
+    if (next.beard) next.beardColor = unifiedColor;
+    if (next.eyes) next.eyesColor = unifiedColor;
+    next.mouthColor = undefined; // Ensure mouth color is not set
 
     return next;
 }

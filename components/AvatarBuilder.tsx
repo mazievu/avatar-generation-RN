@@ -134,31 +134,28 @@ export default function AvatarBuilder({
       }
       next[layer.key] = finalPick ?? null;
     }
-    const hairColor = pickRandom(rng, AVATAR_COLOR_PALETTE)?.name || 'Natural Gray';
-    const eyeColor = pickRandom(rng, AVATAR_COLOR_PALETTE)?.name || 'Black'; // Default eye color
-    const mouthColor = pickRandom(rng, AVATAR_COLOR_PALETTE)?.name || 'Red'; // Default mouth color
+        const unifiedColor = pickRandom(rng, AVATAR_COLOR_PALETTE)?.name || 'Natural Gray';
 
-    if(next.backHair) next.backHairColor = hairColor;
-    if(next.frontHair) next.frontHairColor = hairColor;
-    if(next.eyebrows) next.eyebrowsColor = hairColor;
-    if(next.beard) next.beardColor = hairColor;
+    if(next.backHair) next.backHairColor = unifiedColor;
+    if(next.frontHair) next.frontHairColor = unifiedColor;
+    if(next.eyebrows) next.eyebrowsColor = unifiedColor;
+    if(next.beard) next.beardColor = unifiedColor;
     else next.beardColor = undefined;
 
-    if(next.eyes) next.eyesColor = eyeColor;
-    if(next.mouth) next.mouthColor = mouthColor;
+    if(next.eyes) next.eyesColor = unifiedColor;
+    next.mouthColor = undefined;
 
     setState(next);
   }
 
   const renderLayerOptions = (layer: (typeof manifest)[0]) => {
     const options = getAgeAppropriateOptions(layer, characterAgeCategory);
-    const isColorable = ['frontHair', 'backHair', 'eyebrows', 'beard', 'eyes', 'mouth'].includes(layer.key);
+        const isColorable = ['frontHair', 'backHair', 'eyebrows', 'beard', 'eyes'].includes(layer.key);
     let activeColorName: string | undefined;
     if (layer.key === 'frontHair') activeColorName = state.frontHairColor;
     if (layer.key === 'eyebrows') activeColorName = state.eyebrowsColor;
     if (layer.key === 'beard') activeColorName = state.beardColor;
     if (layer.key === 'eyes') activeColorName = state.eyesColor;
-    if (layer.key === 'mouth') activeColorName = state.mouthColor;
 
     return (
       <View style={avatarBuilderStyles.layerOptionContainer}>
@@ -202,10 +199,10 @@ export default function AvatarBuilder({
                       const isActive = activeColorName === color.name;
                       return (
                           <TouchableOpacity
-                              key={color.name}
+                              key={color.id}
                               style={[
                                   avatarBuilderStyles.colorSwatch,
-                                  { backgroundColor: color.previewBackground },
+                                  { backgroundColor: color.base },
                                   isActive && avatarBuilderStyles.colorSwatchSelected,
                               ]}
                               onPress={() => setColorForLayer(layer.key, color.name)}

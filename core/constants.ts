@@ -1,4 +1,4 @@
-import { LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, CareerTrack, BusinessDefinition, AssetDefinition, AssetType, UnlockableFeature } from './types';
+import { LifePhase, SchoolOption, UniversityMajor, PetType, PetDefinition, CareerTrack, BusinessDefinition, AssetDefinition, AssetType, UnlockableFeature, ColorDefinition } from './types';
 import { ImageSourcePropType } from 'react-native';
 
 // Icon Assets
@@ -185,17 +185,74 @@ export const PET_DATA: Record<PetType, PetDefinition> = {
 
 export const CUSTOM_AVATAR_COST = 10000;
 
-export const AVATAR_COLOR_PALETTE = [
-  { name: 'White', filter: 'grayscale(1) brightness(2.5)', previewBackground: '#ffffff' },
-  { name: 'Natural Gray', filter: 'grayscale(0.8) brightness(1.1) sepia(0.1)', previewBackground: '#808080' },
-  { name: 'Natural Brown', filter: 'sepia(0.5) hue-rotate(-20deg) saturate(1.2)', previewBackground: '#a52a2a' },
-  { name: 'Black', filter: 'brightness(0.2) grayscale(1)', previewBackground: '#000000' },
-  { name: 'Blonde', filter: 'sepia(0.2) saturate(2) brightness(1.2) hue-rotate(-10deg)', previewBackground: '#faf0be' },
-  { name: 'Red', filter: 'sepia(0.6) hue-rotate(-50deg) saturate(3) brightness(0.9)', previewBackground: '#ff0000' },
-  { name: 'Blue', filter: 'sepia(0.5) hue-rotate(180deg) saturate(5) brightness(0.8)', previewBackground: '#0000ff' },
-  { name: 'Green', filter: 'sepia(0.5) hue-rotate(60deg) saturate(3) brightness(0.9)', previewBackground: '#008000' },
-  { name: 'Pink', filter: 'sepia(0.4) hue-rotate(290deg) saturate(5) brightness(1.1)', previewBackground: '#ffc0cb' },
-  { name: 'Purple', filter: 'sepia(0.5) hue-rotate(240deg) saturate(4) brightness(0.9)', previewBackground: '#800080' },
+export const AVATAR_COLOR_PALETTE: ColorDefinition[] = [
+  // === Nhóm màu Tự nhiên (Natural Tones) ===
+  {
+    id: 'natural_black', name: 'Đen mun', category: 'Natural',
+    base: '#2E2E2E', highlight: '#4A4A4A', shadow: '#1C1C1C'
+  },
+  {
+    id: 'natural_chocolate', name: 'Sô-cô-la', category: 'Natural',
+    base: '#5D3A2A', highlight: '#7E5A4D', shadow: '#3C251B'
+  },
+  {
+    id: 'natural_chestnut', name: 'Nâu hạt dẻ', category: 'Natural',
+    base: '#8C5A3A', highlight: '#A97D5B', shadow: '#613E28'
+  },
+  {
+    id: 'natural_blonde', name: 'Vàng hoe', category: 'Natural',
+    base: '#FFD700', highlight: '#FFFACD', shadow: '#D4A017'
+  },
+  {
+    id: 'natural_ginger', name: 'Đỏ gừng', category: 'Natural',
+    base: '#CC5500', highlight: '#E57E45', shadow: '#A54500'
+  },
+
+  // === Nhóm màu Rực rỡ (Vibrant Hues) ===
+  {
+    id: 'vibrant_ruby', name: 'Đỏ ruby', category: 'Vibrant',
+    base: '#E0115F', highlight: '#F95A8F', shadow: '#9F003A'
+  },
+  {
+    id: 'vibrant_sapphire', name: 'Xanh sapphire', category: 'Vibrant',
+    base: '#0F52BA', highlight: '#4A85E1', shadow: '#0A3A85'
+  },
+  {
+    id: 'vibrant_emerald', name: 'Xanh lục bảo', category: 'Vibrant',
+    base: '#50C878', highlight: '#83E1A6', shadow: '#2E8B57'
+  },
+  {
+    id: 'vibrant_amethyst', name: 'Tím thạch anh', category: 'Vibrant',
+    base: '#9966CC', highlight: '#B690DE', shadow: '#7649A3'
+  },
+
+  // === Nhóm màu Pastel (Pastel Shades) ===
+  {
+    id: 'pastel_rose', name: 'Hồng phấn', category: 'Pastel',
+    base: '#F4C4C4', highlight: '#FDE1E1', shadow: '#D0A0A0'
+  },
+  {
+    id: 'pastel_mint', name: 'Xanh bạc hà', category: 'Pastel',
+    base: '#A4E8C3', highlight: '#D1F5E0', shadow: '#83B59A'
+  },
+  {
+    id: 'pastel_sky', name: 'Xanh da trời', category: 'Pastel',
+    base: '#A7D7F9', highlight: '#D4EAFB', shadow: '#85A9C2'
+  },
+  {
+    id: 'pastel_lavender', name: 'Tím oải hương', category: 'Pastel',
+    base: '#D6B4F8', highlight: '#EAD7FD', shadow: '#A98DC2'
+  },
+
+  // === Nhóm màu Thang độ xám (Grayscale) ===
+  {
+    id: 'gray_silver', name: 'Bạch kim', category: 'Grayscale',
+    base: '#C0C0C0', highlight: '#E5E5E5', shadow: '#A9A9A9'
+  },
+  {
+    id: 'gray_white', name: 'Trắng tuyết', category: 'Grayscale',
+    base: '#FFFFFF', highlight: '#FFFFFF', shadow: '#E0E0E0'
+  },
 ];
 
 // ==============================

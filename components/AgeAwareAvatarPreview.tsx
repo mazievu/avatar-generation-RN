@@ -1,12 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Image, StyleSheet, View, ImageSourcePropType, ViewStyle } from 'react-native';
 
-
-import type { Manifest, LayerKey, Character } from '../core/types';
-
+import type { Manifest, LayerKey, Character, ColorDefinition, LayerDefinition } from '../core/types';
+import { getOrBakeVariantFromModule } from '../services/ColorBaker.expo';
+import { AVATAR_COLOR_PALETTE } from '../core/constants';
 
 type AgeStage = 'baby' | 'child' | 'teen' | 'adult' | 'elder';
-
 
 function ageStageFromAge(age: number): AgeStage {
   if (age <= 3) return 'baby';
@@ -24,49 +23,7 @@ function createVariantSrc(baseSrc: string, variant: string): string {
     return `${basePath}__${variant}.${extension}`;
 }
 
-// Function to find the best available variant source URL
-function getVariantSrc(
-    optionId: string | null | undefined,
-    layerKey: LayerKey,
-    stage: AgeStage,
-    colorName: string | undefined, // Added colorName
-    manifest: Manifest,
-    images: Record<string, ImageSourcePropType>
-): { src: ImageSourcePropType | undefined, name: string | undefined } {
-    if (!optionId) return { src: undefined, name: undefined };
-    
-    const layer = manifest.find(l => l.key === layerKey);
-    if (!layer) return { src: undefined, name: undefined };
-    const option = layer.options.find(o => o.id === optionId);
-    if (!option) return { src: undefined, name: undefined };
-
-    const baseSrc = option.previewSrc || option.src;
-    if (!baseSrc) return { src: undefined, name: option.name };
-
-    // 1. Try with both age and color variant (e.g., hair__adult__Blonde.png)
-    if (colorName) {
-        const ageAndColorVariantSrc = createVariantSrc(createVariantSrc(baseSrc, stage), colorName);
-        if (images[ageAndColorVariantSrc]) {
-            return { src: images[ageAndColorVariantSrc], name: option.name };
-        }
-        // 2. Try with just color variant (e.g., hair__Blonde.png)
-        const colorVariantSrc = createVariantSrc(baseSrc, colorName);
-        if (images[colorVariantSrc]) {
-            return { src: images[colorVariantSrc], name: option.name };
-        }
-    }
-    // 3. Try with just age variant (e.g., hair__adult.png)
-    const ageVariantSrc = createVariantSrc(baseSrc, stage);
-    if (images[ageVariantSrc]) return { src: images[ageVariantSrc], name: option.name };
-    // 4. Fallback to base source
-    if (images[baseSrc]) {
-        return { src: images[baseSrc], name: option.name };
-    }
-
-    return { src: undefined, name: option.name };
-}
-
-// Placeholder generation logic, adapted from AvatarBuilder
+// Placeholder generation logic
 function hashString(str: string): number {
   let h = 2166136261;
   for (let i = 0; i < str.length; i++) {
@@ -101,13 +58,88 @@ function makePlaceholderSVG(width: number, height: number, label: string) {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
+const LayerImage: React.FC<{
+    layer: LayerDefinition,
+    optionId: string,
+    stage: AgeStage,
+    colorName?: string,
+    manifest: Manifest,
+    images: Record<string, ImageSourcePropType>,
+    size: { width: number, height: number }
+}> = React.memo(({ layer, optionId, stage, colorName, manifest, images, size }) => {
+    LayerImage.displayName = 'LayerImage';
+    const [source, setSource] = useState<ImageSourcePropType | null>(null);
+    const [placeholder, setPlaceholder] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isActive = true;
+
+        const layerInfo = manifest.find(l => l.key === layer.key);
+        if (!layerInfo) { setSource(null); return; }
+        const option = layerInfo.options.find(o => o.id === optionId);
+        if (!option) { setSource(null); return; }
+        
+        const optionName = option.name;
+        const baseSrc = option.previewSrc || option.src;
+        if (!baseSrc) {
+            if (isActive) {
+                setPlaceholder(`${layer.label}: ${optionName || 'N/A'}`);
+                setSource(null);
+            }
+            return;
+        }
+        
+        const moduleId = images[baseSrc] as number;
+
+        const isColorable = ['frontHair', 'backHair', 'eyebrows', 'beard', 'eyes', 'mouth'].includes(layer.key);
+
+        if (colorName && moduleId && isColorable) {
+            const colorDef = (AVATAR_COLOR_PALETTE as ColorDefinition[]).find(c => c.name === colorName);
+            if (colorDef) {
+                getOrBakeVariantFromModule(moduleId, colorDef.base)
+                    .then(uri => {
+                        if (isActive) setSource({ uri });
+                    })
+                    .catch(err => {
+                        console.error(`Failed to bake color for ${layer.key}:`, err);
+                        if (isActive) setSource(moduleId); // Fallback to uncolored
+                    });
+            } else {
+                if (isActive) setSource(moduleId); // Color not in palette, use uncolored
+            }
+        } else {
+            const ageVariantSrc = createVariantSrc(baseSrc, stage);
+            if (images[ageVariantSrc]) {
+                if (isActive) setSource(images[ageVariantSrc]);
+            } else {
+                if (isActive) setSource(moduleId);
+            }
+        }
+        
+        if (isActive) setPlaceholder(null);
+
+        return () => { isActive = false; };
+    }, [layer, optionId, stage, colorName, manifest, images]);
+
+    if (placeholder) {
+        const placeholderUri = makePlaceholderSVG(size.width, size.height, placeholder);
+        return <Image source={{ uri: placeholderUri }} style={ageAwareAvatarPreviewStyles.layerImage} />;
+    }
+
+    if (!source) {
+        return null; // Loading
+    }
+
+    return <Image source={source} style={ageAwareAvatarPreviewStyles.layerImage} />;
+});
+
 
 interface Props {
   manifest: Manifest;
   images: Record<string, ImageSourcePropType>;
   character: Character;
   size: { width: number; height: number };
-  style?: ViewStyle; // Added
+  style?: ViewStyle;
 }
 
 export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, images, character, size, style }) => {
@@ -118,7 +150,6 @@ export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, i
         return null; 
     }
 
-    // Handle static avatars for specific characters (e.g., Mila's family)
     if (character.staticAvatarUrl) {
         return (
             <View
@@ -130,9 +161,7 @@ export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, i
             >
                 <Image
                     source={character.staticAvatarUrl}
-                    // alt={character.name} is not a prop in RN Image
                     style={ageAwareAvatarPreviewStyles.staticImage}
-                    // draggable={false} is not a prop in RN Image
                 />
             </View>
         );
@@ -141,7 +170,6 @@ export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, i
   const { age, avatarState: state } = character;
   const stage = ageStageFromAge(age);
   
-
   return (
       <View
         style={[
@@ -156,27 +184,17 @@ export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, i
             if (optionId === null) return null;
 
             const colorName = state[`${layer.key}Color` as keyof typeof state] as string | undefined;
-            const { src: displaySrc, name: optionName } = getVariantSrc(optionId, layer.key, stage, colorName, manifest, images);
-
-            // BƯỚC 1: XÓA DÒNG `if` GÂY LỖI BÊN DƯỚI
-            // if (!displaySrc) return null; 
-
-            // BƯỚC 2: SỬA LẠI LOGIC TÍNH `finalSrc` ĐỂ LUÔN TẠO RA SOURCE HỢP LỆ
-            const finalSrc = displaySrc 
-                ? displaySrc 
-                : { uri: makePlaceholderSVG(size.width, size.height, `${layer.label}: ${optionName || 'N/A'}`) };
-            
-            // Image filters are not directly supported in React Native Image component.
-            // Consider using a third-party library for image manipulation if complex filters are needed.
-            // For now, the filter property is removed.
 
             return (
-              <Image
+              <LayerImage
                 key={`${layer.key}-${optionId}`}
-                source={finalSrc}
-                // alt={layer.label} is not a prop in RN Image
-                style={ageAwareAvatarPreviewStyles.layerImage}
-                // draggable={false} is not a prop in RN Image
+                layer={layer}
+                optionId={optionId as string}
+                stage={stage}
+                colorName={colorName}
+                manifest={manifest}
+                images={images}
+                size={size}
               />
             );
         })}
@@ -186,9 +204,9 @@ export const AgeAwareAvatarPreview: React.FC<Props> = React.memo((({ manifest, i
 
 const ageAwareAvatarPreviewStyles = StyleSheet.create({
     container: {
-        backgroundColor: '#e2e8f0', // bg-slate-200
-        borderRadius: 16, // rounded-2xl (assuming 2xl is 16px radius)
-        elevation: 3, // shadow-md
+        backgroundColor: '#e2e8f0',
+        borderRadius: 16,
+        elevation: 3,
         overflow: 'hidden',
         position: 'relative',
         shadowColor: '#000',
@@ -202,8 +220,7 @@ const ageAwareAvatarPreviewStyles = StyleSheet.create({
         position: 'absolute',
         resizeMode: 'contain',
         top: 0,
-        width: '100%', // object-contain
-        // select-none pointer-events-none are not direct RN styles
+        width: '100%',
     },
     staticImage: {
         height: '100%',
@@ -211,7 +228,6 @@ const ageAwareAvatarPreviewStyles = StyleSheet.create({
         position: 'absolute',
         resizeMode: 'contain',
         top: 0,
-        width: '100%', // object-contain
-        // select-none pointer-events-none are not direct RN styles
+        width: '100%',
     },
 });
