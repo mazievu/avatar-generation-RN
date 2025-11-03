@@ -15,7 +15,7 @@ import type { Character, Language, Manifest, PurchasedAsset, GameEvent } from '.
 import { getJourneyMapImage } from './journeyMapLogic';
 
 const MAP_WIDTH = 2942;
-const PANEL_HEIGHT = 550;
+const PANEL_HEIGHT = 650;
 const PANEL_WIDTH = MAP_WIDTH / 3;
 
 // --- MAIN ANIMATION COMPONENT ---
@@ -73,7 +73,7 @@ export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({
         }
     }));
 
-  }, [mapTranslateX, nodeOpacity, nodeScale, nodeTranslateY]);
+  }, []);
 
   const mapAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: mapTranslateX.value }],

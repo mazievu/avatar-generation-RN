@@ -178,7 +178,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
         if (gameState?.familyName && gameState.familyName !== familyNameInput) {
             setFamilyNameInput(gameState.familyName);
         }
-    }, [gameState?.familyName, familyNameInput]);
+    }, [gameState?.familyName]);
 
 
     const onCharacterCenteredOnEvent = useCallback(() => {
@@ -242,9 +242,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
         gameState?.pendingPromotion,
         gameState?.newlyUnlockedFeature,
         pendingStatBoost,
-        view,
-        isPaused,
-        onSetIsPaused
+        view
     ]);
 
     useEffect(() => {

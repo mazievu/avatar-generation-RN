@@ -1,24 +1,32 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, AppState, AppStateStatus, Image, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, AppState, ImageSourcePropType } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createGameLogicHandlers } from './core/game';
-import { GameState, Character, Language, Manifest } from './core/types';
-import { GAME_SPEED_MS, ASSET_DEFINITIONS, UNLOCKABLE_FEATURES } from './core/constants';
+import type { GameState, Character, Language, Manifest } from './core/types';
+import { ASSET_DEFINITIONS, UNLOCKABLE_FEATURES } from './core/constants';
 import { GameUI } from './components/GameUI';
 import { loadAvatarAssets } from './components/ImageAssets';
 import { exampleManifest } from './core/types';
 import { soundManager } from './services';
-import { SceneName } from './components/GameUI';
+import type { SceneName } from './components/GameUI';
 import { reinitializeAllGameData } from './core/gameData';
 import LoadingScreen from './components/LoadingScreen';
 import { startBackgroundBaking } from './services/BackgroundBaker';
 
 const SAVE_KEY = 'generations_savegame';
 
+// Custom hook để buộc một component phải render lại
+const useForceUpdate = () => {
+    const [, setTick] = useState(0);
+    return useCallback(() => {
+        setTick(tick => tick + 1);
+    }, []);
+};
+
 export default function App() {
-    const [gameState, setGameState] = useState<GameState | null>(null);
+    const gameStateRef = useRef<GameState | null>(null);
     const [view, setView] = useState<'menu' | 'playing' | 'gameover' | 'loading'>('menu');
     const [hasSavedGame, setHasSavedGame] = useState(false);
     const [isPaused, setIsPaused] = useState(true);
@@ -29,10 +37,27 @@ export default function App() {
     const [activeScene, setActiveScene] = useState<SceneName>('tree');
     const [pendingStatBoost, setPendingStatBoost] = useState<{ stat: keyof Character['stats'], amount: number, featureId: string } | null>(null);
     const [charactersToBake, setCharactersToBake] = useState<Character[] | null>(null);
+    const [gameSpeed, setGameSpeed] = useState<number>(1); // 1x, 2x, 4x
 
     const appState = useRef(AppState.currentState);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const gameLoopRef = useRef<number | null>(null);
     const wasPlayingRef = useRef(false);
+    const forceUpdate = useForceUpdate();
+
+    // Các hàm bao bọc để tương tác với game state ref
+    const getGameState = useCallback(() => gameStateRef.current, []);
+    
+    const setGameState = useCallback((updater: GameState | null | ((prevState: GameState | null) => GameState | null)) => {
+        let newState: GameState | null;
+        if (typeof updater === 'function') {
+            const currentState = gameStateRef.current;
+            newState = updater(currentState);
+        } else {
+            newState = updater;
+        }
+        gameStateRef.current = newState;
+        forceUpdate(); // Kích hoạt render lại một cách thủ công
+    }, [forceUpdate]);
 
     useEffect(() => {
         const checkSavedGame = async () => {
@@ -64,14 +89,18 @@ export default function App() {
         return () => subscription.remove();
     }, [view]);
 
-    const [gameSpeed, setGameSpeed] = useState<number>(GAME_SPEED_MS);
-
-    const gameLogic = useMemo(() => 
-        createGameLogicHandlers(setGameState, lang, timerRef, setView, setIsPaused, setLang, exampleManifest),
-        [lang]
+    const gameLogic = useMemo(() =>
+        createGameLogicHandlers(
+            getGameState,
+            setGameState,
+            lang,
+            setView,
+            setIsPaused,
+            setLang,
+            exampleManifest
+        ),
+        [lang, getGameState, setGameState]
     );
-
-    const { gameLoop, stopGameLoop } = gameLogic;
 
     useEffect(() => {
         const loadAssets = async () => {
@@ -82,34 +111,66 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        if (view === 'playing' && !wasPlayingRef.current && gameState) {
+        if (view === 'playing' && !wasPlayingRef.current && gameStateRef.current) {
             wasPlayingRef.current = true;
             setIsPaused(true);
             setView('loading');
-            setCharactersToBake(Object.values(gameState.familyMembers));
+            setCharactersToBake(Object.values(gameStateRef.current.familyMembers));
         } else if (view === 'menu' || view === 'gameover') {
             wasPlayingRef.current = false;
         }
-    }, [view, gameState]);
+    }, [view]);
 
+    // Vòng lặp game mới
     useEffect(() => {
-        if (view === 'playing' && !isPaused && !gameState?.gameOverReason) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            timerRef.current = setInterval(gameLoop, gameSpeed);
-        } else {
-            if (timerRef.current) clearInterval(timerRef.current);
-        }
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
+        let lastTickTime = performance.now();
+
+        const runGameLoop = () => {
+            if (!isPaused && view === 'playing') {
+                const now = performance.now();
+                const delta = now - lastTickTime;
+                
+                const daysPerSecond = 60;
+                const msPerDay = 1000 / daysPerSecond;
+                const timeStep = msPerDay / gameSpeed;
+
+                if (delta >= timeStep) {
+                    gameLogic.gameTick(); // Thay đổi trực tiếp ref
+                    lastTickTime = now - (delta % timeStep);
+                }
+            }
+            gameLoopRef.current = requestAnimationFrame(runGameLoop);
         };
-    }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, stopGameLoop]);
+
+        // Vòng lặp cập nhật UI
+        const uiUpdateInterval = setInterval(() => {
+            if (!isPaused && view === 'playing') {
+                forceUpdate();
+            }
+        }, 1000); // Cập nhật UI mỗi giây
+
+        gameLoopRef.current = requestAnimationFrame(runGameLoop);
+
+        return () => {
+            if (gameLoopRef.current) {
+                cancelAnimationFrame(gameLoopRef.current);
+            }
+            clearInterval(uiUpdateInterval);
+        };
+    }, [isPaused, gameSpeed, view, gameLogic, forceUpdate]);
+
 
     useEffect(() => {
-        if (gameState) {
-            gameLogic.saveGame(gameState);
-            setHasSavedGame(true);
-        }
-    }, [gameState, gameLogic]);
+        const save = () => {
+            if (gameStateRef.current) {
+                gameLogic.saveGame(gameStateRef.current);
+                setHasSavedGame(true);
+            }
+        };
+        // Debounce saving
+        const saveTimer = setTimeout(save, 500);
+        return () => clearTimeout(saveTimer);
+    }, [gameStateRef.current, forceUpdate]); // forceUpdate đảm bảo effect này chạy khi state thay đổi
 
     const handleSetLang = (l: Language) => {
         setLang(l);
@@ -138,14 +199,17 @@ export default function App() {
     };
 
     const handleSetFamilyName = (name: string) => {
-        if (gameState) {
-            setGameState({ ...gameState, familyName: name });
+        const currentState = gameStateRef.current;
+        if (currentState) {
+            gameStateRef.current = { ...currentState, familyName: name };
+            forceUpdate();
         }
     };
 
     const handleAcknowledgeUnlock = () => {
-        if (gameState?.newlyUnlockedFeature) {
-            const feature = UNLOCKABLE_FEATURES.find(f => f.id === gameState.newlyUnlockedFeature);
+        const currentState = gameStateRef.current;
+        if (currentState?.newlyUnlockedFeature) {
+            const feature = UNLOCKABLE_FEATURES.find(f => f.id === currentState.newlyUnlockedFeature);
             if (feature && feature.type === 'mystery_box') {
                 const stats: (keyof Character['stats'])[] = ['iq', 'eq', 'happiness', 'health'];
                 const randomStat = stats[Math.floor(Math.random() * stats.length)];
@@ -159,22 +223,31 @@ export default function App() {
     };
 
     const handleConfirmStatBoost = (characterId: string) => {
-        if (pendingStatBoost && gameState) {
-            const char = gameState.familyMembers[characterId];
+        if (pendingStatBoost && gameStateRef.current) {
+            const char = gameStateRef.current.familyMembers[characterId];
             if (char) {
                 const newStats = { ...char.stats };
                 newStats[pendingStatBoost.stat] = Math.min(100, newStats[pendingStatBoost.stat] + pendingStatBoost.amount);
-                setGameState({
-                    ...gameState,
-                    familyMembers: {
-                        ...gameState.familyMembers,
-                        [characterId]: { ...char, stats: newStats },
-                    },
-                });
+                
+                const newFamilyMembers = {
+                    ...gameStateRef.current.familyMembers,
+                    [characterId]: { ...char, stats: newStats },
+                };
+
+                gameStateRef.current = {
+                    ...gameStateRef.current,
+                    familyMembers: newFamilyMembers,
+                };
+                
                 gameLogic.handleClaimFeature(pendingStatBoost.featureId);
+                forceUpdate();
             }
         }
         setPendingStatBoost(null);
+    };
+    
+    const handleSetGameSpeed = (speed: number) => {
+        setGameSpeed(speed);
     };
 
     if (view === 'loading' && charactersToBake) {
@@ -199,7 +272,7 @@ export default function App() {
                 <StatusBar style="auto" />
                 <GameUI
                     view={view}
-                    gameState={gameState}
+                    gameState={gameStateRef.current}
                     isPaused={isPaused}
                     gameSpeed={gameSpeed}
                     showInstructions={showInstructions}
@@ -213,7 +286,7 @@ export default function App() {
                     onCloseInstructions={() => setShowInstructions(false)}
                     onQuitGame={handleQuitGame}
                     onSetIsPaused={setIsPaused}
-                    onSetGameSpeed={(speed) => setGameSpeed(Number(speed))}
+                    onSetGameSpeed={handleSetGameSpeed}
                     onSetSelectedCharacter={setSelectedCharacter}
                     onOpenAvatarBuilder={() => { /* TODO */ }}
                     onEventChoice={gameLogic.handleEventChoice}
