@@ -2,14 +2,14 @@ import { ImageSourcePropType } from 'react-native';
 import { Character, LifePhase, PurchasedAsset, GameEvent } from '../core/types';
 
 const journeyMapImages = {
-  school2: require('../assets/journeymaps/School_2.png'),
-  school3: require('../assets/journeymaps/School_3.png'),
-  company1: require('../assets/journeymaps/company_1.png'),
-  company2: require('../assets/journeymaps/company_2.png'),
-  company3: require('../assets/journeymaps/company_3.png'),
-  house1: require('../assets/journeymaps/House_1.png'),
-  house2: require('../assets/journeymaps/House_2.png'),
-  house3: require('../assets/journeymaps/House_3.png'),
+  school2: require('../assets/journeymaps/School_2.webp'),
+  school3: require('../assets/journeymaps/School_3.webp'),
+  company1: require('../assets/journeymaps/company_1.webp'),
+  company2: require('../assets/journeymaps/company_2.webp'),
+  company3: require('../assets/journeymaps/company_3.webp'),
+  house1: require('../assets/journeymaps/House_1.webp'),
+  house2: require('../assets/journeymaps/House_2.webp'),
+  house3: require('../assets/journeymaps/House_3.webp'),
 };
 
 export function getJourneyMapImage(

@@ -372,6 +372,7 @@ export default {
     // Game Log Messages
     log_first_generation: '{name} was born, starting the first generation.',
     log_alone_start: '{name} has graduated and started a new life with $50,000.',
+    log_couple_start: '{husbandName} and {wifeName} have graduated and started a new life together with $75,000.',
     log_mila_start: 'You begin your journey with Mila\'s family.',
     log_birthday: '{name} has turned {age} years old.',
     log_new_phase: '{name} is now in the {phase} phase.',
@@ -456,4 +457,12 @@ export default {
     event_customize_avatar_title: "Avatar Customized",
     load_game_error_title: "Load Game Error",
     load_game_error_message: "Could not load saved game. The file may be corrupt or from an older version. The saved data has been deleted.",
+    choose_story_title: "Choose Story",
+    premium_shop_title: "Premium Shop",
+    premium_shop_description: "Support the game development and unlock exclusive features!",
+    premium_item_double_income_title: "Double Income",
+    premium_item_double_income_desc: "Double all in-game income.",
+    premium_item_remove_ads_title: "Remove Ads",
+    premium_item_remove_ads_desc: "Remove all in-game ads.",
+    premium_item_purchased: "Purchased",
 };

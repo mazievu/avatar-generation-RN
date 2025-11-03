@@ -15,7 +15,7 @@ import type { Character, Language, Manifest, PurchasedAsset, GameEvent } from '.
 import { getJourneyMapImage } from './journeyMapLogic';
 
 const MAP_WIDTH = 2942;
-const PANEL_HEIGHT = 400;
+const PANEL_HEIGHT = 550;
 const PANEL_WIDTH = MAP_WIDTH / 3;
 
 // --- MAIN ANIMATION COMPONENT ---
@@ -94,7 +94,7 @@ export const JourneyAnimation: React.FC<JourneyAnimationProps> = ({
       <View style={[styles.comicPanel, { backgroundColor: isMapImage ? '#fff' : mapBackground }]}>
         <Animated.View style={[styles.mapContainer, mapAnimatedStyle]}>
             {isMapImage ? (
-              <Image source={mapBackground} style={{ width: MAP_WIDTH, height: PANEL_HEIGHT }} resizeMode="cover" />
+              <Image source={mapBackground} style={{ width: MAP_WIDTH, height: PANEL_HEIGHT }} resizeMode="contain" />
             ) : (
               <Text style={styles.mapLabel}>{character.phase.toUpperCase()}</Text>
             )}

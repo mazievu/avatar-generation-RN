@@ -102,7 +102,7 @@ export default function App() {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, gameState, stopGameLoop]);
+    }, [isPaused, gameSpeed, view, gameLoop, gameState?.gameOverReason, stopGameLoop]);
 
     useEffect(() => {
         if (gameState) {

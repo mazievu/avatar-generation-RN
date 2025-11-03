@@ -365,6 +365,7 @@ export default {
     // Game Log Messages
     log_first_generation: '{name} đã ra đời, bắt đầu thế hệ đầu tiên.',
     log_alone_start: '{name} đã tốt nghiệp và bắt đầu một cuộc sống mới với 50.000 đô la.',
+    log_couple_start: '{husbandName} và {wifeName} đã tốt nghiệp và bắt đầu một cuộc sống mới cùng nhau với 75.000 đô la.',
     log_mila_start: 'Bạn bắt đầu hành trình của mình với gia đình của Mila.',
     log_birthday: '{name} đã tròn {age} tuổi.',
     log_new_phase: '{name} bây giờ đang trong giai đoạn {phase}.',
@@ -449,4 +450,12 @@ export default {
     event_customize_avatar_title: "Ngoại hình đã được tùy chỉnh",
     load_game_error_title: "Lỗi Tải Game",
     load_game_error_message: "Không thể tải game đã lưu. Tệp có thể bị hỏng hoặc từ phiên bản cũ hơn. Dữ liệu đã lưu đã bị xóa.",
+    choose_story_title: "Chọn câu chuyện",
+    premium_shop_title: "Cửa hàng cao cấp",
+    premium_shop_description: "Hỗ trợ phát triển trò chơi và mở khóa các tính năng độc quyền!",
+    premium_item_double_income_title: "Gấp đôi thu nhập",
+    premium_item_double_income_desc: "Tăng gấp đôi tất cả thu nhập trong game.",
+    premium_item_remove_ads_title: "Xóa quảng cáo",
+    premium_item_remove_ads_desc: "Loại bỏ tất cả quảng cáo trong game.",
+    premium_item_purchased: "Đã mua",
 };

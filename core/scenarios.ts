@@ -5,19 +5,22 @@ import { createInitialCharacter, generateName, generateRandomAvatar, addDays } f
 import { randomUUID } from 'expo-crypto';
 
 const createClassicState = (initialYear: number, lang: Language): GameState => {
-    const gender = Math.random() < 0.5 ? Gender.Male : Gender.Female;
-    const major = UNIVERSITY_MAJORS[Math.floor(Math.random() * UNIVERSITY_MAJORS.length)];
-    const age = 24;
+    const husbandAge = 24;
+    const wifeAge = 24;
     const careerTracks = Object.keys(CAREER_LADDER);
-    const randomCareerTrack = careerTracks[Math.floor(Math.random() * careerTracks.length)];
 
-    const character: Character = {
-        id: randomUUID(),
-        name: generateName(gender, lang),
-        gender,
+    const husbandMajor = UNIVERSITY_MAJORS[Math.floor(Math.random() * UNIVERSITY_MAJORS.length)];
+    const husbandCareerTrack = careerTracks[Math.floor(Math.random() * careerTracks.length)];
+    const husbandId = randomUUID();
+    const wifeId = randomUUID();
+
+    const husband: Character = {
+        id: husbandId,
+        name: generateName(Gender.Male, lang),
+        gender: Gender.Male,
         generation: 0,
-        birthDate: { day: 1, year: initialYear - age },
-        age: age,
+        birthDate: { day: 1, year: initialYear - husbandAge },
+        age: husbandAge,
         isAlive: true,
         deathDate: null,
         stats: {
@@ -28,14 +31,14 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
             skill: 10 + Math.floor(Math.random() * 21),
         },
         phase: LifePhase.PostGraduation,
-        education: `University (${major.nameKey})`,
-        major: major.nameKey,
-        careerTrack: randomCareerTrack,
+        education: `University (${husbandMajor.nameKey})`,
+        major: husbandMajor.nameKey,
+        careerTrack: husbandCareerTrack,
         careerLevel: 0,
-        status: CharacterStatus.Working, // Changed to Working since they have a random career
+        status: CharacterStatus.Working,
         statusEndYear: null,
-        relationshipStatus: RelationshipStatus.Single,
-        partnerId: null,
+        relationshipStatus: RelationshipStatus.Married,
+        partnerId: wifeId,
         childrenIds: [],
         parentsIds: [],
         isPlayerCharacter: true,
@@ -45,7 +48,7 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         petId: null,
         completedOneTimeEvents: [],
         displayAdjective: null,
-        avatarState: generateRandomAvatar(exampleManifest, age, gender),
+        avatarState: generateRandomAvatar(exampleManifest, husbandAge, Gender.Male),
         currentClubs: [],
         completedClubEvents: [],
         lowHappinessYears: 0,
@@ -53,25 +56,73 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         monthsInCurrentJobLevel: 0,
         monthsUnemployed: 0,
     };
+
+    const wifeMajor = UNIVERSITY_MAJORS[Math.floor(Math.random() * UNIVERSITY_MAJORS.length)];
+    const wifeCareerTrack = careerTracks[Math.floor(Math.random() * careerTracks.length)];
+
+    const wife: Character = {
+        id: wifeId,
+        name: generateName(Gender.Female, lang),
+        gender: Gender.Female,
+        generation: 0,
+        birthDate: { day: 1, year: initialYear - wifeAge },
+        age: wifeAge,
+        isAlive: true,
+        deathDate: null,
+        stats: {
+            iq: Math.floor(Math.random() * 101),
+            happiness: Math.floor(Math.random() * 101),
+            eq: Math.floor(Math.random() * 101),
+            health: 30 + Math.floor(Math.random() * 71),
+            skill: 10 + Math.floor(Math.random() * 21),
+        },
+        phase: LifePhase.PostGraduation,
+        education: `University (${wifeMajor.nameKey})`,
+        major: wifeMajor.nameKey,
+        careerTrack: wifeCareerTrack,
+        careerLevel: 0,
+        status: CharacterStatus.Working,
+        statusEndYear: null,
+        relationshipStatus: RelationshipStatus.Married,
+        partnerId: husbandId,
+        childrenIds: [],
+        parentsIds: [],
+        isPlayerCharacter: false,
+        mourningUntilYear: null,
+        monthlyNetIncome: 0,
+        eventsThisYear: 0,
+        petId: null,
+        completedOneTimeEvents: [],
+        displayAdjective: null,
+        avatarState: generateRandomAvatar(exampleManifest, wifeAge, Gender.Female),
+        currentClubs: [],
+        completedClubEvents: [],
+        lowHappinessYears: 0,
+        lowHealthYears: 0,
+        monthsInCurrentJobLevel: 0,
+        monthsUnemployed: 0,
+    };
+
     const initialDate = { day: 1, year: initialYear };
     return {
-        familyMembers: { [character.id]: character },
-        familyFund: 50000,
+        familyMembers: { [husband.id]: husband, [wife.id]: wife },
+        familyFund: 75000,
         purchasedAssets: {},
         familyPets: {},
         familyBusinesses: {},
         currentDate: initialDate,
-        gameLog: [{ year: initialYear, messageKey: 'log_alone_start', replacements: { name: character.name } }],
+        gameLog: [{ year: initialYear, messageKey: 'log_couple_start', replacements: { husbandName: husband.name, wifeName: wife.name } }],
         gameOverReason: null, activeEvent: null, pendingSchoolChoice: null,
         pendingUniversityChoice: null, pendingMajorChoice: null,
         pendingClubChoice: null,
-        pendingCareerChoice: null, // No pending career choice as it's randomized
+        pendingCareerChoice: null,
         pendingLoanChoice: null,
         pendingPromotion: null,
         activeLoans: [],
-        eventQueue: [], highestEducation: character.education,
-        highestCareer: character.careerTrack, // Set highest career to the random career
-        totalMembers: 1,
+        eventQueue: [], 
+        highestEducation: husband.education,
+        highestCareer: husband.careerTrack,
+        totalMembers: 2,
         monthlyNetChange: 0,
         eventCooldownUntil: addDays(initialDate, 30),
         lang: lang,
@@ -81,7 +132,7 @@ const createClassicState = (initialYear: number, lang: Language): GameState => {
         claimedFeatures: [],
         newlyUnlockedFeature: null,
         avatarCustomizationCount: 0,
-        familySizeStatic: 1,
+        familySizeStatic: 2,
         scheduler: null,
     };
 };

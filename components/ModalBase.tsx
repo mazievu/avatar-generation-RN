@@ -6,9 +6,10 @@ interface ModalBaseProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
+  contentContainerStyle?: object; // Add this line
 }
 
-const ModalBase: React.FC<ModalBaseProps> = ({ isVisible, onClose, title, children }) => {
+const ModalBase: React.FC<ModalBaseProps> = ({ isVisible, onClose, title, children, contentContainerStyle }) => {
   return (
     <Modal
       animationType="slide"
@@ -26,7 +27,7 @@ const ModalBase: React.FC<ModalBaseProps> = ({ isVisible, onClose, title, childr
               </TouchableOpacity>
             </View>
           )}
-          <View style={modalBaseStyles.modalBody}>
+          <View style={[modalBaseStyles.modalBody, contentContainerStyle]}> {/* Apply contentContainerStyle here */}
             {children}
           </View>
         </View>

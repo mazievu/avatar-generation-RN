@@ -23,7 +23,12 @@ const PremiumShopModal: React.FC<PremiumShopModalProps> = ({
     isLoading,
 }) => {
     return (
-        <ModalBase isVisible={isVisible} onClose={onClose} title={t('premium_shop_title', lang)}>
+        <ModalBase
+            isVisible={isVisible}
+            onClose={onClose}
+            title={t('premium_shop_title', lang)}
+            contentContainerStyle={styles.modalContentContainer} // Apply style here
+        >
             <View style={styles.container}>
                 {isLoading && (
                     <View style={styles.loadingOverlay}>
@@ -55,9 +60,12 @@ const PremiumShopModal: React.FC<PremiumShopModalProps> = ({
 };
 
 const styles = StyleSheet.create({
+    modalContentContainer: {
+        maxHeight: '80%', // Limit content height
+        overflow: 'scroll', // Enable scrolling
+    },
     container: {
         padding: 20,
-        minHeight: 200, // Ensure modal has a decent height
     },
     loadingOverlay: {
         ...StyleSheet.absoluteFillObject,

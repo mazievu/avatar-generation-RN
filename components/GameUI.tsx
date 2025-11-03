@@ -201,6 +201,53 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
     }, []);
 
     useEffect(() => {
+        const isAnyModalOpen =
+            showStoryChoiceModal ||
+            showSettingsModal ||
+            showPremiumShop ||
+            (gameState && (
+                !!gameState.activeEvent ||
+                !!gameState.pendingSchoolChoice ||
+                !!gameState.pendingClubChoice ||
+                !!gameState.pendingUniversityChoice ||
+                !!gameState.pendingMajorChoice ||
+                !!gameState.pendingCareerChoice ||
+                !!gameState.pendingUnderqualifiedChoice ||
+                !!gameState.pendingLoanChoice ||
+                !!gameState.pendingPromotion ||
+                !!gameState.newlyUnlockedFeature
+            )) ||
+            !!pendingStatBoost ||
+            view === 'gameover';
+
+        const shouldBePaused = activeScene !== 'tree' || isAnyModalOpen;
+        
+        if (isPaused !== shouldBePaused) {
+            onSetIsPaused(shouldBePaused);
+        }
+
+    }, [
+        activeScene,
+        showStoryChoiceModal,
+        showSettingsModal,
+        showPremiumShop,
+        gameState?.activeEvent,
+        gameState?.pendingSchoolChoice,
+        gameState?.pendingClubChoice,
+        gameState?.pendingUniversityChoice,
+        gameState?.pendingMajorChoice,
+        gameState?.pendingCareerChoice,
+        gameState?.pendingUnderqualifiedChoice,
+        gameState?.pendingLoanChoice,
+        gameState?.pendingPromotion,
+        gameState?.newlyUnlockedFeature,
+        pendingStatBoost,
+        view,
+        isPaused,
+        onSetIsPaused
+    ]);
+
+    useEffect(() => {
         if (editingBusiness && gameState?.familyBusinesses) {
             const updatedBusiness = gameState.familyBusinesses[editingBusiness.id];
             if (updatedBusiness && JSON.stringify(updatedBusiness.slots) !== JSON.stringify(editingBusiness.slots)) {
@@ -211,7 +258,6 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
 
     const handleSceneChange = (scene: SceneName) => {
         onSetActiveScene(scene);
-        onSetIsPaused(scene !== 'tree');
     };
 
     if (view === 'menu') {
@@ -372,20 +418,19 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
                 isCenteringAnimationDone={isCenteringAnimationDone}
             />
 
-            {view === 'playing' && (
-                <TouchableOpacity onPress={() => setShowStoryChoiceModal(true)} style={gameUIStyles.storyButton}>
-                    <Text style={gameUIStyles.storyButtonText}>{t('story_button', lang)}</Text>
+            <View style={gameUIStyles.topRightButtonsContainer}>
+                {view === 'playing' && (
+                    <TouchableOpacity onPress={() => setShowStoryChoiceModal(true)}>
+                        <Image source={require('../assets/story_button.png')} style={gameUIStyles.topRightButtonIcon} />
+                    </TouchableOpacity>
+                )}
+                <TouchableOpacity onPress={() => setShowSettingsModal(true)}>
+                    <Image source={require('../assets/settingbutton.png')} style={gameUIStyles.topRightButtonIcon} />
                 </TouchableOpacity>
-            )}
-
-            <TouchableOpacity onPress={() => setShowSettingsModal(true)} style={gameUIStyles.settingsButton}>
-                <Text style={gameUIStyles.settingsButtonText}>{t('settings_button', lang)}</Text>
-            </TouchableOpacity>
-
-            {/* New Premium Shop Button */}
-            <TouchableOpacity onPress={() => setShowPremiumShop(true)} style={gameUIStyles.premiumShopButton}>
-                <Text style={gameUIStyles.premiumShopButtonText}>★</Text>
-            </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowPremiumShop(true)}>
+                    <Image source={require('../assets/shopbutton.png')} style={gameUIStyles.topRightButtonIcon} />
+                </TouchableOpacity>
+            </View>
 
             <SettingsModal
                 isVisible={showSettingsModal}
@@ -559,49 +604,19 @@ const gameUIStyles = StyleSheet.create({
         flex: 1,
         position: 'relative',
     },
-    settingsButton: {
-        backgroundColor: colors.accent,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        position: 'absolute',
-        right: 16,
-        top: 90, // Adjusted position
-        zIndex: 10,
-    },
-    settingsButtonText: {
-        color: colors.white,
-        fontWeight: 'bold',
-    },
-    premiumShopButton: { // New style
-        backgroundColor: '#f59e0b', // amber-500
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        position: 'absolute',
-        right: 16,
-        top: 140, // Positioned below settings
-        zIndex: 10,
-    },
-    premiumShopButtonText: { // New style
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 18,
-    },
     speedPicker: { height: 44, width: responsiveSize(120) },
     speedPickerItem: { height: 44 },
-    storyButton: {
-        backgroundColor: colors.primary,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 18,
+    topRightButtonsContainer: {
         position: 'absolute',
+        top: 100,
         right: 16,
-        top: 40, // Adjusted position
         zIndex: 10,
+        alignItems: 'center',
+        gap: 20,
     },
-    storyButtonText: {
-        color: colors.white,
-        fontWeight: 'bold',
+    topRightButtonIcon: {
+        width: 50,
+        height: 50,
+        resizeMode: 'contain',
     },
 });
