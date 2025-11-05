@@ -98,7 +98,7 @@ interface GameUIProps {
     onUpgradeBusiness: (businessId: string) => void;
     onBuyBusiness: (businessType: string) => void;
     onContinueGame: () => void;
-    onStartNewGame: () => void;
+    onResetGame: () => void;
     onPurchaseAsset: (assetId: string) => void;
     onSellBusiness: (businessId: string) => void;
     onSetFamilyName: (name: string) => void;
@@ -147,7 +147,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
     onUpgradeBusiness,
     onBuyBusiness,
     onContinueGame,
-    onStartNewGame,
+    onResetGame,
     onPurchaseAsset,
     onSellBusiness,
     onSetFamilyName,
@@ -264,12 +264,21 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
                 <StartMenu 
                     hasSavedGame={hasSavedGame}
                     onContinue={onContinueGame}
-                    onStartNew={onStartNewGame}
+                    onStartNew={() => setShowStoryChoiceModal(true)}
                     onShowInstructions={onShowInstructions} 
                     lang={lang} 
                     onSetLang={onSetLang} 
                 />
                 {showInstructions && <InstructionsModal onClose={onCloseInstructions} lang={lang} />}
+                <StoryChoiceModal
+                    isVisible={showStoryChoiceModal}
+                    onClose={() => setShowStoryChoiceModal(false)}
+                    onSelectMode={(mode) => {
+                        onStartGame(mode);
+                        setShowStoryChoiceModal(false);
+                    }}
+                    lang={lang}
+                />
             </>
         );
     }
@@ -352,15 +361,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
     return (
         <View style={gameUIStyles.mainContainer}>
 
-            <StoryChoiceModal
-                isVisible={showStoryChoiceModal}
-                onClose={() => setShowStoryChoiceModal(false)}
-                onSelectMode={(mode) => {
-                    onStartGame(mode);
-                    setShowStoryChoiceModal(false);
-                }}
-                lang={lang}
-            />
+
 
                         {view === 'gameover' && gameState.gameOverReason && <SummaryScreen 
                 familyMembers={gameState.familyMembers}
@@ -371,7 +372,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
                 familyFund={gameState.familyFund}
                 purchasedAssets={gameState.purchasedAssets}
                 currentDate={gameState.currentDate}
-                onRestart={onStartNewGame} 
+                onRestart={onResetGame} 
                 lang={lang}
             />}
 

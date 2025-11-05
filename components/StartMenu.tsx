@@ -40,7 +40,10 @@ export const StartMenu: React.FC<StartMenuProps> = ({
   return (
     <ImageBackground source={bgImage} style={startMenuStyles.startMenuContainer} resizeMode="cover">
       <TouchableOpacity
-        onPress={playAction}
+        onPress={() => {
+          console.log("Play button clicked");
+          playAction();
+        }}
         style={startMenuStyles.playButton}
       >
         <Image source={buttonImage} style={startMenuStyles.buttonImage} resizeMode="contain" />

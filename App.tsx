@@ -186,9 +186,8 @@ export default function App() {
         setHasSavedGame(true);
     };
 
-    const handleStartNewGame = () => {
+    const handleResetGame = () => {
         gameLogic.handleStartNewGame();
-        setView('menu');
         setHasSavedGame(false);
     };
 
@@ -304,7 +303,7 @@ export default function App() {
                     onUpgradeBusiness={gameLogic.handleUpgradeBusiness}
                     onBuyBusiness={gameLogic.handleBuyBusiness}
                     onContinueGame={handleContinueGame}
-                    onStartNewGame={handleStartNewGame}
+                    onResetGame={handleResetGame}
                     onPurchaseAsset={gameLogic.handlePurchaseAsset}
                     onSellBusiness={gameLogic.onSellBusiness}
                     onSetFamilyName={handleSetFamilyName}

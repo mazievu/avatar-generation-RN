@@ -1,0 +1,59 @@
+# easignore is based on gitignore patterns
+# https://git-scm.com/docs/gitignore
+#
+# This file is used to ignore files when performing an EAS Build.
+#
+# For more information, see:
+# https://docs.expo.dev/build/eas-ignore/
+
+# node_modules
+node_modules/
+
+# Expo
+.expo/
+
+# build output
+dist/
+build/
+
+# android build output
+android/build/
+android/app/build/
+android/.gradle/
+
+# ios build output
+ios/build/
+
+# misc
+npm-debug.log
+yarn-error.log
+.DS_Store
+*.jks
+*.p12
+*.keystore
+*.cer
+*.mobileprovision
+
+# documentation
+*.md
+
+# git
+.git/
+
+# IDE files
+.idea/
+
+# backup files
+*.bak
+
+# temp files
+*.tmp
+*~
+
+# logs
+*.log
+
+# archives
+*.zip
+*.tar
+*.gz
