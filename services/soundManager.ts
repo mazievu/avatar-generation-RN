@@ -1,42 +1,27 @@
-import { createAudioPlayer, AudioPlayer as OriginalAudioPlayer } from 'expo-audio';
-
-// This is a temporary workaround for what appears to be incorrect type
-// definitions in the installed version of expo-audio.
-// Based on official examples, these methods should exist.
-type PatchedAudioPlayer = OriginalAudioPlayer & {
-  loadAsync: () => Promise<void>;
-  playAsync: () => Promise<void>;
-  pauseAsync: () => Promise<void>;
-  stopAsync: () => Promise<void>;
-  setPositionAsync: (positionMillis: number) => Promise<void>;
-  release: () => Promise<void>;
-};
+import { createAudioPlayer, AudioPlayer } from 'expo-audio';
 
 type SoundName = 'click' | 'success' | 'error'; // Example sound names
 
-const sounds: Record<SoundName, PatchedAudioPlayer | null> = {
+const sounds: Record<SoundName, AudioPlayer | null> = {
   click: null,
   success: null,
   error: null,
 };
 
+let isSfxMuted = false;
+let isMusicMuted = false;
+
 export const soundManager = {
-  async loadSounds() {
+  loadSounds() {
     try {
       // Load click sound
-      const clickSound = createAudioPlayer(require('../assets/sounds/click.mp3')) as PatchedAudioPlayer;
-      await clickSound.loadAsync();
-      sounds.click = clickSound;
+      sounds.click = createAudioPlayer(require('../assets/sounds/click.mp3'));
 
       // Load success sound
-      const successSound = createAudioPlayer(require('../assets/sounds/success.mp3')) as PatchedAudioPlayer;
-      await successSound.loadAsync();
-      sounds.success = successSound;
+      sounds.success = createAudioPlayer(require('../assets/sounds/success.mp3'));
 
       // Load error sound
-      const errorSound = createAudioPlayer(require('../assets/sounds/error.mp3')) as PatchedAudioPlayer;
-      await errorSound.loadAsync();
-      sounds.error = errorSound;
+      sounds.error = createAudioPlayer(require('../assets/sounds/error.mp3'));
 
       console.log('All sounds loaded!');
     } catch (error) {
@@ -44,13 +29,13 @@ export const soundManager = {
     }
   },
 
-  async play(soundName: SoundName) {
+  play(soundName: SoundName) {
+    if (isSfxMuted) return;
     const sound = sounds[soundName];
     if (sound) {
       try {
-        // Using setPositionAsync(0) to emulate replay
-        await sound.setPositionAsync(0);
-        await sound.playAsync();
+        sound.seekTo(0);
+        sound.play();
       } catch (error) {
         console.error(`Error playing ${soundName} sound:`, error);
       }
@@ -59,11 +44,30 @@ export const soundManager = {
     }
   },
 
-  async unloadSounds() {
+  toggleSfx() {
+    isSfxMuted = !isSfxMuted;
+    return isSfxMuted;
+  },
+
+  toggleMusic() {
+    isMusicMuted = !isMusicMuted;
+    // TODO: Add logic to play/pause background music
+    return isMusicMuted;
+  },
+
+  getSfxMutedState() {
+      return isSfxMuted;
+  },
+
+  getMusicMutedState() {
+      return isMusicMuted;
+  },
+
+  unloadSounds() {
     for (const soundName in sounds) {
       const sound = sounds[soundName as SoundName];
       if (sound) {
-        await sound.release();
+        sound.release();
         sounds[soundName as SoundName] = null;
       }
     }

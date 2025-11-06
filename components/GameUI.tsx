@@ -111,6 +111,10 @@ interface GameUIProps {
     onConfirmStatBoost: (characterId: string) => void;
     onCloseStatBoostModal: () => void;
     onPurchaseSuccess: (productId: string) => void;
+    isMusicMuted: boolean;
+    onToggleMusic: () => void;
+    isSfxMuted: boolean;
+    onToggleSfx: () => void;
 }
 
 export const GameUI: React.FC<GameUIProps> = React.memo(({
@@ -160,6 +164,10 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
     onConfirmStatBoost,
     onCloseStatBoostModal,
     onPurchaseSuccess,
+    isMusicMuted,
+    onToggleMusic,
+    isSfxMuted,
+    onToggleSfx,
 }) => {
     const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [characterIdToCenterOnEvent, setCharacterIdToCenterOnEvent] = useState<string | null>(null);
@@ -440,6 +448,10 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
                 onQuitGame={onQuitGame}
                 isPaused={isPaused}
                 onSetIsPaused={onSetIsPaused}
+                isMusicMuted={isMusicMuted}
+                onToggleMusic={onToggleMusic}
+                isSfxMuted={isSfxMuted}
+                onToggleSfx={onToggleSfx}
             />
 
             {gameState && (

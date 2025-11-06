@@ -38,6 +38,8 @@ export default function App() {
     const [pendingStatBoost, setPendingStatBoost] = useState<{ stat: keyof Character['stats'], amount: number, featureId: string } | null>(null);
     const [charactersToBake, setCharactersToBake] = useState<Character[] | null>(null);
     const [gameSpeed, setGameSpeed] = useState<number>(1); // 1x, 2x, 4x
+    const [isMusicMuted, setIsMusicMuted] = useState(soundManager.getMusicMutedState());
+    const [isSfxMuted, setIsSfxMuted] = useState(soundManager.getSfxMutedState());
 
     const appState = useRef(AppState.currentState);
     const gameLoopRef = useRef<number | null>(null);
@@ -104,6 +106,7 @@ export default function App() {
 
     useEffect(() => {
         const loadAssets = async () => {
+            soundManager.loadSounds();
             const loadedImages = await loadAvatarAssets(exampleManifest);
             setAvatarImages(loadedImages);
         };
@@ -245,6 +248,16 @@ export default function App() {
         setPendingStatBoost(null);
     };
     
+    const handleToggleMusic = () => {
+        const isMuted = soundManager.toggleMusic();
+        setIsMusicMuted(isMuted);
+    };
+
+    const handleToggleSfx = () => {
+        const isMuted = soundManager.toggleSfx();
+        setIsSfxMuted(isMuted);
+    };
+
     const handleSetGameSpeed = (speed: number) => {
         setGameSpeed(speed);
     };
@@ -316,6 +329,10 @@ export default function App() {
                     onConfirmStatBoost={handleConfirmStatBoost}
                     onCloseStatBoostModal={() => setPendingStatBoost(null)}
                     onPurchaseSuccess={gameLogic.handlePurchaseSuccess}
+                    isMusicMuted={isMusicMuted}
+                    onToggleMusic={handleToggleMusic}
+                    isSfxMuted={isSfxMuted}
+                    onToggleSfx={handleToggleSfx}
                 />
             </View>
         </GestureHandlerRootView>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Switch } from 'react-native';
 import ModalBase from './ModalBase';
 import { Language } from '../core/types';
 import { t } from '../core/localization';
@@ -18,14 +18,17 @@ interface SettingsModalProps {
     onQuitGame: () => void;
     isPaused: boolean;
     onSetIsPaused: (paused: boolean) => void;
+    isMusicMuted: boolean;
+    onToggleMusic: () => void;
+    isSfxMuted: boolean;
+    onToggleSfx: () => void;
 }
 
-// Updated speed options as per user request
 const speedOptions = [
-    { label: 'Chậm (0.5x)', value: 100 },
-    { label: 'Bình thường (1x)', value: 50 },
-    { label: 'Nhanh (2x)', value: 25 },
-    { label: 'Rất nhanh (4x)', value: 13 },
+    { labelKey: 'game_speed_slow', value: 100 },
+    { labelKey: 'game_speed_normal', value: 50 },
+    { labelKey: 'game_speed_fast', value: 25 },
+    { labelKey: 'game_speed_very_fast', value: 13 },
 ];
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -37,6 +40,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     onQuitGame,
     isPaused,
     onSetIsPaused,
+    isMusicMuted,
+    onToggleMusic,
+    isSfxMuted,
+    onToggleSfx,
 }) => {
     if (!isVisible) {
         return null;
@@ -45,7 +52,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     return (
         <ModalBase isVisible={isVisible} onClose={onClose} title={t('settings_modal_title', lang)}>
             <View style={styles.container}>
-                
                 <View style={styles.settingRow}>
                     <Text style={styles.settingLabel}>{t('game_speed_label', lang) || 'Game Speed'}:</Text>
                     <View style={styles.speedControlContainer}>
@@ -64,19 +70,27 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                         gameSpeed === option.value && styles.speedButtonTextActive,
                                     ]}
                                 >
-                                    {option.label}
+                                    {t(option.labelKey, lang)}
                                 </Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 </View>
 
-                {/* Pause/Resume Game */}
+                <View style={styles.settingRow}>
+                    <Text style={styles.settingLabel}>{t('music_label', lang) || 'Music'}:</Text>
+                    <Switch value={!isMusicMuted} onValueChange={onToggleMusic} />
+                </View>
+
+                <View style={styles.settingRow}>
+                    <Text style={styles.settingLabel}>{t('sfx_label', lang) || 'SFX'}:</Text>
+                    <Switch value={!isSfxMuted} onValueChange={onToggleSfx} />
+                </View>
+
                 <TouchableOpacity onPress={() => onSetIsPaused(!isPaused)} style={styles.pauseResumeButton}>
                     <Text style={styles.pauseResumeButtonText}>{isPaused ? t('resume_button', lang) : t('pause_button', lang)}</Text>
                 </TouchableOpacity>
 
-                {/* Quit Game */}
                 <TouchableOpacity onPress={onQuitGame} style={styles.quitButton}>
                     <Text style={styles.quitButtonText}>{t('quit_game_button', lang)}</Text>
                 </TouchableOpacity>
@@ -128,8 +142,8 @@ const styles = StyleSheet.create({
     },
     settingRow: {
         alignItems: 'center',
-        flexDirection: 'column',
-        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         marginBottom: 20,
         width: '100%',
     },
