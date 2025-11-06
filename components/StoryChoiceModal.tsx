@@ -4,6 +4,7 @@ import type { Language } from '../core/types';
 import { SCENARIOS } from '../core/scenarios';
 import { t } from '../core/localization';
 import { colors } from './designSystem';
+import { soundManager } from '../services';
 
 const { width: screenWidth } = Dimensions.get('window');
 const baseWidth = 375; // A common base width for scaling
@@ -25,7 +26,7 @@ export const StoryChoiceModal: React.FC<StoryChoiceModalProps> = ({ isVisible, o
       animationType="slide"
       transparent={true}
       visible={isVisible}
-      onRequestClose={onClose}
+      onRequestClose={() => { soundManager.play('click'); onClose(); }}
     >
       <View style={storyChoiceModalStyles.centeredView}>
         <View style={storyChoiceModalStyles.modalView}>
@@ -35,7 +36,7 @@ export const StoryChoiceModal: React.FC<StoryChoiceModalProps> = ({ isVisible, o
               <TouchableOpacity
                 key={scenario.id}
                 style={storyChoiceModalStyles.scenarioButton}
-                onPress={() => onSelectMode(scenario.id)}
+                onPress={() => { soundManager.play('click'); onSelectMode(scenario.id); }}
               >
                 <Text style={storyChoiceModalStyles.scenarioName}>{t(scenario.nameKey, lang)}</Text>
                 <Text style={storyChoiceModalStyles.scenarioDescription}>{t(scenario.descriptionKey, lang)}</Text>
@@ -44,7 +45,7 @@ export const StoryChoiceModal: React.FC<StoryChoiceModalProps> = ({ isVisible, o
           </ScrollView>
           <TouchableOpacity
             style={storyChoiceModalStyles.closeButton}
-            onPress={onClose}
+            onPress={() => { soundManager.play('click'); onClose(); }}
           >
             <Text style={storyChoiceModalStyles.closeButtonText}>{t('close_button', lang)}</Text>
           </TouchableOpacity>

@@ -6,6 +6,7 @@ import type { Character, GameState, Language, Manifest, Club, GameLogEntry } fro
 import { LogEntry } from './GameLog';
 import { t } from '../core/localization';
 import { getEducationDisplay } from '../core/utils';
+import { soundManager } from '../services';
 
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { CloseIcon, IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons';
@@ -87,7 +88,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = React.m
             <View>
                 <TouchableOpacity 
                     style={[styles.customizeButton, !isCustomizationUnlocked && styles.disabledButton]} 
-                    onPress={() => onCustomize(character.id)}
+                    onPress={() => { soundManager.play('click'); onCustomize(character.id); }}
                     disabled={!isCustomizationUnlocked}
                 >
                     <Text style={[styles.customizeButtonText, !isCustomizationUnlocked && styles.disabledButtonText]}>{t('customize_button', lang)}</Text>
@@ -112,7 +113,7 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = React.m
       onClose={onClose}
       containerStyle={{ maxHeight: screenHeight * 0.85 }} // <-- GIẢI PHÁP CHÍNH
       closeButtonComponent={
-        <Pressable onPress={onClose} style={styles.closeButton}>
+        <Pressable onPress={() => { soundManager.play('click'); onClose(); }} style={styles.closeButton}>
           <CloseIcon width={responsiveSize(28)} height={responsiveSize(20)} color="#EF4444" />
         </Pressable>
       }
@@ -122,10 +123,10 @@ export const CharacterDetailModal: React.FC<CharacterDetailModalProps> = React.m
                 <Text style={styles.characterName} numberOfLines={1} adjustsFontSizeToFit>{character.name} (G{character.generation})</Text>
             </View>
             <View style={styles.tabContainer}>
-                <Pressable style={[styles.tab, activeTab === 'details' ? styles.activeTab : {}]} onPress={() => setActiveTab('details')}>
+                <Pressable style={[styles.tab, activeTab === 'details' ? styles.activeTab : {}]} onPress={() => { soundManager.play('click'); setActiveTab('details'); }}>
                     <Text style={[styles.tabText, activeTab === 'details' && styles.activeTabText]}>{t('tab_details', lang)}</Text>
                 </Pressable>
-                <Pressable style={[styles.tab, activeTab === 'events' ? styles.activeTab : {}]} onPress={() => setActiveTab('events')}>
+                <Pressable style={[styles.tab, activeTab === 'events' ? styles.activeTab : {}]} onPress={() => { soundManager.play('click'); setActiveTab('events'); }}>
                     <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>{t('tab_life_events', lang)}</Text>
                 </Pressable>
             </View>

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking, ImageBackground, Ima
 
 import type { Language } from '../core/types';
 import { t } from '../core/localization';
+import { soundManager } from '../services';
 
 const bgImage = require('../assets/start_scence.png');
 const playButtonImage = require('../assets/play_button.png');
@@ -42,6 +43,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
       <TouchableOpacity
         onPress={() => {
           console.log("Play button clicked");
+          soundManager.play('click');
           playAction();
         }}
         style={startMenuStyles.playButton}
@@ -54,14 +56,14 @@ export const StartMenu: React.FC<StartMenuProps> = ({
 
       <View style={startMenuStyles.bottomButtonsContainer}>
         <TouchableOpacity
-          onPress={onShowInstructions}
+          onPress={() => { soundManager.play('click'); onShowInstructions(); }}
           style={startMenuStyles.bottomButton}
         >
           <Image source={instructionsButtonImage} style={startMenuStyles.buttonImage} resizeMode="contain" />
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => Linking.openURL('https://www.youtube.com/@Milamioavatar')}
+          onPress={() => { soundManager.play('click'); Linking.openURL('https://www.youtube.com/@Milamioavatar'); }}
           style={startMenuStyles.bottomButton}
         >
           <Image source={youtubeButtonImage} style={startMenuStyles.buttonImage} resizeMode="contain" />
@@ -71,7 +73,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
       {/* Language Selection */}
       <View style={startMenuStyles.languageButtonsContainer}>
         <TouchableOpacity
-          onPress={() => onSetLang('en')}
+          onPress={() => { soundManager.play('click'); onSetLang('en'); }}
           style={[startMenuStyles.languageButton, lang === 'en' && startMenuStyles.languageButtonActive]}
         >
           <Text style={[startMenuStyles.languageButtonText, lang === 'en' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>
@@ -79,7 +81,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => onSetLang('vi')}
+          onPress={() => { soundManager.play('click'); onSetLang('vi'); }}
           style={[startMenuStyles.languageButton, lang === 'vi' && startMenuStyles.languageButtonActive]}
         >
           <Text style={[startMenuStyles.languageButtonText, lang === 'vi' ? startMenuStyles.languageButtonTextActive : startMenuStyles.languageButtonTextInactive]}>

@@ -8,6 +8,7 @@ const sounds: Record<SoundName, AudioPlayer | null> = {
   error: null,
 };
 
+let backgroundMusic: AudioPlayer | null = null;
 let isSfxMuted = false;
 let isMusicMuted = false;
 
@@ -23,6 +24,12 @@ export const soundManager = {
       // Load error sound
       sounds.error = createAudioPlayer(require('../assets/sounds/error.mp3'));
 
+      // Load background music
+      backgroundMusic = createAudioPlayer(require('../assets/sounds/background.mp3'));
+      if (backgroundMusic) {
+        backgroundMusic.loop = true;
+      }
+
       console.log('All sounds loaded!');
     } catch (error) {
       console.error('Error loading sounds:', error);
@@ -30,6 +37,7 @@ export const soundManager = {
   },
 
   play(soundName: SoundName) {
+    console.log(`Playing sound: ${soundName}`);
     if (isSfxMuted) return;
     const sound = sounds[soundName];
     if (sound) {
@@ -44,6 +52,27 @@ export const soundManager = {
     }
   },
 
+  playBackgroundMusic() {
+    if (backgroundMusic && !isMusicMuted) {
+      try {
+        backgroundMusic.play();
+      } catch (error) {
+        console.error('Error playing background music:', error);
+      }
+    }
+  },
+
+  stopBackgroundMusic() {
+    if (backgroundMusic) {
+      try {
+        backgroundMusic.pause();
+        backgroundMusic.seekTo(0);
+      } catch (error) {
+        console.error('Error stopping background music:', error);
+      }
+    }
+  },
+
   toggleSfx() {
     isSfxMuted = !isSfxMuted;
     return isSfxMuted;
@@ -51,7 +80,11 @@ export const soundManager = {
 
   toggleMusic() {
     isMusicMuted = !isMusicMuted;
-    // TODO: Add logic to play/pause background music
+    if (isMusicMuted) {
+      this.stopBackgroundMusic();
+    } else {
+      this.playBackgroundMusic();
+    }
     return isMusicMuted;
   },
 
@@ -70,6 +103,10 @@ export const soundManager = {
         sound.release();
         sounds[soundName as SoundName] = null;
       }
+    }
+    if (backgroundMusic) {
+      backgroundMusic.release();
+      backgroundMusic = null;
     }
     console.log('All sounds unloaded!');
   },

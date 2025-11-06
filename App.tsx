@@ -114,6 +114,14 @@ export default function App() {
     }, []);
 
     useEffect(() => {
+        if (view === 'playing') {
+            soundManager.playBackgroundMusic();
+        } else {
+            soundManager.stopBackgroundMusic();
+        }
+    }, [view]);
+
+    useEffect(() => {
         if (view === 'playing' && !wasPlayingRef.current && gameStateRef.current) {
             wasPlayingRef.current = true;
             setIsPaused(true);

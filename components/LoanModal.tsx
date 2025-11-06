@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import type { Language } from '../core/types';
 import { t } from '../core/localization';
 import { ComicPanelModal } from './ComicPanelModal';
+import { soundManager } from '../services';
 
 
 
@@ -34,7 +35,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
                         {amounts.map(amount => (
                             <TouchableOpacity 
                                 key={amount}
-                                onPress={() => setSelectedAmount(amount)}
+                                onPress={() => { soundManager.play('click'); setSelectedAmount(amount); }}
                                 style={[
                                     loanModalStyles.gridButton,
                                     selectedAmount === amount ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
@@ -53,7 +54,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
                         {terms.map(term => (
                             <TouchableOpacity 
                                 key={term}
-                                onPress={() => setSelectedTerm(term)}
+                                onPress={() => { soundManager.play('click'); setSelectedTerm(term); }}
                                 style={[
                                     loanModalStyles.gridButton,
                                     selectedTerm === term ? loanModalStyles.gridButtonSelected : loanModalStyles.gridButtonNormal
@@ -68,7 +69,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({ onLoanChoice, lang }) => {
                 </View>
             </View>
             
-            <TouchableOpacity onPress={() => onLoanChoice(selectedAmount, selectedTerm)} style={[loanModalStyles.chunkyButton, loanModalStyles.chunkyButtonGreen]}>
+            <TouchableOpacity onPress={() => { soundManager.play('click'); onLoanChoice(selectedAmount, selectedTerm); }} style={[loanModalStyles.chunkyButton, loanModalStyles.chunkyButtonGreen]}>
                 <Text style={loanModalStyles.chunkyButtonText}>
                     {t('accept_loan_button', lang)}
                 </Text>

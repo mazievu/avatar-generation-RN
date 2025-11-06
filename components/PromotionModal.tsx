@@ -6,6 +6,7 @@ import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { getCharacterDisplayName } from '../core/utils';
+import { soundManager } from '../services';
 
 interface PromotionModalProps {
     lang: Language;
@@ -23,7 +24,7 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({ character, newTi
         onClose={() => {}} // No explicit close button, so provide a dummy
         rotate="0deg"
     >
-        <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={promotionModalStyles.avatarContainer}>
+        <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={promotionModalStyles.avatarContainer}>
             <AgeAwareAvatarPreview 
                 character={character} 
                 manifest={manifest} 
@@ -33,7 +34,7 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({ character, newTi
         </TouchableOpacity>
         <Text style={promotionModalStyles.title}>{t('modal_promotion_title', lang)}</Text>
         <Text style={promotionModalStyles.description}>{t('modal_promotion_desc', lang, { name: getCharacterDisplayName(character, lang), title: newTitle })}</Text>
-        <TouchableOpacity onPress={onAccept} style={[promotionModalStyles.button, promotionModalStyles.buttonGreen]}>
+        <TouchableOpacity onPress={() => { soundManager.play('click'); onAccept(); }} style={[promotionModalStyles.button, promotionModalStyles.buttonGreen]}>
             <Text style={promotionModalStyles.buttonText}>
                 {t('accept_promotion_button', lang)}
             </Text>

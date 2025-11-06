@@ -237,7 +237,7 @@ export const PathOfLifeScreen: React.FC<PathOfLifeScreenProps> = React.memo(({
               <Text style={styles.modalTitle}>{t(infoModalFeature.nameKey, lang)}</Text>
               <Text style={styles.modalDescription}>{t(infoModalFeature.descriptionKey, lang)}</Text>
               <Pressable style={styles.modalCloseButton} onPress={() => setInfoModalFeature(null)}>
-                <Text style={styles.modalCloseButtonText}>{t('common.close', lang)}</Text>
+                <Text style={styles.modalCloseButtonText}>{t('close_button', lang)}</Text>
               </Pressable>
             </View>
           </View>

@@ -8,6 +8,7 @@ import { getAllEvents } from '../core/gameData';
 import { t } from '../core/localization';
 import { getCharacterDisplayName } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 import { StatBar } from './StatBar';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon, MoneyIcon } from './icons';
 import { ComicPanelModal } from './ComicPanelModal';
@@ -105,9 +106,9 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
   const potentialSpouse = displayEventData.event.potentialSpouse;
 
   return (
-    <ComicPanelModal visible={true} onClose={onClose} rotate="0deg" disableDismissOnPressOutside={true}>
+    <ComicPanelModal visible={true} onClose={() => { soundManager.play('click'); onClose(); }} rotate="0deg" disableDismissOnPressOutside={true}>
                <View style={eventModalStyles.header}>
-                <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={eventModalStyles.avatarButton}>
+                <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={eventModalStyles.avatarButton}>
                     <AgeAwareAvatarPreview
                         manifest={manifest}
                         character={character}
@@ -125,7 +126,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
             
             {potentialSpouse && (
                 <View style={eventModalStyles.spouseContainer}>
-                    <TouchableOpacity onPress={() => onOpenCharacterDetails(potentialSpouse)} style={eventModalStyles.spouseAvatar}>
+                    <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(potentialSpouse); }} style={eventModalStyles.spouseAvatar}>
                         <AgeAwareAvatarPreview
                             manifest={manifest}
                             character={potentialSpouse}
@@ -153,7 +154,7 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
             {!outcome ? (
                 <View style={eventModalStyles.choicesContainer}>
                   {displayEventData.event.choices.map((choice, index) => (
-                    <TouchableOpacity key={index} onPress={() => handleSelectChoice(choice)} disabled={!!outcome} style={eventModalStyles.choiceButton}>
+                    <TouchableOpacity key={index} onPress={() => { soundManager.play('click'); handleSelectChoice(choice); }} disabled={!!outcome} style={eventModalStyles.choiceButton}>
                       <View style={eventModalStyles.choiceButtonContent}>
                         <Text style={eventModalStyles.choiceButtonText}>
                           {choice.label}

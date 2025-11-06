@@ -7,6 +7,7 @@ import { ChoiceButton } from './ChoiceButton';
 import { t } from '../core/localization';
 import { colors } from './designSystem';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 
 interface SchoolChoiceModalProps {
     character: Character;
@@ -22,7 +23,7 @@ interface SchoolChoiceModalProps {
 export const SchoolChoiceModal: React.FC<SchoolChoiceModalProps> = ({ schoolOptions, onSelect, currentFunds, lang, character, manifest, images, onOpenCharacterDetails }) => (
     <ComicPanelModal visible={true} onClose={() => {}} rotate="2deg">
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
+        <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={styles.avatarContainer}>
             <AgeAwareAvatarPreview
                 character={character}
                 manifest={manifest}

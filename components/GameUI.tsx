@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageSourcePropType, TextInput, Image, Dimensions } from 'react-native';
 
 import type { GameState, Character, EventChoice, SchoolOption, UniversityMajor, Business, Language } from '../core/types';
@@ -18,6 +18,7 @@ import SettingsModal from './SettingsModal';
 import PremiumShop from './premium/PremiumShop';
 import { UnlockNotificationModal } from './UnlockNotificationModal';
 import { PathOfLifeScreen } from './PathOfLifeScreen'; // Corrected import path
+import { soundManager } from '../services';
 import { colors } from './designSystem';
 import CharacterListModal from './CharacterListModal'; // New import
 
@@ -176,11 +177,76 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [showPremiumShop, setShowPremiumShop] = useState(false); // New state
 
+    const handleShowStoryChoiceModal = () => {
+        soundManager.play('click');
+        setShowStoryChoiceModal(true);
+    }
+
+    const handleShowSettingsModal = () => {
+        soundManager.play('click');
+        setShowSettingsModal(true);
+    }
+
+    const handleShowPremiumShop = () => {
+        soundManager.play('click');
+        setShowPremiumShop(true);
+    }
+
     const [familyNameInput, setFamilyNameInput] = useState<string>(
         gameState?.familyName || (gameState?.familyMembers && Object.keys(gameState.familyMembers).length > 0
             ? `${getCharacterDisplayName(gameState.familyMembers[Object.keys(gameState.familyMembers)[0]], lang)}${t('family_suffix', lang)}`
             : t('default_family_name_placeholder', lang)))
     ;
+    const [displayDate, setDisplayDate] = useState(gameState?.currentDate);
+    const previousDate = useRef(null);
+    const animationFrameId = useRef(null);
+    const animationStartTime = useRef(null);
+
+    useEffect(() => {
+        if (gameState?.currentDate && previousDate.current) {
+            const newDate = gameState.currentDate;
+            const oldDate = previousDate.current;
+
+            const totalDaysOld = oldDate.year * 365 + oldDate.day;
+            const totalDaysNew = newDate.year * 365 + newDate.day;
+            const diff = totalDaysNew - totalDaysOld;
+
+            if (diff > 0) {
+                animationStartTime.current = performance.now();
+
+                const animate = (now: number) => {
+                    const elapsed = now - (animationStartTime.current ?? now);
+                    const progress = Math.min(elapsed / (200 / gameSpeed), 1);
+                    const animatedDays = Math.floor(totalDaysOld + diff * progress);
+                    const year = Math.floor(animatedDays / 365);
+                    const day = animatedDays % 365;
+
+                    setDisplayDate({ day, year });
+
+                    if (progress < 1) {
+                        animationFrameId.current = requestAnimationFrame(animate);
+                    } else {
+                        previousDate.current = newDate;
+                    }
+                };
+
+                animationFrameId.current = requestAnimationFrame(animate);
+            } else {
+                setDisplayDate(newDate);
+                previousDate.current = newDate;
+            }
+        } else if (gameState?.currentDate) {
+            setDisplayDate(gameState.currentDate);
+            previousDate.current = gameState.currentDate;
+        }
+
+        return () => {
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current);
+            }
+        };
+    }, [gameState?.currentDate, gameSpeed]);
+
 
     useEffect(() => {
         if (gameState?.familyName && gameState.familyName !== familyNameInput) {
@@ -226,6 +292,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
                 !!gameState.newlyUnlockedFeature
             )) ||
             !!pendingStatBoost ||
+            !!selectedCharacter ||
             view === 'gameover';
 
         const shouldBePaused = activeScene !== 'tree' || isAnyModalOpen;
@@ -263,6 +330,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
     }, [gameState?.familyBusinesses, editingBusiness]);
 
     const handleSceneChange = (scene: SceneName) => {
+        soundManager.play('click');
         onSetActiveScene(scene);
     };
 
@@ -427,14 +495,14 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
 
             <View style={gameUIStyles.topRightButtonsContainer}>
                 {view === 'playing' && (
-                    <TouchableOpacity onPress={() => setShowStoryChoiceModal(true)}>
+                    <TouchableOpacity onPress={handleShowStoryChoiceModal}>
                         <Image source={require('../assets/story_button.png')} style={gameUIStyles.topRightButtonIcon} />
                     </TouchableOpacity>
                 )}
-                <TouchableOpacity onPress={() => setShowSettingsModal(true)}>
+                <TouchableOpacity onPress={handleShowSettingsModal}>
                     <Image source={require('../assets/settingbutton.png')} style={gameUIStyles.topRightButtonIcon} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setShowPremiumShop(true)}>
+                <TouchableOpacity onPress={handleShowPremiumShop}>
                     <Image source={require('../assets/shopbutton.png')} style={gameUIStyles.topRightButtonIcon} />
                 </TouchableOpacity>
             </View>
@@ -486,7 +554,7 @@ export const GameUI: React.FC<GameUIProps> = React.memo(({
             <View style={gameUIStyles.maxWidthContainer}>
                 <View style={gameUIStyles.headerContainer}>
                     <View style={gameUIStyles.headerLeft}>
-                        <Text style={gameUIStyles.dateText}>{formatDate(gameState.currentDate.day, gameState.currentDate.year, lang)}</Text>
+                        {displayDate && <Text style={gameUIStyles.dateText}>{formatDate(displayDate.day, displayDate.year, lang)}</Text>}
                     </View>
                     <View style={gameUIStyles.fundBubble}>
                         <Text style={gameUIStyles.fundIcon}>$</Text>

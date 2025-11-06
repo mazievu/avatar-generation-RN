@@ -14,6 +14,7 @@ import { calculateBusinessMonthlyNetIncome } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { RobotAvatarIcon } from './icons';
 import { ComicPanelModal } from './ComicPanelModal';
+import { soundManager } from '../services';
 
 // Modal for purchasing
 const BusinessPurchaseModal: React.FC<{
@@ -33,12 +34,12 @@ const BusinessPurchaseModal: React.FC<{
             </Text>
             <Text style={businessPurchaseModalStyles.baseRevenueText}>{t('base_revenue_label', lang)}: ${businessDef.baseRevenue.toLocaleString()}/mo</Text>
             <View style={businessPurchaseModalStyles.buttonGroup}>
-                <TouchableOpacity onPress={onClose} style={[businessPurchaseModalStyles.button, businessPurchaseModalStyles.buttonSlate]}>
+                <TouchableOpacity onPress={() => { soundManager.play('click'); onClose(); }}>
                     <Text style={businessPurchaseModalStyles.buttonText}>
                         {t('cancel_button', lang)}
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onBuy(businessKey)} disabled={!canAfford} style={[businessPurchaseModalStyles.button, businessPurchaseModalStyles.buttonGreen, !canAfford && businessPurchaseModalStyles.buttonDisabled]}>
+                <TouchableOpacity onPress={() => { soundManager.play('click'); onBuy(businessKey); }} disabled={!canAfford} style={[businessPurchaseModalStyles.button, businessPurchaseModalStyles.buttonGreen, !canAfford && businessPurchaseModalStyles.buttonDisabled]}>
                     <Text style={businessPurchaseModalStyles.buttonText}>
                         {t('buy_button', lang)} (${businessDef.cost.toLocaleString()})
                     </Text>
@@ -124,7 +125,7 @@ const BusinessManageSelectionModal: React.FC<{
                             {t(BUSINESS_DEFINITIONS[business.type]?.nameKey || 'unknown_business', lang)} (ID: {business.id.substring(0, 4)}...)
                         </Text>
                         <TouchableOpacity
-                            onPress={() => onManage(business)}
+                            onPress={() => { soundManager.play('click'); onManage(business); }}
                             style={[businessManageSelectionModalStyles.button, businessManageSelectionModalStyles.buttonBlue]}
                         >
                             <Text style={businessManageSelectionModalStyles.buttonText}>
@@ -135,7 +136,7 @@ const BusinessManageSelectionModal: React.FC<{
                 ))}
             </ScrollView>
             <View style={businessManageSelectionModalStyles.buttonGroup}>
-                <TouchableOpacity onPress={onClose} style={[businessManageSelectionModalStyles.button, businessManageSelectionModalStyles.buttonSlate]}>
+                <TouchableOpacity onPress={() => { soundManager.play('click'); onClose(); }} style={[businessManageSelectionModalStyles.button, businessManageSelectionModalStyles.buttonSlate]}>
                     <Text style={businessManageSelectionModalStyles.buttonText}>
                         {t('cancel_button', lang)}
                     </Text>
@@ -328,6 +329,7 @@ export const BusinessMap: React.FC<{
                                         }
                                     ]}
                                     onPress={() => {
+                                        soundManager.play('click');
                                         if (isOwned) {
                                             if (ownedOfType && ownedOfType.length === 1) {
                                                 onManageBusiness(ownedOfType[0]);
@@ -387,7 +389,7 @@ export const BusinessMap: React.FC<{
                     businessDef={businessDefForModal}
                     familyFund={familyFund}
                     onBuy={handleBuy}
-                    onClose={() => setSelectedLocationKey(null)}
+                    onClose={() => { soundManager.play('click'); setSelectedLocationKey(null); }}
                     lang={lang}
                 />
             )}
@@ -397,10 +399,11 @@ export const BusinessMap: React.FC<{
                     businessType={showManageModalForType}
                     ownedBusinesses={ownedBusinessesByType.get(showManageModalForType) || []}
                     onManage={(business) => {
+                        soundManager.play('click');
                         onManageBusiness(business);
                         setShowManageModalForType(null);
                     }}
-                    onClose={() => setShowManageModalForType(null)}
+                    onClose={() => { soundManager.play('click'); setShowManageModalForType(null); }}
                     lang={lang}
                 />
             )}

@@ -9,6 +9,7 @@ import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { UpgradeIcon, RobotAvatarIcon, CloseIcon } from './icons';
 import { LifePhase, CharacterStatus } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
+import { soundManager } from '../services';
 
 // =================================================================
 // BƯỚC 2: TẠO COMPONENT CON `AssignmentModal`
@@ -27,7 +28,7 @@ const AssignmentModal: React.FC<{
     const renderCharacterItem = ({ item }: { item: Character | 'unassigned' | 'robot' }) => {
         if (item === 'unassigned') {
             return (
-                <TouchableOpacity style={assignmentModalStyles.itemContainer} onPress={() => onSelect(null)}>
+                <TouchableOpacity style={assignmentModalStyles.itemContainer} onPress={() => { soundManager.play('click'); onSelect(null); }}>
                     <View style={assignmentModalStyles.avatarPlaceholder} />
                     <Text style={assignmentModalStyles.itemText}>{localization.t('unassigned_option', lang)}</Text>
                 </TouchableOpacity>
@@ -35,7 +36,7 @@ const AssignmentModal: React.FC<{
         }
         if (item === 'robot') {
             return (
-                <TouchableOpacity style={assignmentModalStyles.itemContainer} onPress={() => onSelect('robot')}>
+                <TouchableOpacity style={assignmentModalStyles.itemContainer} onPress={() => { soundManager.play('click'); onSelect('robot'); }}>
                     <RobotAvatarIcon style={assignmentModalStyles.avatar} />
                     <Text style={assignmentModalStyles.itemText}>{`${localization.t('hire_robot_option', lang)} (-${ROBOT_HIRE_COST}/mo)`}</Text>
                 </TouchableOpacity>
@@ -47,7 +48,7 @@ const AssignmentModal: React.FC<{
         const isMajorMatch = slot.requiredMajor !== 'Unskilled' && character.major === slot.requiredMajor;
         
         return (
-            <TouchableOpacity style={assignmentModalStyles.itemContainer} onPress={() => onSelect(character.id)}>
+            <TouchableOpacity style={assignmentModalStyles.itemContainer} onPress={() => { soundManager.play('click'); onSelect(character.id); }}>
                 <AgeAwareAvatarPreview manifest={manifest} character={character} images={images} size={{width: 48, height: 48}} />
                 <View style={assignmentModalStyles.characterInfo}>
                     <Text style={assignmentModalStyles.itemText}>{`${isMajorMatch ? '⭐ ' : ''}${displayName}`}</Text>
@@ -66,7 +67,7 @@ const AssignmentModal: React.FC<{
             visible={isVisible}
             onRequestClose={onClose}
         >
-            <Pressable style={assignmentModalStyles.overlay} onPress={onClose}>
+            <Pressable style={assignmentModalStyles.overlay} onPress={() => { soundManager.play('click'); onClose(); }}>
                 <View style={assignmentModalStyles.modalContent}>
                     <Text style={assignmentModalStyles.modalTitle}>{localization.t('assign_employee_title', lang)}</Text>
                     <FlatList
@@ -146,7 +147,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = R
                         <Text style={businessManagementModalStyles.title}>{localization.t(businessDef.nameKey, lang)}</Text>
                         <Text style={businessManagementModalStyles.levelText}>{localization.t('level_label', lang)}: {business.level}</Text>
                     </View>
-                    <Pressable onPress={onClose} style={businessManagementModalStyles.closeButton}><CloseIcon width={32} height={32} color="#94a3b8" /></Pressable>
+                    <Pressable onPress={() => { soundManager.play('click'); onClose(); }} style={businessManagementModalStyles.closeButton}><CloseIcon width={32} height={32} color="#94a3b8" /></Pressable>
                 </View>
 
                 <ScrollView style={businessManagementModalStyles.slotsContainer}>
@@ -161,7 +162,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = R
                                 <TouchableOpacity 
                                     key={index} 
                                     style={businessManagementModalStyles.slotItem} 
-                                    onPress={() => setIsAssigningForSlot(index)}
+                                    onPress={() => { soundManager.play('click'); setIsAssigningForSlot(index); }}
                                 >
                                     <View style={businessManagementModalStyles.avatarContainer}>
                                         {assignedCharacter ? (
@@ -199,7 +200,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = R
                 <View style={businessManagementModalStyles.footer}>
                         {business.level < 2 && businessDef.upgradeSlots.length > 0 && (
                             <TouchableOpacity
-                                onPress={() => onUpgradeBusiness(business.id)}
+                                onPress={() => { soundManager.play('click'); onUpgradeBusiness(business.id); }}
                                 disabled={!canUpgrade}
                                 style={[businessManagementModalStyles.upgradeButton, !canUpgrade && businessManagementModalStyles.upgradeButtonDisabled]}
                             >
@@ -211,6 +212,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = R
                         )}
                         <TouchableOpacity
                             onPress={() => {
+                                soundManager.play('click');
                                 onSellBusiness(business.id);
                                 onClose();
                             }}
@@ -227,7 +229,7 @@ export const BusinessManagementModal: React.FC<BusinessManagementModalProps> = R
             {isAssigningForSlot !== null && (
                 <AssignmentModal
                     isVisible={true}
-                    onClose={() => setIsAssigningForSlot(null)}
+                    onClose={() => { soundManager.play('click'); setIsAssigningForSlot(null); }}
                     availableMembers={availableMembers}
                     onSelect={(characterId) => handleAssignmentChange(isAssigningForSlot, characterId)}
                     lang={lang}

@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image,
 import { LayerKey, Manifest, AvatarState, Character, Gender, LayerDefinition, ColorDefinition } from "../core/types";
 import { AVATAR_COLOR_PALETTE, CUSTOM_AVATAR_COST } from "../core/constants";
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 
 // =============================================
 // Helpers (Giữ nguyên)
@@ -162,7 +163,7 @@ export default function AvatarBuilder({
         <View style={avatarBuilderStyles.layerOptionHeader}>
           <Text style={avatarBuilderStyles.layerOptionTitle}>{layer.label}</Text>
           {layer.allowNone && (
-            <TouchableOpacity onPress={() => setLayer(layer.key, null)}>
+            <TouchableOpacity onPress={() => { soundManager.play('click'); setLayer(layer.key, null); }}>
                 <Text style={avatarBuilderStyles.noneButtonText}>None</Text>
             </TouchableOpacity>
           )}
@@ -181,7 +182,7 @@ export default function AvatarBuilder({
                     selected ? avatarBuilderStyles.optionButtonSelected : avatarBuilderStyles.optionButtonNormal,
                     { width: optionSize, height: optionSize }
                 ]}
-                onPress={() => setLayer(layer.key, opt.id)}
+                onPress={() => { soundManager.play('click'); setLayer(layer.key, opt.id); }}
               >
                 {displaySource ? (
                     <Image source={displaySource} style={avatarBuilderStyles.optionImage} />
@@ -205,7 +206,7 @@ export default function AvatarBuilder({
                                   { backgroundColor: color.base },
                                   isActive && avatarBuilderStyles.colorSwatchSelected,
                               ]}
-                              onPress={() => setColorForLayer(layer.key, color.name)}
+                              onPress={() => { soundManager.play('click'); setColorForLayer(layer.key, color.name); }}
                           />
                       );
                   })}
@@ -224,7 +225,7 @@ export default function AvatarBuilder({
         <ScrollView>
           <TouchableOpacity
             style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonSlate, avatarBuilderStyles.chunkyButtonMarginBottom]}
-            onPress={() => setSelectedLayerKey(null)}
+            onPress={() => { soundManager.play('click'); setSelectedLayerKey(null); }}
           >
             <Text style={avatarBuilderStyles.chunkyButtonText}>Back to Layers</Text>
           </TouchableOpacity>
@@ -244,7 +245,7 @@ export default function AvatarBuilder({
             <TouchableOpacity
               key={layer.key}
               style={avatarBuilderStyles.layerSelectButton}
-              onPress={() => setSelectedLayerKey(layer.key)}
+              onPress={() => { soundManager.play('click'); setSelectedLayerKey(layer.key); }}
             >
               <Text style={avatarBuilderStyles.layerSelectButtonText}>{layer.label}</Text>
             </TouchableOpacity>
@@ -263,7 +264,7 @@ export default function AvatarBuilder({
                   <View style={avatarBuilderStyles.previewColumn}>
                     <AgeAwareAvatarPreview manifest={manifest} character={{ ...character, avatarState: state }} images={images} size={{width: 256, height: 256}} />
                     <View style={avatarBuilderStyles.controlsContainer}>
-                      <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonPink]} onPress={randomize}>
+                      <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonPink]} onPress={() => { soundManager.play('click'); randomize(); }}>
                           <Text style={avatarBuilderStyles.chunkyButtonText}>Randomize</Text>
                       </TouchableOpacity>
                       <View style={avatarBuilderStyles.seedInputContainer}>
@@ -291,14 +292,14 @@ export default function AvatarBuilder({
                   </View>
                 </View>
                  <View style={avatarBuilderStyles.footerButtonsContainer}>
-                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonSlate]} onPress={onClose}><Text style={avatarBuilderStyles.chunkyButtonText}>Cancel</Text></TouchableOpacity>
-                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonBlue]} onPress={onWatchAd}><Text style={avatarBuilderStyles.chunkyButtonText}>Watch Ad</Text></TouchableOpacity>
+                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonSlate]} onPress={() => { soundManager.play('click'); onClose(); }}><Text style={avatarBuilderStyles.chunkyButtonText}>Cancel</Text></TouchableOpacity>
+                    <TouchableOpacity style={[avatarBuilderStyles.chunkyButton, avatarBuilderStyles.chunkyButtonBlue]} onPress={() => { soundManager.play('click'); onWatchAd(); }}><Text style={avatarBuilderStyles.chunkyButtonText}>Watch Ad</Text></TouchableOpacity>
                     <TouchableOpacity 
                         style={[
                             avatarBuilderStyles.chunkyButton, 
                             familyFund < CUSTOM_AVATAR_COST ? avatarBuilderStyles.chunkyButtonDisabled : avatarBuilderStyles.chunkyButtonGreen
                         ]} 
-                        onPress={() => onSave(state)}
+                        onPress={() => { soundManager.play('click'); onSave(state); }}
                         disabled={familyFund < CUSTOM_AVATAR_COST}
                     >
                         <Text style={avatarBuilderStyles.chunkyButtonText}>Pay {CUSTOM_AVATAR_COST.toLocaleString()}</Text>

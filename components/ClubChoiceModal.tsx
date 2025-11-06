@@ -5,6 +5,7 @@ import type { Club, Language, Character, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 
 interface ClubChoiceModalProps {
   character: Character;
@@ -25,7 +26,7 @@ export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clu
       rotate="-1deg"
     >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
+        <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={styles.avatarContainer}>
           <AgeAwareAvatarPreview
             character={character}
             manifest={manifest}
@@ -43,7 +44,7 @@ export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clu
         {clubs.map((club) => (
           <TouchableOpacity 
             key={club.id} 
-            onPress={() => onSelect(club.id)} 
+            onPress={() => { soundManager.play('click'); onSelect(club.id); }} 
             style={styles.choiceButton}
           >
             <Text style={styles.choiceButtonText}>
@@ -53,7 +54,7 @@ export const ClubChoiceModal: React.FC<ClubChoiceModalProps> = ({ character, clu
         ))}
       </ScrollView>
 
-      <TouchableOpacity onPress={onSkip} style={[styles.button, styles.buttonSlate]}>
+      <TouchableOpacity onPress={() => { soundManager.play('click'); onSkip(); }} style={[styles.button, styles.buttonSlate]}>
         <Text style={styles.buttonText}>
           {t('skip_clubs', lang)}
         </Text>

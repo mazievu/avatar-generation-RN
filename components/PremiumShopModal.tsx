@@ -4,6 +4,7 @@ import ModalBase from './ModalBase';
 import { Language } from '../core/types';
 import { t } from '../core/localization';
 import { PremiumProduct } from '../services/iapService'; // Import the new type
+import { soundManager } from '../services';
 
 interface PremiumShopModalProps {
     isVisible: boolean;
@@ -46,7 +47,7 @@ const PremiumShopModal: React.FC<PremiumShopModalProps> = ({
                         <TouchableOpacity
                             style={[styles.buyButton, product.isPurchased && styles.disabledButton]}
                             disabled={product.isPurchased || isLoading}
-                            onPress={() => onPurchase(product.id)}
+                            onPress={() => { soundManager.play('click'); onPurchase(product.id); }}
                         >
                             <Text style={styles.buyButtonText}>
                                 {product.isPurchased ? t('premium_item_purchased', lang) : product.price}

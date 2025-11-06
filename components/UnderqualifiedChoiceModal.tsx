@@ -7,6 +7,7 @@ import { ChoiceButton } from './ChoiceButton';
 import { CAREER_LADDER } from '../core/constants';
 import { t } from '../core/localization';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 
 interface UnderqualifiedChoiceModalProps {
     character: Character;
@@ -29,7 +30,7 @@ export const UnderqualifiedChoiceModal: React.FC<UnderqualifiedChoiceModalProps>
             rotate="0deg"
         >
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
+                <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={styles.avatarContainer}>
                     <AgeAwareAvatarPreview
                         character={character}
                         manifest={manifest}

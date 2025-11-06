@@ -4,6 +4,7 @@ import type { Character, Stats } from '../core/types';
 import { getCharacterDisplayName } from '../core/utils';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons';
+import { soundManager } from '../services';
 
 interface CharacterListModalProps {
   isVisible: boolean;
@@ -78,7 +79,7 @@ const CharacterListModal: React.FC<CharacterListModalProps> = ({
       return (
         <TouchableOpacity
           style={[styles.characterItem, isSelected && styles.selectedCharacterItem]}
-          onPress={() => handleSelectCharacter(item.id)}
+          onPress={() => { soundManager.play('click'); handleSelectCharacter(item.id); }}
         >
           <AgeAwareAvatarPreview
             character={item}
@@ -121,7 +122,7 @@ const CharacterListModal: React.FC<CharacterListModalProps> = ({
       animationType="fade"
       transparent={true}
       visible={isVisible}
-      onRequestClose={onClose}
+      onRequestClose={() => { soundManager.play('click'); onClose(); }}
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
@@ -138,7 +139,7 @@ const CharacterListModal: React.FC<CharacterListModalProps> = ({
 
           <TouchableOpacity
             style={[styles.confirmButton, !selectedCharacterId && styles.confirmButtonDisabled]}
-            onPress={handleConfirmPress}
+            onPress={() => { soundManager.play('click'); handleConfirmPress(); }}
             disabled={!selectedCharacterId}
           >
             <Text style={styles.confirmButtonText}>Xác nhận</Text>

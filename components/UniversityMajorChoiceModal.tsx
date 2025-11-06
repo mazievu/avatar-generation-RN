@@ -8,6 +8,7 @@ import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 import { typography, colors, spacing } from './designSystem';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 
 const { width: screenWidth } = Dimensions.get('window');
 const baseWidth = 375;
@@ -32,9 +33,9 @@ export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProp
     const allUnaffordable = majors.every(major => currentFunds < major.cost);
 
     return (
-        <ComicPanelModal visible={true} onClose={onAbandon} rotate="0deg">
+        <ComicPanelModal visible={true} onClose={() => { soundManager.play('click'); onAbandon(); }} rotate="0deg">
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
+                <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={styles.avatarContainer}>
                     <AgeAwareAvatarPreview
                         character={character}
                         manifest={manifest}
@@ -61,7 +62,7 @@ export const UniversityMajorChoiceModal: React.FC<UniversityMajorChoiceModalProp
             {allUnaffordable && (
                 <View style={styles.unaffordableSection}>
                     <Text style={[styles.unaffordableText, { fontSize: responsiveFontSize(14, userFontScale) }]}>{t('modal_major_no_money', lang)}</Text>
-                    <TouchableOpacity onPress={onAbandon} style={[styles.button, styles.buttonSlate]}>
+                    <TouchableOpacity onPress={() => { soundManager.play('click'); onAbandon(); }} style={[styles.button, styles.buttonSlate]}>
                         <Text style={[styles.buttonText, { fontSize: responsiveFontSize(typography.bodyBold.fontSize, userFontScale) }]}>
                             {t('university_choice_no', lang)}
                         </Text>

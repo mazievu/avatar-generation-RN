@@ -8,6 +8,7 @@ import { ASSET_DEFINITIONS } from '../core/constants';
 import { IqIcon, HappinessIcon, EqIcon, HealthIcon, SkillIcon } from './icons'; // Assuming these icons are available
 import { ComicPanelModal } from './ComicPanelModal';
 import { imageAssets } from './ImageAssets';
+import { soundManager } from '../services';
 
 interface AssetSlotProps {
     asset: AssetDefinition;
@@ -28,7 +29,7 @@ const statIcons: Record<keyof Stats, React.ElementType> = {
 const AssetSlot: React.FC<AssetSlotProps> = ({ asset, isOwned, canAfford, lang, onViewDetails }) => {
     return (
         <TouchableOpacity
-            onPress={() => onViewDetails(asset)}
+            onPress={() => { soundManager.play('click'); onViewDetails(asset); }}
             style={[
                 assetSlotStyles.container,
                 isOwned ? assetSlotStyles.owned : assetSlotStyles.available,
@@ -343,11 +344,11 @@ const FamilyAssetsPanelInternal: React.FC<{
             {selectedAsset && (
                 <ComicPanelModal
                     visible={true}
-                    onClose={() => setSelectedAsset(null)}
+                    onClose={() => { soundManager.play('click'); setSelectedAsset(null); }}
                     // rotate="-1deg" // Example rotation, can be adjusted
                 >
                     {/* Content of the old AssetDetailModal goes here */}
-                    <TouchableOpacity onPress={() => setSelectedAsset(null)} style={assetDetailModalStyles.closeButton}>
+                    <TouchableOpacity onPress={() => { soundManager.play('click'); setSelectedAsset(null); }} style={assetDetailModalStyles.closeButton}>
                         <Text style={assetDetailModalStyles.closeButtonText}>&times;</Text>
                     </TouchableOpacity>
 
@@ -396,7 +397,7 @@ const FamilyAssetsPanelInternal: React.FC<{
                             </View>
                         ) : (
                             <TouchableOpacity
-                                onPress={() => { onPurchaseAsset(selectedAsset.id); setSelectedAsset(null); }}
+                                onPress={() => { soundManager.play('click'); onPurchaseAsset(selectedAsset.id); setSelectedAsset(null); }}
                                 disabled={!(familyFund >= selectedAsset.cost)}
                                 style={[assetDetailModalStyles.chunkyButton, assetDetailModalStyles.chunkyButtonGreen, !(familyFund >= selectedAsset.cost) && assetDetailModalStyles.chunkyButtonDisabled]}
                             >

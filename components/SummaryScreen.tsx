@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import type { GameState, Character, Language, PurchasedAsset } from '../core/types';
 import { ASSET_DEFINITIONS } from '../core/constants';
 import { t } from '../core/localization';
+import { soundManager } from '../services';
 
 
 
@@ -69,7 +70,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = React.memo(({
               <Text style={summaryScreenStyles.statItem}><Text style={summaryScreenStyles.statLabel}>{t('summary_ending_year', lang)}:</Text> {currentDate.year}</Text>
             </View>
 
-            <TouchableOpacity onPress={onRestart} style={summaryScreenStyles.restartButton}>
+            <TouchableOpacity onPress={() => { soundManager.play('click'); onRestart(); }} style={summaryScreenStyles.restartButton}>
               <Text style={summaryScreenStyles.restartButtonText}>
                 {t('play_again_button', lang)}
               </Text>

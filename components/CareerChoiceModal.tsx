@@ -8,6 +8,7 @@ import { CAREER_LADDER, VOCATIONAL_TRAINING } from '../core/constants';
 import { getCharacterDisplayName } from '../core/utils';
 import { t } from '../core/localization';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 
 interface CareerChoiceModalProps {
     character: Character;
@@ -23,7 +24,7 @@ interface CareerChoiceModalProps {
 export const CareerChoiceModal: React.FC<CareerChoiceModalProps> = ({ character, options, onSelect, currentFunds, lang, manifest, images, onOpenCharacterDetails }) => (
      <ComicPanelModal visible={true} onClose={() => {}} rotate="1deg">
         <View style={styles.header}>
-            <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
+            <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={styles.avatarContainer}>
                 <AgeAwareAvatarPreview
                     character={character}
                     manifest={manifest}

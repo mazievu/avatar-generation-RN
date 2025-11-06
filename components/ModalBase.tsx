@@ -1,12 +1,13 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { soundManager } from '../services';
 
 interface ModalBaseProps {
   isVisible: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  contentContainerStyle?: object; // Add this line
+  contentContainerStyle?: object;
 }
 
 const ModalBase: React.FC<ModalBaseProps> = ({ isVisible, onClose, title, children, contentContainerStyle }) => {
@@ -19,15 +20,15 @@ const ModalBase: React.FC<ModalBaseProps> = ({ isVisible, onClose, title, childr
     >
       <View style={modalBaseStyles.centeredView}>
         <View style={modalBaseStyles.modalView}>
-          {title && (
+          {!!title && (
             <View style={modalBaseStyles.modalHeader}>
               <Text style={modalBaseStyles.modalTitle}>{title}</Text>
-              <TouchableOpacity onPress={onClose} style={modalBaseStyles.closeButton}>
+              <TouchableOpacity onPress={() => { soundManager.play('click'); onClose(); }} style={modalBaseStyles.closeButton}>
                 <Text style={modalBaseStyles.closeButtonText}>X</Text>
               </TouchableOpacity>
             </View>
           )}
-          <View style={[modalBaseStyles.modalBody, contentContainerStyle]}> {/* Apply contentContainerStyle here */}
+          <View style={[modalBaseStyles.modalBody, contentContainerStyle]}>
             {children}
           </View>
         </View>
@@ -41,11 +42,11 @@ const modalBaseStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
     flex: 1,
-    justifyContent: 'center', // Semi-transparent background
+    justifyContent: 'center',
   },
   closeButton: {
     alignItems: 'center',
-    backgroundColor: '#FF6347', // Tomato color
+    backgroundColor: '#FF6347',
     borderRadius: 15,
     height: 30,
     justifyContent: 'center',
@@ -77,7 +78,7 @@ const modalBaseStyles = StyleSheet.create({
     borderRadius: 20,
     elevation: 5,
     margin: 20,
-    maxHeight: '80%', // Adjust max height as needed
+    maxHeight: '80%',
     padding: 35,
     shadowColor: '#000',
     shadowOffset: {
@@ -86,7 +87,7 @@ const modalBaseStyles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    width: '80%', // Adjust width as needed
+    width: '80%',
   },
 });
 

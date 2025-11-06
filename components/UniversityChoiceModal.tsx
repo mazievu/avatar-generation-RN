@@ -5,6 +5,7 @@ import type { Character, Language, Manifest } from '../core/types';
 import { ComicPanelModal } from './ComicPanelModal';
 import { t } from '../core/localization';
 import { AgeAwareAvatarPreview } from './AgeAwareAvatarPreview';
+import { soundManager } from '../services';
 
 interface UniversityChoiceModalProps {
     character: Character;
@@ -18,7 +19,7 @@ interface UniversityChoiceModalProps {
 export const UniversityChoiceModal: React.FC<UniversityChoiceModalProps> = ({ character, onSelect, lang, manifest, images, onOpenCharacterDetails }) => (
     <ComicPanelModal visible={true} onClose={() => {}} rotate="0deg">
         <View style={styles.header}>
-            <TouchableOpacity onPress={() => onOpenCharacterDetails(character)} style={styles.avatarContainer}>
+            <TouchableOpacity onPress={() => { soundManager.play('click'); onOpenCharacterDetails(character); }} style={styles.avatarContainer}>
                 <AgeAwareAvatarPreview
                     character={character}
                     manifest={manifest}
@@ -33,10 +34,10 @@ export const UniversityChoiceModal: React.FC<UniversityChoiceModalProps> = ({ ch
 
         <Text style={styles.description}>{t('modal_university_desc', lang, { name: character.name })}</Text>
 
-        <TouchableOpacity onPress={() => onSelect(true)} style={[styles.button, styles.buttonBlue]}>
+        <TouchableOpacity onPress={() => { soundManager.play('click'); onSelect(true); }} style={[styles.button, styles.buttonBlue]}>
             <Text style={styles.buttonText}>{t('university_choice_yes', lang)}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => onSelect(false)} style={[styles.button, styles.buttonSlate]}>
+        <TouchableOpacity onPress={() => { soundManager.play('click'); onSelect(false); }} style={[styles.button, styles.buttonSlate]}>
             <Text style={styles.buttonText}>{t('university_choice_no', lang)}</Text>
         </TouchableOpacity>
     </ComicPanelModal>
