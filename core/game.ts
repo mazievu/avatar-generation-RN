@@ -274,8 +274,8 @@ export const createGameLogicHandlers = (
             day = 1;
             year += 1;
         }
-        state.currentDate = { day, year };
         const isNewYear = day === 1 && year > state.currentDate.year;
+        state.currentDate = { day, year };
 
         const memberUpdates: Record<string, Partial<Character>> = {};
 
@@ -868,7 +868,11 @@ export const createGameLogicHandlers = (
             const childBorn = Object.values(nextState.familyMembers).find((c: Character) => c.generation >= 6);
             if(childBorn) nextState.gameOverReason = 'victory';
 
-            nextState.activeEvent = null; // Clear the active event
+            if (nextState.activeEvent) {
+                nextState.activeEvent.result = finalEffect;
+            }
+
+            // nextState.activeEvent = null; // Clear the active event
             return nextState;
         });
         setIsPaused(false);

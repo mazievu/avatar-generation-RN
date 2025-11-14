@@ -240,6 +240,7 @@ export type EventQueueItem = {
     event: GameEvent;
     replacements?: Record<string, string | number>;
     scheduledEvent?: ScheduledEvent; // Link back to the scheduler
+    result?: EventEffect;
 };
 
 export interface GameState {

@@ -22,7 +22,7 @@ const responsiveSize = (size: number) => Math.round(size * scale);
 
 interface EventModalProps {
   lang: Language;
-  eventData: { characterId: string; event: GameEvent & { potentialSpouse?: Character }; replacements?: Record<string, string | number> };
+  eventData: { characterId: string; event: GameEvent & { potentialSpouse?: Character }; replacements?: Record<string, string | number>; result?: EventEffect; };
   character: Character;
   onChoice: (choice: EventChoice) => void;
   onClose: () => void;
@@ -35,7 +35,6 @@ interface EventModalProps {
 export const EventModal: React.FC<EventModalProps> = ({ eventData, character, onChoice, onClose, lang, images, manifest, onEventHandled, onOpenCharacterDetails }) => {
   const [initialCharacterState, setInitialCharacterState] = React.useState(character);
   const [displayEventData, setDisplayEventData] = React.useState(eventData);
-  const [outcome, setOutcome] = React.useState<EventEffect | null>(null);
  
   const okButtonPressState = useSharedValue(0);
 
@@ -75,15 +74,13 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
       timerRef.current = setTimeout(() => {
         setDisplayEventData(eventData);
         setInitialCharacterState(character);
-        setOutcome(null);
       }, 2500);
     }
     return () => clearTimer();
   }, [eventData, displayEventData, character]);
 
   const handleSelectChoice = (choice: EventChoice) => {
-    if (outcome) return;
-    setOutcome(choice.effect);
+    if (eventData.result) return;
     onChoice(choice);
   };
 
@@ -151,10 +148,10 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                 </View>
             )}
 
-            {!outcome ? (
+            {!eventData.result ? (
                 <View style={eventModalStyles.choicesContainer}>
                   {displayEventData.event.choices.map((choice, index) => (
-                    <TouchableOpacity key={index} onPress={() => { soundManager.play('click'); handleSelectChoice(choice); }} disabled={!!outcome} style={eventModalStyles.choiceButton}>
+                    <TouchableOpacity key={index} onPress={() => { soundManager.play('click'); handleSelectChoice(choice); }} disabled={!!eventData.result} style={eventModalStyles.choiceButton}>
                       <View style={eventModalStyles.choiceButtonContent}>
                         <Text style={eventModalStyles.choiceButtonText}>
                           {choice.label}
@@ -181,15 +178,15 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                 </View>
             ) : (
                 <View style={eventModalStyles.outcomeContainer}>
-                    <Text style={eventModalStyles.outcomeMessage}>"{t(outcome.logKey, lang, { name: characterDisplayName })}"</Text>
+                    <Text style={eventModalStyles.outcomeMessage}>"{t(eventData.result.logKey, lang, { ...displayEventData.replacements, name: characterDisplayName })}"</Text>
                     <View style={eventModalStyles.outcomeDetails}>
-                        {outcome.fundChange && (
+                        {eventData.result.fundChange && (
                             <View style={eventModalStyles.fundChangeDetail}>
                                 <MoneyIcon />
-                                <Text style={[eventModalStyles.fundChangeDetailText, outcome.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{`${t('family_fund_label', lang)}: ${outcome.fundChange > 0 ? '+' : ''}$${outcome.fundChange.toLocaleString()}`}</Text>
+                                <Text style={[eventModalStyles.fundChangeDetailText, eventData.result.fundChange > 0 ? eventModalStyles.fundChangePositive : eventModalStyles.fundChangeNegative]}>{`${t('family_fund_label', lang)}: ${eventData.result.fundChange > 0 ? '+' : ''}$${eventData.result.fundChange.toLocaleString()}`}</Text>
                             </View>
                         )}
-                        {outcome.statChanges && Object.entries(outcome.statChanges).map(([stat, change]) => {
+                        {eventData.result.statChanges && Object.entries(eventData.result.statChanges).map(([stat, change]) => {
                             if (change === 0) return null;
                             const key = stat as keyof Stats;
                             const initialValue = initialCharacterState.stats[key];
@@ -209,16 +206,8 @@ export const EventModal: React.FC<EventModalProps> = ({ eventData, character, on
                     </View>
                      <TouchableOpacity
                             onPress={() => { 
-                                clearTimer();
-                                const isNewEventPending = eventData.event.id !== displayEventData.event.id || eventData.characterId !== displayEventData.characterId;
-                                if (isNewEventPending) {
-                                    setDisplayEventData(eventData);
-                                    setInitialCharacterState(character);
-                                    setOutcome(null);
-                                } else {
-                                    onEventHandled(character.id);
-                                    onClose();
-                                }
+                                soundManager.play('click');
+                                onClose();
                             }}
                             onPressIn={handleOkPressIn}
                             onPressOut={handleOkPressOut}
